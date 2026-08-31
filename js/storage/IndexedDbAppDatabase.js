@@ -129,7 +129,11 @@ export class IndexedDbAppDatabase {
       await requestResult(records.clear());
       await Promise.all(parsed.records.map(record => requestResult(records.put(record))));
     });
-    return this.info;
+    return Object.freeze({
+      ...this.info,
+      restoredBackupCreatedAt: parsed.createdAt,
+      restoredRecordCount: parsed.records.length
+    });
   }
 
   async close() {
@@ -224,7 +228,11 @@ function parseBackup(input) {
     }
     return { store: record.store, key: record.key, value: record.value, updatedAt: Number(record.updatedAt || 0) };
   });
-  return { records };
+  const createdAt = Number(parsed.createdAt || 0);
+  if (!Number.isFinite(createdAt) || createdAt <= 0) {
+    throw new Error("Резервная копия IndexedDB не содержит корректную дату создания");
+  }
+  return { createdAt, records };
 }
 
 function backupReviver(_key, value) {

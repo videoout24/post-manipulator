@@ -1,4 +1,4 @@
-import { AppDatabase } from "./storage/AppDatabase.js?v=1.7.0";
+import { AppDatabase } from "./storage/AppDatabase.js?v=1.7.1";
 import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.5.9";
 import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.7.0";
 import { SECURITY_GATE_CONFIG } from "./security/SecurityGateConfig.js?v=1.6.1";
@@ -66,7 +66,7 @@ async function bootstrapSecurityGate() {
         botId: appDb.botId,
         persistent: appDb.info.persistent === true
       });
-      const { startApplication } = await import("./app.js?v=1.7.0");
+      const { startApplication } = await import("./app.js?v=1.7.1");
       application = await startApplication({
         appDb,
         token: result.token,

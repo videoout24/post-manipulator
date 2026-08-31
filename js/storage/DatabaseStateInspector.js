@@ -33,12 +33,24 @@ export class DatabaseStateInspector {
   }
 
   async hasMeaningfulData({ includeBindings = true } = {}) {
+    return (await this.inspectMeaningfulData({ includeBindings })).hasData;
+  }
+
+  async inspectMeaningfulData({ includeBindings = true } = {}) {
     const [rows, bindingRows] = await Promise.all([
       Promise.all(CONTENT_STORES.map(store => this.db.all(store))),
       this.db.all("bindings")
     ]);
-    return rows.some(records => records.length > 0) || (includeBindings &&
-      bindingRows.some(row => ![MINI_APP_USER_IDENTITY_KEY, PUBLISHER_BOT_IDENTITY_KEY].includes(row.key)));
+    const contentRows = rows.flat();
+    const customBindingRows = includeBindings
+      ? bindingRows.filter(row => ![MINI_APP_USER_IDENTITY_KEY, PUBLISHER_BOT_IDENTITY_KEY].includes(row.key))
+      : [];
+    const meaningfulRows = [...contentRows, ...customBindingRows];
+    const latestUpdatedAt = meaningfulRows.reduce((latest, row) => {
+      const updatedAt = Number(row?.updatedAt || 0);
+      return Number.isFinite(updatedAt) ? Math.max(latest, updatedAt) : latest;
+    }, 0);
+    return Object.freeze({ hasData: meaningfulRows.length > 0, latestUpdatedAt });
   }
 
   async isDatabaseEmpty(options = {}) { return !(await this.hasMeaningfulData(options)); }

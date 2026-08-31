@@ -8,12 +8,15 @@ const client = await readFile(new URL("../js/telegram/TelegramClient.js", import
 
 assert.match(html, /id="createTelegramBackup"/);
 assert.match(html, /id="telegramBackupRestoreDialog"/);
-assert.match(app, /telegram:owner-bound/);
+assert.match(html, /id="telegramBackupCheckPinned"/);
+assert.match(html, /id="telegramBackupRestoreManual"/);
+assert.match(app, /inspectPinnedBackup/);
 assert.match(app, /restoreDownloadedFile/);
 assert.match(backup, /exportBackup\(\)/);
 assert.match(backup, /MAX_RAW_BACKUP_BYTES/);
 assert.match(backup, /pinChatMessage/);
 assert.match(backup, /telegramLastBackup/);
+assert.match(backup, /telegramAppliedBackup/);
 assert.match(backup, /deleteMessage\(previous\.chatId, previous\.messageId\)\.catch/);
 assert.match(backup, /findPinnedBackup/);
 assert.match(client, /uploadDocument/);

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { TelegramNavigation } from '../js/telegram/TelegramNavigation.js?v=1.5.9';
+import { TelegramNavigation } from '../js/telegram/TelegramNavigation.js?v=1.7.1';
 
 const clicks = [];
 const fakeDocument = {
@@ -17,19 +17,29 @@ const db = {
   async get(storeName, key, fallback) { return store.get(`${storeName}:${key}`) ?? fallback; },
   async put(storeName, key, value) { store.set(`${storeName}:${key}`, value); return value; }
 };
-const nav = new TelegramNavigation({ db, documentRef: fakeDocument, botIdentity: { async getIdentity() { return { id: 1, username: 'publisher_bot' }; } } });
+const telegramLinks = [];
+const externalLinks = [];
+const webApp = {
+  openTelegramLink(url) { telegramLinks.push(url); },
+  openLink(url) { externalLinks.push(url); }
+};
+const nav = new TelegramNavigation({ db, documentRef: fakeDocument, webApp, botIdentity: { async getIdentity() { return { id: 1, username: 'publisher_bot' }; } } });
 await nav.initialize();
 nav.openBotStart({ token: 'owner-token' });
-assert.equal(clicks.at(-1).href, 'tg://resolve?domain=publisher_bot&start=owner-token');
-assert.equal(clicks.at(-1).target, '_blank');
+assert.equal(telegramLinks.at(-1), 'https://t.me/publisher_bot?start=owner-token');
 nav.openPrivateMessage({ chatId: -1001234567890, messageId: 10 });
-assert.equal(clicks.at(-1).href, 'tg://privatepost?channel=1234567890&post=10');
-assert.equal(clicks.at(-1).target, '_blank');
+assert.equal(telegramLinks.at(-1), 'https://t.me/c/1234567890/10');
+assert.equal(clicks.length, 0, 'Mini App navigation must use Telegram.WebApp instead of synthetic links');
 await nav.setNativeIntegration(false);
 nav.openBotStart({ token: 'owner-token' });
-assert.equal(clicks.at(-1).href, 'https://t.me/publisher_bot?start=owner-token');
-assert.equal(clicks.at(-1).target, '_blank');
+assert.equal(externalLinks.at(-1), 'https://t.me/publisher_bot?start=owner-token');
 nav.openPrivateMessage({ chatId: -1001234567890, messageId: 10 });
-assert.equal(clicks.at(-1).href, 'https://t.me/c/1234567890/10');
-assert.equal(clicks.at(-1).target, '_blank');
+assert.equal(externalLinks.at(-1), 'https://t.me/c/1234567890/10');
+
+store.set('settings:telegramNativeIntegration', true);
+const fallback = new TelegramNavigation({ db, documentRef: fakeDocument, webApp: null });
+await fallback.initialize();
+fallback.openPrivateMessage({ chatId: -1001234567890, messageId: 11 });
+assert.equal(clicks.at(-1).href, 'tg://privatepost?channel=1234567890&post=11');
+assert.equal(clicks.at(-1).target, '', 'tg:// fallback must stay in the current WebView context');
 console.log('telegram_navigation_mode_smoke: OK');

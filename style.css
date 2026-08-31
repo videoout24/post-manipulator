@@ -2,6 +2,7 @@
 * { box-sizing: border-box; }
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
   color: #e9eef5;
   background: #0f1319;
 }
@@ -48,6 +49,8 @@ body[data-app-locked="true"] { background: #0d1219; }
 .security-gate-form .security-gate-actions { margin-top: 2px; }
 .security-gate-actions .primary { border-color: #4283c5; background: #26629f; color: #fff; }
 button, input, select, textarea { font: inherit; }
+select { color-scheme: dark; }
+select option { background: #0c1117; color: #e9eef5; }
 button {
   border: 1px solid #313b49; background: #18202b; color: inherit;
   border-radius: 7px; padding: 7px 11px; cursor: pointer;

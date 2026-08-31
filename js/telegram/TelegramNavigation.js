@@ -1,12 +1,20 @@
 const NATIVE_SETTING_KEY = "telegramNativeIntegration";
 
 export class TelegramNavigation {
-  constructor({ db, events = null, botIdentity = null, windowRef = globalThis.window, documentRef = globalThis.document } = {}) {
+  constructor({
+    db,
+    events = null,
+    botIdentity = null,
+    windowRef = globalThis.window,
+    documentRef = globalThis.document,
+    webApp = windowRef?.Telegram?.WebApp || null
+  } = {}) {
     this.db = db;
     this.events = events;
     this.botIdentity = botIdentity;
     this.windowRef = windowRef;
     this.documentRef = documentRef;
+    this.webApp = webApp;
     this.nativeIntegration = true;
     this.bot = null;
     this.unsubscribers = [];
@@ -77,15 +85,28 @@ export class TelegramNavigation {
   #open({ nativeUrl = "", webUrl = "" } = {}) {
     const url = this.nativeIntegration ? (nativeUrl || webUrl) : webUrl;
     if (!url) return false;
+    if (webUrl && this.nativeIntegration && typeof this.webApp?.openTelegramLink === "function") {
+      try {
+        this.webApp.openTelegramLink(webUrl);
+        return true;
+      } catch {
+        // Fall through for browsers and older Telegram clients.
+      }
+    }
+    if (webUrl && !this.nativeIntegration && typeof this.webApp?.openLink === "function") {
+      try {
+        this.webApp.openLink(webUrl);
+        return true;
+      } catch {
+        // Fall through to a regular web link.
+      }
+    }
     const doc = this.documentRef;
     if (doc?.createElement && doc?.body) {
       const link = doc.createElement("a");
       link.href = url;
       link.rel = "noopener noreferrer";
-      // A tg:// navigation in the current browsing context can fire beforeunload,
-      // stop the application lifecycle, and then leave the editor tab visible after
-      // the native Telegram app opens. Always isolate both native and web links.
-      link.target = "_blank";
+      if (!url.startsWith("tg://")) link.target = "_blank";
       link.style.display = "none";
       doc.body.append(link);
       link.click();

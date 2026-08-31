@@ -1,5 +1,9 @@
+import { DatabaseStateInspector } from "./DatabaseStateInspector.js?v=1.7.1";
+
 export const MAX_RAW_BACKUP_BYTES = 20 * 1024 * 1024;
 const LAST_BACKUP_KEY = "telegramLastBackup";
+const APPLIED_BACKUP_KEY = "telegramAppliedBackup";
+const TELEGRAM_DATE_TOLERANCE_MS = 1000;
 
 export class TelegramBackupService {
   constructor({ db, client, ownerBinding, maxRawBytes = MAX_RAW_BACKUP_BYTES } = {}) {
@@ -40,7 +44,45 @@ export class TelegramBackupService {
     const pinned = (await this.client.getChat(target.chatId))?.pinned_message;
     const document = pinned?.document;
     if (!document || !isSupportedBackup(document)) return null;
-    return { chatId: target.chatId, messageId: pinned.message_id, document };
+    return {
+      chatId: Number(target.chatId),
+      messageId: Number(pinned.message_id),
+      createdAt: telegramMessageDate(pinned.date),
+      document
+    };
+  }
+
+  async inspectPinnedBackup(owner = null) {
+    const backup = await this.findPinnedBackup(owner);
+    if (!backup) return Object.freeze({ status: "missing", shouldOfferRestore: false, backup: null });
+
+    const inspector = new DatabaseStateInspector({ db: this.db });
+    const [local, lastCreated, lastApplied] = await Promise.all([
+      inspector.inspectMeaningfulData({ includeBindings: false }),
+      this.db.get("runtime", LAST_BACKUP_KEY, null),
+      this.db.get("runtime", APPLIED_BACKUP_KEY, null)
+    ]);
+    const alreadyCurrent = matchesBackup(lastCreated, backup) || matchesBackup(lastApplied, backup);
+    const newerByDate = backup.createdAt > 0 &&
+      backup.createdAt > local.latestUpdatedAt + TELEGRAM_DATE_TOLERANCE_MS;
+    const localNewerByDate = local.hasData && backup.createdAt > 0 &&
+      local.latestUpdatedAt > backup.createdAt + TELEGRAM_DATE_TOLERANCE_MS;
+    const shouldOfferRestore = !alreadyCurrent && (!local.hasData || newerByDate);
+    const status = alreadyCurrent
+      ? localNewerByDate ? "not-newer" : "current"
+      : shouldOfferRestore
+        ? "newer"
+        : backup.createdAt > 0
+          ? "not-newer"
+          : "unknown-date";
+
+    return Object.freeze({
+      status,
+      shouldOfferRestore,
+      backup,
+      localHasData: local.hasData,
+      localUpdatedAt: local.latestUpdatedAt
+    });
   }
 
   async isDatabaseEmpty() {
@@ -49,9 +91,21 @@ export class TelegramBackupService {
     return new DatabaseStateInspector({ db: this.db }).isDatabaseEmpty({ includeBindings: false });
   }
 
-  async restoreDownloadedFile(file) {
+  async restoreDownloadedFile(file, { sourceBackup = null } = {}) {
     if (!(file instanceof Blob)) throw new Error("Выберите скачанный файл резервной копии");
-    return this.db.restoreBackup(file);
+    const result = await this.db.restoreBackup(file);
+    if (sourceBackup?.chatId && sourceBackup?.messageId) {
+      const restored = {
+        chatId: Number(sourceBackup.chatId),
+        messageId: Number(sourceBackup.messageId),
+        createdAt: Number(sourceBackup.createdAt || result?.restoredBackupCreatedAt || Date.now())
+      };
+      await Promise.all([
+        this.db.put("runtime", APPLIED_BACKUP_KEY, restored),
+        this.db.put("runtime", LAST_BACKUP_KEY, restored)
+      ]);
+    }
+    return result;
   }
 }
 
@@ -59,4 +113,13 @@ function isSupportedBackup(document) {
   const name = String(document.file_name || "").toLowerCase();
   return /^rich-current-.*\.json$/.test(name) && document.mime_type === "application/json";
 }
-import { DatabaseStateInspector } from "./DatabaseStateInspector.js?v=1.5.9";
+
+function telegramMessageDate(value) {
+  const seconds = Number(value || 0);
+  return Number.isFinite(seconds) && seconds > 0 ? Math.round(seconds * 1000) : 0;
+}
+
+function matchesBackup(record, backup) {
+  return Number(record?.chatId) === Number(backup?.chatId) &&
+    Number(record?.messageId) === Number(backup?.messageId);
+}

@@ -9,7 +9,7 @@ import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js
 import { EditorCanvasPreferences } from "./editor/EditorCanvasPreferences.js?v=1.5.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.5.9";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.6.5";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.7.1";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.5.9";
 import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.5.9";
 import { createEditorDomain } from "./app/createEditorDomain.js?v=1.7.0";
@@ -17,9 +17,10 @@ import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.5.9";
 import { createEditorShell } from "./app/createEditorShell.js?v=1.6.5";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
 import { PublicationView } from "./publications/PublicationView.js?v=1.5.9";
-import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.0";
+import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.1";
 import { LinkingController } from "./links/LinkingController.js?v=1.5.9";
 import { LinkRelationNavigator } from "./links/LinkRelationNavigator.js?v=1.5.9";
+import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
 
 /**
  * Builds the application only after js/bootstrap.js has admitted a verified
@@ -112,22 +113,18 @@ const {
 } = telegram;
 const telegramBackups = new TelegramBackupService({ db: appDb, client: telegramClient, ownerBinding });
 const backupRestoreDialog = document.querySelector("#telegramBackupRestoreDialog");
+const backupRestoreTitle = document.querySelector("#telegramBackupRestoreTitle");
 const backupRestoreHint = document.querySelector("#telegramBackupRestoreHint");
+const backupRestoreFile = document.querySelector("#telegramBackupRestoreFile");
+const backupState = document.querySelector("#telegramBackupState");
 let discoveredPinnedBackup = null;
-events.on("telegram:owner-bound", async owner => {
-  try {
-    if (!await telegramBackups.isDatabaseEmpty()) return;
-    discoveredPinnedBackup = await telegramBackups.findPinnedBackup(owner);
-    if (!discoveredPinnedBackup) return;
-    if (backupRestoreHint) backupRestoreHint.textContent = `В закреплённом сообщении есть ${discoveredPinnedBackup.document.file_name || "резервная копия"}.`;
-    backupRestoreDialog?.showModal?.();
-  } catch (error) {
-    console.warn("Pinned backup discovery failed", error);
-  }
-});
 // initData was verified by the security gate before the application started,
 // so it is the authoritative source for the local workspace owner.
-await ownerBinding.bindVerifiedMiniAppUser(telegramContext?.telegramUserId);
+const verifiedOwner = await ownerBinding.bindVerifiedMiniAppUser(telegramContext?.telegramUserId);
+void checkPinnedBackup({ owner: verifiedOwner, automatic: true }).catch(error => {
+  if (backupState) backupState.textContent = `Проверка закреплённой копии не удалась: ${error?.message || error}`;
+  console.warn("Pinned backup discovery failed", error);
+});
 const projectPreviewSync = new ProjectPreviewSync({
   store: projectStore,
   compiler: projectCompiler,
@@ -321,6 +318,7 @@ createTelegramBackupButton?.addEventListener("click", async () => {
   createTelegramBackupButton.disabled = true;
   try {
     const result = await telegramBackups.createAndPin();
+    if (backupState) backupState.textContent = `Текущая копия создана ${formatBackupDate(result.createdAt)}.`;
     notifications.show({ message: `Резервная копия отправлена и закреплена (${formatBackupSize(result.backup.bytes.byteLength)}).`, type: "success" });
   } catch (error) {
     notifications.show({ message: `Резервная копия: ${error?.message || error}`, type: "error", duration: 7000 });
@@ -328,21 +326,49 @@ createTelegramBackupButton?.addEventListener("click", async () => {
     createTelegramBackupButton.disabled = false;
   }
 });
+document.querySelector("#telegramBackupCheckPinned")?.addEventListener("click", async event => {
+  const button = event.currentTarget;
+  if (button.disabled) return;
+  button.disabled = true;
+  try {
+    const inspection = await checkPinnedBackup({ automatic: false });
+    if (!inspection.backup) {
+      notifications.show({ message: "Самая новая закреплённая запись не является резервной копией Post Manipulator.", type: "warning" });
+    }
+  } catch (error) {
+    notifications.show({ message: `Проверка копии: ${error?.message || error}`, type: "error", duration: 7000 });
+  } finally {
+    button.disabled = false;
+  }
+});
+document.querySelector("#telegramBackupRestoreManual")?.addEventListener("click", () => {
+  showBackupRestoreDialog({ manual: true });
+});
 document.querySelector("#telegramBackupRestoreOpen")?.addEventListener("click", () => {
-  const username = telegramClient.hasToken() ? telegramSettings?.bot?.username : "";
-  if (username) window.open(`https://t.me/${username}`, "_blank", "noopener");
+  const username = telegramClient.hasToken() ? (telegramSettings?.bot?.username || verifiedBot?.username) : "";
+  if (username) telegramNavigation.openBot(username);
 });
 document.querySelector("#telegramBackupRestoreSkip")?.addEventListener("click", () => backupRestoreDialog?.close());
 document.querySelector("#telegramBackupRestoreApply")?.addEventListener("click", async () => {
   const button = document.querySelector("#telegramBackupRestoreApply");
-  const file = document.querySelector("#telegramBackupRestoreFile")?.files?.[0];
+  const file = backupRestoreFile?.files?.[0];
   if (!file) {
     notifications.show({ message: "Сначала выберите скачанный файл резервной копии.", type: "warning" });
     return;
   }
+  if (!await confirmDarkDialog({
+    title: "Заменить локальную базу?",
+    message: "Все текущие проекты, черновики, настройки и локальные привязки будут заменены данными из выбранной резервной копии.",
+    confirmLabel: "Восстановить",
+    danger: true
+  })) return;
   button.disabled = true;
   try {
-    await telegramBackups.restoreDownloadedFile(file);
+    const sourceBackup = discoveredPinnedBackup &&
+      String(file.name || "") === String(discoveredPinnedBackup.document?.file_name || "")
+      ? discoveredPinnedBackup
+      : null;
+    await telegramBackups.restoreDownloadedFile(file, { sourceBackup });
     backupRestoreDialog?.close();
     window.location.reload();
   } catch (error) {
@@ -352,10 +378,48 @@ document.querySelector("#telegramBackupRestoreApply")?.addEventListener("click",
   }
 });
 
+async function checkPinnedBackup({ owner = null, automatic = false } = {}) {
+  if (backupState) backupState.textContent = "Проверяем самую новую закреплённую копию…";
+  const inspection = await telegramBackups.inspectPinnedBackup(owner);
+  discoveredPinnedBackup = inspection.backup || null;
+  renderBackupInspection(inspection);
+  if (inspection.shouldOfferRestore || (!automatic && inspection.backup)) {
+    showBackupRestoreDialog({ inspection });
+  }
+  return inspection;
+}
+
+function renderBackupInspection(inspection) {
+  if (!backupState) return;
+  const date = inspection.backup?.createdAt ? formatBackupDate(inspection.backup.createdAt) : "с неизвестной датой";
+  const messages = {
+    missing: "Самая новая закреплённая запись не является резервной копией Post Manipulator.",
+    current: `Закреплённая копия от ${date} уже соответствует этой локальной базе.`,
+    newer: `Закреплённая копия от ${date} новее локальной базы.`,
+    "not-newer": `Локальная база не старее закреплённой копии от ${date}.`,
+    "unknown-date": "Дата закреплённой копии недоступна; её можно восстановить вручную."
+  };
+  backupState.textContent = messages[inspection.status] || "Состояние резервной копии неизвестно.";
+}
+
+function showBackupRestoreDialog({ inspection = null, manual = false } = {}) {
+  if (inspection?.backup) discoveredPinnedBackup = inspection.backup;
+  if (manual && !discoveredPinnedBackup) {
+    if (backupRestoreTitle) backupRestoreTitle.textContent = "Ручное восстановление";
+    if (backupRestoreHint) backupRestoreHint.textContent = "Выберите ранее скачанную резервную копию Post Manipulator.";
+  } else if (discoveredPinnedBackup) {
+    const date = discoveredPinnedBackup.createdAt ? formatBackupDate(discoveredPinnedBackup.createdAt) : "неизвестно";
+    if (backupRestoreTitle) backupRestoreTitle.textContent = inspection?.shouldOfferRestore ? "Найдена более свежая копия" : "Восстановление из закрепа";
+    if (backupRestoreHint) backupRestoreHint.textContent = `Самая новая закреплённая копия: ${discoveredPinnedBackup.document.file_name || "backup.json"}; дата отправки — ${date}.`;
+  }
+  if (backupRestoreFile) backupRestoreFile.value = "";
+  if (backupRestoreDialog && !backupRestoreDialog.open) backupRestoreDialog.showModal();
+}
+
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.7.0",
+  build: "1.7.1",
   notifications,
   layoutPreferences,
   telegramNavigation,
@@ -402,5 +466,10 @@ return handle;
 
 function formatBackupSize(bytes) {
   return `${(Number(bytes || 0) / (1024 * 1024)).toFixed(1)} МБ`;
+}
+
+function formatBackupDate(value) {
+  const date = new Date(Number(value || 0));
+  return Number.isNaN(date.getTime()) ? "неизвестно" : date.toLocaleString("ru-RU");
 }
 }

@@ -1,4 +1,4 @@
-import { APP_DATABASE_STORES, IndexedDbAppDatabase } from "./IndexedDbAppDatabase.js?v=1.7.0";
+import { APP_DATABASE_STORES, IndexedDbAppDatabase } from "./IndexedDbAppDatabase.js?v=1.7.1";
 
 export const APP_DATABASE_NAME_PREFIX = "post-manipulator-bot";
 
@@ -69,9 +69,9 @@ export class AppDatabase {
     const source = bytes instanceof Uint8Array
       ? bytes
       : new Uint8Array(await bytes?.arrayBuffer?.() || bytes || 0);
-    const info = await database.restoreBackup(source);
-    this.info = info;
-    return info;
+    const result = await database.restoreBackup(source);
+    this.info = database.info;
+    return result;
   }
 
   async close() {

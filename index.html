@@ -7,12 +7,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<meta content="1.7.0" name="rmb-build"/>
+<meta content="1.7.1" name="rmb-build"/>
 <title>Post Manipulator</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
 <link href="./assets/post-manipulator.png" rel="icon" type="image/png"/>
 <link href="./assets/post-manipulator.png" rel="apple-touch-icon"/>
-<link href="./style.css?v=1.7.0" rel="stylesheet"/>
+<link href="./style.css?v=1.7.1" rel="stylesheet"/>
 </head>
 <body data-app-locked="true">
 <div aria-hidden="true" id="appShell" inert>
@@ -20,7 +20,7 @@
 <div class="topbar-left">
 <div class="brand"><button aria-label="Открыть настройки Post Manipulator" class="brand-settings-trigger" id="openSettingsFromBrand" title="Открыть настройки" type="button"><strong>Post Manipulator</strong></button>
 
-<span class="muted">schema-driven / vanilla JS · build 1.7.0</span>
+<span class="muted">schema-driven / vanilla JS · build 1.7.1</span>
 </div>
 <nav aria-label="Разделы Post Manipulator" class="top-tabs">
 
@@ -60,6 +60,14 @@
 <div class="settings-meta" id="storagePersistenceUsage"></div>
 <div class="settings-actions"><button class="primary" id="requestPersistentStorage" type="button">Защитить локальные данные</button></div>
 <p class="settings-hint">Постоянное хранилище защищает IndexedDB от автоматического удаления браузером при нехватке места. Пользователь всё равно может удалить данные сайта вручную.</p>
+</section><section class="settings-card">
+<h2>Резервные копии</h2>
+<div class="settings-state" id="telegramBackupState">Последняя закреплённая копия ещё не проверена</div>
+<div class="settings-actions">
+<button class="primary" id="telegramBackupCheckPinned" type="button">Проверить закреп</button>
+<button id="telegramBackupRestoreManual" type="button">Восстановить из файла</button>
+</div>
+<p class="settings-hint">Проверка использует самую новую закреплённую запись по дате отправки. Восстановление полностью заменяет текущую локальную IndexedDB; Bot API token остаётся в CloudStorage.</p>
 </section><section class="settings-card">
 <h2>Бот и long polling</h2>
 <div class="settings-meta" id="tgTokenStored">Токен не задан</div>
@@ -255,10 +263,10 @@
 <div aria-live="polite" class="toast" data-type="info" id="toast" role="status"></div>
 <dialog class="session-token-dialog" id="telegramBackupRestoreDialog">
 <form method="dialog">
-<div class="dialog-head"><strong>Найдена резервная копия</strong></div>
+<div class="dialog-head"><strong id="telegramBackupRestoreTitle">Найдена резервная копия</strong></div>
 <div class="session-token-dialog-body">
 <p id="telegramBackupRestoreHint">В закреплённом сообщении есть резервная копия.</p>
-<p class="settings-hint">Скачайте закреплённый файл из чата с ботом, затем выберите его здесь. После восстановления страница перезагрузится.</p>
+<p class="settings-hint">Скачайте нужный файл из чата с ботом, затем выберите его здесь. Восстановление полностью заменит локальную базу, после чего страница перезагрузится.</p>
 <label class="settings-field"><span>Файл резервной копии</span><input accept=".json,application/json" id="telegramBackupRestoreFile" type="file"/></label>
 <div class="settings-actions"><button class="primary" id="telegramBackupRestoreApply" type="button">Восстановить</button><button id="telegramBackupRestoreOpen" type="button">Открыть Telegram</button><button id="telegramBackupRestoreSkip" type="button">Позже</button></div>
 </div>
@@ -268,6 +276,6 @@
 <section aria-live="polite" aria-modal="true" id="securityGate" role="dialog">
 <div class="security-gate-card"><h1 class="security-gate-title">Защищённый запуск</h1><p class="security-gate-copy">Проверяем окружение Telegram…</p></div>
 </section>
-<script src="./js/bootstrap.js?v=1.7.0" type="module"></script>
+<script src="./js/bootstrap.js?v=1.7.1" type="module"></script>
 </body>
 </html>

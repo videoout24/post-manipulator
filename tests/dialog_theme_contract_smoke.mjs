@@ -10,6 +10,8 @@ const [css, dialogs, gallery, settings, metaDialog] = await Promise.all([
 ]);
 
 assert.match(css, /dialog \{[\s\S]*?color-scheme: dark;[\s\S]*?background: #10161e;[\s\S]*?color: #e9eef5;/);
+assert.match(css, /:root \{[\s\S]*?color-scheme: dark;/);
+assert.match(css, /select option \{ background: #0c1117; color: #e9eef5; \}/);
 assert.match(css, /dialog::backdrop \{ background: rgba\(0, 0, 0, \.72\); \}/);
 assert.match(css, /dialog input,[\s\S]*?dialog select,[\s\S]*?dialog textarea \{[\s\S]*?background: #0b1118;[\s\S]*?color: #e9eef5;/);
 assert.match(css, /#securityGate \{[\s\S]*?color: #e9eef5;/);
