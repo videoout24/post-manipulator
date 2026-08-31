@@ -1,0 +1,22 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const inspector = await readFile(new URL("../js/editor/BlockInspector.js", import.meta.url), "utf8");
+const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+assert.match(inspector, /link-relation-button/);
+assert.match(inspector, /links:select-target-requested/);
+assert.match(inspector, /links:block-target-requested/);
+assert.match(inspector, /Выделите текст, который нужно связать/);
+assert.match(inspector, /const existing = findLinkRelationAtRange\(value, start, end\);/);
+assert.match(inspector, /end <= start && !existing/);
+assert.match(inspector, /Связь разрывается…/);
+assert.match(inspector, /is-linked/);
+assert.match(inspector, /Связано с:/);
+assert.match(inspector, /Фрагмент ссылки:/);
+assert.match(inspector, /marker\?\.value\?\.text/);
+assert.match(inspector, /links:source-opened/);
+assert.match(inspector, /findLinkRelationById/);
+assert.match(inspector, /setSelectionRange/);
+assert.match(inspector, /Связь выбрана\. Нажмите ↗, чтобы разорвать\./);
+assert.doesNotMatch(html, /confirmLinkRelation/);
+console.log("link_relation_toolbar_contract_smoke: OK");

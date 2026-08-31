@@ -1,0 +1,60 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const css = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+const lifecycle = fs.readFileSync(new URL('../js/app/AppLifecycle.js', import.meta.url), 'utf8');
+const library = fs.readFileSync(new URL('../js/project/ProjectLibraryView.js', import.meta.url), 'utf8');
+const cards = fs.readFileSync(new URL('../js/project/ProjectPostCard.js', import.meta.url), 'utf8');
+const layout = fs.readFileSync(new URL('../js/core/LayoutPreferences.js', import.meta.url), 'utf8');
+
+assert.match(html, /id="projectLibrarySidebar"/);
+assert.match(html, /id="projectLibrarySplitter"/);
+assert.match(html, /id="projectLibraryDetail"/);
+assert.match(html, /id="projectLibraryPostSplitter"/);
+assert.match(html, /id="projectLibraryPostPanel"/);
+assert.match(css, /grid-template-columns:\s*var\(--project-library-left-width\)\s+6px\s+minmax\(0,\s*1fr\)\s+6px\s+var\(--project-library-right-width\)/);
+assert.match(layout, /projectLibraryLeft:\s*260/);
+assert.match(layout, /projectLibraryLeft:\s*\[180,\s*560\]/);
+assert.match(layout, /projectLibraryRight:\s*340/);
+assert.match(layout, /projectLibraryRight:\s*\[260,\s*680\]/);
+assert.match(lifecycle, /bindSplitter\?\.\(this\.documentRoot\.querySelector\("#projectLibrarySplitter"\),\s*\{\s*key:\s*"projectLibraryLeft",\s*edge:\s*"left"\s*\}\)/);
+assert.match(lifecycle, /bindSplitter\?\.\(this\.documentRoot\.querySelector\("#projectLibraryPostSplitter"\),\s*\{\s*key:\s*"projectLibraryRight",\s*edge:\s*"right"\s*\}\)/);
+
+assert.match(library, /project-library-sidebar-head/);
+assert.match(library, /\+ Создать/);
+assert.match(library, /requestNewProjectTitle/);
+assert.match(library, /className = "project-create-dialog"/);
+assert.doesNotMatch(library, /prompt\("Название проекта", "Новый проект"\)/);
+assert.match(library, /projectPostOpenButton/);
+assert.match(library, /Редактировать этот пост в Editor/);
+assert.match(library, /showProjectRenameOverlay/);
+assert.match(library, /showCardDeleteConfirmation/);
+assert.doesNotMatch(library, /confirm\(`Удалить проект/);
+assert.doesNotMatch(library, /prompt\("Название проекта", project\.title\)/);
+assert.match(library, /selectedPosts = new Map\(\)/);
+assert.match(library, /session\.openProject\(projectId, \{ postId \}\)/);
+assert.match(library, /#renderPostPanel/);
+assert.match(library, /post-detail-panel-data/);
+assert.match(library, /Открыть в Editor/);
+
+assert.match(cards, /variant === "overview"/);
+assert.match(cards, /case "heading"/);
+assert.match(cards, /case "paragraph"/);
+assert.match(cards, /case "table"/);
+assert.match(cards, /case "photo"/);
+assert.match(cards, /case "video"/);
+assert.match(cards, /thumbnails\.getUrl/);
+assert.match(cards, /gallery\.getAsset/);
+assert.match(css, /project-post-preview-table/);
+assert.match(css, /project-post-preview-media-thumb/);
+assert.match(css, /\.project-library-posts\s*\{[\s\S]*?display:\s*flex;[\s\S]*?flex-direction:\s*column;/);
+assert.match(css, /\.project-library-post-panel/);
+assert.match(css, /\.post-detail-panel-data/);
+assert.match(css, /\.project-library-item\.active-editor\s*\{[\s\S]*?border-color:\s*#59ae78/);
+assert.match(css, /\.project-library-detail \.project-post-card\.active\s*\{[\s\S]*?border-color:\s*#59ae78/);
+assert.match(cards, /case \"project_map_backlink\"/);
+assert.match(cards, /hasUnappliedProductionChanges/);
+assert.match(cards, /published && hasProductionChanges && onApplyChanges/);
+
+console.log('project library layout smoke: OK');

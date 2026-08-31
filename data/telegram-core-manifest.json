@@ -1,0 +1,1858 @@
+{
+  "engine": "schema-driven-block-editor",
+  "version": "1.4.0",
+  "limits": {
+    "maxBlocks": 500,
+    "maxDepth": 16
+  },
+  "registries": {
+    "propertyCatalogCount": 89,
+    "propertyCount": 64,
+    "formattingCommandCount": 25,
+    "formattingMetadataCount": 18,
+    "formattingCount": 25,
+    "properties": [
+      "content.text",
+      "content.credit",
+      "content.caption",
+      "content.captionCredit",
+      "heading.size",
+      "preformatted.language",
+      "math.expression",
+      "anchor.name",
+      "list.item.blocks",
+      "list.item.label",
+      "list.item.hasCheckbox",
+      "list.item.isChecked",
+      "list.item.value",
+      "list.item.type",
+      "list.items",
+      "list.ordered",
+      "table.cell.text",
+      "table.cell.isHeader",
+      "table.cell.colspan",
+      "table.cell.rowspan",
+      "table.cell.align",
+      "table.cell.valign",
+      "table.cells",
+      "table.isBordered",
+      "table.isStriped",
+      "table.columns",
+      "details.summary",
+      "details.isOpen",
+      "map.location",
+      "map.latitude",
+      "map.longitude",
+      "map.zoom",
+      "map.width",
+      "map.height",
+      "media.source",
+      "media.galleryId",
+      "media.fileId",
+      "media.animation",
+      "media.audio",
+      "media.photo",
+      "media.video",
+      "media.voiceNote",
+      "media.hasSpoiler",
+      "collage.columns",
+      "slideshow.autoplay",
+      "thinking.text",
+      "format.bold",
+      "format.italic",
+      "format.underline",
+      "format.strikethrough",
+      "format.spoiler",
+      "format.subscript",
+      "format.superscript",
+      "format.marked",
+      "format.code",
+      "format.date_time.unix_time",
+      "format.date_time.date_time_format",
+      "format.date_time",
+      "format.text_mention.user",
+      "format.text_mention",
+      "format.url.url",
+      "format.url",
+      "format.email_address.email_address",
+      "format.email_address",
+      "format.phone_number.phone_number",
+      "format.phone_number",
+      "format.bank_card_number.bank_card_number",
+      "format.bank_card_number",
+      "format.mention.username",
+      "format.mention",
+      "format.hashtag.hashtag",
+      "format.hashtag",
+      "format.cashtag.cashtag",
+      "format.cashtag",
+      "format.bot_command.bot_command",
+      "format.bot_command",
+      "format.anchor_link.anchor_name",
+      "format.anchor_link",
+      "format.reference.name",
+      "format.reference",
+      "format.reference_link.reference_name",
+      "format.reference_link",
+      "format.custom_emoji.custom_emoji_id",
+      "format.custom_emoji.alternative_text",
+      "format.custom_emoji",
+      "format.mathematical_expression.expression",
+      "format.mathematical_expression",
+      "format.anchor.name",
+      "format.anchor",
+      "semantic.text",
+      "semantic.dateTime",
+      "semantic.dateTimeFormat",
+      "contact.phone",
+      "contact.email",
+      "hashtag.value",
+      "link.url",
+      "anchor.target",
+      "button.style"
+    ],
+    "formatting": [
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "spoiler",
+      "subscript",
+      "superscript",
+      "marked",
+      "code",
+      "date_time",
+      "text_mention",
+      "url",
+      "email_address",
+      "phone_number",
+      "bank_card_number",
+      "mention",
+      "hashtag",
+      "cashtag",
+      "bot_command",
+      "anchor_link",
+      "reference",
+      "reference_link",
+      "custom_emoji",
+      "mathematical_expression",
+      "anchor"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "properties": [
+        "content.text"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "properties": [
+        "content.text",
+        "heading.size"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "marked",
+          "url",
+          "anchor_link",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "preformatted",
+      "properties": [
+        "content.text",
+        "preformatted.language"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "code"
+        ]
+      }
+    },
+    {
+      "type": "footer",
+      "properties": [
+        "content.text"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "url"
+        ]
+      }
+    },
+    {
+      "type": "divider",
+      "properties": [],
+      "richTextCapabilities": {}
+    },
+    {
+      "type": "mathematical_expression",
+      "properties": [
+        "math.expression"
+      ],
+      "richTextCapabilities": {}
+    },
+    {
+      "type": "anchor",
+      "properties": [
+        "anchor.name"
+      ],
+      "richTextCapabilities": {}
+    },
+    {
+      "type": "list",
+      "properties": [
+        "list.items"
+      ],
+      "richTextCapabilities": {}
+    },
+    {
+      "type": "block_quotation",
+      "properties": [
+        "content.text",
+        "content.credit"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "credit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "pull_quotation",
+      "properties": [
+        "content.text",
+        "content.credit"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "credit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "collage",
+      "properties": [
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "slideshow",
+      "properties": [
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "properties": [
+        "table.cells",
+        "table.isBordered",
+        "table.isStriped",
+        "content.caption"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "details",
+      "properties": [
+        "details.summary",
+        "details.isOpen"
+      ],
+      "richTextCapabilities": {
+        "summary": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "marked",
+          "url",
+          "anchor_link",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "map",
+      "properties": [
+        "map.location",
+        "map.zoom",
+        "map.width",
+        "map.height",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "animation",
+      "properties": [
+        "media.animation",
+        "media.hasSpoiler",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "audio",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "photo",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "media.hasSpoiler",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "video",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "media.hasSpoiler",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "voice_note",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "thinking",
+      "properties": [
+        "thinking.text"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "date_time",
+          "text_mention",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji",
+          "mathematical_expression",
+          "url",
+          "email_address",
+          "phone_number",
+          "bank_card_number",
+          "mention",
+          "hashtag",
+          "cashtag",
+          "bot_command",
+          "anchor",
+          "anchor_link",
+          "reference",
+          "reference_link"
+        ]
+      }
+    },
+    {
+      "type": "paragraph",
+      "properties": [
+        "content.text"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "properties": [
+        "content.text",
+        "heading.size"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "marked"
+        ]
+      }
+    },
+    {
+      "type": "footer",
+      "properties": [
+        "content.text"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "marked"
+        ]
+      }
+    },
+    {
+      "type": "date_time",
+      "properties": [
+        "semantic.dateTime",
+        "semantic.dateTimeFormat"
+      ],
+      "richTextCapabilities": {},
+      "semantic": {
+        "inline": true
+      }
+    },
+    {
+      "type": "phone",
+      "properties": [
+        "semantic.text",
+        "contact.phone"
+      ],
+      "richTextCapabilities": {},
+      "semantic": {
+        "inline": true
+      }
+    },
+    {
+      "type": "email",
+      "properties": [
+        "semantic.text",
+        "contact.email"
+      ],
+      "richTextCapabilities": {},
+      "semantic": {
+        "inline": true
+      }
+    },
+    {
+      "type": "hashtag",
+      "properties": [
+        "hashtag.value"
+      ],
+      "richTextCapabilities": {},
+      "semantic": {
+        "inline": true
+      }
+    },
+    {
+      "type": "text_link",
+      "properties": [
+        "semantic.text",
+        "link.url"
+      ],
+      "richTextCapabilities": {},
+      "semantic": {
+        "inline": true
+      }
+    },
+    {
+      "type": "anchor_link",
+      "properties": [
+        "semantic.text",
+        "anchor.target"
+      ],
+      "richTextCapabilities": {},
+      "semantic": {
+        "inline": true
+      }
+    },
+    {
+      "type": "url_button",
+      "properties": [
+        "semantic.text",
+        "link.url",
+        "button.style"
+      ],
+      "richTextCapabilities": {},
+      "wire": {
+        "kind": "reply_markup"
+      }
+    },
+    {
+      "type": "list",
+      "properties": [
+        "list.items",
+        "list.ordered"
+      ],
+      "richTextCapabilities": {}
+    },
+    {
+      "type": "block_quotation",
+      "properties": [
+        "content.credit"
+      ],
+      "richTextCapabilities": {
+        "credit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "pull_quotation",
+      "properties": [
+        "content.text",
+        "content.credit"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "credit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "collage",
+      "properties": [
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "slideshow",
+      "properties": [
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "properties": [
+        "table.cells",
+        "table.isBordered",
+        "table.isStriped",
+        "content.caption"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "details",
+      "properties": [
+        "details.summary",
+        "details.isOpen"
+      ],
+      "richTextCapabilities": {
+        "summary": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "marked"
+        ]
+      }
+    },
+    {
+      "type": "map",
+      "properties": [
+        "map.location",
+        "map.zoom",
+        "map.width",
+        "map.height",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "animation",
+      "properties": [
+        "media.animation",
+        "media.hasSpoiler",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "audio",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "photo",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "media.hasSpoiler",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "video",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "media.hasSpoiler",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "voice_note",
+      "properties": [
+        "media.galleryId",
+        "media.fileId",
+        "content.caption",
+        "content.captionCredit"
+      ],
+      "richTextCapabilities": {
+        "caption": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ],
+        "captionCredit": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    },
+    {
+      "type": "thinking",
+      "properties": [
+        "thinking.text"
+      ],
+      "richTextCapabilities": {
+        "text": [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "spoiler",
+          "subscript",
+          "superscript",
+          "marked",
+          "code",
+          "custom_emoji"
+        ]
+      }
+    }
+  ],
+  "inspectorEditors": [
+    "text",
+    "rich-text",
+    "number",
+    "number",
+    "checkbox",
+    "select",
+    "url",
+    "color",
+    "media",
+    "json",
+    "location",
+    "table",
+    "list-items",
+    "block-array",
+    "string",
+    "integer",
+    "boolean",
+    "enum",
+    "datetime-local",
+    "anchor-select"
+  ],
+  "features": [
+    "master-property-registry",
+    "formatting-metadata-in-property-registry",
+    "telegram-richtext-formatting-registry",
+    "registry-driven-block-inspector",
+    "visual-list-items-editor",
+    "visual-table-cell-editor",
+    "nested-registry-property-editors",
+    "inline-richtext-format-metadata-editor",
+    "property-groups",
+    "block-property-capabilities",
+    "per-richtext-field-format-capabilities",
+    "structured-richtext-ast-formatting",
+    "list-item-property-catalog",
+    "table-cell-property-catalog",
+    "meta-block-registry-properties",
+    "meta-block-registry",
+    "save-selected-subtree-as-meta-block",
+    "multi-selection",
+    "meta-block-parameter-extraction",
+    "meta-block-bindings",
+    "live-block-count",
+    "live-nesting-depth",
+    "telegram-limit-validation",
+    "precise-canvas-drag-and-drop",
+    "drag-outside-canvas-to-delete",
+    "details-richmessage-open-property-independent-from-canvas-collapse",
+    "details-collapsed-child-summary",
+    "telegram-desktop-security-gate",
+    "telegram-cloud-storage-aes-gcm-token",
+    "direct-telegram-bot-api-client",
+    "long-polling-runtime",
+    "owner-deep-link-binding",
+    "strict-owner-update-guard",
+    "configurable-owner-media-filter",
+    "normalized-owner-media-events",
+    "system-preview-topic",
+    "self-healing-preview-topic",
+    "single-live-preview-message",
+    "live-rich-message-preview",
+    "telegram-wire-rich-message-renderer",
+    "single-slot-private-preview-channel-binding",
+    "preview-channel-admin-rights-verification",
+    "preview-channel-health-tracking",
+    "gallery-topic-transport-create-rename",
+    "project-preview-channel-transport",
+    "gallery-core",
+    "gallery-indexeddb-metadata",
+    "gallery-idempotent-update-ingest",
+    "gallery-file-unique-id-duplicate-hints",
+    "gallery-user-topic-catalog",
+    "gallery-topic-filters",
+    "gallery-type-filters",
+    "gallery-safe-source-message-delete",
+    "awaited-gallery-media-handlers",
+    "permanent-bot-id-identity",
+    "same-bot-token-rotation",
+    "token-rotation-preserves-bindings",
+    "runtime-bot-id-guard",
+    "gallery-thumbnail-direct-url",
+    "gallery-thumbnail-url-refresh",
+    "gallery-thumbnail-url-invalidation-on-token-rotation",
+    "editor-contextual-gallery-picker",
+    "editor-gallery-type-filtering",
+    "editor-gallery-topic-filter",
+    "gallery-drag-to-media-block",
+    "media-block-gallery-id",
+    "media-block-telegram-file-id-snapshot",
+    "media-block-caption-import",
+    "canvas-media-thumbnail-preview",
+    "editor-resizable-two-pane-layout",
+    "gallery-resizable-three-pane-layout",
+    "indexeddb-layout-preferences",
+    "legacy-media-url-migration",
+    "preview-local-validity-gate",
+    "preview-waits-for-incomplete-editor-state",
+    "collage-gallery-photo-video-drop",
+    "slideshow-gallery-photo-video-drop",
+    "collection-auto-richblock-creation",
+    "canvas-delete-key-shortcut",
+    "compact-collapsed-media-resource-properties",
+    "shared-richtext-style-toolbar",
+    "collapsible-richtext-property-fields",
+    "explicit-canvas-block-collapse",
+    "canvas-collapse-independent-from-telegram-state",
+    "collapsed-canvas-safe-sibling-sort",
+    "table-columns-managed-by-visual-cell-editor",
+    "map-location-single-source-editor",
+    "inline-canvas-property-editor",
+    "right-inspector-removed",
+    "inline-block-actions",
+    "block-service-info-overlay",
+    "table-cells-only-no-richblock-children",
+    "canvas-double-click-collapse-toggle",
+    "session-textarea-row-memory",
+    "textarea-content-autosize-no-vertical-scroll",
+    "textarea-alt-arrow-row-sizing",
+    "unified-thin-accent-scrollbars",
+    "heading-size-richtext-footer-control",
+    "preformatted-language-richtext-footer-control",
+    "details-open-richtext-footer-control",
+    "formula-template-category-subcategory-chips",
+    "formula-template-json-library",
+    "formula-horizontal-wheel-scroll",
+    "compact-line-driven-list-editor",
+    "list-no-richblock-children",
+    "quote-shared-inline-editor-type-switch",
+    "quote-no-user-child-blocks",
+    "collage-slideshow-shared-inline-editor-type-switch",
+    "table-direct-cell-text-editor",
+    "table-active-cell-format-toolbar",
+    "table-csv-markdown-local-import",
+    "table-only-horizontal-scroll",
+    "media-spoiler-header-control",
+    "richtext-plain-status-label-removed",
+    "visual-formatting-only-richtext-toolbar",
+    "basic-unicode-emoji-picker",
+    "semantic-date-time-block-and-caret-insert",
+    "semantic-phone-block-and-caret-insert",
+    "semantic-email-block-and-caret-insert",
+    "semantic-hashtag-block-and-caret-insert",
+    "semantic-text-link-block-and-caret-insert",
+    "stable-anchor-node-linking",
+    "automatic-anchor-link-name-resolution",
+    "url-button-reply-markup-block",
+    "semantic-richtext-preserved-during-plain-edit",
+    "references-deferred-to-project-layer",
+    "reply-markup-excluded-from-richblock-limits"
+  ],
+  "uiTabs": [
+    "settings",
+    "editor",
+    "gallery",
+    "project",
+    "publications"
+  ],
+  "telegramCore": {
+    "storage": {
+      "engine": "bot-scoped IndexedDB",
+      "databaseName": "post-manipulator-bot-<botId>",
+      "stores": [
+        "settings",
+        "bindings",
+        "runtime",
+        "topics",
+        "preview",
+        "gallery",
+        "thumbnail_cache",
+        "projects",
+        "messages"
+      ],
+      "botIdentityStore": "bindings/botIdentity"
+    },
+    "runtime": {
+      "transport": "getUpdates long polling",
+      "offsetStore": "runtime/telegramOffset",
+      "acceptedOwnerMedia": [
+        "photo",
+        "video",
+        "audio",
+        "voice",
+        "document"
+      ],
+      "ignoredByDefault": [
+        "text",
+        "video_note",
+        "sticker",
+        "animation",
+        "location",
+        "contact",
+        "poll",
+        "dice"
+      ]
+    },
+    "owner": {
+      "binding": "t.me deep-link /start token",
+      "singleOwner": true,
+      "foreignUsers": "ignored"
+    },
+    "editorPreview": {
+      "systemTopic": "Предпросмотр",
+      "selfHealing": true,
+      "messageStrategy": "edit existing; recreate message if missing; recreate topic if thread is invalid"
+    },
+    "projectPreviewChannel": {
+      "slots": 1,
+      "type": "private channel",
+      "binding": "my_chat_member discovery + random channel_post confirmation code",
+      "requiredRights": [
+        "post_messages",
+        "edit_messages",
+        "delete_messages"
+      ],
+      "discoveryWhenSlotFilled": false
+    },
+    "publicApi": {
+      "editor": [
+        "telegramCore.editor.preview.schedule",
+        "telegramCore.editor.preview.sync",
+        "telegramCore.editor.preview.setEnabled"
+      ],
+      "project": [
+        "telegramCore.project.previewChannel.render",
+        "telegramCore.project.previewChannel.send",
+        "telegramCore.project.previewChannel.edit",
+        "telegramCore.project.previewChannel.deleteMessage"
+      ],
+      "gallery": [
+        "telegramCore.media.onReceived",
+        "telegramCore.topics.onObserved",
+        "telegramCore.topics.create",
+        "telegramCore.topics.rename"
+      ]
+    },
+    "credentials": {
+      "tokenStore": "Telegram.WebApp.CloudStorage/rmb_token_v2/AES-GCM",
+      "cloudIdentityMetadata": "none",
+      "identityStore": "bindings/botIdentity",
+      "rotationCheck": "getMe(newToken).id === stored botIdentity.id",
+      "preserves": [
+        "owner binding",
+        "preview topic",
+        "preview channel",
+        "gallery",
+        "topics",
+        "runtime offset"
+      ]
+    },
+    "securityGate": {
+      "mode": "client-only",
+      "allowedPlatforms": ["tdesktop"],
+      "launcherBotId": "resolved by getMe after token decryption",
+      "publisherBotMode": "same",
+      "maxInitDataAgeSec": 900,
+      "telegramUserIdentityStore": "bindings/miniAppUserIdentity",
+      "publisherBotIdentityStore": "bindings/botIdentity",
+      "tokenStore": "Telegram.WebApp.CloudStorage/rmb_token_v2/AES-GCM",
+      "cloudIdentityMetadata": "none",
+      "databaseEncrypted": false
+    }
+  },
+  "gallery": {
+    "assetIdentity": "random asset_<type>_<uuid>",
+    "stores": {
+      "metadata": "gallery",
+      "topics": "topics/gallery:<threadId>",
+      "thumbnails": "thumbnail_cache"
+    },
+    "originalMediaStoredLocally": false,
+    "duplicateHint": "telegram.fileUniqueId",
+    "idempotencyKey": "sourceEventKey = chatId:messageId",
+    "thumbnailCache": {
+      "type": "browser HTTP cache + in-memory getFile URL cache",
+      "persistentBlobCache": false,
+      "urlTtlMinutes": 50,
+      "sourceOfTruth": "thumbnailFileId"
+    },
+    "sourceDelete": "optional; only after metadata persistence",
+    "filters": [
+      "type",
+      "topic",
+      "no-topic",
+      "search"
+    ],
+    "acceptedTypes": [
+      "photo",
+      "video",
+      "audio",
+      "voice",
+      "document"
+    ],
+    "editorIntegration": {
+      "blockTypes": {
+        "photo": [
+          "photo"
+        ],
+        "video": [
+          "video"
+        ],
+        "audio": [
+          "audio"
+        ],
+        "voice_note": [
+          "voice"
+        ],
+        "collage": [
+          "photo",
+          "video"
+        ],
+        "slideshow": [
+          "photo",
+          "video"
+        ]
+      },
+      "blockSnapshotFields": [
+        "galleryId",
+        "fileId",
+        "caption"
+      ],
+      "fileIdReadOnly": true,
+      "dragAndDrop": true,
+      "canvasPreview": true,
+      "documentAssets": "gallery-only; Telegram Rich Messages have no InputRichBlockDocument",
+      "collectionAssignment": "Gallery photo/video → auto-created child Photo/Video RichBlock",
+      "collectionSelection": "container remains selected after asset add"
+    }
+  },
+  "uiLayout": {
+    "store": "settings/ui.layout.preferences",
+    "editor": [
+      "editorLeft"
+    ],
+    "gallery": [
+      "galleryLeft",
+      "galleryRight"
+    ]
+  }
+}

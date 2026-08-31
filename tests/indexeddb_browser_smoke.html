@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>IndexedDB browser smoke</title>
+<pre id="result">WAITING</pre>
+<script type="module">
+  import { AppDatabase } from "../js/storage/AppDatabase.js";
+
+  const output = document.querySelector("#result");
+  const fail = error => {
+    output.dataset.state = "failed";
+    output.textContent = `${error?.name || "Error"}: ${error?.message || error}\n${error?.stack || ""}`;
+  };
+
+  try {
+    const botId = 900719925;
+    const db = new AppDatabase();
+    const info = await db.selectBot(botId);
+    const key = `smoke-${Date.now()}`;
+    const value = { type: "photo", topicThreadId: 42, telegram: { fileUniqueId: key }, createdAt: Date.now() };
+    await db.put("gallery", key, value);
+    const restored = await db.get("gallery", key);
+    const indexed = await db.indexAll("gallery", "byFileUniqueId", key);
+    const backup = await db.exportBackup();
+    if (info.databaseName !== `post-manipulator-bot-${botId}`) throw new Error("bot database name mismatch");
+    if (restored?.telegram?.fileUniqueId !== key) throw new Error("get/put mismatch");
+    if (indexed.length !== 1 || indexed[0].key !== key) throw new Error("index mismatch");
+    if (!(backup.bytes instanceof Uint8Array) || backup.bytes.byteLength < 100) throw new Error("backup export mismatch");
+    await db.delete("gallery", key);
+    await db.restoreBackup(backup.bytes);
+    if ((await db.get("gallery", key))?.telegram?.fileUniqueId !== key) throw new Error("backup restore mismatch");
+    await db.delete("gallery", key);
+    output.dataset.state = "passed";
+    output.textContent = JSON.stringify({ indexedDb: info, backupBytes: backup.bytes.byteLength });
+    await db.close();
+  } catch (error) {
+    fail(error);
+  }
+</script>

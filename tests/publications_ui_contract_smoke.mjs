@@ -1,0 +1,70 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const view = fs.readFileSync(new URL("../js/publications/PublicationView.js", import.meta.url), "utf8");
+const runtime = fs.readFileSync(new URL("../js/telegram/TelegramRuntime.js", import.meta.url), "utf8");
+const service = fs.readFileSync(new URL("../js/telegram/PublicationTargetService.js", import.meta.url), "utf8");
+const panel = fs.readFileSync(new URL("../js/editor/EditorRightPanel.js", import.meta.url), "utf8");
+const publicationService = fs.readFileSync(new URL("../js/telegram/PublicationService.js", import.meta.url), "utf8");
+
+assert.match(html, /id="publicationsApp"/);
+assert.match(view, /\+ Добавить канал \/ группу/);
+for (const label of ["Все", "Каналы", "Группы"]) assert.ok(view.includes(`"${label}"`));
+assert.match(view, /publication-target-members[\s\S]*?👥/);
+assert.match(view, /publication-target-comments[\s\S]*?connected[\s\S]*?disconnected/);
+assert.match(view, /Группа комментариев подключена/);
+assert.doesNotMatch(view, /button\("×", \(\) => this\.telegramCore\.publications\.removeTarget/);
+assert.match(runtime, /publicationTargets\?\.handleMyChatMember/);
+assert.match(service, /Канал предпросмотра нельзя добавить в Публикации/);
+assert.match(view, /key: "publicationsLeft"/);
+assert.match(view, /key: "publicationsRight"/);
+assert.match(view, /selectedPublicationId = null/);
+assert.match(view, /#normalizePublicationSelection/);
+assert.match(view, /#publicationPostPanel/);
+assert.match(view, /Данные выбранной публикации/);
+assert.match(view, /publication-record-card\$\{selected \? " selected" : ""\}/);
+assert.match(view, /draft:session-changed/);
+assert.match(view, /#isEditingPublication/);
+assert.match(view, /editor-active/);
+for (const label of ["Опубликованные", "Отложенные", "Всё время", "Сегодня", "7 дней", "Месяц", "Произвольный диапазон"]) {
+  assert.ok(view.includes(`"${label}"`), `${label} filter missing`);
+}
+assert.match(view, /input\.type = "date"/);
+assert.match(view, /Опубликовать черновик/);
+assert.match(view, /Комментарии включены/);
+assert.match(view, /Отключить комментарии/);
+assert.match(view, /commentsEnabled: !disableComments\.checked/);
+assert.match(view, /Отложить публикацию/);
+assert.match(view, /Дата и время/);
+assert.match(view, /Комментарии/);
+assert.match(view, /requestProjectPostSchedule/);
+assert.doesNotMatch(view, /comments\.disabled = commentsField\.hidden \|\| target\?\.discussionRights/);
+assert.match(view, /await this\.telegramCore\.publications\.refreshTarget\(targetChatId\)/);
+assert.match(view, /publication-record-open/);
+assert.match(view, /publication-record-edit/);
+assert.match(view, /publication-record-delete/);
+assert.match(view, /await this\.telegramCore\.publications\.delete\(record\.id\)[\s\S]*?this\.publications = await this\.telegramCore\.publications\.list\(\)/);
+assert.match(view, /#isProjectSourceMissing/);
+assert.match(view, /record\.source\?\.kind === "project" && !projectMissing/,
+  "an orphaned Project publication must fall back to the ordinary publication cleanup path");
+assert.match(view, /publication-comment-badge/);
+assert.match(view, /const comments = button\("💬"/);
+assert.doesNotMatch(view, /`💬 \$\{Number\(record\.commentCount/);
+assert.match(view, /reactionEmoji\(reaction\.type\)/);
+assert.match(view, /publication-reaction-row/);
+assert.match(view, /reactionRow\.append\(badge\)/);
+assert.match(panel, /await this\.documents\?\.saveCurrentContext\?\.\(\)/);
+assert.match(panel, /this\.onPublishDraft\(fresh\)/);
+assert.match(panel, /activeDraft\?\.source\?\.kind === "publication"\) rows = \[activeDraft\]/);
+assert.match(panel, /onApplyChanges: draft => this\.#applyDraftChanges\(draft\)/);
+assert.match(panel, /onCancelPublicationEdit: draft => this\.#cancelPublicationEdit\(draft\)/);
+assert.match(panel, /documents\?\.discardDraft\?\.\(draft\.id/);
+assert.match(panel, /#finishPublicationEdit\(draft, "publication-edit-applied"\)/);
+assert.match(view, /publication-target-discussion/);
+assert.match(view, /target\.linkedDiscussionTitle \|\| "Группа обсуждения"/);
+assert.match(view, /incompleteChannels[\s\S]*?refreshTarget/);
+assert.match(view, /visibility === "public" \? "Публичный" : "Приватный"/);
+assert.match(publicationService, /this\.#reconcilePendingForward\(record\)\.catch/);
+
+console.log("publications UI contract smoke: OK");

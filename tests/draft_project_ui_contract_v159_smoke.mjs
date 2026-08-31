@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const panel=fs.readFileSync(new URL('../js/editor/EditorRightPanel.js', import.meta.url),'utf8');
+const draftView=fs.readFileSync(new URL('../js/editor/DraftListView.js', import.meta.url),'utf8');
+const projectView=fs.readFileSync(new URL('../js/editor/ProjectPostListView.js', import.meta.url),'utf8');
+const documents=fs.readFileSync(new URL('../js/editor/EditorDocumentCoordinator.js', import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../js/app.js', import.meta.url),'utf8');
+const commands=fs.readFileSync(new URL('../js/editor/EditorCommandController.js', import.meta.url),'utf8');
+const palette=fs.readFileSync(new URL('../js/editor/BlockPalette.js', import.meta.url),'utf8');
+const library=fs.readFileSync(new URL('../js/project/ProjectLibraryView.js', import.meta.url),'utf8');
+
+assert(!draftView.includes('button("Открыть"'), 'Draft card must not have separate Open button');
+for (const label of ['В проект','Опубликовать','Отложить']) assert(draftView.includes(label), `${label} action missing on Draft card`);
+assert(!draftView.includes('draft-panel-note'), 'obsolete Draft information card must be removed');
+assert(!draftView.includes('draft-card-summary'), 'Draft cards must not render AST/content previews in the right panel');
+assert(documents.includes('await this.projectSession.openStandaloneAst(draft.messageAst'), 'Draft card selection must load its AST into Canvas/Editor');
+assert(documents.includes('this.draftSession?.activate?.(draft'), 'Draft card selection must activate that Draft as the live editor document');
+assert(draftView.includes('event.target.closest("button, a, input, textarea, select")'), 'Draft card click must be the open action');
+assert(documents.includes('this.draftSession?.isActive?.()') && documents.includes('reason: "project-opened"'), 'Moving any Draft into Project must relinquish any active Draft session after it is flushed');
+assert(commands.includes('Название нового черновика'), 'New command must create a named Draft');
+assert(commands.includes('await this.documents.saveCurrentContext();'), 'New Draft must save previous context first');
+assert(palette.includes('if (b.projectVirtual) return false;'), 'Project virtual blocks must stay unavailable in Palette');
+assert(projectView.includes('getProjectPostPublicationEligibility'), 'Editor Project cards must use shared publication eligibility');
+assert(library.includes('getProjectPostPublicationEligibility'), 'Project Library cards must use shared publication eligibility');
+console.log('draft_project_ui_contract_v159_smoke: OK');
