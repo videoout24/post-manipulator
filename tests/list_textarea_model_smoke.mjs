@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { formatListMarker, reconcileListItemsByLines } from "../js/editor/BlockInspector.js?v=1.5.9";
+import { formatListMarker, markerTypeForCheckboxMode, reconcileListItemsByLines } from "../js/editor/BlockInspector.js?v=1.7.5";
 
 const item = (text, checked) => ({
   blocks: [{ type: "paragraph", text }],
@@ -45,3 +45,6 @@ assert.equal(formatListMarker("a", 27), "aa.");
 assert.equal(formatListMarker("A", 28), "AB.");
 assert.equal(formatListMarker("i", 9), "ix.");
 assert.equal(formatListMarker("I", 14), "XIV.");
+
+assert.equal(markerTypeForCheckboxMode("1", true), "", "checkbox mode must clear an existing numbering marker");
+assert.equal(markerTypeForCheckboxMode("A", false), "A");

@@ -1692,7 +1692,7 @@ export class BlockInspector {
     // Checked state remains independent on each item.
     let checkboxMode = items.some(item => !!item?.has_checkbox);
     const first = items[0] || {};
-    let markerType = String(first.type || "");
+    let markerType = markerTypeForCheckboxMode(first.type, checkboxMode);
     let start = Number.isFinite(Number(first.value)) ? Math.trunc(Number(first.value)) : 1;
 
     const itemsLayout = document.createElement("div");
@@ -1764,6 +1764,7 @@ export class BlockInspector {
       countLabel.textContent = `Элементов: ${items.length}`;
       removeButton.disabled = !!schema.readOnly || items.length === 0;
       startValue.disabled = !!schema.readOnly || !markerType;
+      marker.disabled = !!schema.readOnly || checkboxMode;
     };
 
     const emit = () => {
@@ -1908,6 +1909,8 @@ export class BlockInspector {
 
     hasCheckbox.input.addEventListener("change", () => {
       checkboxMode = hasCheckbox.input.checked;
+      markerType = markerTypeForCheckboxMode(markerType, checkboxMode);
+      marker.value = markerType;
       normalizeItems();
       renderMarkerRail();
       emit();
@@ -2481,6 +2484,10 @@ export function applyUrlPrefix(value, prefix) {
   rest = rest.replace(/^[a-z][a-z0-9+.-]*:(?:\/\/)?/i, "");
   if (selected.endsWith("//")) rest = rest.replace(/^\/+/, "");
   return `${selected}${rest}`;
+}
+
+export function markerTypeForCheckboxMode(markerType, checkboxMode) {
+  return checkboxMode ? "" : String(markerType || "");
 }
 
 function makeCompactCheckbox(node, binding, controller, labelText) {

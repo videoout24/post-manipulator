@@ -12,8 +12,6 @@ export class TelegramViewportController {
   start() {
     if (this.started) return this.snapshot;
     this.started = true;
-    try { this.webApp?.expand?.(); }
-    catch (error) { this.logger?.warn?.("Telegram Mini App height expansion failed", error); }
     this.webApp?.onEvent?.("viewportChanged", this.sync);
     this.windowRoot?.addEventListener?.("resize", this.sync);
     this.windowRoot?.visualViewport?.addEventListener?.("resize", this.sync);
@@ -45,7 +43,10 @@ export class TelegramViewportController {
     const preferredWidth = screenWidth ? Math.round(screenWidth * 2 / 3) : viewportWidth;
     const style = this.documentRoot?.documentElement?.style;
     if (viewportWidth) style?.setProperty?.("--app-viewport-width", `${Math.round(viewportWidth)}px`);
-    if (viewportHeight) style?.setProperty?.("--app-viewport-height", `${Math.round(viewportHeight)}px`);
+    if (viewportHeight) {
+      style?.setProperty?.("--app-viewport-height", `${Math.round(viewportHeight)}px`);
+      style?.setProperty?.("--editor-bottom-spacer-height", `${Math.round(viewportHeight / 2)}px`);
+    }
     if (preferredWidth) style?.setProperty?.("--app-preferred-window-width", `${preferredWidth}px`);
     const body = this.documentRoot?.body;
     if (body?.dataset) {

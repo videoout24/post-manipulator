@@ -2,7 +2,7 @@
 // the entered token and its Bot ID then verifies the Telegram signed initData.
 export const SECURITY_GATE_CONFIG = Object.freeze({
   allowedPlatforms: Object.freeze(["tdesktop"]),
-  maxInitDataAgeSec: 15 * 60,
+  maxInitDataAgeSec: 30,
   maxClockSkewSec: 60,
   cloudStorageTimeoutMs: 12_000,
   botApiTimeoutMs: 15_000,

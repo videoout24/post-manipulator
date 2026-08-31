@@ -17,7 +17,7 @@ assert.match(app, /searchParams\.set\("restore", "1"\)/);
 assert.doesNotMatch(app, /window\.location\.reload/);
 assert.match(bootstrap, /recoverBackupBeforeApplication/);
 assert.match(bootstrap, /restoreDownloadedFile/);
-assert.match(bootstrap, /await recoverBackupBeforeApplication[\s\S]+await import\("\.\/app\.js\?v=1\.7\.3"\)/);
+assert.match(bootstrap, /await recoverBackupBeforeApplication[\s\S]+await import\("\.\/app\.js\?v=1\.7\.5"\)/);
 assert.match(backup, /exportBackup\(\)/);
 assert.match(backup, /MAX_RAW_BACKUP_BYTES/);
 assert.match(backup, /pinChatMessage/);

@@ -674,6 +674,10 @@ body.drag-delete-active::before {
   overscroll-behavior: contain;
 }
 .canvas { min-height: 100%; }
+.canvas-bottom-spacer {
+  height: var(--editor-bottom-spacer-height, 50vh);
+  pointer-events: none;
+}
 .inspector { overflow: hidden; }
 .inspector-body {
   height: auto;
@@ -2258,3 +2262,50 @@ body.resizing-layout * { cursor: col-resize !important; }
   background: #080b0f; color: #d8e2ee; color-scheme: dark;
 }
 .draft-project-select-field select option { background: #080b0f; color: #d8e2ee; }
+
+/* v1.7.5 — one predictable dark select skin across Telegram Desktop WebViews. */
+select:not([multiple]) {
+  -webkit-appearance: none;
+  appearance: none;
+  color-scheme: dark;
+  border: 1px solid #34475d;
+  border-radius: 6px;
+  background-color: #0b1118;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #8fa6bd 50%),
+    linear-gradient(135deg, #8fa6bd 50%, transparent 50%);
+  background-position:
+    calc(100% - 10px) calc(50% - 1px),
+    calc(100% - 6px) calc(50% - 1px);
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  color: #d8e2ee;
+  min-height: 28px;
+  padding-right: 24px !important;
+}
+select:not([multiple]):hover { border-color: #4a6685; background-color: #101a26; }
+select:not([multiple]):focus-visible { outline: 1px solid #6ba3ff; outline-offset: 1px; }
+select:not([multiple]):disabled { opacity: .55; cursor: not-allowed; }
+select:not([multiple]) option { background-color: #0b1118; color: #d8e2ee; }
+
+.compact-select,
+.compact-field select,
+.rich-footer-control select,
+.block-type-switch {
+  min-height: 24px;
+  height: 24px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.date-time-picker.has-accessory {
+  grid-template-columns: minmax(0, 1fr) minmax(128px, 180px);
+}
+.date-time-picker-format {
+  width: 100%;
+  height: 28px;
+  min-height: 28px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.table-cell-controls .compact-field select { max-width: 112px; }
+.asset-picker-topic { height: 30px; min-height: 30px; }

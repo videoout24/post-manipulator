@@ -19,7 +19,7 @@ export class InitDataVerificationError extends Error {
 export async function verifyInitData(initData, {
   launcherBotId,
   publicKeyHex = TELEGRAM_PRODUCTION_ED25519_PUBLIC_KEY_HEX,
-  maxAgeSec = 15 * 60,
+  maxAgeSec = 30,
   maxClockSkewSec = 60,
   now = Date.now(),
   cryptoApi = globalThis.crypto
@@ -62,7 +62,7 @@ export async function verifyInitData(initData, {
   if (authDate > currentSec + boundedSeconds(maxClockSkewSec, 60)) {
     throw new InitDataVerificationError("AUTH_DATE_FUTURE", "Время запуска Mini App недопустимо");
   }
-  if (currentSec - authDate > boundedSeconds(maxAgeSec, 15 * 60)) {
+  if (currentSec - authDate > boundedSeconds(maxAgeSec, 30)) {
     throw new InitDataVerificationError("AUTH_DATE_EXPIRED", "Срок действия запуска Mini App истёк");
   }
 

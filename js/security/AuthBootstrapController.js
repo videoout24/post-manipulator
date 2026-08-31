@@ -1,7 +1,7 @@
 import { TelegramApiError } from "../telegram/TelegramClient.js?v=1.5.9";
 import { BotIdentityMismatchError, BotIdentityProbeTimeoutError } from "../telegram/BotIdentityService.js?v=1.5.9";
 import { DatabaseStateInspector, MINI_APP_USER_IDENTITY_KEY, PUBLISHER_BOT_IDENTITY_KEY } from "../storage/DatabaseStateInspector.js?v=1.5.9";
-import { InitDataVerificationError, verifyInitData } from "./InitDataVerifier.js?v=1.7.0";
+import { InitDataVerificationError, verifyInitData } from "./InitDataVerifier.js?v=1.7.5";
 import { validateNewPassword, validatePassword } from "./PasswordPolicy.js?v=1.5.9";
 import { decryptToken, encryptToken } from "./TokenCrypto.js?v=1.7.0";
 import { TOKEN_STORAGE_KEY } from "./TokenStorageKey.js?v=1.7.0";
@@ -19,14 +19,14 @@ export class AuthBootstrapError extends Error {
  * never persists them and never returns them to application code.
  */
 export class AuthBootstrapController {
-  constructor({ db, cloudStorage, initData, initDataPublicKeyHex, maxInitDataAgeSec = 15 * 60, maxClockSkewSec = 60, now = () => Date.now(), botIdentityService, inspector = null, cryptoApi = globalThis.crypto } = {}) {
+  constructor({ db, cloudStorage, initData, initDataPublicKeyHex, maxInitDataAgeSec = 30, maxClockSkewSec = 60, now = () => Date.now(), botIdentityService, inspector = null, cryptoApi = globalThis.crypto } = {}) {
     this.db = db;
     this.cloudStorage = cloudStorage;
     this.initData = String(initData || "");
     this.initDataPublicKeyHex = initDataPublicKeyHex;
     this.maxInitDataAgeSec = maxInitDataAgeSec;
     this.maxClockSkewSec = maxClockSkewSec;
-    this.now = now;
+    this.launchValidationTime = Number(now());
     this.telegramUserId = 0;
     this.authDate = 0;
     this.botIdentityService = botIdentityService;
@@ -292,7 +292,7 @@ export class AuthBootstrapController {
         publicKeyHex: this.initDataPublicKeyHex,
         maxAgeSec: this.maxInitDataAgeSec,
         maxClockSkewSec: this.maxClockSkewSec,
-        now: this.now(),
+        now: this.launchValidationTime,
         cryptoApi: this.cryptoApi
       });
       if (this.profile?.userId && Number(this.profile.userId) !== Number(verified.telegramUserId)) {

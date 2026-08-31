@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { AuthBootstrapController } from "../js/security/AuthBootstrapController.js?v=1.7.0";
-import { buildDataCheckString, parseInitData, verifyInitData } from "../js/security/InitDataVerifier.js?v=1.5.9";
+import { AuthBootstrapController } from "../js/security/AuthBootstrapController.js?v=1.7.5";
+import { buildDataCheckString, parseInitData, verifyInitData } from "../js/security/InitDataVerifier.js?v=1.7.5";
 import { validateNewPassword } from "../js/security/PasswordPolicy.js?v=1.5.9";
 import { CloudStorageAdapter } from "../js/security/CloudStorageAdapter.js?v=1.7.0";
 import { TelegramEnvironmentError, TelegramEnvironmentGate } from "../js/security/TelegramEnvironmentGate.js?v=1.7.0";
@@ -51,6 +51,11 @@ async function initDataTests() {
   const { initData, publicKeyHex } = signed;
   const verified = await verifyInitData(initData, { launcherBotId: 777000, publicKeyHex, now, cryptoApi });
   assert.deepEqual(verified, { telegramUserId: 123456789, authDate: Math.floor(now / 1000) });
+  const expired = await signedMiniAppLaunch({ botId: 777000, userId: 123456789, now: now - 31_000 });
+  await assert.rejects(
+    verifyInitData(expired.initData, { launcherBotId: 777000, publicKeyHex: expired.publicKeyHex, now, cryptoApi }),
+    { code: "AUTH_DATE_EXPIRED" }
+  );
   const bridge = {
     getItem(_key, callback) { callback(null, null, false); },
     setItem(_key, _value, callback) { callback(null, true); },
@@ -139,6 +144,7 @@ async function cloudStorageEnvironmentDiagnosticsTests() {
 
 async function controllerTests() {
   const now = 1_800_000_000_000;
+  let securityClock = now;
   const firstLaunch = await signedMiniAppLaunch({ botId: 123456, userId: 42, now });
   const foreignLaunch = await signedMiniAppLaunch({ botId: 123456, userId: 43, now });
   const records = new Map();
@@ -169,7 +175,7 @@ async function controllerTests() {
     cloudStorage,
     initData: launch.initData,
     initDataPublicKeyHex: launch.publicKeyHex,
-    now: () => now,
+    now: () => securityClock,
     botIdentityService,
     cryptoApi
   });
@@ -177,7 +183,9 @@ async function controllerTests() {
   assert.equal((await first.prepare()).state, "FIRST_SETUP_PASSWORD");
   assert.deepEqual(selectedBotIds, [], "first setup must not open an unscoped database before getMe establishes Bot ID");
   assert.equal((await first.beginFirstSetup({ password: "Пароль123", confirmation: "Пароль123" })).state, "FIRST_SETUP_TOKEN");
+  securityClock += 60_000;
   const completed = await first.finishFirstSetup({ token: "123456:secret" });
+  securityClock = now;
   assert.equal(completed.state, "STARTING_APPLICATION");
   assert.deepEqual(selectedBotIds, [123456], "verified getMe Bot ID selects the persistent database");
   assert.deepEqual(completed.telegramContext, { telegramUserId: 42, authDate: Math.floor(now / 1000) });
@@ -326,7 +334,7 @@ async function bootstrapBoundaryTests() {
   assert.match(html, /<div aria-hidden="true" id="appShell" inert>/);
   assert.match(html, /id="securityGate"/);
   assert.doesNotMatch(html, /src="\.\/js\/app\.js/);
-  assert.match(bootstrap, /await import\("\.\/app\.js\?v=1\.7\.3"\)/);
+  assert.match(bootstrap, /await import\("\.\/app\.js\?v=1\.7\.5"\)/);
   assert.match(app, /export async function startApplication/);
   assert.doesNotMatch(app, /new AppDatabase\(\)/);
 }
