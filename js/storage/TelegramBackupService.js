@@ -4,6 +4,7 @@ export const MAX_RAW_BACKUP_BYTES = 20 * 1024 * 1024;
 const LAST_BACKUP_KEY = "telegramLastBackup";
 const APPLIED_BACKUP_KEY = "telegramAppliedBackup";
 const TELEGRAM_DATE_TOLERANCE_MS = 1000;
+const BACKUP_MATCH_TOLERANCE_MS = 30 * 60 * 1000;
 
 export class TelegramBackupService {
   constructor({ db, client, ownerBinding, maxRawBytes = MAX_RAW_BACKUP_BYTES } = {}) {
@@ -38,10 +39,10 @@ export class TelegramBackupService {
     return { backup, ...current };
   }
 
-  async findPinnedBackup(owner = null) {
+  async findPinnedBackup(owner = null, { signal } = {}) {
     const target = owner || await this.ownerBinding?.getOwner?.();
     if (!this.client?.hasToken?.() || !target?.chatId) return null;
-    const pinned = (await this.client.getChat(target.chatId))?.pinned_message;
+    const pinned = (await this.client.getChat(target.chatId, { signal }))?.pinned_message;
     const document = pinned?.document;
     if (!document || !isSupportedBackup(document)) return null;
     return {
@@ -52,8 +53,8 @@ export class TelegramBackupService {
     };
   }
 
-  async inspectPinnedBackup(owner = null) {
-    const backup = await this.findPinnedBackup(owner);
+  async inspectPinnedBackup(owner = null, options = {}) {
+    const backup = await this.findPinnedBackup(owner, options);
     if (!backup) return Object.freeze({ status: "missing", shouldOfferRestore: false, backup: null });
 
     const inspector = new DatabaseStateInspector({ db: this.db });
@@ -62,7 +63,7 @@ export class TelegramBackupService {
       this.db.get("runtime", LAST_BACKUP_KEY, null),
       this.db.get("runtime", APPLIED_BACKUP_KEY, null)
     ]);
-    const alreadyCurrent = matchesBackup(lastCreated, backup) || matchesBackup(lastApplied, backup);
+    const alreadyCurrent = matchesBackup(lastCreated, backup) || matchesAppliedBackup(lastApplied, backup);
     const newerByDate = backup.createdAt > 0 &&
       backup.createdAt > local.latestUpdatedAt + TELEGRAM_DATE_TOLERANCE_MS;
     const localNewerByDate = local.hasData && backup.createdAt > 0 &&
@@ -94,18 +95,22 @@ export class TelegramBackupService {
   async restoreDownloadedFile(file, { sourceBackup = null } = {}) {
     if (!(file instanceof Blob)) throw new Error("Выберите скачанный файл резервной копии");
     const result = await this.db.restoreBackup(file);
-    if (sourceBackup?.chatId && sourceBackup?.messageId) {
-      const restored = {
+    const restored = {
+      backupCreatedAt: Number(result?.restoredBackupCreatedAt || 0),
+      fileName: normalizeBackupFileName(file.name),
+      appliedAt: Date.now()
+    };
+    const matchedPinnedBackup = selectedFileMatchesBackup(restored, sourceBackup);
+    if (matchedPinnedBackup) {
+      Object.assign(restored, {
         chatId: Number(sourceBackup.chatId),
         messageId: Number(sourceBackup.messageId),
-        createdAt: Number(sourceBackup.createdAt || result?.restoredBackupCreatedAt || Date.now())
-      };
-      await Promise.all([
-        this.db.put("runtime", APPLIED_BACKUP_KEY, restored),
-        this.db.put("runtime", LAST_BACKUP_KEY, restored)
-      ]);
+        createdAt: Number(sourceBackup.createdAt || restored.backupCreatedAt || Date.now())
+      });
     }
-    return result;
+    await this.db.put("runtime", APPLIED_BACKUP_KEY, restored);
+    if (matchedPinnedBackup) await this.db.put("runtime", LAST_BACKUP_KEY, restored);
+    return Object.freeze({ ...result, matchedPinnedBackup });
   }
 }
 
@@ -122,4 +127,31 @@ function telegramMessageDate(value) {
 function matchesBackup(record, backup) {
   return Number(record?.chatId) === Number(backup?.chatId) &&
     Number(record?.messageId) === Number(backup?.messageId);
+}
+
+function matchesAppliedBackup(record, backup) {
+  if (matchesBackup(record, backup)) return true;
+  const recordName = normalizeBackupFileName(record?.fileName);
+  const backupName = normalizeBackupFileName(backup?.document?.file_name);
+  if (recordName && backupName) return recordName === backupName;
+  return datesMatch(record?.backupCreatedAt, backup?.createdAt);
+}
+
+function selectedFileMatchesBackup(restored, backup) {
+  if (!backup?.chatId || !backup?.messageId) return false;
+  const selectedName = normalizeBackupFileName(restored?.fileName);
+  const pinnedName = normalizeBackupFileName(backup?.document?.file_name);
+  if (selectedName && pinnedName) return selectedName === pinnedName;
+  return datesMatch(restored?.backupCreatedAt, backup?.createdAt);
+}
+
+function normalizeBackupFileName(value) {
+  return String(value || "").trim().toLowerCase().replace(/\s*\(\d+\)(?=\.json$)/, "");
+}
+
+function datesMatch(left, right) {
+  const a = Number(left || 0);
+  const b = Number(right || 0);
+  return Number.isFinite(a) && a > 0 && Number.isFinite(b) && b > 0 &&
+    Math.abs(a - b) <= BACKUP_MATCH_TOLERANCE_MS;
 }
