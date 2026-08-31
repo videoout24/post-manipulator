@@ -3,9 +3,10 @@ import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.
 import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.5.9";
 import { OwnerBindingService } from "./telegram/OwnerBindingService.js?v=1.5.9";
 import { TelegramClient } from "./telegram/TelegramClient.js?v=1.5.9";
+import { TelegramViewportController } from "./telegram/TelegramViewportController.js?v=1.7.3";
 import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.7.0";
 import { SECURITY_GATE_CONFIG } from "./security/SecurityGateConfig.js?v=1.6.1";
-import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.0";
+import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.3";
 import { TelegramEnvironmentGate, TelegramEnvironmentError } from "./security/TelegramEnvironmentGate.js?v=1.7.0";
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
 
@@ -33,6 +34,8 @@ async function bootstrapSecurityGate() {
     const environment = await new TelegramEnvironmentGate({ config: SECURITY_GATE_CONFIG }).check();
     telegramWebApp = environment.webApp;
     gateView.setWebApp(environment.webApp, { canCloseMiniApp: true });
+    const viewport = new TelegramViewportController({ webApp: environment.webApp }).start();
+    console.info("[Post Manipulator] Telegram viewport ready", viewport);
     appDb = new AppDatabase();
     gateView.show("OPENING_DATABASE");
     bootstrapStage = "authorization";
@@ -83,7 +86,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.7.2");
+      const { startApplication } = await import("./app.js?v=1.7.3");
       application = await startApplication({
         appDb,
         token: result.token,

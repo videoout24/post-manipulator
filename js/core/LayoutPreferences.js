@@ -1,5 +1,3 @@
-const KEY = "ui.layout.preferences";
-
 const DEFAULTS = Object.freeze({
   editorLeft: 230,
   editorProject: 260,
@@ -22,10 +20,25 @@ const LIMITS = Object.freeze({
   publicationsRight: [260, 680]
 });
 
+const VIEWPORT_RATIOS = Object.freeze({
+  editorLeft: 0.18,
+  editorProject: 0.22,
+  galleryLeft: 0.17,
+  galleryRight: 0.25,
+  projectLibraryLeft: 0.20,
+  projectLibraryRight: 0.27,
+  publicationsLeft: 0.23,
+  publicationsRight: 0.27
+});
+
 export class LayoutPreferences {
-  constructor({ db, events = null } = {}) {
+  constructor({ db, events = null, windowRoot = globalThis.window, documentRoot = globalThis.document } = {}) {
+    // db remains accepted for compatibility, but panel geometry is deliberately
+    // session-only: a width saved on one monitor must not break another one.
     this.db = db;
     this.events = events;
+    this.windowRoot = windowRoot;
+    this.documentRoot = documentRoot;
     this.values = { ...DEFAULTS };
     this.bound = new WeakSet();
     this.initialized = false;
@@ -33,12 +46,7 @@ export class LayoutPreferences {
 
   async initialize() {
     if (this.initialized) return this.snapshot();
-    const saved = await this.db?.get?.("settings", KEY, null);
-    if (saved && typeof saved === "object") {
-      for (const key of Object.keys(DEFAULTS)) {
-        if (saved[key] != null) this.values[key] = clampValue(key, saved[key]);
-      }
-    }
+    this.values = layoutForViewport(this.#viewportWidth());
     this.initialized = true;
     this.apply();
     return this.snapshot();
@@ -48,7 +56,8 @@ export class LayoutPreferences {
   get(key) { return this.values[key] ?? DEFAULTS[key]; }
 
   apply() {
-    const style = document.documentElement.style;
+    const style = this.documentRoot?.documentElement?.style;
+    if (!style?.setProperty) return;
     style.setProperty("--editor-left-width", `${this.get("editorLeft")}px`);
     style.setProperty("--editor-project-width", `${this.get("editorProject")}px`);
     style.setProperty("--gallery-left-width", `${this.get("galleryLeft")}px`);
@@ -66,7 +75,6 @@ export class LayoutPreferences {
   }
 
   async save() {
-    await this.db?.put?.("settings", KEY, this.snapshot());
     this.events?.emit?.("layout:changed", this.snapshot());
   }
 
@@ -115,6 +123,23 @@ export class LayoutPreferences {
       await this.save();
     });
   }
+
+  #viewportWidth() {
+    return positiveWidth(
+      this.windowRoot?.visualViewport?.width,
+      this.windowRoot?.innerWidth,
+      this.documentRoot?.documentElement?.clientWidth,
+      1280
+    );
+  }
+}
+
+export function layoutForViewport(viewportWidth) {
+  const width = positiveWidth(viewportWidth, 1280);
+  return Object.fromEntries(Object.keys(DEFAULTS).map(key => [
+    key,
+    clampValue(key, Math.round(width * VIEWPORT_RATIOS[key]))
+  ]));
 }
 
 function clampValue(key, value) {
@@ -122,6 +147,14 @@ function clampValue(key, value) {
   const [min, max] = LIMITS[key] || [100, 1000];
   if (!Number.isFinite(n)) return DEFAULTS[key];
   return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+function positiveWidth(...values) {
+  for (const value of values) {
+    const number = Number(value || 0);
+    if (Number.isFinite(number) && number > 0) return number;
+  }
+  return 1280;
 }
 
 export const LAYOUT_DEFAULTS = DEFAULTS;

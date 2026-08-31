@@ -12,7 +12,7 @@ const DEFAULT_MEDIA_SETTINGS = Object.freeze({
 });
 
 export class TelegramRuntime {
-  constructor({ db, events, client, ownerBinding, previewChannelBinding, publicationTargets = null, publications = null, botIdentity }) {
+  constructor({ db, events, client, ownerBinding, previewChannelBinding, publicationTargets = null, publications = null, serviceMessages = null, botIdentity }) {
     this.db = db;
     this.events = events;
     this.client = client;
@@ -20,6 +20,7 @@ export class TelegramRuntime {
     this.previewChannelBinding = previewChannelBinding;
     this.publicationTargets = publicationTargets;
     this.publications = publications;
+    this.serviceMessages = serviceMessages;
     this.botIdentity = botIdentity;
     this.running = false;
     this.abortController = null;
@@ -154,51 +155,57 @@ export class TelegramRuntime {
   }
 
   async #processUpdate(update) {
-    await this.publications?.handleUpdate?.(update);
-    // System handlers always run before owner/media filtering.
-    if (update.my_chat_member) {
-      await this.previewChannelBinding.handleMyChatMember(update);
-      await this.publicationTargets?.handleMyChatMember?.(update);
-      return;
+    try {
+      await this.publications?.handleUpdate?.(update);
+      // System handlers always run before owner/media filtering.
+      if (update.my_chat_member) {
+        await this.previewChannelBinding.handleMyChatMember(update);
+        await this.publicationTargets?.handleMyChatMember?.(update);
+        return;
+      }
+      if (update.channel_post) {
+        await this.previewChannelBinding.handleChannelPost(update);
+        await this.publicationTargets?.handleMessage?.(update);
+        return;
+      }
+
+      if (update.message && await this.publicationTargets?.handleMessage?.(update)) return;
+
+      let owner = await this.ownerBinding.getOwner();
+      if (!owner) {
+        const result = await this.ownerBinding.handleUpdate(update);
+        if (result?.bound) owner = result.owner;
+        return;
+      }
+
+      const message = update.message;
+      if (!message) return;
+      if (Number(message.from?.id || 0) !== Number(owner.userId)) return;
+      if (message.chat?.type !== "private" || Number(message.chat?.id || 0) !== Number(owner.chatId)) return;
+
+      const topicEvent = extractOwnerTopicEvent(message);
+      if (topicEvent) await this.events?.emitAsync("telegram:owner-topic-event", topicEvent);
+
+      const media = extractOwnerMedia(message);
+      if (!media) return; // text, video_note, stickers and everything else are intentionally ignored.
+      const accepted = await this.getMediaSettings();
+      if (!accepted[media.type]) return;
+
+      await this.events?.emitAsync("telegram:owner-media", {
+        ...media,
+        source: {
+          chatId: Number(message.chat.id),
+          messageId: Number(message.message_id),
+          threadId: message.message_thread_id ? Number(message.message_thread_id) : null
+        },
+        caption: message.caption || "",
+        date: message.date || null
+      });
+    } finally {
+      // Service messages are cleaned only after every interested domain has
+      // observed the update (for example, forum-topic metadata is retained).
+      await this.serviceMessages?.handleUpdate?.(update);
     }
-    if (update.channel_post) {
-      await this.previewChannelBinding.handleChannelPost(update);
-      await this.publicationTargets?.handleMessage?.(update);
-      return;
-    }
-
-    if (update.message && await this.publicationTargets?.handleMessage?.(update)) return;
-
-    let owner = await this.ownerBinding.getOwner();
-    if (!owner) {
-      const result = await this.ownerBinding.handleUpdate(update);
-      if (result?.bound) owner = result.owner;
-      return;
-    }
-
-    const message = update.message;
-    if (!message) return;
-    if (Number(message.from?.id || 0) !== Number(owner.userId)) return;
-    if (message.chat?.type !== "private" || Number(message.chat?.id || 0) !== Number(owner.chatId)) return;
-
-    const topicEvent = extractOwnerTopicEvent(message);
-    if (topicEvent) await this.events?.emitAsync("telegram:owner-topic-event", topicEvent);
-
-    const media = extractOwnerMedia(message);
-    if (!media) return; // text, video_note, stickers and everything else are intentionally ignored.
-    const accepted = await this.getMediaSettings();
-    if (!accepted[media.type]) return;
-
-    await this.events?.emitAsync("telegram:owner-media", {
-      ...media,
-      source: {
-        chatId: Number(message.chat.id),
-        messageId: Number(message.message_id),
-        threadId: message.message_thread_id ? Number(message.message_thread_id) : null
-      },
-      caption: message.caption || "",
-      date: message.date || null
-    });
   }
 
   #setStatus(state, message, extra = {}) {

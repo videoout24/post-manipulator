@@ -18,6 +18,25 @@ const STATE_COPY = Object.freeze({
   TOKEN_ROTATING: ["Обновляем защищённый token", "Создаём новую соль и IV для этого входа…"]
 });
 
+const BUSY_STATES = new Set([
+  "CHECKING_ENVIRONMENT",
+  "OPENING_DATABASE",
+  "PROCESSING_PASSWORD",
+  "PROCESSING_TOKEN",
+  "STARTING_APPLICATION",
+  "TOKEN_ENCRYPTING",
+  "TOKEN_ROTATING"
+]);
+
+const ACTION_PROGRESS = Object.freeze({
+  onFirstPassword: ["PROCESSING_PASSWORD", "Проверяем и принимаем пароль…"],
+  onUnlock: ["PROCESSING_PASSWORD", "Расшифровываем token и проверяем защищённый запуск…"],
+  onRecoveryPassword: ["PROCESSING_PASSWORD", "Подготавливаем новые защищённые credentials…"],
+  onFirstToken: ["PROCESSING_TOKEN", "Telegram проверяет Publisher Bot, затем token будет зашифрован…"],
+  onRecoveryToken: ["PROCESSING_TOKEN", "Telegram проверяет Publisher Bot, затем token будет сохранён…"],
+  onReplacementToken: ["PROCESSING_TOKEN", "Telegram проверяет новый token и принадлежность бота…"]
+});
+
 /** Presentational UI only; transitions live in AuthBootstrapController. */
 export class SecurityGateView {
   constructor({ root, webApp = null } = {}) {
@@ -44,6 +63,14 @@ export class SecurityGateView {
     const content = contentForState(this, state, payload);
     card.append(element("h1", "security-gate-title", content.title), element("p", "security-gate-copy", content.copy));
     if (content.detail) card.append(element("p", "security-gate-detail", content.detail));
+    if (BUSY_STATES.has(state)) {
+      card.setAttribute("aria-busy", "true");
+      const progress = element("div", "security-gate-progress", "Операция выполняется");
+      progress.setAttribute("role", "status");
+      progress.setAttribute("aria-live", "polite");
+      progress.prepend(element("span", "security-gate-spinner"));
+      card.append(progress);
+    }
     if (content.form) card.append(content.form);
     if (content.actions) card.append(content.actions);
     this.root.append(card);
@@ -56,6 +83,8 @@ export class SecurityGateView {
   }
 
   #submit(action, values) {
+    const progress = ACTION_PROGRESS[action];
+    if (progress) this.show(progress[0], { message: progress[1] });
     Promise.resolve(this.handlers[action]?.(values)).catch(error => this.handlers.onError?.(error));
   }
 
@@ -114,7 +143,11 @@ export class SecurityGateView {
 function contentForState(view, state, payload) {
   const [defaultTitle, defaultCopy] = STATE_COPY[state] || ["Защищённый запуск", "Пожалуйста, подождите…"];
   const result = { title: defaultTitle, copy: payload.message || defaultCopy, detail: "", form: null, actions: null };
-  if (state === "FIRST_SETUP_PASSWORD") {
+  if (state === "PROCESSING_PASSWORD") {
+    result.title = "Проверяем credentials";
+  } else if (state === "PROCESSING_TOKEN") {
+    result.title = "Подключаем Publisher Bot";
+  } else if (state === "FIRST_SETUP_PASSWORD") {
     result.title = "Создайте пароль";
     result.copy = payload.existingData
       ? "Локальные данные сохранены. Пароль зашифрует token перед сохранением в Telegram CloudStorage."

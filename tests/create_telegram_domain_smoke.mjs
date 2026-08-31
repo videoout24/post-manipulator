@@ -12,6 +12,7 @@ const validator = { validate() { return []; } };
 const tree = { root: { id: "root", type: "document", props: {}, children: [] } };
 const treeProvider = () => tree;
 const telegram = createTelegramDomain({ db, events, renderer, validator, tree, treeProvider });
+assert.equal(telegram.runtime.serviceMessages, telegram.serviceMessages);
 
 assert(Object.isFrozen(telegram));
 for (const key of [
