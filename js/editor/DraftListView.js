@@ -107,6 +107,7 @@ function createDraftCard({
     actions.append(placeholderButton("Отложить", "Publications: отложенная публикация будет подключена позже"));
   }
   if (actions.childElementCount) card.append(actions);
+  else card.classList.add("no-footer-actions");
 
   const open = () => onOpen?.(draft);
   card.onclick = event => {

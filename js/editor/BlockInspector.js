@@ -25,15 +25,17 @@ import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
 import { findLinkRelationAtRange, findLinkRelationById } from "../links/LinkRelationAst.js?v=1.5.9";
 import { AVAILABLE_EMOJIS } from "./EmojiCatalog.js?v=1.7.6";
+import { projectMapEntryText } from "../project/ProjectMapText.js?v=1.7.11";
 
 export class BlockInspector {
-  constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, events = null }) {
+  constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, emojiPreferences = null, events = null }) {
     this.root = root;
     this.registry = registry;
     this.controller = controller;
     this.formulaTemplates = formulaTemplates;
     this.richTextContext = richTextContext || { active: null };
     this.projectContext = projectContext;
+    this.emojiPreferences = emojiPreferences;
     this.events = events;
     this.textareaSizing = new SessionTextareaSizing();
     this.richTextStates = new Map();
@@ -1208,23 +1210,8 @@ export class BlockInspector {
       button.onclick = () => this.applyRichTextFormatToState(stateGetter?.(), format);
       host.append(button);
     };
-    if (formats.includes("date_time")) appendFormatButton("date_time");
-
-    const emoji = document.createElement("button");
-    emoji.type = "button";
-    emoji.className = "rich-format-button emoji-toggle-button";
-    emoji.textContent = "😀";
-    emoji.title = "Emoji";
-    emoji.setAttribute("aria-label", "Открыть emoji");
-    emoji.onmousedown = e => e.preventDefault();
-    emoji.setAttribute("aria-expanded", "false");
-    emoji.onclick = () => this.toggleEmojiPicker(stateGetter?.());
-    if (state) state.emojiToggleButton = emoji;
-    host.append(emoji);
-
-    if (formats.includes("custom_emoji")) appendFormatButton("custom_emoji");
     for (const formatId of formats) {
-      if (formatId === "date_time" || formatId === "custom_emoji") continue;
+      if (formatId === "date_time") continue;
       appendFormatButton(formatId);
     }
 
@@ -1256,6 +1243,19 @@ export class BlockInspector {
     link.onmousedown = event => event.preventDefault();
     link.onclick = () => this.requestLinkRelation(stateGetter?.());
     host.append(link);
+
+    if (formats.includes("date_time")) appendFormatButton("date_time");
+    const emoji = document.createElement("button");
+    emoji.type = "button";
+    emoji.className = "rich-format-button emoji-toggle-button";
+    emoji.textContent = "😀";
+    emoji.title = "Emoji";
+    emoji.setAttribute("aria-label", "Открыть emoji");
+    emoji.onmousedown = e => e.preventDefault();
+    emoji.setAttribute("aria-expanded", "false");
+    emoji.onclick = () => this.toggleEmojiPicker(stateGetter?.());
+    if (state) state.emojiToggleButton = emoji;
+    host.append(emoji);
     this.refreshRichTextToolbarState(state);
   }
 
@@ -1428,13 +1428,23 @@ export class BlockInspector {
     host.innerHTML = "";
     const picker = document.createElement("div");
     picker.className = "basic-emoji-picker";
-    for (const value of AVAILABLE_EMOJIS) {
+    const emojiCatalog = this.emojiPreferences?.orderedCatalog?.(AVAILABLE_EMOJIS) || AVAILABLE_EMOJIS;
+    for (const value of emojiCatalog) {
       const button = document.createElement("button");
       button.type = "button";
       button.textContent = value;
-      button.title = value;
+      button.title = `${value} · Ctrl+клик — переместить в начало`;
       button.onmousedown = e => e.preventDefault();
-      button.onclick = () => state.insertValue?.(value);
+      button.onclick = event => {
+        if (!event.ctrlKey) {
+          state.insertValue?.(value);
+          return;
+        }
+        event.preventDefault();
+        picker.prepend(button);
+        picker.scrollTop = 0;
+        this.emojiPreferences?.promote?.(value)?.catch?.(() => {});
+      };
       picker.append(button);
     }
     host.append(picker);
@@ -1982,7 +1992,7 @@ export class BlockInspector {
     let selectedCol = 0;
     let selectedCells = new Set([tableCellKey(0, 0)]);
     let pointerSelectionHandled = false;
-    let rightCtrlHeld = false;
+    const tableCtrlKeys = new Set();
     const tableTypingSession = { enabled: false, formats: new Set(), metadata: new Map() };
     const cellStates = new WeakMap();
     const fields = this.registry.properties?.resolveFields(schema.cell?.fields || []) || [];
@@ -2011,10 +2021,10 @@ export class BlockInspector {
     const cellControls = document.createElement("div");
     cellControls.className = "table-cell-controls";
     const cellLabel = document.createElement("strong");
-    cellLabel.title = "Правый Ctrl + стрелки — перейти в соседнюю ячейку";
+    cellLabel.title = "Левый или правый Ctrl + стрелки — перейти в соседнюю ячейку";
     const navHint = document.createElement("span");
     navHint.className = "table-nav-hint";
-    navHint.textContent = "R Ctrl + ← ↑ → ↓";
+    navHint.textContent = "L/R Ctrl + ← ↑ → ↓";
     navHint.title = "Перемещение по ячейкам таблицы";
     const mergeRow = miniButton("Объединить в строке", "Объединить выделенные соседние ячейки одной строки");
     mergeRow.className = "table-merge-row";
@@ -2064,8 +2074,11 @@ export class BlockInspector {
       target.scrollIntoView({ block: "nearest", inline: "nearest" });
     };
     grid.addEventListener("keydown", event => {
-      if (event.code === "ControlRight") { rightCtrlHeld = true; return; }
-      if (!rightCtrlHeld) return;
+      if (["ControlLeft", "ControlRight"].includes(event.code)) {
+        tableCtrlKeys.add(event.code);
+        return;
+      }
+      if (!tableCtrlKeys.size) return;
       const movement = {
         ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0]
       }[event.key];
@@ -2074,9 +2087,9 @@ export class BlockInspector {
       event.stopPropagation();
       moveTableFocus(...movement);
     });
-    grid.addEventListener("keyup", event => { if (event.code === "ControlRight") rightCtrlHeld = false; });
+    grid.addEventListener("keyup", event => { tableCtrlKeys.delete(event.code); });
     grid.addEventListener("focusout", event => {
-      if (!grid.contains(event.relatedTarget)) rightCtrlHeld = false;
+      if (!grid.contains(event.relatedTarget)) tableCtrlKeys.clear();
     });
 
     wrap.append(toolbar, cellControls, formatRow, configHost, scroller);
@@ -2891,12 +2904,7 @@ function resolveBacklinkRelation(project, activePostId, node) {
 }
 
 function projectMapSlotLabel(map, slot, index) {
-  const props = map?.props || {};
-  const prefix = String(props.prefix || "");
-  const text = String(slot?.text || "");
-  const base = props.numbering === "none"
-    ? `${prefix}${text}`
-    : `${prefix}${index + 1}${props.separator == null ? ". " : String(props.separator)}${text}`;
+  const base = projectMapEntryText(map?.props, slot, index);
   return base.trim() || `Slot ${index + 1}`;
 }
 

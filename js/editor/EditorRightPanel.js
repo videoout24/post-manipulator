@@ -1,5 +1,5 @@
-import { createDraftListView } from "./DraftListView.js?v=1.5.9";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.7.6";
+import { createDraftListView } from "./DraftListView.js?v=1.7.12";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.7.12";
 
 export class EditorRightPanel {
   constructor({

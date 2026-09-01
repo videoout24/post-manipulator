@@ -24,6 +24,7 @@ export class TelegramCore {
       getBindingSession: () => publicationTargets.getSession(),
       refreshTarget: chatId => publicationTargets.refresh(chatId),
       removeTarget: chatId => publicationTargets.remove(chatId),
+      setServiceMessageCleanup: (chatId, enabled) => publicationTargets.setServiceMessageCleanup(chatId, enabled),
       onTargetsChanged: handler => events?.on("telegram:publication-targets", handler),
       list: () => publications.list(),
       publishDraft: (draftId, chatId, options) => publications.publishDraft(draftId, chatId, options),

@@ -58,10 +58,10 @@ const SERVICE_MESSAGE_FIELDS = Object.freeze([
   "web_app_data"
 ]);
 
-/** Best-effort cleanup limited to the verified owner chat and preview channel. */
+/** Best-effort cleanup in system scopes and opted-in publication targets. */
 export class TelegramServiceMessageCleaner {
-  constructor({ client, ownerBinding, previewChannelBinding, events = null } = {}) {
-    Object.assign(this, { client, ownerBinding, previewChannelBinding, events });
+  constructor({ client, ownerBinding, previewChannelBinding, publicationTargets = null, events = null } = {}) {
+    Object.assign(this, { client, ownerBinding, previewChannelBinding, publicationTargets, events });
   }
 
   async handleUpdate(update) {
@@ -104,11 +104,20 @@ export class TelegramServiceMessageCleaner {
     }
     if (message.chat?.type === "channel") {
       const preview = await this.previewChannelBinding?.getSlot?.();
-      return ["bound", "unavailable"].includes(preview?.status)
-        && Number(preview?.chatId || 0) === chatId
-        ? "preview_channel"
-        : "";
+      if (["bound", "unavailable"].includes(preview?.status)
+        && Number(preview?.chatId || 0) === chatId) return "preview_channel";
     }
+
+    if (!["channel", "group", "supergroup"].includes(message.chat?.type)) return "";
+    const targets = await this.publicationTargets?.list?.() || [];
+    const directTarget = targets.find(target => Number(target?.chatId || 0) === chatId);
+    if (directTarget?.deleteServiceMessages === true) return "publication_target";
+    const parentChannel = targets.find(target =>
+      target?.type === "channel"
+      && target.deleteServiceMessages === true
+      && Number(target.linkedDiscussionChatId || 0) === chatId
+    );
+    if (parentChannel) return "publication_discussion";
     return "";
   }
 }

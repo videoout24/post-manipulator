@@ -1,5 +1,5 @@
 import { BlockPalette } from "../editor/BlockPalette.js?v=1.5.9";
-import { BlockInspector } from "../editor/BlockInspector.js?v=1.7.6";
+import { BlockInspector } from "../editor/BlockInspector.js?v=1.7.11";
 import { TreeView } from "../editor/TreeView.js?v=1.5.9";
 import { MediaAssetBinder } from "../editor/MediaAssetBinder.js?v=1.5.9";
 import { EditorAssetPicker } from "../editor/EditorAssetPicker.js?v=1.5.9";
@@ -21,7 +21,8 @@ export function createEditorWorkspace({
   gallery,
   thumbnails,
   notifications,
-  editorCanvasPreferences = null
+  editorCanvasPreferences = null,
+  emojiPreferences = null
 } = {}) {
   const inlineProperties = new BlockInspector({
     root: null,
@@ -30,6 +31,7 @@ export function createEditorWorkspace({
     formulaTemplates,
     richTextContext,
     projectContext: projectSession,
+    emojiPreferences,
     events
   });
   const palette = new BlockPalette({

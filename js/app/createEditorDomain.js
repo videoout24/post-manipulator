@@ -1,12 +1,12 @@
-import { createDefaultPropertyRegistry } from "../core/PropertyRegistry.js?v=1.5.9";
-import { createTelegramFormattingRegistry } from "../core/FormattingRegistry.js?v=1.5.9";
+import { createDefaultPropertyRegistry } from "../core/PropertyRegistry.js?v=1.7.11";
+import { createTelegramFormattingRegistry } from "../core/FormattingRegistry.js?v=1.7.9";
 import { BlockRegistry } from "../core/BlockRegistry.js?v=1.5.9";
 import { MetaBlockRegistry } from "../core/MetaBlockRegistry.js?v=1.7.0";
 import { SelectionModel } from "../core/SelectionModel.js?v=1.5.9";
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
 import { Validator } from "../core/Validator.js?v=1.5.9";
-import { registerTelegramCore } from "../blocks/registerCoreBlocks.js?v=1.7.7";
-import { registerProjectBlocks } from "../blocks/registerProjectBlocks.js?v=1.5.9";
+import { registerTelegramCore } from "../blocks/registerCoreBlocks.js?v=1.7.9";
+import { registerProjectBlocks } from "../blocks/registerProjectBlocks.js?v=1.7.11";
 import { EditorController } from "../editor/EditorController.js?v=1.5.9";
 import { FormulaTemplateLibrary } from "../editor/FormulaTemplateLibrary.js?v=1.5.9";
 import { DraftStore } from "../editor/DraftStore.js?v=1.5.9";

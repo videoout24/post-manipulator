@@ -105,6 +105,29 @@ project = await store.getProject(project.id);
 assert.equal(hasUnappliedProductionChanges(project, project.posts.find(post => post.id === article.id)), false, "applying refreshes the production baseline");
 assert.equal((await db.get("publications", projectPublicationId(project.id, article.id))).pinned, true, "editing a pinned Project post must preserve its pin state");
 
+await assert.rejects(
+  service.unpublishPost(project.id, mapPost.id),
+  /Нельзя удалить карту проекта раньше связанных постов/,
+  "a published Map must remain until its linked posts are unpublished"
+);
+await assert.rejects(
+  service.discardPostProjection(project.id, mapPost.id),
+  /Нельзя удалить карту проекта раньше связанных постов/,
+  "local projection cleanup must not bypass the Map deletion order"
+);
+const mapProjectionId = projectPublicationId(project.id, mapPost.id);
+const expiredMapRecord = await db.get("publications", mapProjectionId);
+expiredMapRecord.deleteUntil = Date.now() - 1;
+await db.put("publications", mapProjectionId, expiredMapRecord);
+await assert.rejects(
+  service.checkExpiredUnpublish(project.id, mapPost.id),
+  /Нельзя удалить карту проекта раньше связанных постов/,
+  "expired-publication cleanup must not bypass the Map deletion order"
+);
+expiredMapRecord.deleteUntil = Date.now() + 48 * 60 * 60 * 1000;
+await db.put("publications", mapProjectionId, expiredMapRecord);
+assert.equal(deleted.length, 0, "blocked Map cleanup must not call Telegram");
+
 const articleProjectionId = projectPublicationId(project.id, article.id);
 const expiredArticleRecord = await db.get("publications", articleProjectionId);
 expiredArticleRecord.deleteUntil = Date.now() - 1;
@@ -126,5 +149,10 @@ assert.equal(project.posts.find(post => post.id === article.id).publication.stat
 assert.equal(project.posts.find(post => post.id === article.id).deployments.production, undefined);
 assert.equal(await db.get("publications", projectPublicationId(project.id, article.id)), null);
 assert.equal(edited.length, 1, "removing a Project post refreshes its published Map");
+
+await service.unpublishPost(project.id, mapPost.id);
+project = await store.getProject(project.id);
+assert.equal(deleted.length, 2, "the Map can be removed after every linked post");
+assert.equal(project.posts.find(post => post.id === mapPost.id).publication.state, "draft");
 
 console.log("project publication projection smoke: OK");

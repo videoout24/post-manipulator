@@ -1,8 +1,8 @@
-import { ProjectStore } from "../project/ProjectStore.js?v=1.7.6";
+import { ProjectStore } from "../project/ProjectStore.js?v=1.7.11";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { ProjectGraphReconciler } from "../project/ProjectGraphReconciler.js?v=1.5.9";
 import { ProjectEditorSession } from "../project/ProjectEditorSession.js?v=1.7.6";
-import { ProjectCompiler } from "../project/ProjectCompiler.js?v=1.5.9";
+import { ProjectCompiler } from "../project/ProjectCompiler.js?v=1.7.11";
 import { ProjectValidator } from "../project/ProjectValidator.js?v=1.5.9";
 import { ProjectDeploymentResolver } from "../project/ProjectDeploymentResolver.js?v=1.5.9";
 

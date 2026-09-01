@@ -446,12 +446,12 @@ function enforceLinearProjectStructure(project) {
   map.children = [];
   map.props = {
     numbering: "numeric",
-    prefix: "",
-    separator: ". ",
     emptyText: "Карта пока пуста",
     ...(map.props && typeof map.props === "object" ? map.props : {}),
     mapId
   };
+  delete map.props.prefix;
+  delete map.props.separator;
   project.structure.rootMapId = mapId;
 
   const postById = new Map(project.posts.filter(post => post !== root).map(post => [String(post.id), post]));
@@ -497,8 +497,6 @@ function createProjectMap(mapId) {
       mapId,
       slots: [],
       numbering: "numeric",
-      prefix: "",
-      separator: ". ",
       emptyText: "Карта пока пуста"
     },
     children: []

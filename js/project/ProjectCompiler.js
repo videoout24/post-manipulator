@@ -1,6 +1,7 @@
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver } from "./ProjectDeploymentResolver.js?v=1.5.9";
+import { projectMapEntryText } from "./ProjectMapText.js?v=1.7.11";
 
 export class ProjectCompiler {
   compilePost(project, postId, { deployment = "preview", index = null, resolver = null, sourceAst = null } = {}) {
@@ -41,7 +42,7 @@ export class ProjectCompiler {
     return slots.map((slot, index) => {
       const targetPost = context.project.posts.find(post => post.id === slot?.targetPostId) || null;
       const state = targetPost ? logicalState(targetPost) : "empty";
-      const entryText = buildEntryText(props, slot, index);
+      const entryText = projectMapEntryText(props, slot, index);
       const leading = state === "scheduled"
         ? scheduledStatusPrefix(targetPost?.schedule)
         : `${statusEmoji(state)} `;
@@ -64,14 +65,6 @@ export class ProjectCompiler {
 
 function paragraph(text, id) {
   return { id, type: "paragraph", props: { text }, children: [] };
-}
-
-function buildEntryText(props, slot, index) {
-  const text = String(slot?.text || "");
-  const prefix = String(props.prefix || "");
-  if (props.numbering === "none") return `${prefix}${text}`;
-  const separator = props.separator == null ? ". " : String(props.separator);
-  return `${prefix}${index + 1}${separator}${text}`;
 }
 
 function logicalState(post) {

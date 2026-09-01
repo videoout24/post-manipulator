@@ -188,9 +188,14 @@ export class PublicationView {
     const pin = button("📌", () => this.#togglePinned(record, pin), "publication-record-pin");
     pin.classList.toggle("active", Boolean(record.pinned));
     pin.title = scheduled ? "Пост ещё не опубликован" : record.pinned ? "Распинить пост" : "Запинить пост";
+    if (!scheduled && record.commentsEnabled && record.discussionMessageId) {
+      pin.title = record.pinned ? "Распинить пост и комментарии" : "Запинить пост и комментарии";
+    }
+    const discussionPending = !record.pinned && record.commentsEnabled && !record.discussionMessageId;
+    if (discussionPending) pin.title = "Ожидается сообщение в группе обсуждения";
     pin.setAttribute("aria-label", pin.title);
     pin.setAttribute("aria-pressed", String(Boolean(record.pinned)));
-    pin.disabled = scheduled;
+    pin.disabled = scheduled || discussionPending;
     const open = button("👁", () => this.#openMessage(record), "publication-record-open");
     open.title = scheduled ? "Пост ещё не опубликован" : "Открыть сообщение в Telegram";
     open.disabled = scheduled;
@@ -849,7 +854,17 @@ export class PublicationView {
     }
     meta.append(metrics);
     const actions = el("div", "publication-target-actions");
-    actions.append(button("Проверить", () => this.#refresh(target.chatId)));
+    const cleanupEnabled = target.deleteServiceMessages === true;
+    const cleanup = button(
+      "🧹 Удалять сервисные",
+      () => this.#toggleServiceMessageCleanup(target),
+      `publication-target-cleanup${cleanupEnabled ? " active" : ""}`
+    );
+    cleanup.setAttribute("aria-pressed", String(cleanupEnabled));
+    cleanup.title = cleanupEnabled
+      ? "Удаление сервисных сообщений включено"
+      : "Удаление сервисных сообщений выключено";
+    actions.append(cleanup, button("Проверить", () => this.#refresh(target.chatId)));
     card.append(head, meta, actions);
     card.onclick = event => {
       if (event.target.closest("button")) return;
@@ -872,6 +887,19 @@ export class PublicationView {
   async #refresh(chatId) {
     try { await this.telegramCore.publications.refreshTarget(chatId); }
     catch (error) { this.notifications?.show?.({ message: `Проверка: ${error?.message || error}`, type: "error" }); }
+  }
+
+  async #toggleServiceMessageCleanup(target) {
+    const enabled = target.deleteServiceMessages !== true;
+    try {
+      await this.telegramCore.publications.setServiceMessageCleanup(target.chatId, enabled);
+      this.notifications?.show?.({
+        message: enabled ? "Удаление сервисных сообщений включено" : "Удаление сервисных сообщений выключено",
+        type: "success"
+      });
+    } catch (error) {
+      this.notifications?.show?.({ message: `Сервисные сообщения: ${error?.message || error}`, type: "error" });
+    }
   }
 }
 

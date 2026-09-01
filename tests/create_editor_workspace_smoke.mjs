@@ -34,6 +34,7 @@ const gallery = {};
 const thumbnails = {};
 const notices = [];
 const notifications = { show: payload => notices.push(payload) };
+const emojiPreferences = {};
 
 const composition = createEditorWorkspace({
   documentRoot,
@@ -49,11 +50,13 @@ const composition = createEditorWorkspace({
   dragState,
   gallery,
   thumbnails,
-  notifications
+  notifications,
+  emojiPreferences
 });
 
 assert(Object.isFrozen(composition));
 assert.equal(composition.inlineProperties.registry, registry);
+assert.equal(composition.inlineProperties.emojiPreferences, emojiPreferences);
 assert.equal(composition.palette.root, elements.get("#palette"));
 assert.equal(composition.palette.categoryRoot, elements.get("#blockCategoryFilters"));
 assert.equal(composition.palette.metaRegistry, metaRegistry);

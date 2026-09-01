@@ -56,15 +56,56 @@ assert.equal(publicationDeleteHoursLeft({ publishedAt: record.publishedAt }, rec
 assert.equal(isPublicationDeleteAvailable(record, record.deleteUntil - 1), true);
 assert.equal(isPublicationDeleteAvailable(record, record.deleteUntil), false);
 
+await service.handleUpdate({ message: {
+  message_id: 70, chat: { id: -2001 }, is_automatic_forward: true,
+  forward_origin: { type: "channel", chat: { id: -1001 }, message_id: 42 }
+} });
+let stored = (await service.list())[0];
+assert.equal(stored.discussionMessageId, 70);
+
 const pinnedRecord = await service.setPinned(record.id, true);
 assert.equal(pinnedRecord.pinned, true);
 assert.ok(pinnedRecord.pinnedAt);
 assert.deepEqual(pinned[0], ["pin", -1001, 42, { disableNotification: true }]);
+assert.deepEqual(pinned[1], ["pin", -2001, 70, { disableNotification: true }], "discussion message must be pinned with its channel post");
 assert.equal((await db.get("publications", record.id)).pinned, true);
 const unpinnedRecord = await service.setPinned(record.id, false);
 assert.equal(unpinnedRecord.pinned, false);
 assert.equal(unpinnedRecord.pinnedAt, null);
-assert.deepEqual(pinned[1], ["unpin", -1001, 42]);
+assert.deepEqual(pinned[2], ["unpin", -1001, 42]);
+assert.deepEqual(pinned[3], ["unpin", -2001, 70], "discussion message must be unpinned with its channel post");
+
+const pinMessage = client.pinChatMessage;
+client.pinChatMessage = async (chatId, messageId, options) => {
+  pinned.push(["pin", chatId, messageId, options]);
+  if (chatId === -2001) throw new Error("discussion pin denied");
+  return true;
+};
+await assert.rejects(service.setPinned(record.id, true), /Не удалось синхронизировать закрепление/);
+assert.deepEqual(pinned.slice(-3).map(item => item.slice(0, 3)), [
+  ["pin", -1001, 42],
+  ["pin", -2001, 70],
+  ["unpin", -1001, 42]
+], "a failed discussion pin must roll the channel pin back");
+assert.equal((await db.get("publications", record.id)).pinned, false);
+client.pinChatMessage = pinMessage;
+
+const lateForwardRecord = {
+  ...(await db.get("publications", record.id)),
+  id: "late-forward",
+  messageId: 43,
+  discussionMessageId: null,
+  pinned: true,
+  pinnedAt: Date.now()
+};
+await db.put("publications", lateForwardRecord.id, lateForwardRecord);
+await service.handleUpdate({ message: {
+  message_id: 73, chat: { id: -2001 }, is_automatic_forward: true,
+  forward_origin: { type: "channel", chat: { id: -1001 }, message_id: 43 }
+} });
+assert.deepEqual(pinned.at(-1), ["pin", -2001, 73, { disableNotification: true }],
+  "a late automatic forward must inherit an existing channel pin");
+await db.delete("publications", lateForwardRecord.id);
 
 const expired = { ...record, id: "expired", deleteUntil: record.publishedAt + 1 };
 await db.put("publications", expired.id, expired);
@@ -77,13 +118,6 @@ const missing = await service.checkExpiredDeletion(expired.id);
 assert.equal(missing.remoteState, "missing");
 await service.discardLocal(expired.id);
 assert.equal(await db.get("publications", expired.id), null);
-
-await service.handleUpdate({ message: {
-  message_id: 70, chat: { id: -2001 }, is_automatic_forward: true,
-  forward_origin: { type: "channel", chat: { id: -1001 }, message_id: 42 }
-} });
-let stored = (await service.list())[0];
-assert.equal(stored.discussionMessageId, 70);
 
 await service.handleUpdate({ message: { message_id: 71, chat: { id: -2001 }, reply_to_message: { message_id: 70 } } });
 await service.handleUpdate({ message: { message_id: 72, chat: { id: -2001 }, message_thread_id: 70, reply_to_message: { message_id: 71 } } });

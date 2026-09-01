@@ -4,19 +4,20 @@ import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.3";
 import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.7.6";
 import { GalleryView } from "./gallery/GalleryView.js?v=1.7.6";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.7.6";
-import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.7.6";
+import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.7.10";
 import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js?v=1.5.9";
 import { EditorCanvasPreferences } from "./editor/EditorCanvasPreferences.js?v=1.5.9";
+import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.5.9";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.7.6";
-import { createProjectDomain } from "./app/createProjectDomain.js?v=1.7.6";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.7.9";
+import { createProjectDomain } from "./app/createProjectDomain.js?v=1.7.11";
 import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.5.9";
-import { createEditorDomain } from "./app/createEditorDomain.js?v=1.7.7";
-import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.7.6";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.7.6";
+import { createEditorDomain } from "./app/createEditorDomain.js?v=1.7.11";
+import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.7.11";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.7.12";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
-import { PublicationView } from "./publications/PublicationView.js?v=1.7.6";
+import { PublicationView } from "./publications/PublicationView.js?v=1.7.9";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
 import { LinkingController } from "./links/LinkingController.js?v=1.5.9";
 import { LinkRelationNavigator } from "./links/LinkRelationNavigator.js?v=1.5.9";
@@ -34,7 +35,8 @@ const persistentStorage = await Storage.create({ db: appDb });
 const initialMetaBlocks = await appDb.get("settings", "editor.metaBlocks", []);
 const layoutPreferences = new LayoutPreferences({ db: appDb, events });
 const editorCanvasPreferences = new EditorCanvasPreferences({ db: appDb, events });
-await editorCanvasPreferences.initialize();
+const emojiPreferences = new EmojiPreferences({ db: appDb, events });
+await Promise.all([editorCanvasPreferences.initialize(), emojiPreferences.initialize()]);
 const notifications = new AppNotifications({
   root: document.querySelector("#toast"),
   events,
@@ -213,7 +215,8 @@ const editorWorkspaceComposition = createEditorWorkspace({
   gallery: galleryCore,
   thumbnails: thumbnailCache,
   notifications,
-  editorCanvasPreferences
+  editorCanvasPreferences,
+  emojiPreferences
 });
 const {
   inlineProperties,
@@ -371,7 +374,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.7.7",
+  build: "1.7.12",
   notifications,
   layoutPreferences,
   telegramNavigation,

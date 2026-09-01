@@ -115,11 +115,25 @@ export class PublicationService {
     }
     const nextPinned = Boolean(pinned);
     if (nextPinned === Boolean(record.pinned)) return structuredClone(record);
+    if (nextPinned && record.commentsEnabled && (!record.discussionChatId || !record.discussionMessageId)) {
+      throw new Error("Дождитесь появления сообщения в группе обсуждения");
+    }
 
-    if (nextPinned) {
-      await this.client.pinChatMessage(record.chatId, record.messageId, { disableNotification: true });
-    } else {
-      await this.client.unpinChatMessage(record.chatId, record.messageId);
+    const messages = [{ chatId: record.chatId, messageId: record.messageId }];
+    if (record.commentsEnabled && record.discussionChatId && record.discussionMessageId) {
+      messages.push({ chatId: record.discussionChatId, messageId: record.discussionMessageId });
+    }
+    const changed = [];
+    try {
+      for (const message of messages) {
+        await this.#setMessagePinned(message, nextPinned);
+        changed.push(message);
+      }
+    } catch (error) {
+      for (const message of changed.reverse()) {
+        await this.#setMessagePinned(message, !nextPinned).catch(() => {});
+      }
+      throw new Error(`Не удалось синхронизировать закрепление поста и комментариев: ${error?.message || error}`);
     }
     record.pinned = nextPinned;
     record.pinnedAt = nextPinned ? Date.now() : null;
@@ -127,6 +141,13 @@ export class PublicationService {
     this.events?.emit("telegram:publication-updated", structuredClone(record));
     this.events?.emit("telegram:publications-changed", await this.list());
     return structuredClone(record);
+  }
+
+  async #setMessagePinned({ chatId, messageId }, pinned) {
+    if (pinned) {
+      return this.client.pinChatMessage(chatId, messageId, { disableNotification: true });
+    }
+    return this.client.unpinChatMessage(chatId, messageId);
   }
 
   async delete(recordId) {
@@ -289,6 +310,14 @@ export class PublicationService {
     if (!record.commentsEnabled) {
       await this.client.deleteMessage(record.discussionChatId, record.discussionMessageId);
       record.commentsDisabled = true;
+    } else if (record.pinned) {
+      // Legacy records or a forward received during an older app session may already
+      // be pinned in the channel. Bring the newly discovered discussion message into
+      // the same state as soon as Telegram exposes its identity.
+      await this.#setMessagePinned({
+        chatId: record.discussionChatId,
+        messageId: record.discussionMessageId
+      }, true);
     }
     await this.#save(record);
     return true;

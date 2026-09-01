@@ -85,14 +85,6 @@ export function createTelegramFormattingRegistry() {
     fields: [field("reference_name", "Имя ссылки", "text", { required: true })]
   });
 
-  r.register("custom_emoji", {
-    label: "Custom Emoji",
-    shortLabel: "😀+",
-    fields: [
-      field("custom_emoji_id", "Custom emoji ID", "text", { required: true }),
-      field("alternative_text", "Альтернативный emoji", "text", { required: true })
-    ]
-  });
   r.register("mathematical_expression", {
     label: "Математическое выражение",
     shortLabel: "∑",
@@ -117,6 +109,6 @@ export const FORMAT_GROUPS = Object.freeze({
   code: ["code"],
   full: [
     "bold", "italic", "underline", "strikethrough", "spoiler",
-    "subscript", "superscript", "marked", "code", "custom_emoji", "date_time"
+    "subscript", "superscript", "marked", "code", "date_time"
   ]
 });

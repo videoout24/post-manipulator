@@ -285,11 +285,51 @@ export class ProjectPublicationService {
     if (!post || !deployment?.chatId || !deployment?.messageId) {
       throw new Error("Этот Project post не опубликован");
     }
+    this.#assertMapCanBeUnpublished(project, post);
     const [publication, target] = await Promise.all([
       this.db.get("publications", projectPublicationId(project.id, post.id), null),
       this.#requireTarget(deployment.chatId)
     ]);
     return { project, post, deployment, publication, target };
+  }
+
+  #assertMapCanBeUnpublished(project, post) {
+    const index = new ProjectIndex(project);
+    const hostedMapIds = [...index.mapToHostPost.entries()]
+      .filter(([, hostPostId]) => String(hostPostId) === String(post.id))
+      .map(([mapId]) => String(mapId));
+    if (!hostedMapIds.length) return;
+
+    const dependentIds = new Set();
+    for (const candidate of project.posts || []) {
+      if (String(candidate.id) === String(post.id)) continue;
+      if (index.mapSlotsForPost(candidate.id).some(slot => String(slot.hostPostId) === String(post.id))) {
+        dependentIds.add(String(candidate.id));
+      }
+    }
+    for (const mapId of hostedMapIds) {
+      for (const backlink of index.backlinksForMap(mapId)) dependentIds.add(String(backlink.hostPostId));
+    }
+
+    const activeDependents = (project.posts || []).filter(candidate =>
+      dependentIds.has(String(candidate.id))
+      && (
+        Boolean(candidate.deployments?.production?.messageId)
+        || candidate.publication?.state === "published"
+        || candidate.publication?.state === "scheduled"
+        || Boolean(candidate.schedule?.scheduledAt)
+      )
+    );
+    if (!activeDependents.length) return;
+
+    const titles = activeDependents
+      .slice(0, 3)
+      .map(candidate => `«${candidate.title || "Пост"}»`)
+      .join(", ");
+    const remainder = activeDependents.length > 3 ? ` и ещё ${activeDependents.length - 3}` : "";
+    throw new Error(
+      `Нельзя удалить карту проекта раньше связанных постов. Сначала удалите или отмените их публикации: ${titles}${remainder}.`
+    );
   }
 
   async #discardPostProjection({ project, post, target }) {

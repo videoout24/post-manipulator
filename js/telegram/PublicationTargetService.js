@@ -21,7 +21,10 @@ export class PublicationTargetService {
     );
     return targets
       .filter(item => !(item?.type === "group" && linkedDiscussionIds.has(Number(item.chatId))))
-      .map(item => structuredClone(item));
+      .map(item => ({
+        ...structuredClone(item),
+        deleteServiceMessages: item?.deleteServiceMessages === true
+      }));
   }
 
   getSession() { return this.db.get("runtime", SESSION_KEY, null); }
@@ -83,6 +86,7 @@ export class PublicationTargetService {
 
   async refresh(chatId, { chatHint = null, memberHint = null, discoveredBy = "refresh" } = {}) {
     if (await this.#isPreviewChannel(chatId)) throw new Error("Канал предпросмотра нельзя добавить в Публикации");
+    const existing = (await this.list()).find(item => Number(item.chatId) === Number(chatId));
     const bot = await this.client.getMe();
     const [chat, member, memberCount] = await Promise.all([
       this.client.getChat(chatId).catch(() => chatHint),
@@ -102,7 +106,8 @@ export class PublicationTargetService {
       const discussionAvailability = publicationAvailability(discussionMember || {}, "supergroup");
       discussionRights = {
         status: discussionMember?.status || "unknown",
-        canDelete: discussionAvailability.admin && discussionAvailability.rights.delete === true
+        canDelete: discussionAvailability.admin && discussionAvailability.rights.delete === true,
+        canPin: discussionAvailability.admin && discussionAvailability.rights.pin === true
       };
     }
     const target = {
@@ -122,6 +127,7 @@ export class PublicationTargetService {
       linkedChannelChatId: chat.type !== "channel" && chat.linked_chat_id ? Number(chat.linked_chat_id) : null,
       commentsEnabled: chat.type === "channel" && Boolean(chat.linked_chat_id),
       discussionRights,
+      deleteServiceMessages: existing?.deleteServiceMessages === true,
       discoveredBy,
       checkedAt: Date.now()
     };
@@ -139,9 +145,27 @@ export class PublicationTargetService {
     this.events?.emit("telegram:publication-targets", targets);
   }
 
+  async setServiceMessageCleanup(chatId, enabled) {
+    const targets = await this.list();
+    const index = targets.findIndex(item => Number(item.chatId) === Number(chatId));
+    if (index < 0) throw new Error("Канал или группа не найдены");
+    targets[index] = {
+      ...targets[index],
+      deleteServiceMessages: enabled === true
+    };
+    await this.db.put("bindings", TARGETS_KEY, targets);
+    this.events?.emit("telegram:publication-targets", targets);
+    return structuredClone(targets[index]);
+  }
+
   async #save(target) {
     let targets = await this.list();
     if (target.type === "channel" && target.linkedDiscussionChatId) {
+      const discussion = targets.find(item => Number(item.chatId) === Number(target.linkedDiscussionChatId));
+      target = {
+        ...target,
+        deleteServiceMessages: target.deleteServiceMessages === true || discussion?.deleteServiceMessages === true
+      };
       targets = targets.filter(item => Number(item.chatId) !== Number(target.linkedDiscussionChatId));
     }
     const index = targets.findIndex(item => Number(item.chatId) === Number(target.chatId));
@@ -168,9 +192,11 @@ export class PublicationTargetService {
         linkedDiscussionTitle: group.title || "",
         discussionRights: {
           status: group.rights ? "administrator" : "unknown",
-          canDelete: group.rights?.delete === true
+          canDelete: group.rights?.delete === true,
+          canPin: group.rights?.pin === true
         },
         commentsEnabled: true,
+        deleteServiceMessages: targets[channelIndex].deleteServiceMessages === true || group.deleteServiceMessages === true,
         checkedAt: Date.now()
       };
     }

@@ -1,5 +1,6 @@
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { hasUnappliedProductionChanges } from "./ProjectPublicationState.js?v=1.5.9";
+import { projectMapEntryText } from "./ProjectMapText.js?v=1.7.11";
 
 const PREVIEW_LIMIT = 6;
 
@@ -25,7 +26,11 @@ export function createProjectPostCard({
   const published = post?.publication?.state === "published" && Boolean(post?.deployments?.production?.messageId);
   const scheduled = post?.publication?.state === "scheduled" && Boolean(post?.schedule?.scheduledAt);
   const hasProductionChanges = published && hasUnappliedProductionChanges(project, post);
-  const card = el("article", `project-post-card project-post-card-${variant}${selected ? " selected" : ""}${active ? " active" : ""}${published ? " project-published" : ""}`);
+  const hasPublicationFooter = (!published && !scheduled && showPublicationActions)
+    || (scheduled && showPublicationActions && Boolean(onCancelSchedule))
+    || (published && hasProductionChanges && Boolean(onApplyChanges));
+  const noFooter = variant === "compact" && !hasPublicationFooter;
+  const card = el("article", `project-post-card project-post-card-${variant}${selected ? " selected" : ""}${active ? " active" : ""}${published ? " project-published" : ""}${noFooter ? " no-footer-actions" : ""}`);
   card.dataset.postId = String(post?.id || "");
 
   const head = el("div", "project-post-card-head");
@@ -376,11 +381,7 @@ async function hydrateMediaPreview(wrap, node, { gallery, thumbnails }) {
 }
 
 function buildMapEntryText(props, slot, index) {
-  const text = String(slot?.text || "");
-  const prefix = String(props?.prefix || "");
-  if (props?.numbering === "none") return `${prefix}${text}`;
-  const separator = props?.separator == null ? ". " : String(props.separator);
-  return `${prefix}${index + 1}${separator}${text}`;
+  return projectMapEntryText(props, slot, index);
 }
 
 function statusEmoji(post) {

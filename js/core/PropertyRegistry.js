@@ -332,15 +332,12 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
   });
   add("project.map.numbering", {
     label: "Нумерация", group: "Project Map", type: "enum", editor: "select", default: "numeric", scope: "project",
-    options: [{ value: "numeric", label: "1, 2, 3…" }, { value: "none", label: "Без номера" }]
-  });
-  add("project.map.prefix", {
-    label: "Префикс", group: "Project Map", type: "string", editor: "text", default: "", scope: "project",
-    hint: "Например: Chapter "
-  });
-  add("project.map.separator", {
-    label: "Разделитель", group: "Project Map", type: "string", editor: "text", default: ". ", scope: "project",
-    hint: "Например: .  или  · "
+    options: [
+      { value: "numeric", label: "1, 2, 3…" },
+      { value: "latin_upper", label: "A, B, C…" },
+      { value: "roman_upper", label: "I, II, III…" },
+      { value: "none", label: "Без номера" }
+    ]
   });
   add("project.map.emptyText", {
     label: "Текст пустой карты", group: "Project Map", type: "string", editor: "text", default: "Карта пока пуста", scope: "project"

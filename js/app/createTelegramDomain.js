@@ -4,13 +4,13 @@ import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5"
 import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.5.9";
 import { TopicTransport } from "../telegram/TopicTransport.js?v=1.5.9";
 import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.5.9";
-import { TelegramCore } from "../telegram/TelegramCore.js?v=1.7.6";
+import { TelegramCore } from "../telegram/TelegramCore.js?v=1.7.9";
 import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.7.3";
-import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.7.3";
+import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.7.9";
 import { PreviewController } from "../telegram/PreviewController.js?v=1.7.6";
 import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.7.1";
-import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.5.9";
-import { PublicationService } from "../telegram/PublicationService.js?v=1.7.6";
+import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.7.9";
+import { PublicationService } from "../telegram/PublicationService.js?v=1.7.8";
 import { LinkRelationStore } from "../links/LinkRelationStore.js?v=1.5.9";
 
 export function createTelegramDomain({ db, events, renderer, validator, tree, treeProvider = null, previewSyncGuard = null, drafts = null, draftSession = null, documents = null, initialToken = "", verifiedBot = null } = {}) {
@@ -22,7 +22,13 @@ export function createTelegramDomain({ db, events, renderer, validator, tree, tr
   const publicationTargets = new PublicationTargetService({ db, events, client, previewChannelBinding });
   const linkRelations = new LinkRelationStore({ db, events });
   const publications = new PublicationService({ db, events, client, renderer, validator, targets: publicationTargets, drafts, draftSession, documents, linkRelations });
-  const serviceMessages = new TelegramServiceMessageCleaner({ client, ownerBinding, previewChannelBinding, events });
+  const serviceMessages = new TelegramServiceMessageCleaner({
+    client,
+    ownerBinding,
+    previewChannelBinding,
+    publicationTargets,
+    events
+  });
   const topics = new TopicTransport({ events, client, ownerBinding });
   const runtime = new TelegramRuntime({
     db,

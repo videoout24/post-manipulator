@@ -1,4 +1,4 @@
-import { createProjectPostCard } from "./ProjectPostCard.js?v=1.5.9";
+import { createProjectPostCard } from "./ProjectPostCard.js?v=1.7.12";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";

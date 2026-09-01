@@ -47,7 +47,7 @@ const mapHost=project.posts[0].id;
 let made=await store.createPost(project.id,{title:'Target'}); project=made.project; const target=made.post.id;
 made=await store.createPost(project.id,{title:'Unrelated'}); project=made.project; const unrelated=made.post.id;
 await store.savePostAst(project.id,target,{id:'root',type:'document',props:{},children:[{id:'h',type:'heading',props:{text:'Before',level:2},children:[]}]});
-await store.savePostAst(project.id,mapHost,{id:'root',type:'document',props:{},children:[{id:'m',type:'project_post_map',props:{mapId:'auto_map',numbering:'numeric',prefix:'',separator:'. ',slots:[{id:'s',targetPostId:target,text:''}]},children:[]}]});
+await store.savePostAst(project.id,mapHost,{id:'root',type:'document',props:{},children:[{id:'m',type:'project_post_map',props:{mapId:'auto_map',numbering:'numeric',slots:[{id:'s',targetPostId:target,text:''}]},children:[]}]});
 await store.savePostAst(project.id,unrelated,{id:'root',type:'document',props:{},children:[{id:'p',type:'paragraph',props:{text:'Unrelated'},children:[]}]});
 await reconciler.reconcile(project.id);
 await sync.sync(project.id);

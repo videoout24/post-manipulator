@@ -8,6 +8,8 @@ const service = fs.readFileSync(new URL("../js/telegram/PublicationTargetService
 const panel = fs.readFileSync(new URL("../js/editor/EditorRightPanel.js", import.meta.url), "utf8");
 const publicationService = fs.readFileSync(new URL("../js/telegram/PublicationService.js", import.meta.url), "utf8");
 const client = fs.readFileSync(new URL("../js/telegram/TelegramClient.js", import.meta.url), "utf8");
+const cleaner = fs.readFileSync(new URL("../js/telegram/TelegramServiceMessageCleaner.js", import.meta.url), "utf8");
+const core = fs.readFileSync(new URL("../js/telegram/TelegramCore.js", import.meta.url), "utf8");
 
 assert.match(html, /id="publicationsApp"/);
 assert.match(view, /\+ Добавить канал \/ группу/);
@@ -15,9 +17,17 @@ for (const label of ["Все", "Каналы", "Группы"]) assert.ok(view.i
 assert.match(view, /publication-target-members[\s\S]*?👥/);
 assert.match(view, /publication-target-comments[\s\S]*?connected[\s\S]*?disconnected/);
 assert.match(view, /Группа комментариев подключена/);
+assert.match(view, /🧹 Удалять сервисные/);
+assert.match(view, /publication-target-cleanup\$\{cleanupEnabled \? " active" : ""\}/);
+assert.match(view, /cleanup\.setAttribute\("aria-pressed"/);
+assert.match(view, /setServiceMessageCleanup\(target\.chatId, enabled\)/);
 assert.doesNotMatch(view, /button\("×", \(\) => this\.telegramCore\.publications\.removeTarget/);
 assert.match(runtime, /publicationTargets\?\.handleMyChatMember/);
 assert.match(service, /Канал предпросмотра нельзя добавить в Публикации/);
+assert.match(service, /deleteServiceMessages: existing\?\.deleteServiceMessages === true/);
+assert.match(core, /setServiceMessageCleanup: \(chatId, enabled\)/);
+assert.match(cleaner, /directTarget\?\.deleteServiceMessages === true/);
+assert.match(cleaner, /target\.deleteServiceMessages === true[\s\S]*?target\.linkedDiscussionChatId/);
 assert.match(view, /key: "publicationsLeft"/);
 assert.match(view, /key: "publicationsRight"/);
 assert.match(view, /selectedPublicationId = null/);
@@ -72,6 +82,10 @@ assert.match(view, /incompleteChannels[\s\S]*?refreshTarget/);
 assert.match(view, /visibility === "public" \? "Публичный" : "Приватный"/);
 assert.match(publicationService, /this\.#reconcilePendingForward\(record\)\.catch/);
 assert.match(publicationService, /async setPinned\(recordId, pinned\)/);
+assert.match(publicationService, /record\.discussionChatId[\s\S]*record\.discussionMessageId/);
+assert.match(publicationService, /for \(const message of changed\.reverse\(\)\)/,
+  "a partial channel/discussion pin operation must be rolled back");
 assert.match(client, /unpinChatMessage\(chatId, messageId, options\)/);
+assert.match(view, /discussionPending[\s\S]*pin\.disabled = scheduled \|\| discussionPending/);
 
 console.log("publications UI contract smoke: OK");

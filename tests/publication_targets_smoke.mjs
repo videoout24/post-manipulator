@@ -22,7 +22,7 @@ const client = {
     return Number(id) === -1001
       ? { status: "administrator", can_post_messages: true, can_edit_messages: true, can_delete_messages: true }
       : Number(id) === -2001
-        ? { status: "administrator", can_delete_messages: true }
+        ? { status: "administrator", can_delete_messages: true, can_pin_messages: true }
       : { status: "administrator", can_delete_messages: true, can_pin_messages: true };
   },
   async getChatMemberCount(id) { return Number(id) === -1001 ? 1200 : 85; },
@@ -35,7 +35,7 @@ const previewChannelBinding = {
 const service = new PublicationTargetService({ db, client, previewChannelBinding });
 
 await db.put("bindings", "publicationTargets", [{
-  chatId: -2001, type: "group", title: "News comments", status: "ready"
+  chatId: -2001, type: "group", title: "News comments", status: "ready", deleteServiceMessages: true
 }]);
 
 await service.handleMyChatMember({ my_chat_member: {
@@ -47,8 +47,10 @@ assert.equal(targets.length, 1);
 assert.equal(targets[0].commentsEnabled, true);
 assert.equal(targets[0].memberCount, 1200);
 assert.equal(targets[0].discussionRights.canDelete, true);
+assert.equal(targets[0].discussionRights.canPin, true);
 assert.equal(targets[0].linkedDiscussionTitle, "News comments");
 assert.equal(targets[0].visibility, "private");
+assert.equal(targets[0].deleteServiceMessages, true, "a discussion-group cleanup preference must transfer to its channel");
 assert.equal(targets.some(item => item.chatId === -2001), false);
 
 await service.handleMyChatMember({ my_chat_member: {
@@ -63,11 +65,22 @@ targets = await service.list();
 assert.equal(targets.length, 2);
 assert.equal(targets[1].type, "group");
 assert.equal(targets[1].status, "ready");
+assert.equal(targets[1].deleteServiceMessages, false, "cleanup must be opt-in");
+
+const cleanupTarget = await service.setServiceMessageCleanup(-2002, true);
+assert.equal(cleanupTarget.deleteServiceMessages, true);
+await service.refresh(-2002);
+assert.equal((await service.list()).find(item => item.chatId === -2002).deleteServiceMessages, true,
+  "refreshing a target must preserve its cleanup preference");
 
 await service.handleMyChatMember({ my_chat_member: {
   chat: chats.get(-2002), new_chat_member: { status: "member" }
 } });
 assert.equal((await service.list()).find(item => item.chatId === -2002).status, "unavailable");
+assert.equal((await service.list()).find(item => item.chatId === -2002).deleteServiceMessages, true,
+  "membership updates must preserve the cleanup preference");
+
+await assert.rejects(() => service.setServiceMessageCleanup(-404, true), /не найдены/);
 
 await service.handleMyChatMember({ my_chat_member: {
   chat: { id: -999, type: "channel", title: "Preview" },

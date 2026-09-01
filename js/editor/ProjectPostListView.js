@@ -1,4 +1,4 @@
-import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.5.9";
+import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.7.12";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "../project/ProjectPublicationEligibility.js?v=1.5.9";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";

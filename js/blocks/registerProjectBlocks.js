@@ -12,8 +12,6 @@ export function registerProjectBlocks(registry) {
         prop("project.map.id", "mapId"),
         prop("project.map.slots", "slots"),
         prop("project.map.numbering", "numbering"),
-        prop("project.map.prefix", "prefix"),
-        prop("project.map.separator", "separator"),
         prop("project.map.emptyText", "emptyText")
       ] },
       children: { allowed: false },

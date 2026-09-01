@@ -526,7 +526,10 @@ body.drag-delete-active::before {
 .publication-binding-card span { color: #8fa2b7; font-size: 9px; line-height: 1.45; }
 .publication-binding-card code { padding: 8px; border-radius: 5px; background: #080b0f; color: #a9d3ff; text-align: center; user-select: all; }
 .publication-binding-actions, .publication-target-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.publication-target-actions { flex-wrap: wrap; }
 .publication-binding-actions button, .publication-target-actions button { padding: 6px 8px; font-size: 9px; }
+.publication-target-cleanup { margin-right: auto; color: #8596aa; }
+.publication-target-cleanup.active { border-color: #315a4b; background: #10271c; color: #72c997; }
 .publication-target-list { display: grid; gap: 8px; }
 .publication-target-empty { padding: 14px 8px; color: #6f8095; font-size: 10px; text-align: center; }
 .publication-target-card { display: grid; gap: 8px; padding: 10px; border: 1px solid #293746; border-radius: 8px; background: #0b1118; }
@@ -2262,6 +2265,22 @@ body.resizing-layout * { cursor: col-resize !important; }
   border-color: #55353a;
   background: #26191c;
   color: #d8a4aa;
+}
+
+/* Compact cards without a publication footer still need a comfortable hit area. */
+.project-post-panel .project-post-card-compact.no-footer-actions > .project-post-card-head,
+.project-post-panel .draft-card.no-footer-actions > .draft-card-head {
+  min-height: 68px;
+  align-items: center;
+}
+
+/* Inline card forms must expand the Editor side panel card instead of being clipped. */
+.project-post-panel .project-post-card-overlay {
+  position: relative;
+  inset: auto;
+  min-height: 76px;
+  border-top: 1px solid #2b3949;
+  border-radius: 0 0 7px 7px;
 }
 
 .draft-project-dialog { width: min(460px, calc(100vw - 28px)); }

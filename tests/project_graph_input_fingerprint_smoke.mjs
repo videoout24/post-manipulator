@@ -6,7 +6,7 @@ const heading = text => ({ id: "heading", type: "heading", props: { text }, chil
 const paragraph = text => ({ id: "paragraph", type: "paragraph", props: { text }, children: [] });
 const map = targetPostId => ({
   id: "map", type: "project_post_map",
-  props: { mapId: "map-1", prefix: "ignored", slots: [{ id: "slot-1", text: "derived", targetPostId }] },
+  props: { mapId: "map-1", numbering: "numeric", slots: [{ id: "slot-1", text: "derived", targetPostId }] },
   children: []
 });
 
@@ -18,7 +18,7 @@ assert.equal(
 );
 assert.equal(
   projectGraphInputFingerprint(baseline),
-  projectGraphInputFingerprint(ast([heading("Title"), paragraph("one"), { ...map("post-2"), props: { ...map("post-2").props, prefix: "new", slots: [{ id: "slot-1", text: "new derived", targetPostId: "post-2" }] } }])),
+  projectGraphInputFingerprint(ast([heading("Title"), paragraph("one"), { ...map("post-2"), props: { ...map("post-2").props, numbering: "none", slots: [{ id: "slot-1", text: "new derived", targetPostId: "post-2" }] } }])),
   "Map presentation and derived text must not affect the graph fingerprint"
 );
 assert.notEqual(projectGraphInputFingerprint(baseline), projectGraphInputFingerprint(ast([heading("New title"), paragraph("one"), map("post-2")])));

@@ -24,12 +24,20 @@ const second = await store.createPost(project.id,{title:'Second'});
 project = second.project;
 const currentMap = getProjectRootMap(project);
 assert.deepEqual(currentMap.props.slots.map(slot=>slot.targetPostId), [first.post.id, second.post.id]);
+assert.equal("prefix" in currentMap.props, false);
+assert.equal("separator" in currentMap.props, false);
 for (const [index, post] of project.posts.slice(1).entries()) {
   const backlink = post.messageAst.children.find(node=>node.type==='project_map_backlink');
   assert.equal(backlink.props.targetMapId, project.structure.rootMapId);
   assert.equal(backlink.props.targetSlotId, currentMap.props.slots[index].id);
   assert.equal(post.messageAst.children.filter(node=>node.type==='project_post_map').length, 0);
 }
+
+currentMap.props.prefix = "Legacy ";
+currentMap.props.separator = " · ";
+project = await store.saveProject(project);
+assert.equal("prefix" in getProjectRootMap(project).props, false, "legacy Map prefix must be removed during normalization");
+assert.equal("separator" in getProjectRootMap(project).props, false, "legacy Map separator must be removed during normalization");
 
 project = await store.movePost(project.id, second.post.id, 'up');
 assert.deepEqual(project.posts.map(post=>post.id), [root.id, second.post.id, first.post.id]);

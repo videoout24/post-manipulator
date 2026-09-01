@@ -14,6 +14,7 @@ const treeProvider = () => tree;
 const previewSyncGuard = () => true;
 const telegram = createTelegramDomain({ db, events, renderer, validator, tree, treeProvider, previewSyncGuard });
 assert.equal(telegram.runtime.serviceMessages, telegram.serviceMessages);
+assert.equal(telegram.serviceMessages.publicationTargets, telegram.publicationTargets);
 
 assert(Object.isFrozen(telegram));
 for (const key of [
@@ -31,5 +32,6 @@ assert.equal(telegram.core.runtime, telegram.runtime);
 assert.equal(telegram.core.owner, telegram.ownerBinding);
 assert.equal(telegram.core.project.previewChannel, telegram.projectPreviewTransport);
 assert.equal(typeof telegram.core.publications.setPinned, "function");
+assert.equal(typeof telegram.core.publications.setServiceMessageCleanup, "function");
 
 console.log("create_telegram_domain_smoke: OK");
