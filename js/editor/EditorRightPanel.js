@@ -1,10 +1,10 @@
-import { createDraftListView } from "./DraftListView.js?v=1.7.12";
+import { createDraftListView } from "./DraftListView.js?v=1.7.13";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.7.12";
 
 export class EditorRightPanel {
   constructor({
     root, layout, session, draftSession = null, drafts, projects = null,
-    documents = null, events, onError = null, onToast = null, onPublishDraft = null, onApplyDraftChanges = null,
+    documents = null, events, onError = null, onToast = null, onPublishDraft = null, onScheduleDraft = null, onApplyDraftChanges = null,
     onPublishProjectPost = null, onScheduleProjectPost = null, onCancelProjectPostSchedule = null, onApplyProjectChanges = null
   } = {}) {
     this.root = root;
@@ -18,6 +18,7 @@ export class EditorRightPanel {
     this.onError = onError;
     this.onToast = onToast;
     this.onPublishDraft = onPublishDraft;
+    this.onScheduleDraft = onScheduleDraft;
     this.onApplyDraftChanges = onApplyDraftChanges;
     this.onPublishProjectPost = onPublishProjectPost;
     this.onScheduleProjectPost = onScheduleProjectPost;
@@ -150,6 +151,7 @@ export class EditorRightPanel {
       onDelete: draft => this.#deleteDraft(draft),
       onMoveToProject: draft => this.#moveDraftToProject(draft),
       onPublish: draft => this.#requestDraftPublication(draft),
+      onSchedule: draft => this.#requestDraftSchedule(draft),
       onApplyChanges: draft => this.#applyDraftChanges(draft),
       onCancelPublicationEdit: draft => this.#cancelPublicationEdit(draft),
       onSelectTarget: target => this.#selectLinkTarget(target),
@@ -183,6 +185,18 @@ export class EditorRightPanel {
       if (!fresh.messageAst?.children?.length) throw new Error("Добавьте хотя бы один блок перед публикацией");
       if (this.onPublishDraft) return this.onPublishDraft(fresh);
       this.events?.emit?.("publication:draft-requested", fresh);
+      return true;
+    });
+  }
+
+  async #requestDraftSchedule(draft) {
+    return this.#run(async () => {
+      await this.documents?.saveCurrentContext?.();
+      const fresh = await this.drafts?.get?.(draft.id);
+      if (!fresh) throw new Error("Черновик не найден");
+      if (!fresh.messageAst?.children?.length) throw new Error("Добавьте хотя бы один блок перед публикацией");
+      if (this.onScheduleDraft) return this.onScheduleDraft(fresh);
+      this.events?.emit?.("publication:draft-schedule-requested", fresh);
       return true;
     });
   }

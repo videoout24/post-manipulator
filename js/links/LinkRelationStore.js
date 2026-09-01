@@ -88,6 +88,39 @@ export class LinkRelationStore {
     return changed;
   }
 
+  async bindSourcePublicationToDraft(publicationId, draftId) {
+    if (!publicationId || !draftId) return [];
+    const changed = [];
+    for (const relation of await this.list()) {
+      if (relation.source?.kind !== "publication" || String(relation.source.id) !== String(publicationId)) continue;
+      relation.source = { ...relation.source, kind: "draft", id: String(draftId) };
+      relation.updatedAt = Date.now();
+      await this.db.put("link_relations", relation.id, relation);
+      changed.push(structuredClone(relation));
+    }
+    if (changed.length) this.events?.emit("links:changed", { reason: "sources-restored", relations: changed });
+    return changed;
+  }
+
+  async bindTargetPublicationToDraft(publicationId, draftId) {
+    if (!publicationId || !draftId) return [];
+    const changed = [];
+    for (const relation of await this.list()) {
+      if (relation.target?.kind !== "publication" || String(relation.target.id) !== String(publicationId)) continue;
+      relation.target = { ...relation.target, kind: "draft", id: String(draftId) };
+      relation.status = LINK_RELATION_STATUS.PENDING;
+      relation.resolvedUrl = "";
+      relation.error = "";
+      relation.resolvedAt = null;
+      relation.appliedAt = null;
+      relation.updatedAt = Date.now();
+      await this.db.put("link_relations", relation.id, relation);
+      changed.push(structuredClone(relation));
+    }
+    if (changed.length) this.events?.emit("links:changed", { reason: "targets-restored", relations: changed });
+    return changed;
+  }
+
   async materializeAst(ast) {
     let next = structuredClone(ast);
     for (const relationId of relationIdsInAst(next)) {

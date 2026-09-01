@@ -7,7 +7,7 @@ assert.equal(draftHasBlocks({ messageAst: { children: [] } }), false);
 assert.equal(draftHasBlocks({ messageAst: { children: [{ id: "p", type: "paragraph" }] } }), true);
 
 const source = fs.readFileSync(new URL("../js/editor/DraftListView.js", import.meta.url), "utf8");
-assert.match(source, /if \(draftHasBlocks\(draft\)\) \{[\s\S]*?button\("В проект"[\s\S]*?placeholderButton\("Отложить"/);
-assert.doesNotMatch(source, /if \(!publicationCopy\) actions\.append\(placeholderButton\("Отложить"/);
+assert.match(source, /if \(draftHasBlocks\(draft\)\) \{[\s\S]*?button\("В проект"[\s\S]*?button\("Отложить"[\s\S]*?onSchedule/);
+assert.doesNotMatch(source, /placeholderButton/);
 
 console.log("draft empty project action smoke: OK");

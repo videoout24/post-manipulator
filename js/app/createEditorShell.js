@@ -2,7 +2,7 @@ import { AppNavigation } from "./AppNavigation.js?v=1.5.9";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
 import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.5.9";
 import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.5.9";
-import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.7.12";
+import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.7.13";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.5.9";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.7.12";
 import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.5.9";
@@ -21,6 +21,7 @@ export function createEditorShell({
   documents,
   projectPreviewSync,
   onPublishDraft = null,
+  onScheduleDraft = null,
   onApplyDraftChanges = null,
   onPublishProject = null,
   onPublishProjectPost = null,
@@ -130,6 +131,7 @@ export function createEditorShell({
     onError: error => showToast({ message: `Editor panel: ${error?.message || error}`, type: "error" }),
     onToast: payload => showToast(payload),
     onPublishDraft,
+    onScheduleDraft,
     onApplyDraftChanges,
     onPublishProjectPost,
     onScheduleProjectPost,

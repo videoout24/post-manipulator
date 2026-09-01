@@ -56,6 +56,11 @@ async function initDataTests() {
     verifyInitData(expired.initData, { launcherBotId: 777000, publicKeyHex: expired.publicKeyHex, now, cryptoApi }),
     { code: "AUTH_DATE_EXPIRED" }
   );
+  const future = await signedMiniAppLaunch({ botId: 777000, userId: 123456789, now: now + 61_000 });
+  await assert.rejects(
+    verifyInitData(future.initData, { launcherBotId: 777000, publicKeyHex: future.publicKeyHex, now, cryptoApi }),
+    { code: "AUTH_DATE_FUTURE" }
+  );
   const bridge = {
     getItem(_key, callback) { callback(null, null, false); },
     setItem(_key, _value, callback) { callback(null, true); },
@@ -225,6 +230,14 @@ async function controllerTests() {
   assert.equal((await unlock.unlock({ password: "Пароль123" })).state, "STARTING_APPLICATION");
   assert.notEqual(items.get(tokenStorageKey), beforeRotation, "successful unlock must rotate encrypted container");
 
+  const futureLaunch = await signedMiniAppLaunch({ botId: 123456, userId: 42, now: now + 61_000 });
+  const wrongClock = new AuthBootstrapController(controllerOptions(futureLaunch));
+  assert.equal((await wrongClock.prepare()).state, "UNLOCK_PASSWORD");
+  await assert.rejects(wrongClock.unlock({ password: "Пароль123" }), {
+    code: "BLOCKED_INIT_DATA_TIME_INVALID",
+    message: "Системные часы отстают от времени запуска Telegram."
+  });
+
   const recoveredRecords = new Map();
   const recoveredDb = {
     async get(store, key, fallback = null) { return recoveredRecords.get(`${store}/${key}`) ?? fallback; },
@@ -334,7 +347,7 @@ async function bootstrapBoundaryTests() {
   assert.match(html, /<div aria-hidden="true" id="appShell" inert>/);
   assert.match(html, /id="securityGate"/);
   assert.doesNotMatch(html, /src="\.\/js\/app\.js/);
-  assert.match(bootstrap, /await import\("\.\/app\.js\?v=1\.7\.12"\)/);
+  assert.match(bootstrap, /await import\("\.\/app\.js\?v=1\.7\.13"\)/);
   assert.match(app, /export async function startApplication/);
   assert.doesNotMatch(app, /new AppDatabase\(\)/);
 }

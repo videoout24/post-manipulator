@@ -34,6 +34,23 @@ export class DraftStore {
     return structuredClone(draft);
   }
 
+  async restore({ id, title = "", messageAst, source = null, createdAt = null, updatedAt = null } = {}) {
+    if (!id) throw new Error("Draft id is required");
+    if (await this.get(id)) throw new Error(`Draft already exists: ${id}`);
+    const now = Date.now();
+    const draft = normalizeDraft({
+      id,
+      title: title || "Черновик",
+      messageAst,
+      source,
+      createdAt: Number(createdAt || now),
+      updatedAt: Number(updatedAt || now)
+    });
+    await this.db?.put?.("drafts", draft.id, draft);
+    this.events?.emit?.("draft:changed", { reason: "restored", draft: structuredClone(draft), draftId: draft.id });
+    return structuredClone(draft);
+  }
+
   async saveAst(id, messageAst) {
     const current = await this.get(id);
     if (!current) throw new Error(`Draft not found: ${id}`);

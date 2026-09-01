@@ -33,5 +33,7 @@ assert.equal(telegram.core.owner, telegram.ownerBinding);
 assert.equal(telegram.core.project.previewChannel, telegram.projectPreviewTransport);
 assert.equal(typeof telegram.core.publications.setPinned, "function");
 assert.equal(typeof telegram.core.publications.setServiceMessageCleanup, "function");
+assert.equal(typeof telegram.core.publications.scheduleDraft, "function");
+assert.equal(typeof telegram.core.publications.cancelDraftSchedule, "function");
 
 console.log("create_telegram_domain_smoke: OK");

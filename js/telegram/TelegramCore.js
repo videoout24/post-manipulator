@@ -28,6 +28,8 @@ export class TelegramCore {
       onTargetsChanged: handler => events?.on("telegram:publication-targets", handler),
       list: () => publications.list(),
       publishDraft: (draftId, chatId, options) => publications.publishDraft(draftId, chatId, options),
+      scheduleDraft: (draftId, chatId, options) => publications.scheduleDraft(draftId, chatId, options),
+      cancelDraftSchedule: recordId => publications.cancelDraftSchedule(recordId),
       setPinned: (recordId, pinned) => publications.setPinned(recordId, pinned),
       createEditDraft: recordId => publications.createEditDraft(recordId),
       applyDraftChanges: draftId => publications.applyDraftChanges(draftId),

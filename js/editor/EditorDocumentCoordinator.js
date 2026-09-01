@@ -81,13 +81,21 @@ export class EditorDocumentCoordinator {
   }
 
   async clearPublishedDraft(draftId) {
+    return this.#clearRemovedDraft(draftId, { sessionReason: "published", canvasReason: "draft-published" });
+  }
+
+  async clearScheduledDraft(draftId) {
+    return this.#clearRemovedDraft(draftId, { sessionReason: "scheduled", canvasReason: "draft-scheduled" });
+  }
+
+  async #clearRemovedDraft(draftId, { sessionReason, canvasReason }) {
     if (this.projectSession?.isProjectActive?.()) return false;
     const activeDraftId = this.draftSession?.activeDraftId || null;
     if (activeDraftId && activeDraftId !== draftId) return false;
-    if (activeDraftId === draftId) await this.draftSession.deactivate({ flush: false, reason: "published" });
+    if (activeDraftId === draftId) await this.draftSession.deactivate({ flush: false, reason: sessionReason });
     await this.projectSession.openStandaloneAst(
       { id: "root", type: "document", props: {}, children: [] },
-      { reason: "draft-published", persist: false }
+      { reason: canvasReason, persist: false }
     );
     return true;
   }

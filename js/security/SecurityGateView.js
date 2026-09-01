@@ -6,6 +6,7 @@ const STATE_COPY = Object.freeze({
   BLOCKED_INIT_DATA_MISSING: ["Нет безопасных данных запуска", "Закройте Mini App и откройте её заново из Telegram."],
   BLOCKED_INIT_DATA_INVALID: ["Не удалось подтвердить запуск", "Закройте Mini App и откройте её заново из Telegram."],
   BLOCKED_INIT_DATA_EXPIRED: ["Запуск устарел", "Закройте Mini App и откройте её заново из Telegram."],
+  BLOCKED_INIT_DATA_TIME_INVALID: ["Проверьте время устройства", "Время запуска Telegram не совпадает с системными часами."],
   BLOCKED_TELEGRAM_USER_INVALID: ["Пользователь Telegram не подтверждён", "Закройте Mini App и откройте её заново из Telegram."],
   BLOCKED_TELEGRAM_USER_MISMATCH: ["Эта локальная база привязана к другому аккаунту Telegram", "Пароль и token не будут запрошены. Данные не изменены."],
   BLOCKED_CRYPTO_UNSUPPORTED: ["Криптография клиента не поддерживается", "Обновите Telegram Desktop и повторите попытку."],
@@ -17,6 +18,18 @@ const STATE_COPY = Object.freeze({
   TOKEN_ENCRYPTING: ["Сохраняем защищённый token", "Проверяем запись Telegram CloudStorage…"],
   TOKEN_ROTATING: ["Обновляем защищённый token", "Создаём новую соль и IV для этого входа…"]
 });
+
+const DEVICE_TIME_HINT_STATES = new Set([
+  "BLOCKED_INIT_DATA_EXPIRED",
+  "BLOCKED_INIT_DATA_TIME_INVALID"
+]);
+const DEVICE_TIME_HINT = "Проверьте автоматическую синхронизацию даты, времени и часового пояса в настройках системы. Затем закройте Mini App и откройте её заново.";
+const LAUNCH_WINDOW_HINT_STATES = new Set([
+  "CHECKING_ENVIRONMENT",
+  "FIRST_SETUP_PASSWORD",
+  "UNLOCK_PASSWORD"
+]);
+const LAUNCH_WINDOW_HINT = "Данные запуска проверяются в 30-секундном окне. Время открытия уже зафиксировано: после появления формы можно вводить пароль и token без спешки.";
 
 const BUSY_STATES = new Set([
   "CHECKING_ENVIRONMENT",
@@ -143,6 +156,8 @@ export class SecurityGateView {
 function contentForState(view, state, payload) {
   const [defaultTitle, defaultCopy] = STATE_COPY[state] || ["Защищённый запуск", "Пожалуйста, подождите…"];
   const result = { title: defaultTitle, copy: payload.message || defaultCopy, detail: "", form: null, actions: null };
+  if (DEVICE_TIME_HINT_STATES.has(state)) result.detail = DEVICE_TIME_HINT;
+  else if (LAUNCH_WINDOW_HINT_STATES.has(state)) result.detail = LAUNCH_WINDOW_HINT;
   if (state === "PROCESSING_PASSWORD") {
     result.title = "Проверяем credentials";
   } else if (state === "PROCESSING_TOKEN") {

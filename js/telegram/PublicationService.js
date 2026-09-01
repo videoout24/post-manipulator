@@ -3,10 +3,14 @@ import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } f
 
 export const PUBLICATION_DELETE_WINDOW_MS = 48 * 60 * 60 * 1000;
 const PENDING_FORWARD_PREFIX = "publicationForward:";
+const MAX_TIMER_DELAY = 2_147_000_000;
+const SCHEDULE_RETRY_DELAY = 60_000;
 
 export class PublicationService {
   constructor({ db, events = null, client, renderer, validator, targets, drafts, draftSession = null, documents = null, linkRelations = null } = {}) {
     Object.assign(this, { db, events, client, renderer, validator, targets, drafts, draftSession, documents, linkRelations });
+    this.scheduleTimers = new Map();
+    this.recordOperations = new Map();
     this.linkUnsubscribe = this.events?.on?.("links:changed", event => {
       if (event?.reason !== "removed" || event?.relation?.source?.kind !== "publication") return;
       this.#removeRelationFromPublishedSource(event.relation).catch(error => {
@@ -20,7 +24,16 @@ export class PublicationService {
     });
   }
 
+  async initialize() {
+    for (const record of await this.list()) {
+      if (record?.source?.kind === "draft" && record.scheduledAt && !record.messageId) this.#armSchedule(record);
+    }
+  }
+
   stop() {
+    for (const entry of this.scheduleTimers.values()) clearTimeout(entry.timer);
+    this.scheduleTimers.clear();
+    this.recordOperations.clear();
     this.linkUnsubscribe?.();
     this.linkUnsubscribe = null;
     this.projectPublicationUnsubscribe?.();
@@ -31,6 +44,100 @@ export class PublicationService {
     const rows = await this.db.all("publications");
     return rows.map(row => row.value)
       .sort((a, b) => Number(b.publishedAt || b.scheduledAt || 0) - Number(a.publishedAt || a.scheduledAt || 0));
+  }
+
+  async scheduleDraft(draftId, targetChatId, { scheduledAt, commentsEnabled = true } = {}) {
+    const publishAt = Number(scheduledAt || 0);
+    if (!Number.isFinite(publishAt) || publishAt <= Date.now()) {
+      throw new Error("Укажите время отложенной публикации в будущем");
+    }
+    const [draft, target] = await Promise.all([
+      this.drafts.get(draftId),
+      this.#requireTarget(targetChatId)
+    ]);
+    if (!draft) throw new Error("Черновик не найден");
+    if (draft.source?.kind === "publication") throw new Error("Рабочую копию публикации нельзя поставить в отложку");
+    if (!draft.messageAst?.children?.length) throw new Error("Пустой черновик нельзя отложить");
+    this.#assertCommentsConfig(target, commentsEnabled);
+    const errors = this.validator.validate(astTree(draft.messageAst));
+    if (errors.length) throw new Error(errors.join("; "));
+
+    const record = {
+      id: `publication_${randomUUID()}`,
+      source: {
+        kind: "draft",
+        draftId: draft.id,
+        title: draft.title,
+        draftSource: draft.source ? structuredClone(draft.source) : null,
+        draftCreatedAt: Number(draft.createdAt || Date.now()),
+        draftUpdatedAt: Number(draft.updatedAt || draft.createdAt || Date.now())
+      },
+      messageAst: structuredClone(draft.messageAst),
+      target: structuredClone(target),
+      chatId: Number(target.chatId),
+      messageId: null,
+      publishedAt: null,
+      scheduledAt: publishAt,
+      createdAt: Date.now(),
+      deleteUntil: null,
+      commentsRequested: Boolean(commentsEnabled),
+      commentsEnabled: target.type === "channel" && Boolean(target.commentsEnabled) && Boolean(commentsEnabled),
+      discussionChatId: target.linkedDiscussionChatId || null,
+      discussionUsername: target.linkedDiscussionUsername || "",
+      discussionMessageId: null,
+      commentsDisabled: false,
+      pinned: false,
+      pinnedAt: null,
+      commentMessageIds: [],
+      commentCount: 0,
+      reactionCount: 0,
+      reactions: [],
+      reactionActors: {}
+    };
+    await this.db.put("publications", record.id, record);
+    await this.linkRelations?.bindSourceDraftToPublication?.(draft.id, record.id);
+    if (this.documents?.clearScheduledDraft) await this.documents.clearScheduledDraft(draft.id);
+    else if (this.documents?.clearPublishedDraft) await this.documents.clearPublishedDraft(draft.id);
+    else if (this.draftSession?.activeDraftId === draft.id) {
+      await this.draftSession.deactivate({ flush: false, reason: "scheduled" });
+    }
+    await this.drafts.delete(draft.id);
+    this.#armSchedule(record);
+    this.events?.emit("telegram:draft-publication-scheduled", structuredClone(record));
+    this.events?.emit("telegram:publications-changed", await this.list());
+    return structuredClone(record);
+  }
+
+  async cancelDraftSchedule(recordId) {
+    return this.#withRecordOperation(recordId, async () => {
+      const record = await this.db.get("publications", recordId, null);
+      if (!record?.scheduledAt || record.source?.kind !== "draft" || record.messageId) {
+        throw new Error("Этот черновик не находится в отложенных публикациях");
+      }
+      const editDrafts = (await this.drafts.list()).filter(draft =>
+        draft.source?.kind === "publication" && String(draft.source.publicationId) === String(record.id)
+      );
+      if (editDrafts.some(draft => String(draft.id) === String(this.draftSession?.activeDraftId || ""))) {
+        throw new Error("Сначала примените или отмените редактирование отложенной публикации");
+      }
+      this.#clearSchedule(record.id);
+      await this.linkRelations?.reconcileSource?.({ kind: "publication", id: record.id }, record.messageAst);
+      for (const draft of editDrafts) await this.drafts.delete(draft.id);
+      const restored = await this.drafts.restore({
+        id: record.source.draftId,
+        title: record.source.title || "Черновик",
+        messageAst: record.messageAst,
+        source: record.source.draftSource || null,
+        createdAt: record.source.draftCreatedAt,
+        updatedAt: Date.now()
+      });
+      await this.linkRelations?.bindSourcePublicationToDraft?.(record.id, restored.id);
+      await this.linkRelations?.bindTargetPublicationToDraft?.(record.id, restored.id);
+      await this.db.delete("publications", record.id);
+      this.events?.emit("telegram:draft-publication-schedule-cancelled", { record: structuredClone(record), draft: structuredClone(restored) });
+      this.events?.emit("telegram:publications-changed", await this.list());
+      return restored;
+    });
   }
 
   async publishDraft(draftId, targetChatId, { commentsEnabled = true } = {}) {
@@ -55,6 +162,8 @@ export class PublicationService {
       replyMarkup: envelope.replyMarkup,
       disableNotification: false
     });
+    const messageId = Number(message?.message_id || 0);
+    if (!messageId) throw new Error("Telegram не вернул message_id для публикации");
     const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
     const record = {
       id: `publication_${randomUUID()}`,
@@ -62,7 +171,7 @@ export class PublicationService {
       messageAst: structuredClone(publishAst),
       target: structuredClone(target),
       chatId: Number(target.chatId),
-      messageId: Number(message.message_id),
+      messageId,
       publishedAt,
       deleteUntil: publishedAt + PUBLICATION_DELETE_WINDOW_MS,
       commentsEnabled: target.type === "channel" && target.commentsEnabled && Boolean(commentsEnabled),
@@ -96,6 +205,117 @@ export class PublicationService {
       this.events?.emit("telegram:publication-discussion-error", { record, error });
     });
     return record;
+  }
+
+  #armSchedule(record, { runAt = Number(record?.scheduledAt || 0) } = {}) {
+    const scheduledAt = Number(record?.scheduledAt || 0);
+    if (!record?.id || !scheduledAt || record.messageId) return;
+    const current = this.scheduleTimers.get(record.id);
+    if (current?.scheduledAt === scheduledAt) return;
+    this.#clearSchedule(record.id);
+    const delay = Math.max(0, Math.min(MAX_TIMER_DELAY, Number(runAt || scheduledAt) - Date.now()));
+    const timer = setTimeout(() => {
+      this.scheduleTimers.delete(record.id);
+      if (scheduledAt > Date.now()) {
+        this.#armSchedule(record);
+        return;
+      }
+      this.#runScheduledDraft(record.id, scheduledAt).catch(() => {});
+    }, delay);
+    this.scheduleTimers.set(record.id, { timer, scheduledAt, runAt: Number(runAt || scheduledAt) });
+  }
+
+  #clearSchedule(recordId) {
+    const entry = this.scheduleTimers.get(recordId);
+    if (entry) clearTimeout(entry.timer);
+    this.scheduleTimers.delete(recordId);
+  }
+
+  async #runScheduledDraft(recordId, expectedScheduledAt) {
+    try {
+      return await this.#withRecordOperation(recordId, async () => {
+        const record = await this.db.get("publications", recordId, null);
+        if (!record?.scheduledAt || record.messageId || record.source?.kind !== "draft") return null;
+        if (Number(record.scheduledAt) !== Number(expectedScheduledAt)) return null;
+        if (Number(record.scheduledAt) > Date.now()) {
+          this.#armSchedule(record);
+          return null;
+        }
+        return this.#publishScheduledDraft(record);
+      });
+    } catch (error) {
+      const record = await this.db.get("publications", recordId, null).catch(() => null);
+      if (record?.scheduledAt && !record.messageId && Number(record.scheduledAt) === Number(expectedScheduledAt)) {
+        this.events?.emit("telegram:draft-publication-schedule-error", {
+          record: structuredClone(record),
+          error,
+          message: error?.message || String(error)
+        });
+        this.#armSchedule(record, { runAt: Date.now() + SCHEDULE_RETRY_DELAY });
+      }
+      throw error;
+    }
+  }
+
+  async #publishScheduledDraft(record) {
+    const target = await this.#requireTarget(record.chatId);
+    const commentsRequested = record.commentsRequested !== false;
+    this.#assertCommentsConfig(target, commentsRequested);
+    const publishAst = await this.linkRelations?.materializeAst?.(record.messageAst) || record.messageAst;
+    const tree = astTree(publishAst);
+    const errors = this.validator.validate(tree);
+    if (errors.length) throw new Error(errors.join("; "));
+    const envelope = this.renderer.renderEnvelope(tree);
+    const message = await this.client.sendRichMessage({
+      chatId: target.chatId,
+      richMessage: envelope.richMessage,
+      replyMarkup: envelope.replyMarkup,
+      disableNotification: false
+    });
+    const messageId = Number(message?.message_id || 0);
+    if (!messageId) throw new Error("Telegram не вернул message_id для отложенной публикации");
+    const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
+    record.messageAst = structuredClone(publishAst);
+    record.target = structuredClone(target);
+    record.chatId = Number(target.chatId);
+    record.messageId = messageId;
+    record.publishedAt = publishedAt;
+    record.scheduledAt = null;
+    record.deleteUntil = publishedAt + PUBLICATION_DELETE_WINDOW_MS;
+    record.commentsEnabled = target.type === "channel" && Boolean(target.commentsEnabled) && commentsRequested;
+    record.discussionChatId = target.linkedDiscussionChatId || null;
+    record.discussionUsername = target.linkedDiscussionUsername || "";
+    await this.db.put("publications", record.id, record);
+    const resolvedRelations = await this.linkRelations?.resolveWaitingForPublication?.(record) || [];
+    await this.#applyResolvedRelations(resolvedRelations);
+    this.events?.emit("telegram:publication-created", structuredClone(record));
+    this.events?.emit("telegram:publications-changed", await this.list());
+    this.#reconcilePendingForward(record).catch(error => {
+      this.events?.emit("telegram:publication-discussion-error", { record, error });
+    });
+    return structuredClone(record);
+  }
+
+  async #requireTarget(chatId) {
+    const target = (await this.targets.list()).find(item => Number(item.chatId) === Number(chatId));
+    if (!target || target.status !== "ready") throw new Error("Канал или группа недоступны для публикации");
+    return target;
+  }
+
+  #assertCommentsConfig(target, commentsEnabled) {
+    if (target.type === "channel" && target.commentsEnabled && commentsEnabled === false && !target.discussionRights?.canDelete) {
+      throw new Error("Для отключения комментариев боту нужно право удаления сообщений в группе обсуждения");
+    }
+  }
+
+  #withRecordOperation(recordId, operation) {
+    const key = String(recordId || "");
+    const previous = this.recordOperations.get(key) || Promise.resolve();
+    const current = previous.catch(() => {}).then(operation);
+    this.recordOperations.set(key, current);
+    return current.finally(() => {
+      if (this.recordOperations.get(key) === current) this.recordOperations.delete(key);
+    });
   }
 
   async #reconcilePendingForward(record) {
@@ -208,7 +428,8 @@ export class PublicationService {
         publicationId: record.id,
         chatId: record.chatId,
         messageId: record.messageId,
-        targetTitle: record.target?.title || ""
+        targetTitle: record.target?.title || "",
+        scheduledAt: Number(record.scheduledAt || 0) || null
       }
     });
   }
@@ -217,25 +438,29 @@ export class PublicationService {
     const draft = await this.drafts.get(draftId);
     const publicationId = draft?.source?.kind === "publication" ? draft.source.publicationId : null;
     if (!draft || !publicationId) throw new Error("Черновик не связан с публикацией");
-    const record = await this.db.get("publications", publicationId, null);
-    if (!record) throw new Error("Исходная публикация не найдена");
-    const appliedAst = await this.linkRelations?.materializeAst?.(draft.messageAst) || draft.messageAst;
-    const tree = astTree(appliedAst);
-    const errors = this.validator.validate(tree);
-    if (errors.length) throw new Error(errors.join("; "));
-    const envelope = this.renderer.renderEnvelope(tree);
-    await this.client.editRichMessage({
-      chatId: record.chatId,
-      messageId: record.messageId,
-      richMessage: envelope.richMessage,
-      replyMarkup: envelope.replyMarkup
+    return this.#withRecordOperation(publicationId, async () => {
+      const record = await this.db.get("publications", publicationId, null);
+      if (!record) throw new Error("Исходная публикация не найдена");
+      const appliedAst = await this.linkRelations?.materializeAst?.(draft.messageAst) || draft.messageAst;
+      const tree = astTree(appliedAst);
+      const errors = this.validator.validate(tree);
+      if (errors.length) throw new Error(errors.join("; "));
+      if (!record.scheduledAt) {
+        const envelope = this.renderer.renderEnvelope(tree);
+        await this.client.editRichMessage({
+          chatId: record.chatId,
+          messageId: record.messageId,
+          richMessage: envelope.richMessage,
+          replyMarkup: envelope.replyMarkup
+        });
+      }
+      record.messageAst = structuredClone(appliedAst);
+      record.editedAt = Date.now();
+      await this.db.put("publications", record.id, record);
+      this.events?.emit("telegram:publication-updated", structuredClone(record));
+      this.events?.emit("telegram:publications-changed", await this.list());
+      return structuredClone(record);
     });
-    record.messageAst = structuredClone(appliedAst);
-    record.editedAt = Date.now();
-    await this.db.put("publications", record.id, record);
-    this.events?.emit("telegram:publication-updated", record);
-    this.events?.emit("telegram:publications-changed", await this.list());
-    return record;
   }
 
   async #applyResolvedRelations(relations) {

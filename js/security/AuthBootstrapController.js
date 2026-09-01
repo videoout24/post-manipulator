@@ -333,13 +333,16 @@ function mapInitDataError(error) {
   const code = {
     INIT_DATA_MISSING: "BLOCKED_INIT_DATA_MISSING",
     AUTH_DATE_EXPIRED: "BLOCKED_INIT_DATA_EXPIRED",
+    AUTH_DATE_FUTURE: "BLOCKED_INIT_DATA_TIME_INVALID",
     TELEGRAM_USER_INVALID: "BLOCKED_TELEGRAM_USER_INVALID",
     CRYPTO_UNAVAILABLE: "BLOCKED_CRYPTO_UNSUPPORTED"
   }[error.code] || "BLOCKED_INIT_DATA_INVALID";
   const message = code === "BLOCKED_INIT_DATA_EXPIRED"
     ? "Срок безопасного запуска истёк. Закройте и заново откройте Mini App."
+    : code === "BLOCKED_INIT_DATA_TIME_INVALID"
+      ? "Системные часы отстают от времени запуска Telegram."
     : code === "BLOCKED_CRYPTO_UNSUPPORTED"
-      ? "Этот Telegram-клиент не поддерживает нужную криптографию"
-      : "Telegram не подтвердил безопасный запуск приложения";
+        ? "Этот Telegram-клиент не поддерживает нужную криптографию"
+        : "Telegram не подтвердил безопасный запуск приложения";
   return new AuthBootstrapError(code, message, { cause: error });
 }

@@ -52,6 +52,8 @@ const lifecycle = new AppLifecycle({
   projectLibrary: service("project-library"),
   galleryCore,
   telegramSettings: service("telegram-settings"),
+  publicationView: service("publications"),
+  publicationService: service("draft-schedules"),
   galleryView,
   appDb: { async get(_store, _key, fallback = null) { return fallback; } },
   ownerBinding: { async getOwner() { return { id: 1 }; }, async getSession() { return null; } },
@@ -66,6 +68,7 @@ const lifecycle = new AppLifecycle({
 
 await lifecycle.start();
 assert(calls.indexOf("gallery-core:start") < calls.indexOf("telegram-settings:initialize"));
+assert(calls.indexOf("publications:initialize") < calls.indexOf("draft-schedules:initialize"));
 assert.equal(calls.filter(call => typeof call === "string" && call.startsWith("splitter:")).length, 4);
 assert(calls.includes("splitter:projectLibraryRight"));
 assert(!calls.includes("client:set-token"));

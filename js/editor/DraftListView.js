@@ -10,6 +10,7 @@ export function createDraftListView({
   onDelete = null,
   onMoveToProject = null,
   onPublish = null,
+  onSchedule = null,
   onApplyChanges = null,
   onCancelPublicationEdit = null,
   onSelectTarget = null,
@@ -50,6 +51,7 @@ export function createDraftListView({
         onDelete,
         onMoveToProject,
         onPublish,
+        onSchedule,
         onApplyChanges,
         onCancelPublicationEdit,
         onSelectTarget,
@@ -66,7 +68,7 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onApplyChanges, onCancelPublicationEdit, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
+  onSchedule, onApplyChanges, onCancelPublicationEdit, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
 }) {
   const publicationCopy = draft.source?.kind === "publication" && draft.source?.publicationId;
   const card = el("article", `draft-card${selected ? " selected" : ""}${publicationCopy ? " draft-publication-edit" : ""}`);
@@ -96,7 +98,12 @@ function createDraftCard({
   const actions = el("div", "draft-card-actions draft-card-lifecycle-actions");
   if (publicationCopy) {
     actions.classList.add("publication-edit-actions");
-    const apply = button("Применить изменения", "Обновить опубликованное сообщение", () => onApplyChanges?.(draft));
+    const scheduledCopy = Boolean(draft.source?.scheduledAt);
+    const apply = button(
+      "Применить изменения",
+      scheduledCopy ? "Обновить содержимое отложенной публикации" : "Обновить опубликованное сообщение",
+      () => onApplyChanges?.(draft)
+    );
     apply.classList.add("publication-edit-apply");
     const cancel = button("Отмена", "Отменить редактирование и удалить рабочую копию", () => onCancelPublicationEdit?.(draft));
     cancel.classList.add("publication-edit-cancel");
@@ -104,7 +111,7 @@ function createDraftCard({
   } else if (draftHasBlocks(draft)) {
     actions.append(button("В проект", "Перенести черновик в Project", () => onMoveToProject?.(draft)));
     actions.append(button("Опубликовать", "Опубликовать черновик", () => onPublish?.(draft)));
-    actions.append(placeholderButton("Отложить", "Publications: отложенная публикация будет подключена позже"));
+    actions.append(button("Отложить", "Запланировать публикацию черновика", () => onSchedule?.(draft)));
   }
   if (actions.childElementCount) card.append(actions);
   else card.classList.add("no-footer-actions");
@@ -208,12 +215,6 @@ function formatTime(value) {
   const date = new Date(Number(value || Date.now()));
   try { return date.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
   catch { return date.toISOString(); }
-}
-
-function placeholderButton(text, title) {
-  const item = button(text, title, () => {});
-  item.classList.add("publication-placeholder-action");
-  return item;
 }
 
 function button(text, title, handler) {

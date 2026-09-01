@@ -36,4 +36,12 @@ assert.equal((await store.get(draftTarget.id)).target.id, publicationFromDraft.i
 await store.bindSourceDraftToPublication("draft_source", publicationFromDraft.id);
 assert.deepEqual((await store.get(draftTarget.id)).source.kind, "publication");
 assert.equal((await store.get(draftTarget.id)).source.id, publicationFromDraft.id);
+const scheduledTarget = await store.create({
+  source: { kind: "draft", id: "other_draft" },
+  target: { kind: "publication", id: "scheduled_publication" }
+});
+await store.bindTargetPublicationToDraft("scheduled_publication", "restored_draft");
+assert.equal((await store.get(scheduledTarget.id)).target.kind, "draft");
+assert.equal((await store.get(scheduledTarget.id)).target.id, "restored_draft");
+assert.equal((await store.get(scheduledTarget.id)).status, LINK_RELATION_STATUS.PENDING);
 console.log("link_relation_store_smoke: OK");

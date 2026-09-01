@@ -76,6 +76,13 @@ assert.deepEqual(calls[1], ["standalone:open", { id: "root", type: "document", p
 calls.length = 0;
 draftSession.active = true;
 draftSession.activeDraftId = draft.id;
+assert.equal(await coordinator.clearScheduledDraft(draft.id), true);
+assert.deepEqual(calls[0], ["draft:deactivate", { flush: false, reason: "scheduled" }]);
+assert.deepEqual(calls[1], ["standalone:open", { id: "root", type: "document", props: {}, children: [] }, { reason: "draft-scheduled", persist: false }]);
+
+calls.length = 0;
+draftSession.active = true;
+draftSession.activeDraftId = draft.id;
 assert.equal(await coordinator.discardDraft(draft.id, { reason: "publication-edit-cancelled" }), true);
 assert.deepEqual(calls.map(call => call[0]), ["draft:deactivate", "draft:delete", "standalone:open"]);
 assert.deepEqual(calls[0][1], { flush: false, reason: "publication-edit-cancelled" });

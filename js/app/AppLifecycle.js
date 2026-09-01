@@ -18,6 +18,7 @@ export class AppLifecycle {
     ownerBinding,
     previewChannelBinding,
     publicationTargets,
+    publicationService,
     telegramRuntime,
     telegramClient,
     telegramCore,
@@ -29,7 +30,7 @@ export class AppLifecycle {
       windowRoot, documentRoot, build, notifications, layoutPreferences,
       telegramNavigation, projectSession, editorDocuments, editorTelegramControls, projectLibrary,
       galleryCore, telegramSettings, publicationView, galleryView, appDb, ownerBinding,
-      previewChannelBinding, publicationTargets, telegramRuntime, telegramClient, telegramCore,
+      previewChannelBinding, publicationTargets, publicationService, telegramRuntime, telegramClient, telegramCore,
       editorPreviewStatus, stoppables, logger
     });
     this.stopped = false;
@@ -55,6 +56,7 @@ export class AppLifecycle {
     this.galleryCore?.start?.();
     await this.#initialize("Telegram Core", this.telegramSettings);
     await this.#initialize("Publications", this.publicationView);
+    await this.#initialize("Draft schedules", this.publicationService);
     await this.#initialize("Gallery", this.galleryView);
 
     await this.#initializePreviewState();

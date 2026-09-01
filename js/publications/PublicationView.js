@@ -1,7 +1,7 @@
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.7.6";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.7.13";
 
 export class PublicationView {
   constructor({
@@ -44,6 +44,14 @@ export class PublicationView {
       this.events?.on?.("project:publication", () => this.render()),
       this.events?.on?.("draft:session-changed", () => this.render()),
       this.events?.on?.("publication:draft-requested", draft => this.#showPublishDraftDialog(draft)),
+      this.events?.on?.("publication:draft-schedule-requested", draft => this.#showScheduleDraftDialog(draft)),
+      this.events?.on?.("telegram:draft-publication-schedule-error", ({ record, message } = {}) => {
+        this.notifications?.show?.({
+          message: `Не удалось опубликовать «${record?.source?.title || "отложенный черновик"}»: ${message || "повтор через минуту"}`,
+          type: "error",
+          duration: 7000
+        });
+      }),
       this.events?.on?.("links:target-slot-changed", ({ targetKey = "" } = {}) => {
         if (targetKey === this.linkTargetSlotKey) return;
         this.linkTargetSlotKey = targetKey;
@@ -75,6 +83,7 @@ export class PublicationView {
   stop() { for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe?.(); }
 
   requestDraftPublication(draft) { return this.#showPublishDraftDialog(draft); }
+  requestDraftSchedule(draft) { return this.#showScheduleDraftDialog(draft); }
   requestProjectPublication(project) { return this.#showPublishProjectDialog(project); }
   requestProjectPostPublication(project, post) { return this.#showPublishProjectDialog(project, post); }
   requestProjectPostSchedule(project, post) { return this.#showScheduleProjectPostDialog(project, post); }
@@ -108,7 +117,7 @@ export class PublicationView {
       ["all", "Все"], ["published", "Опубликованные"], ["scheduled", "Отложенные"]
     ], this.statusFilter, value => { this.statusFilter = value; this.render(); }));
     filterPanel.append(this.#contentFilterRow("Источник", [
-      ["all", "Все"], ["project", "Проекты"]
+      ["all", "Все"], ["draft", "Черновики"], ["project", "Проекты"]
     ], this.sourceFilter, value => { this.sourceFilter = value; this.render(); }));
     filterPanel.append(this.#contentFilterRow("Период", [
       ["all", "Всё время"], ["today", "Сегодня"], ["7d", "7 дней"], ["month", "Месяц"], ["custom", "Произвольный диапазон"]
@@ -142,7 +151,7 @@ export class PublicationView {
     const to = this.timeFilter === "custom" && this.dateRange.to ? new Date(`${this.dateRange.to}T23:59:59`).getTime() : Infinity;
     return this.publications.filter(record => {
       if (this.selectedTargetId && Number(record.chatId) !== Number(this.selectedTargetId)) return false;
-      if (this.sourceFilter === "project" && record.source?.kind !== "project") return false;
+      if (this.sourceFilter !== "all" && record.source?.kind !== this.sourceFilter) return false;
       if (this.statusFilter === "published" && record.scheduledAt) return false;
       if (this.statusFilter === "scheduled" && !record.scheduledAt) return false;
       return this.timeFilter === "all" || (Number(record.publishedAt || record.scheduledAt) >= from && Number(record.publishedAt || record.scheduledAt) <= to);
@@ -171,9 +180,10 @@ export class PublicationView {
     identity.append(el("strong", "", record.source?.title || "Публикация"));
     identity.append(el("span", "", `${record.target?.title || record.chatId} · ${formatPublicationDate(record.scheduledAt || record.publishedAt)}`));
     if (projectPost) identity.append(el("span", "publication-record-origin project", `Проект · ${record.source?.projectTitle || "Без названия"}`));
+    else if (scheduled) identity.append(el("span", "publication-record-origin", "Черновик · отложенная публикация"));
     const tools = el("div", "publication-record-tools");
     const edit = button("✎", () => this.#editPublication(record), "publication-record-edit");
-    edit.title = projectPost ? "Открыть Project post в Editor" : "Редактировать публикацию в Editor";
+    edit.title = projectPost ? "Открыть Project post в Editor" : scheduled ? "Редактировать отложенную публикацию в Editor" : "Редактировать публикацию в Editor";
     const linkTarget = {
       kind: "publication",
       id: record.id,
@@ -267,7 +277,7 @@ export class PublicationView {
     const heading = el("div", "post-detail-panel-heading");
     const projectPost = record.source?.kind === "project";
     heading.append(
-      el("span", "post-detail-panel-kicker", projectPost ? "Пост проекта" : "Публикация"),
+      el("span", "post-detail-panel-kicker", projectPost ? "Пост проекта" : record.scheduledAt ? "Отложенный черновик" : "Публикация"),
       el("h2", "", record.source?.title || record.target?.title || "Публикация"),
       el("span", `post-detail-panel-state ${record.scheduledAt ? "scheduled" : "published"}`, record.scheduledAt ? "Запланирована" : "Опубликована")
     );
@@ -285,7 +295,7 @@ export class PublicationView {
     const open = button("Открыть в Telegram", () => this.#openMessage(record), "primary");
     open.disabled = Boolean(record.scheduledAt);
     actions.append(edit, open);
-    if (record.scheduledAt && projectPost) {
+    if (record.scheduledAt) {
       actions.append(button("Отменить отложку", () => this.#cancelScheduledPublication(record)));
     }
     if (record.commentsEnabled && record.discussionMessageId) {
@@ -393,10 +403,6 @@ export class PublicationView {
         });
         return;
       }
-      if (record.source?.kind !== "project") {
-        this.notifications?.show?.({ message: "Отмена этой отложенной публикации пока не подключена", type: "warning" });
-        return;
-      }
       showCardDeleteConfirmation(card, {
         message: `Отменить отложенную публикацию «${record.source?.title || "Пост"}»?`,
         confirmLabel: "Отменить",
@@ -468,13 +474,19 @@ export class PublicationView {
 
   async #cancelScheduledPublication(record) {
     try {
-      if (record.source?.kind !== "project" || !this.projectPublications?.cancelPostSchedule) {
-        throw new Error("Отмена отложенной публикации не подключена");
+      if (record.source?.kind === "project") {
+        if (!this.projectPublications?.cancelPostSchedule) throw new Error("Отмена отложенной публикации Project не подключена");
+        await this.projectPublications.cancelPostSchedule(record.source.projectId, record.source.postId);
+      } else {
+        if (!this.telegramCore.publications.cancelDraftSchedule) throw new Error("Отмена отложенного черновика не подключена");
+        await this.telegramCore.publications.cancelDraftSchedule(record.id);
       }
-      await this.projectPublications.cancelPostSchedule(record.source.projectId, record.source.postId);
       this.publications = await this.telegramCore.publications.list();
       this.render();
-      this.notifications?.show?.({ message: "Отложенная публикация отменена", type: "success" });
+      this.notifications?.show?.({
+        message: record.source?.kind === "project" ? "Отложенная публикация отменена" : "Отложка отменена, материал возвращён в черновики",
+        type: "success"
+      });
       return true;
     } catch (error) {
       this.notifications?.show?.({ message: `Отложенная публикация: ${error?.message || error}`, type: "error" });
@@ -552,6 +564,102 @@ export class PublicationView {
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.showModal();
+  }
+
+  #showScheduleDraftDialog(draft) {
+    const targets = this.targets.filter(target => target.status === "ready");
+    if (!this.telegramCore?.publications?.scheduleDraft) {
+      this.notifications?.show?.({ message: "Отложенная публикация черновиков не подключена", type: "error" });
+      return;
+    }
+    if (!draft?.id || !targets.length) {
+      this.notifications?.show?.({ message: "Сначала подключите доступный канал или группу", type: "warning" });
+      return;
+    }
+    const dialog = document.createElement("dialog");
+    dialog.className = "publication-draft-dialog";
+    const form = document.createElement("form");
+    form.method = "dialog";
+    const head = el("div", "dialog-head");
+    head.append(el("strong", "", "Отложить черновик"), button("×", () => dialog.close("cancel")));
+    const body = el("div", "publication-draft-dialog-body");
+    body.append(el("strong", "publication-draft-title", draft.title || "Черновик"));
+
+    const targetField = el("label", "publication-draft-target-field");
+    targetField.append(el("span", "", "Канал или группа"));
+    const targetSelect = document.createElement("select");
+    for (const target of targets) {
+      const option = document.createElement("option");
+      option.value = String(target.chatId);
+      option.textContent = `${target.type === "channel" ? "Канал" : "Группа"} · ${target.title}`;
+      targetSelect.append(option);
+    }
+    targetField.append(targetSelect);
+
+    const timeField = el("label", "publication-draft-target-field");
+    timeField.append(el("span", "", "Дата и время"));
+    const time = document.createElement("input");
+    time.type = "datetime-local";
+    time.step = "60";
+    time.min = datetimeLocalValue(Date.now() + 60_000);
+    time.value = datetimeLocalValue(Date.now() + 10 * 60_000);
+    timeField.append(time);
+
+    const commentsField = el("label", "publication-comments-option");
+    commentsField.append(el("span", "", "Комментарии"));
+    const comments = document.createElement("select");
+    comments.append(new Option("Включены", "enabled"), new Option("Отключены", "disabled"));
+    commentsField.append(comments);
+    const syncComments = () => {
+      const target = targets.find(item => Number(item.chatId) === Number(targetSelect.value));
+      commentsField.hidden = !(target?.type === "channel" && target.commentsEnabled);
+      comments.disabled = commentsField.hidden;
+      commentsField.title = "Чтобы отключить комментарии, боту нужно право удалять сообщения в группе обсуждения";
+    };
+    targetSelect.onchange = syncComments;
+    syncComments();
+
+    const actions = el("div", "format-config-actions");
+    const cancel = button("Отмена", () => dialog.close("cancel"));
+    const schedule = button("Отложить", async () => {
+      const scheduledAt = new Date(time.value).getTime();
+      if (!Number.isFinite(scheduledAt) || scheduledAt <= Date.now()) {
+        time.setCustomValidity("Укажите время в будущем");
+        time.reportValidity();
+        return;
+      }
+      time.setCustomValidity("");
+      schedule.disabled = cancel.disabled = targetSelect.disabled = time.disabled = comments.disabled = true;
+      try {
+        const targetChatId = Number(targetSelect.value);
+        await this.telegramCore.publications.refreshTarget(targetChatId);
+        const record = await this.telegramCore.publications.scheduleDraft(draft.id, targetChatId, {
+          scheduledAt,
+          commentsEnabled: comments.value !== "disabled"
+        });
+        this.selectedTargetId = record.chatId;
+        this.selectedPublicationId = record.id;
+        this.publicationSelectionDismissed = false;
+        this.sourceFilter = "draft";
+        this.statusFilter = "scheduled";
+        dialog.close("scheduled");
+        document.querySelector('[data-tab="publications"]')?.click?.();
+        this.render();
+        this.notifications?.show?.({ message: `Отложено: ${draft.title || "Черновик"}`, type: "success" });
+      } catch (error) {
+        schedule.disabled = cancel.disabled = targetSelect.disabled = time.disabled = false;
+        syncComments();
+        this.notifications?.show?.({ message: `Отложенная публикация: ${error?.message || error}`, type: "error", duration: 7000 });
+      }
+    }, "primary");
+    actions.append(cancel, schedule);
+    body.append(targetField, timeField, commentsField, actions);
+    form.append(head, body);
+    dialog.append(form);
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.showModal();
+    time.focus();
   }
 
   #showPublishProjectDialog(project, post = null) {
