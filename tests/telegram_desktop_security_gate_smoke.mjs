@@ -334,7 +334,7 @@ async function bootstrapBoundaryTests() {
   assert.match(html, /<div aria-hidden="true" id="appShell" inert>/);
   assert.match(html, /id="securityGate"/);
   assert.doesNotMatch(html, /src="\.\/js\/app\.js/);
-  assert.match(bootstrap, /await import\("\.\/app\.js\?v=1\.7\.6"\)/);
+  assert.match(bootstrap, /await import\("\.\/app\.js\?v=1\.7\.7"\)/);
   assert.match(app, /export async function startApplication/);
   assert.doesNotMatch(app, /new AppDatabase\(\)/);
 }

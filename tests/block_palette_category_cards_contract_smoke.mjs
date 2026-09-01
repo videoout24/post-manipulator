@@ -24,5 +24,7 @@ for (const type of ["divider", "table", "details"]) {
 }
 assert.match(blocks, /semantic\("anchor_link", "Ссылка на якорь",[\s\S]*?\{ category: "Навигация" \}\)/);
 assert.match(blocks, /type:\s*"url_button", name:\s*"URL Button", category:\s*"Семантика"/);
+assert.match(blocks, /type:\s*"thinking", name:\s*"Thinking", paletteHidden:true, category:\s*"System"/,
+  "Thinking must stay compatible with old documents without appearing in the block palette");
 
 console.log("block_palette_category_cards_contract_smoke: OK");

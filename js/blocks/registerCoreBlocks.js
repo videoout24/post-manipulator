@@ -227,7 +227,7 @@ export function registerTelegramCore(registry) {
       children:{allowed:false}
     },
     {
-      type:"thinking", name:"Thinking", category:"System",
+      type:"thinking", name:"Thinking", paletteHidden:true, category:"System",
       capabilities:{streaming:true,persistent:false},
       accepts:{properties:[rich("thinking.text", "text", FORMAT_GROUPS.full)]},
       children:{allowed:false}
