@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { PublicationTargetService, publicationAvailability } from "../js/telegram/PublicationTargetService.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 class MemoryDb {
   constructor() { this.data = new Map(); }
@@ -80,7 +81,10 @@ assert.equal((await service.list()).find(item => item.chatId === -2002).status, 
 assert.equal((await service.list()).find(item => item.chatId === -2002).deleteServiceMessages, true,
   "membership updates must preserve the cleanup preference");
 
-await assert.rejects(() => service.setServiceMessageCleanup(-404, true), /не найдены/);
+await assert.rejects(
+  () => service.setServiceMessageCleanup(-404, true),
+  error => error.message === t("telegram.publicationTargetService.channelOrGroupNotFound")
+);
 
 await service.handleMyChatMember({ my_chat_member: {
   chat: { id: -999, type: "channel", title: "Preview" },

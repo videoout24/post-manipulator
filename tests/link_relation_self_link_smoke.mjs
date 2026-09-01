@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js";
 import { LinkingController } from "../js/links/LinkingController.js";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const events = new EventBus();
 const nodes = new Map([
@@ -41,7 +42,7 @@ assert.deepEqual(linking.getTargetSlot(), self);
 // self-link can be written even though the target was selected normally.
 await assert.rejects(
   linking.attachInline({ nodeId: "source", property: "text", start: 0, end: 5 }),
-  /Нельзя связать сообщение с самим собой/
+  error => error.message === t("links.linkingController.cannotLinkAMessageToItself")
 );
 assert.equal(createCalls, 0, "a self-link must not reach persistent storage");
 assert.deepEqual(linking.getTargetSlot(), self, "the card selection is untouched after a rejected self-link");
@@ -81,7 +82,7 @@ const parentPost = {
 await projectLinking.toggleTarget(parentPost);
 await assert.rejects(
   projectLinking.attachBlock({ nodeId: "project-source", text: "Открыть" }),
-  /Нельзя связать сообщение с самим собой/
+  error => error.message === t("links.linkingController.cannotLinkAMessageToItself")
 );
 assert.equal(projectCreateCalls, 0, "a Project post must not link to itself");
 assert.deepEqual(projectLinking.getTargetSlot(), parentPost);

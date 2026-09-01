@@ -1,3 +1,4 @@
+import { getLocale, t } from "../i18n/index.js?v=1.8.0";
 import { DatabaseStateInspector } from "./DatabaseStateInspector.js?v=1.7.1";
 
 export const MAX_RAW_BACKUP_BYTES = 20 * 1024 * 1024;
@@ -15,17 +16,17 @@ export class TelegramBackupService {
   }
 
   async createAndPin() {
-    if (!this.client?.hasToken?.()) throw new Error("Введите токен Telegram для текущей сессии");
+    if (!this.client?.hasToken?.()) throw new Error(t("storage.telegramBackupService.enterTheTelegramTokenForTheCurrent"));
     const owner = await this.ownerBinding?.getOwner?.();
-    if (!owner?.chatId) throw new Error("Сначала привяжите владельца: копия отправляется в его чат с ботом");
+    if (!owner?.chatId) throw new Error(t("storage.telegramBackupService.bindTheOwnerFirstTheCopyIs"));
     const backup = await this.db.exportBackup();
-    if (backup.bytes.byteLength > this.maxRawBytes) throw new Error("Резервная копия больше 20 МБ. Сжатие ZIP пока не добавлено.");
+    if (backup.bytes.byteLength > this.maxRawBytes) throw new Error(t("storage.telegramBackupService.backupIsLargerThan20MBZIP"));
 
     const file = new File([backup.bytes], backup.filename, { type: backup.mimeType || "application/json" });
     const message = await this.client.uploadDocument({
       chatId: owner.chatId,
       file,
-      caption: `Резервная копия Post Manipulator · ${new Date(backup.createdAt).toLocaleString("ru-RU")}`
+      caption: t("storage.telegramBackupService.postManipulatorBackup", { 0: new Date(backup.createdAt).toLocaleString(getLocale()) })
     });
     await this.client.pinChatMessage(owner.chatId, message.message_id);
     const previous = await this.db.get("runtime", LAST_BACKUP_KEY, null);
@@ -93,7 +94,7 @@ export class TelegramBackupService {
   }
 
   async restoreDownloadedFile(file, { sourceBackup = null } = {}) {
-    if (!(file instanceof Blob)) throw new Error("Выберите скачанный файл резервной копии");
+    if (!(file instanceof Blob)) throw new Error(t("storage.telegramBackupService.selectTheDownloadedBackupFile"));
     const result = await this.db.restoreBackup(file);
     const restored = {
       backupCreatedAt: Number(result?.restoredBackupCreatedAt || 0),

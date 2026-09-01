@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const DEFAULT_LIMIT = 80;
 const DEFAULT_CONTEXT_LIMIT = 16;
 const PROPERTY_COALESCE_MS = 700;
@@ -160,12 +161,12 @@ export class EditorSessionHistory {
     if (this.undoButton) {
       this.undoButton.disabled = !canUndo;
       this.undoButton.setAttribute?.("aria-disabled", String(!canUndo));
-      this.undoButton.title = canUndo ? "Отменить изменение (Ctrl/Cmd + Z)" : "Нет изменений для отмены";
+      this.undoButton.title = canUndo ? t("editor.editorSessionHistory.undoChangeCtrlCmdZ") : t("editor.editorSessionHistory.noChangesToUndo");
     }
     if (this.redoButton) {
       this.redoButton.disabled = !canRedo;
       this.redoButton.setAttribute?.("aria-disabled", String(!canRedo));
-      this.redoButton.title = canRedo ? "Повторить изменение (Ctrl/Cmd + Shift + Z)" : "Нет изменений для повтора";
+      this.redoButton.title = canRedo ? t("editor.editorSessionHistory.redoChangeCtrlCmdShiftZ") : t("editor.editorSessionHistory.noChangesToRedo");
     }
   }
 

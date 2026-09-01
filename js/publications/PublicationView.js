@@ -1,3 +1,4 @@
+import { getLocale, t } from "../i18n/index.js?v=1.8.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
@@ -47,7 +48,7 @@ export class PublicationView {
       this.events?.on?.("publication:draft-schedule-requested", draft => this.#showScheduleDraftDialog(draft)),
       this.events?.on?.("telegram:draft-publication-schedule-error", ({ record, message } = {}) => {
         this.notifications?.show?.({
-          message: `Не удалось опубликовать «${record?.source?.title || "отложенный черновик"}»: ${message || "повтор через минуту"}`,
+          message: t("publications.publicationView.failedToPublish", { 0: record?.source?.title || t("publications.publicationView.delayedDraft"), 1: message || t("publications.publicationView.retryInAMinute") }),
           type: "error",
           duration: 7000
         });
@@ -93,9 +94,9 @@ export class PublicationView {
     this.root.innerHTML = "";
     const shell = el("div", "publication-shell");
     const sidebar = el("aside", "publication-sidebar");
-    const add = button("+ Добавить канал / группу", () => this.#startBinding(), "primary publication-add-target");
+    const add = button(t("publications.publicationView.addChannelGroup"), () => this.#startBinding(), "primary publication-add-target");
     const filters = el("div", "publication-filters");
-    for (const [value, label] of [["all", "Все"], ["channel", "Каналы"], ["group", "Группы"]]) {
+    for (const [value, label] of [["all", t("editor.blockPalette.all")], ["channel", t("publications.publicationView.channels")], ["group", t("publications.publicationView.groups")]]) {
       const chip = button(label, () => { this.filter = value; this.render(); }, "publication-filter-chip");
       chip.classList.toggle("active", this.filter === value);
       chip.setAttribute("aria-pressed", String(this.filter === value));
@@ -106,35 +107,35 @@ export class PublicationView {
 
     const visible = this.targets.filter(target => this.filter === "all" || target.type === this.filter);
     const list = el("div", "publication-target-list");
-    if (!visible.length) list.append(el("div", "publication-target-empty", "Подключённых каналов и групп пока нет."));
+    if (!visible.length) list.append(el("div", "publication-target-empty", t("publications.publicationView.noConnectedChannelsAndGroupsYet")));
     for (const target of visible) list.append(this.#targetCard(target));
     sidebar.append(list);
 
     const content = el("section", "publication-content");
-    content.append(el("h1", "", "Публикации"));
+    content.append(el("h1", "", t("publications.publicationView.posts")));
     const filterPanel = el("div", "publication-content-filters");
-    filterPanel.append(this.#contentFilterRow("Статус", [
-      ["all", "Все"], ["published", "Опубликованные"], ["scheduled", "Отложенные"]
+    filterPanel.append(this.#contentFilterRow(t("project.projectLibraryView.status"), [
+      ["all", t("editor.blockPalette.all")], ["published", t("publications.publicationView.published")], ["scheduled", t("publications.publicationView.scheduled")]
     ], this.statusFilter, value => { this.statusFilter = value; this.render(); }));
-    filterPanel.append(this.#contentFilterRow("Источник", [
-      ["all", "Все"], ["draft", "Черновики"], ["project", "Проекты"]
+    filterPanel.append(this.#contentFilterRow(t("gallery.galleryView.source"), [
+      ["all", t("editor.blockPalette.all")], ["draft", t("editor.draftListView.drafts")], ["project", t("project.projectLibraryView.projects")]
     ], this.sourceFilter, value => { this.sourceFilter = value; this.render(); }));
-    filterPanel.append(this.#contentFilterRow("Период", [
-      ["all", "Всё время"], ["today", "Сегодня"], ["7d", "7 дней"], ["month", "Месяц"], ["custom", "Произвольный диапазон"]
+    filterPanel.append(this.#contentFilterRow(t("publications.publicationView.period"), [
+      ["all", t("publications.publicationView.allTime")], ["today", t("publications.publicationView.today")], ["7d", t("publications.publicationView.7Days")], ["month", t("publications.publicationView.month")], ["custom", t("publications.publicationView.customRange")]
     ], this.timeFilter, value => { this.timeFilter = value; this.render(); }));
     if (this.timeFilter === "custom") filterPanel.append(this.#dateRangeEditor());
     content.append(filterPanel);
     const publications = this.#filteredPublications();
     const selectedPublication = this.#normalizePublicationSelection(publications);
     const publicationList = el("div", "publication-record-list");
-    if (!publications.length) publicationList.append(el("p", "publication-content-empty", "Публикаций по выбранным фильтрам пока нет."));
+    if (!publications.length) publicationList.append(el("p", "publication-content-empty", t("publications.publicationView.noPostsForTheSelectedFiltersYet")));
     for (const record of publications) publicationList.append(this.#publicationCard(record));
     content.append(publicationList);
     const leftSplitter = el("div", "layout-splitter publication-splitter");
-    leftSplitter.title = "Изменить ширину панели каналов и групп";
+    leftSplitter.title = t("publications.publicationView.changeTheWidthOfTheChannelsAnd");
     leftSplitter.dataset.publicationSplitter = "left";
     const rightSplitter = el("div", "layout-splitter publication-splitter");
-    rightSplitter.title = "Изменить ширину панели выбранной публикации";
+    rightSplitter.title = t("publications.publicationView.changeTheWidthOfTheSelectedPost");
     rightSplitter.dataset.publicationSplitter = "right";
     shell.append(sidebar, leftSplitter, content, rightSplitter, this.#publicationPostPanel(selectedPublication));
     this.root.append(shell);
@@ -177,17 +178,17 @@ export class PublicationView {
     card.setAttribute("aria-pressed", String(selected));
     const head = el("div", "publication-record-head");
     const identity = el("div", "publication-record-identity");
-    identity.append(el("strong", "", record.source?.title || "Публикация"));
+    identity.append(el("strong", "", record.source?.title || t("editor.draftListView.publication")));
     identity.append(el("span", "", `${record.target?.title || record.chatId} · ${formatPublicationDate(record.scheduledAt || record.publishedAt)}`));
-    if (projectPost) identity.append(el("span", "publication-record-origin project", `Проект · ${record.source?.projectTitle || "Без названия"}`));
-    else if (scheduled) identity.append(el("span", "publication-record-origin", "Черновик · отложенная публикация"));
+    if (projectPost) identity.append(el("span", "publication-record-origin project", t("publications.publicationView.project", { 0: record.source?.projectTitle || t("publications.publicationView.untitled") })));
+    else if (scheduled) identity.append(el("span", "publication-record-origin", t("publications.publicationView.draftScheduledPost")));
     const tools = el("div", "publication-record-tools");
     const edit = button("✎", () => this.#editPublication(record), "publication-record-edit");
-    edit.title = projectPost ? "Открыть Project post в Editor" : scheduled ? "Редактировать отложенную публикацию в Editor" : "Редактировать публикацию в Editor";
+    edit.title = projectPost ? t("publications.publicationView.openProjectPostInEditor") : scheduled ? t("publications.publicationView.editScheduledPostInEditor") : t("publications.publicationView.editPostInEditor");
     const linkTarget = {
       kind: "publication",
       id: record.id,
-      title: record.source?.title || record.target?.title || "Публикация"
+      title: record.source?.title || record.target?.title || t("editor.draftListView.publication")
     };
     const link = createLinkTargetButton(linkTarget, {
       targetKey: this.linkTargetSlotKey,
@@ -197,24 +198,24 @@ export class PublicationView {
     });
     const pin = button("📌", () => this.#togglePinned(record, pin), "publication-record-pin");
     pin.classList.toggle("active", Boolean(record.pinned));
-    pin.title = scheduled ? "Пост ещё не опубликован" : record.pinned ? "Распинить пост" : "Запинить пост";
+    pin.title = scheduled ? t("publications.publicationView.postNotYetPublished") : record.pinned ? t("publications.publicationView.unpinPost") : t("publications.publicationView.pinPost");
     if (!scheduled && record.commentsEnabled && record.discussionMessageId) {
-      pin.title = record.pinned ? "Распинить пост и комментарии" : "Запинить пост и комментарии";
+      pin.title = record.pinned ? t("publications.publicationView.unpinPostAndComments") : t("publications.publicationView.pinPostAndComments");
     }
     const discussionPending = !record.pinned && record.commentsEnabled && !record.discussionMessageId;
-    if (discussionPending) pin.title = "Ожидается сообщение в группе обсуждения";
+    if (discussionPending) pin.title = t("publications.publicationView.messageExpectedInDiscussionGroup");
     pin.setAttribute("aria-label", pin.title);
     pin.setAttribute("aria-pressed", String(Boolean(record.pinned)));
     pin.disabled = scheduled || discussionPending;
     const open = button("👁", () => this.#openMessage(record), "publication-record-open");
-    open.title = scheduled ? "Пост ещё не опубликован" : "Открыть сообщение в Telegram";
+    open.title = scheduled ? t("publications.publicationView.postNotYetPublished") : t("publications.publicationView.openMessageInTelegram");
     open.disabled = scheduled;
     const remove = button("🗑", () => this.#requestPublicationRemoval(card, record, remove), "publication-record-delete");
     remove.title = scheduled
-      ? "Отменить отложенную публикацию"
+      ? t("project.projectPostCard.cancelTheScheduledPublication")
       : isPublicationDeleteAvailable(record)
-      ? (projectPost ? "Удалить Project post из Telegram и вернуть его в черновик" : "Удалить сообщение из Telegram")
-      : "Проверить публикацию и при необходимости убрать локальную проекцию";
+      ? (projectPost ? t("publications.publicationView.deleteProjectPostFromTelegramAndReturn") : t("publications.publicationView.deleteMessageFromTelegram"))
+      : t("publications.publicationView.checkPublicationAndIfNecessaryRemoveLocal");
     tools.append(edit, link, pin, open, remove);
     head.append(identity, tools);
     const reactionRow = el("div", "publication-reaction-row");
@@ -228,7 +229,7 @@ export class PublicationView {
     }
     if (record.commentsEnabled) {
       const comments = button("💬", () => this.#openDiscussion(record), "publication-comment-badge");
-      comments.title = record.discussionMessageId ? "Открыть обсуждение" : "Ожидается сообщение в группе обсуждения";
+      comments.title = record.discussionMessageId ? t("publications.publicationView.openDiscussion") : t("publications.publicationView.messageExpectedInDiscussionGroup");
       comments.setAttribute("aria-label", comments.title);
       comments.disabled = !record.discussionMessageId;
       stats.append(comments);
@@ -265,10 +266,10 @@ export class PublicationView {
 
   #publicationPostPanel(record) {
     const panel = el("aside", `publication-post-panel${record ? " visible" : ""}`);
-    panel.setAttribute("aria-label", "Данные выбранной публикации");
+    panel.setAttribute("aria-label", t("publications.publicationView.dataOfSelectedPost"));
     if (!record) {
       const empty = el("div", "post-detail-panel-empty");
-      empty.append(el("strong", "", "Выберите публикацию"), el("span", "", "Здесь появятся данные выбранного поста."));
+      empty.append(el("strong", "", t("publications.publicationView.selectAPost")), el("span", "", t("project.projectLibraryView.dataOfTheSelectedPostWillAppear")));
       panel.append(empty);
       return panel;
     }
@@ -277,45 +278,45 @@ export class PublicationView {
     const heading = el("div", "post-detail-panel-heading");
     const projectPost = record.source?.kind === "project";
     heading.append(
-      el("span", "post-detail-panel-kicker", projectPost ? "Пост проекта" : record.scheduledAt ? "Отложенный черновик" : "Публикация"),
-      el("h2", "", record.source?.title || record.target?.title || "Публикация"),
-      el("span", `post-detail-panel-state ${record.scheduledAt ? "scheduled" : "published"}`, record.scheduledAt ? "Запланирована" : "Опубликована")
+      el("span", "post-detail-panel-kicker", projectPost ? t("editor.projectPostListView.projectPost") : record.scheduledAt ? t("publications.publicationView.scheduledDraft") : t("editor.draftListView.publication")),
+      el("h2", "", record.source?.title || record.target?.title || t("editor.draftListView.publication")),
+      el("span", `post-detail-panel-state ${record.scheduledAt ? "scheduled" : "published"}`, record.scheduledAt ? t("publications.publicationView.scheduled2") : t("publications.publicationView.published2"))
     );
     const close = button("×", () => {
       this.selectedPublicationId = null;
       this.publicationSelectionDismissed = true;
       this.render();
     }, "post-detail-panel-close");
-    close.title = "Закрыть панель выбранной публикации";
+    close.title = t("publications.publicationView.closeSelectedPostPanel");
     close.setAttribute("aria-label", close.title);
     head.append(heading, close);
 
     const actions = el("div", "post-detail-panel-actions");
-    const edit = button(projectPost ? "Открыть в Editor" : "Редактировать", () => this.#editPublication(record));
-    const open = button("Открыть в Telegram", () => this.#openMessage(record), "primary");
+    const edit = button(projectPost ? t("project.projectLibraryView.openInEditor2") : t("publications.publicationView.edit"), () => this.#editPublication(record));
+    const open = button(t("publications.publicationView.openInTelegram"), () => this.#openMessage(record), "primary");
     open.disabled = Boolean(record.scheduledAt);
     actions.append(edit, open);
     if (record.scheduledAt) {
-      actions.append(button("Отменить отложку", () => this.#cancelScheduledPublication(record)));
+      actions.append(button(t("project.projectPostCard.cancelTheScheduling"), () => this.#cancelScheduledPublication(record)));
     }
     if (record.commentsEnabled && record.discussionMessageId) {
-      actions.append(button("Обсуждение", () => this.#openDiscussion(record)));
+      actions.append(button(t("publications.publicationView.discussion"), () => this.#openDiscussion(record)));
     }
 
     const data = el("dl", "post-detail-panel-data");
-    if (projectPost) appendDetailData(data, "Проект", record.source?.projectTitle || "—");
-    appendDetailData(data, "Канал", record.target?.title || String(record.chatId || "—"));
-    appendDetailData(data, "Тип", record.target?.type === "group" ? "Группа" : "Канал");
-    appendDetailData(data, record.scheduledAt ? "Запланирована" : "Опубликована", formatPublicationDate(record.scheduledAt || record.publishedAt));
-    appendDetailData(data, "Telegram ID", record.messageId ? String(record.messageId) : "—");
-    appendDetailData(data, "Блоки", String(countAstBlocks(record.messageAst)));
-    appendDetailData(data, "Реакции", formatCount(record.reactionCount || reactionTotal(record.reactions)));
-    appendDetailData(data, "Комментарии", record.commentsEnabled ? formatCount(record.commentCount) : "Отключены");
+    if (projectPost) appendDetailData(data, t("project.projectLibraryView.project"), record.source?.projectTitle || "—");
+    appendDetailData(data, t("publications.publicationView.channel"), record.target?.title || String(record.chatId || "—"));
+    appendDetailData(data, t("gallery.galleryView.type2"), record.target?.type === "group" ? t("publications.publicationView.group") : t("publications.publicationView.channel"));
+    appendDetailData(data, record.scheduledAt ? t("publications.publicationView.scheduled2") : t("publications.publicationView.published2"), formatPublicationDate(record.scheduledAt || record.publishedAt));
+    appendDetailData(data, t("publications.publicationView.telegramId"), record.messageId ? String(record.messageId) : "—");
+    appendDetailData(data, t("editor.editorWorkspaceView.blocks"), String(countAstBlocks(record.messageAst)));
+    appendDetailData(data, t("publications.publicationView.reactions"), formatCount(record.reactionCount || reactionTotal(record.reactions)));
+    appendDetailData(data, t("publications.publicationView.comments"), record.commentsEnabled ? formatCount(record.commentCount) : t("publications.publicationView.disabled"));
     const deleteHours = publicationDeleteHoursLeft(record);
-    appendDetailData(data, "Удаление", record.scheduledAt ? "Появится после публикации" : (deleteHours ? `Доступно ещё ${deleteHours} ч` : "Недоступно после 48 ч"));
+    appendDetailData(data, t("publications.publicationView.deletion"), record.scheduledAt ? t("publications.publicationView.willAppearAfterPublication") : (deleteHours ? t("publications.publicationView.availableForAnotherH", { 0: deleteHours }) : t("publications.publicationView.unavailableAfter48H")));
 
     const content = el("section", "post-detail-panel-content publication-detail-content");
-    content.append(el("h3", "", "Содержимое"));
+    content.append(el("h3", "", t("core.propertyRegistry.content")));
     content.append(el("p", "publication-detail-summary", summarizePublication(record.messageAst)));
 
     panel.append(head, actions, data, content);
@@ -339,12 +340,12 @@ export class PublicationView {
     try {
       const updated = await this.telegramCore.publications.setPinned(record.id, !record.pinned);
       this.notifications?.show?.({
-        message: updated.pinned ? "Пост закреплён" : "Пост откреплён",
+        message: updated.pinned ? t("publications.publicationView.postPinned") : t("publications.publicationView.postUnpinned"),
         type: "success"
       });
       return true;
     } catch (error) {
-      this.notifications?.show?.({ message: `Закрепление: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.pinning", { 0: error?.message || error }), type: "error" });
       return false;
     } finally {
       if (pinButton.isConnected) pinButton.disabled = false;
@@ -354,7 +355,7 @@ export class PublicationView {
   async #editPublication(record) {
     try {
       if (record.source?.kind === "project") {
-        if (!this.documents?.openProjectPost) throw new Error("Editor не может открыть Project post");
+        if (!this.documents?.openProjectPost) throw new Error(t("publications.publicationView.editorCannotOpenProjectPost"));
         await this.documents.openProjectPost(record.source.projectId, record.source.postId);
         document.querySelector('[data-tab="editor"]')?.click?.();
         return true;
@@ -363,7 +364,7 @@ export class PublicationView {
       await this.events?.emitAsync?.("publication:edit-draft-requested", draft);
       document.querySelector('[data-tab="editor"]')?.click?.();
     } catch (error) {
-      this.notifications?.show?.({ message: `Редактирование: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.edit2", { 0: error?.message || error }), type: "error" });
     }
   }
 
@@ -378,7 +379,7 @@ export class PublicationView {
     try {
       const projectMissing = await this.#isProjectSourceMissing(record);
       if (record.source?.kind === "project" && !projectMissing) {
-        if (!this.projectPublications?.unpublishPost) throw new Error("Удаление Project publication не подключено");
+        if (!this.projectPublications?.unpublishPost) throw new Error(t("publications.publicationView.deletionProjectPublicationNotConnected"));
         await this.projectPublications.unpublishPost(record.source.projectId, record.source.postId);
       } else {
         await this.telegramCore.publications.delete(record.id);
@@ -387,7 +388,7 @@ export class PublicationView {
       this.render();
     }
     catch (error) {
-      this.notifications?.show?.({ message: `Удаление: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.delete", { 0: error?.message || error }), type: "error" });
       return false;
     }
   }
@@ -397,15 +398,15 @@ export class PublicationView {
     if (record.scheduledAt) {
       if (projectMissing) {
         showCardDeleteConfirmation(card, {
-          message: `Project для отложенной публикации «${record.source?.title || "Пост"}» уже не найден. Убрать локальную запись?`,
-          confirmLabel: "Убрать локально",
+          message: t("publications.publicationView.projectForDelayedPublicationWasNotFound", { 0: record.source?.title || t("editor.blockInspector.post") }),
+          confirmLabel: t("publications.publicationView.removeLocally"),
           onConfirm: () => this.#discardLocalPublication(record)
         });
         return;
       }
       showCardDeleteConfirmation(card, {
-        message: `Отменить отложенную публикацию «${record.source?.title || "Пост"}»?`,
-        confirmLabel: "Отменить",
+        message: t("publications.publicationView.cancelDelayedPublication", { 0: record.source?.title || t("editor.blockInspector.post") }),
+        confirmLabel: t("publications.publicationView.cancel"),
         onConfirm: () => this.#cancelScheduledPublication(record)
       });
       return;
@@ -413,8 +414,8 @@ export class PublicationView {
     if (isPublicationDeleteAvailable(record)) {
       showCardDeleteConfirmation(card, {
         message: record.source?.kind === "project" && !projectMissing
-          ? `Удалить Project post «${record.source?.title || "Пост"}» из Telegram?`
-          : `Удалить публикацию «${record.source?.title || "Публикация"}» из Telegram?`,
+          ? t("publications.publicationView.deleteProjectPostFromTelegram", { 0: record.source?.title || t("editor.blockInspector.post") })
+          : t("publications.publicationView.deletePublicationFromTelegram", { 0: record.source?.title || t("editor.draftListView.publication") }),
         onConfirm: () => this.#deletePublication(record)
       });
       return;
@@ -425,16 +426,16 @@ export class PublicationView {
       const result = record.source?.kind === "project" && !projectMissing
         ? await this.projectPublications?.checkExpiredUnpublish?.(record.source.projectId, record.source.postId)
         : await this.telegramCore.publications.checkExpiredDeletion?.(record.id);
-      if (!result) throw new Error("Проверка публикации не подключена");
+      if (!result) throw new Error(t("publications.publicationView.publicationCheckNotConnected"));
       if (result.remoteState === "deleted") {
         this.publications = await this.telegramCore.publications.list();
         this.render();
-        this.notifications?.show?.({ message: "Сообщение удалено из Telegram, локальная проекция очищена", type: "success" });
+        this.notifications?.show?.({ message: t("publications.publicationView.messageDeletedFromTelegramLocalProjectionCleared"), type: "success" });
         return;
       }
       this.#showExpiredRemovalConfirmation(card, record, result.remoteState);
     } catch (error) {
-      this.notifications?.show?.({ message: `Проверка публикации: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.publicationCheck", { 0: error?.message || error }), type: "error" });
     } finally {
       if (removeButton.isConnected) removeButton.disabled = false;
     }
@@ -442,13 +443,13 @@ export class PublicationView {
 
   #showExpiredRemovalConfirmation(card, record, remoteState) {
     const projectPost = record.source?.kind === "project";
-    const title = projectPost ? "Project post" : "Публикация";
+    const title = projectPost ? t("editor.projectPostListView.projectPost") : t("editor.draftListView.publication");
     const message = remoteState === "present"
-      ? `${title} всё ещё есть в Telegram, но прошло 48 часов и бот не может его удалить. Убрать локальную проекцию? Сообщение останется в Telegram, и управление публикацией будет потеряно.`
-      : `${title} больше не найден в Telegram. Убрать локальную проекцию? Это действие не восстановит сообщение в канале или группе.`;
+      ? t("publications.publicationView.isStillInTelegramBut48Hours", { 0: title })
+      : t("publications.publicationView.noLongerFoundInTelegramRemoveLocal", { 0: title });
     showCardDeleteConfirmation(card, {
       message,
-      confirmLabel: "Убрать локально",
+      confirmLabel: t("publications.publicationView.removeLocally"),
       onConfirm: () => this.#discardLocalPublication(record)
     });
   }
@@ -457,17 +458,17 @@ export class PublicationView {
     try {
       const projectMissing = await this.#isProjectSourceMissing(record);
       if (record.source?.kind === "project" && !projectMissing) {
-        if (!this.projectPublications?.discardPostProjection) throw new Error("Локальная очистка Project publication не подключена");
+        if (!this.projectPublications?.discardPostProjection) throw new Error(t("publications.publicationView.localProjectPublicationCleanupIsNotConnected"));
         await this.projectPublications.discardPostProjection(record.source.projectId, record.source.postId);
       } else {
-        if (!this.telegramCore.publications.discardLocal) throw new Error("Локальная очистка публикации не подключена");
+        if (!this.telegramCore.publications.discardLocal) throw new Error(t("publications.publicationView.localPublicationCleanupIsNotConnected"));
         await this.telegramCore.publications.discardLocal(record.id);
       }
       this.publications = await this.telegramCore.publications.list();
       this.render();
       return true;
     } catch (error) {
-      this.notifications?.show?.({ message: `Локальная очистка: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.localCleanup", { 0: error?.message || error }), type: "error" });
       return false;
     }
   }
@@ -475,21 +476,21 @@ export class PublicationView {
   async #cancelScheduledPublication(record) {
     try {
       if (record.source?.kind === "project") {
-        if (!this.projectPublications?.cancelPostSchedule) throw new Error("Отмена отложенной публикации Project не подключена");
+        if (!this.projectPublications?.cancelPostSchedule) throw new Error(t("publications.publicationView.cancelOfPostponedProjectPublicationIsNot"));
         await this.projectPublications.cancelPostSchedule(record.source.projectId, record.source.postId);
       } else {
-        if (!this.telegramCore.publications.cancelDraftSchedule) throw new Error("Отмена отложенного черновика не подключена");
+        if (!this.telegramCore.publications.cancelDraftSchedule) throw new Error(t("publications.publicationView.cancelOfPostponedDraftIsNotConnected"));
         await this.telegramCore.publications.cancelDraftSchedule(record.id);
       }
       this.publications = await this.telegramCore.publications.list();
       this.render();
       this.notifications?.show?.({
-        message: record.source?.kind === "project" ? "Отложенная публикация отменена" : "Отложка отменена, материал возвращён в черновики",
+        message: record.source?.kind === "project" ? t("publications.publicationView.postponedPublicationCanceled") : t("publications.publicationView.delayCanceledMaterialReturnedToDrafts"),
         type: "success"
       });
       return true;
     } catch (error) {
-      this.notifications?.show?.({ message: `Отложенная публикация: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.postponedPublication", { 0: error?.message || error }), type: "error" });
       return false;
     }
   }
@@ -503,7 +504,7 @@ export class PublicationView {
   #showPublishDraftDialog(draft) {
     const targets = this.targets.filter(target => target.status === "ready");
     if (!targets.length) {
-      this.notifications?.show?.({ message: "Сначала подключите доступный канал или группу", type: "warning" });
+      this.notifications?.show?.({ message: t("publications.publicationView.firstConnectAnAvailableChannelOrGroup"), type: "warning" });
       return;
     }
     const dialog = document.createElement("dialog");
@@ -511,16 +512,16 @@ export class PublicationView {
     const form = document.createElement("form");
     form.method = "dialog";
     const head = el("div", "dialog-head");
-    head.append(el("strong", "", "Опубликовать черновик"), button("×", () => dialog.close("cancel")));
+    head.append(el("strong", "", t("editor.draftListView.publishDraft")), button("×", () => dialog.close("cancel")));
     const body = el("div", "publication-draft-dialog-body");
-    body.append(el("strong", "publication-draft-title", draft.title || "Черновик"));
+    body.append(el("strong", "publication-draft-title", draft.title || t("editor.draftListView.draft")));
     const field = el("label", "publication-draft-target-field");
-    field.append(el("span", "", "Канал или группа"));
+    field.append(el("span", "", t("publications.publicationView.channelOrGroup")));
     const select = document.createElement("select");
     for (const target of targets) {
       const option = document.createElement("option");
       option.value = String(target.chatId);
-      option.textContent = `${target.type === "channel" ? "Канал" : "Группа"} · ${target.title}`;
+      option.textContent = `${target.type === "channel" ? t("publications.publicationView.channel") : t("publications.publicationView.group")} · ${target.title}`;
       select.append(option);
     }
     field.append(select);
@@ -528,19 +529,19 @@ export class PublicationView {
     const comments = document.createElement("input");
     comments.type = "checkbox";
     comments.checked = true;
-    commentsField.append(comments, el("span", "", "Комментарии включены"));
+    commentsField.append(comments, el("span", "", t("publications.publicationView.commentsEnabled")));
     const syncComments = () => {
       const target = targets.find(item => Number(item.chatId) === Number(select.value));
       commentsField.hidden = !(target?.type === "channel" && target.commentsEnabled);
       comments.checked = !commentsField.hidden;
       comments.disabled = commentsField.hidden;
-      commentsField.title = "Снимите флажок, чтобы удалить сообщение поста из группы обсуждения";
+      commentsField.title = t("publications.publicationView.uncheckToRemoveThePostMessageFrom");
     };
     select.onchange = syncComments;
     syncComments();
     const actions = el("div", "format-config-actions");
-    const cancel = button("Отмена", () => dialog.close("cancel"));
-    const publish = button("Опубликовать", async () => {
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+    const publish = button(t("editor.draftListView.publish"), async () => {
       publish.disabled = cancel.disabled = select.disabled = true;
       try {
         const targetChatId = Number(select.value);
@@ -550,11 +551,11 @@ export class PublicationView {
         dialog.close("published");
         document.querySelector('[data-tab="publications"]')?.click?.();
         this.render();
-        this.notifications?.show?.({ message: `Опубликовано: ${draft.title}`, type: "success" });
+        this.notifications?.show?.({ message: t("publications.publicationView.published3", { 0: draft.title }), type: "success" });
       } catch (error) {
         publish.disabled = cancel.disabled = select.disabled = false;
         syncComments();
-        this.notifications?.show?.({ message: `Публикация: ${error?.message || error}`, type: "error" });
+        this.notifications?.show?.({ message: t("publications.publicationView.publication", { 0: error?.message || error }), type: "error" });
       }
     }, "primary");
     actions.append(cancel, publish);
@@ -569,11 +570,11 @@ export class PublicationView {
   #showScheduleDraftDialog(draft) {
     const targets = this.targets.filter(target => target.status === "ready");
     if (!this.telegramCore?.publications?.scheduleDraft) {
-      this.notifications?.show?.({ message: "Отложенная публикация черновиков не подключена", type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.postponedDraftPublicationIsNotConnected"), type: "error" });
       return;
     }
     if (!draft?.id || !targets.length) {
-      this.notifications?.show?.({ message: "Сначала подключите доступный канал или группу", type: "warning" });
+      this.notifications?.show?.({ message: t("publications.publicationView.firstConnectAnAvailableChannelOrGroup"), type: "warning" });
       return;
     }
     const dialog = document.createElement("dialog");
@@ -581,23 +582,23 @@ export class PublicationView {
     const form = document.createElement("form");
     form.method = "dialog";
     const head = el("div", "dialog-head");
-    head.append(el("strong", "", "Отложить черновик"), button("×", () => dialog.close("cancel")));
+    head.append(el("strong", "", t("publications.publicationView.postponeDraft")), button("×", () => dialog.close("cancel")));
     const body = el("div", "publication-draft-dialog-body");
-    body.append(el("strong", "publication-draft-title", draft.title || "Черновик"));
+    body.append(el("strong", "publication-draft-title", draft.title || t("editor.draftListView.draft")));
 
     const targetField = el("label", "publication-draft-target-field");
-    targetField.append(el("span", "", "Канал или группа"));
+    targetField.append(el("span", "", t("publications.publicationView.channelOrGroup")));
     const targetSelect = document.createElement("select");
     for (const target of targets) {
       const option = document.createElement("option");
       option.value = String(target.chatId);
-      option.textContent = `${target.type === "channel" ? "Канал" : "Группа"} · ${target.title}`;
+      option.textContent = `${target.type === "channel" ? t("publications.publicationView.channel") : t("publications.publicationView.group")} · ${target.title}`;
       targetSelect.append(option);
     }
     targetField.append(targetSelect);
 
     const timeField = el("label", "publication-draft-target-field");
-    timeField.append(el("span", "", "Дата и время"));
+    timeField.append(el("span", "", t("core.propertyRegistry.dateAndTime")));
     const time = document.createElement("input");
     time.type = "datetime-local";
     time.step = "60";
@@ -606,25 +607,25 @@ export class PublicationView {
     timeField.append(time);
 
     const commentsField = el("label", "publication-comments-option");
-    commentsField.append(el("span", "", "Комментарии"));
+    commentsField.append(el("span", "", t("publications.publicationView.comments")));
     const comments = document.createElement("select");
-    comments.append(new Option("Включены", "enabled"), new Option("Отключены", "disabled"));
+    comments.append(new Option(t("publications.publicationView.enabled"), "enabled"), new Option(t("publications.publicationView.disabled"), "disabled"));
     commentsField.append(comments);
     const syncComments = () => {
       const target = targets.find(item => Number(item.chatId) === Number(targetSelect.value));
       commentsField.hidden = !(target?.type === "channel" && target.commentsEnabled);
       comments.disabled = commentsField.hidden;
-      commentsField.title = "Чтобы отключить комментарии, боту нужно право удалять сообщения в группе обсуждения";
+      commentsField.title = t("publications.publicationView.toDisableCommentsTheBotNeedsPermission");
     };
     targetSelect.onchange = syncComments;
     syncComments();
 
     const actions = el("div", "format-config-actions");
-    const cancel = button("Отмена", () => dialog.close("cancel"));
-    const schedule = button("Отложить", async () => {
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+    const schedule = button(t("editor.draftListView.postpone"), async () => {
       const scheduledAt = new Date(time.value).getTime();
       if (!Number.isFinite(scheduledAt) || scheduledAt <= Date.now()) {
-        time.setCustomValidity("Укажите время в будущем");
+        time.setCustomValidity(t("publications.publicationView.specifyAFutureTime"));
         time.reportValidity();
         return;
       }
@@ -645,11 +646,11 @@ export class PublicationView {
         dialog.close("scheduled");
         document.querySelector('[data-tab="publications"]')?.click?.();
         this.render();
-        this.notifications?.show?.({ message: `Отложено: ${draft.title || "Черновик"}`, type: "success" });
+        this.notifications?.show?.({ message: t("publications.publicationView.postponed", { 0: draft.title || t("editor.draftListView.draft") }), type: "success" });
       } catch (error) {
         schedule.disabled = cancel.disabled = targetSelect.disabled = time.disabled = false;
         syncComments();
-        this.notifications?.show?.({ message: `Отложенная публикация: ${error?.message || error}`, type: "error", duration: 7000 });
+        this.notifications?.show?.({ message: t("publications.publicationView.postponedPublication", { 0: error?.message || error }), type: "error", duration: 7000 });
       }
     }, "primary");
     actions.append(cancel, schedule);
@@ -665,11 +666,11 @@ export class PublicationView {
   #showPublishProjectDialog(project, post = null) {
     const targets = this.targets.filter(target => target.status === "ready");
     if (!this.projectPublications) {
-      this.notifications?.show?.({ message: "Production-публикация Project не подключена", type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.productionProjectPublicationIsNotConnected"), type: "error" });
       return;
     }
     if (!targets.length) {
-      this.notifications?.show?.({ message: "Сначала подключите доступный канал или группу", type: "warning" });
+      this.notifications?.show?.({ message: t("publications.publicationView.firstConnectAnAvailableChannelOrGroup"), type: "warning" });
       return;
     }
 
@@ -677,7 +678,7 @@ export class PublicationView {
       .map(post => Number(post.deployments?.production?.chatId || post.schedule?.chatId || 0))
       .filter(Boolean))];
     if (productionChatIds.length > 1) {
-      this.notifications?.show?.({ message: "В Project уже есть несколько production-каналов", type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.theProjectAlreadyHasSeveralProductionChannels"), type: "error" });
       return;
     }
     const lockedTargetId = productionChatIds[0] || null;
@@ -687,19 +688,19 @@ export class PublicationView {
     form.method = "dialog";
     const head = el("div", "dialog-head");
     const singlePost = Boolean(post?.id);
-    head.append(el("strong", "", singlePost ? "Опубликовать пост проекта" : "Опубликовать проект"), button("×", () => dialog.close("cancel")));
+    head.append(el("strong", "", singlePost ? t("publications.publicationView.publishTheProjectPost") : t("project.projectLibraryView.publishProject")), button("×", () => dialog.close("cancel")));
     const body = el("div", "publication-draft-dialog-body");
-    body.append(el("strong", "publication-draft-title", singlePost ? `${project?.title || "Проект"} · ${post.title || "Пост"}` : (project?.title || "Проект")));
+    body.append(el("strong", "publication-draft-title", singlePost ? `${project?.title || t("project.projectLibraryView.project")} · ${post.title || t("editor.blockInspector.post")}` : (project?.title || t("project.projectLibraryView.project"))));
     body.append(el("p", "", singlePost
-      ? "При публикации связанная Post Map автоматически обновится рабочей Telegram-ссылкой."
-      : "Посты с Post Map будут опубликованы первыми; затем сервис свяжет все Map и Back to Map реальными Telegram-ссылками."));
+      ? t("publications.publicationView.whenPublishingTheLinkedPostMapWill")
+      : t("publications.publicationView.postsWithAPostMapWillBe")));
     const field = el("label", "publication-draft-target-field");
-    field.append(el("span", "", "Канал или группа"));
+    field.append(el("span", "", t("publications.publicationView.channelOrGroup")));
     const select = document.createElement("select");
     for (const target of targets) {
       const option = document.createElement("option");
       option.value = String(target.chatId);
-      option.textContent = `${target.type === "channel" ? "Канал" : "Группа"} · ${target.title}`;
+      option.textContent = `${target.type === "channel" ? t("publications.publicationView.channel") : t("publications.publicationView.group")} · ${target.title}`;
       option.selected = Number(target.chatId) === Number(lockedTargetId);
       select.append(option);
     }
@@ -707,29 +708,29 @@ export class PublicationView {
       const selectedTarget = targets.find(target => Number(target.chatId) === Number(lockedTargetId));
       if (!selectedTarget) {
         dialog.remove();
-        this.notifications?.show?.({ message: "Production-канал Project больше недоступен", type: "error" });
+        this.notifications?.show?.({ message: t("publications.publicationView.theProjectProductionChannelIsNoLonger"), type: "error" });
         return;
       }
       select.disabled = true;
-      field.append(el("span", "publication-project-target-lock", "Канал закреплён за уже опубликованными постами проекта."));
+      field.append(el("span", "publication-project-target-lock", t("publications.publicationView.theChannelIsTiedToAlreadyPublished")));
     }
     field.append(select);
     const commentsField = el("label", "publication-comments-option");
     const disableComments = document.createElement("input");
     disableComments.type = "checkbox";
-    commentsField.append(disableComments, el("span", "", "Отключить комментарии"));
+    commentsField.append(disableComments, el("span", "", t("publications.publicationView.disableComments")));
     const syncComments = () => {
       const target = targets.find(item => Number(item.chatId) === Number(select.value));
       commentsField.hidden = !(target?.type === "channel" && target.commentsEnabled);
       disableComments.checked = false;
       disableComments.disabled = commentsField.hidden;
-      commentsField.title = "Бот удалит технические сообщения постов из группы обсуждения";
+      commentsField.title = t("publications.publicationView.theBotWillDeleteTechnicalPostMessages");
     };
     select.onchange = syncComments;
     syncComments();
     const actions = el("div", "format-config-actions");
-    const cancel = button("Отмена", () => dialog.close("cancel"));
-    const publish = button(lockedTargetId ? (singlePost ? "Опубликовать пост" : "Продолжить публикацию") : (singlePost ? "Опубликовать пост" : "Опубликовать проект"), async () => {
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+    const publish = button(lockedTargetId ? (singlePost ? t("publications.publicationView.publishPost") : t("publications.publicationView.continuePublishing")) : (singlePost ? t("publications.publicationView.publishPost") : t("project.projectLibraryView.publishProject")), async () => {
       publish.disabled = cancel.disabled = true;
       const wasDisabled = select.disabled;
       select.disabled = true;
@@ -745,12 +746,12 @@ export class PublicationView {
         dialog.close("published");
         document.querySelector('[data-tab="publications"]')?.click?.();
         this.render();
-        this.notifications?.show?.({ message: singlePost ? `Опубликован: ${post.title || "Пост"}` : `Опубликован проект: ${project.title}`, type: "success" });
+        this.notifications?.show?.({ message: singlePost ? t("publications.publicationView.published4", { 0: post.title || t("editor.blockInspector.post") }) : t("publications.publicationView.projectPublished", { 0: project.title }), type: "success" });
       } catch (error) {
         publish.disabled = cancel.disabled = false;
         select.disabled = wasDisabled;
         syncComments();
-        this.notifications?.show?.({ message: `Project: ${error?.message || error}`, type: "error", duration: 7000 });
+        this.notifications?.show?.({ message: t("publications.publicationView.projectError", { 0: error?.message || error }), type: "error", duration: 7000 });
       }
     }, "primary");
     actions.append(cancel, publish);
@@ -765,18 +766,18 @@ export class PublicationView {
   #showScheduleProjectPostDialog(project, post) {
     const targets = this.targets.filter(target => target.status === "ready");
     if (!this.projectPublications?.schedulePost) {
-      this.notifications?.show?.({ message: "Отложенная публикация Project не подключена", type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.delayedProjectPublicationIsNotConnected"), type: "error" });
       return;
     }
     if (!project?.id || !post?.id || !targets.length) {
-      this.notifications?.show?.({ message: "Сначала подключите доступный канал или группу", type: "warning" });
+      this.notifications?.show?.({ message: t("publications.publicationView.firstConnectAnAvailableChannelOrGroup"), type: "warning" });
       return;
     }
     const targetChatIds = [...new Set((project.posts || [])
       .map(item => Number(item.deployments?.production?.chatId || item.schedule?.chatId || 0))
       .filter(Boolean))];
     if (targetChatIds.length > 1) {
-      this.notifications?.show?.({ message: "В Project уже есть несколько production-каналов", type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.theProjectAlreadyHasSeveralProductionChannels"), type: "error" });
       return;
     }
     const lockedTargetId = targetChatIds[0] || null;
@@ -785,33 +786,33 @@ export class PublicationView {
     const form = document.createElement("form");
     form.method = "dialog";
     const head = el("div", "dialog-head");
-    head.append(el("strong", "", "Отложить публикацию"), button("×", () => dialog.close("cancel")));
+    head.append(el("strong", "", t("publications.publicationView.delayPublication")), button("×", () => dialog.close("cancel")));
     const body = el("div", "publication-draft-dialog-body");
-    body.append(el("strong", "publication-draft-title", `${project.title || "Проект"} · ${post.title || "Пост"}`));
+    body.append(el("strong", "publication-draft-title", `${project.title || t("project.projectLibraryView.project")} · ${post.title || t("editor.blockInspector.post")}`));
 
     const targetField = el("label", "publication-draft-target-field");
-    targetField.append(el("span", "", "Канал или группа"));
+    targetField.append(el("span", "", t("publications.publicationView.channelOrGroup")));
     const targetSelect = document.createElement("select");
     for (const target of targets) {
       const option = document.createElement("option");
       option.value = String(target.chatId);
-      option.textContent = `${target.type === "channel" ? "Канал" : "Группа"} · ${target.title}`;
+      option.textContent = `${target.type === "channel" ? t("publications.publicationView.channel") : t("publications.publicationView.group")} · ${target.title}`;
       option.selected = Number(target.chatId) === Number(lockedTargetId);
       targetSelect.append(option);
     }
     if (lockedTargetId) {
       if (!targets.some(target => Number(target.chatId) === Number(lockedTargetId))) {
         dialog.remove();
-        this.notifications?.show?.({ message: "Production-канал Project больше недоступен", type: "error" });
+        this.notifications?.show?.({ message: t("publications.publicationView.theProjectProductionChannelIsNoLonger"), type: "error" });
         return;
       }
       targetSelect.disabled = true;
-      targetField.append(el("span", "publication-project-target-lock", "Канал закреплён за другими постами проекта."));
+      targetField.append(el("span", "publication-project-target-lock", t("publications.publicationView.theChannelIsTiedToOtherProject")));
     }
     targetField.append(targetSelect);
 
     const timeField = el("label", "publication-draft-target-field");
-    timeField.append(el("span", "", "Дата и время"));
+    timeField.append(el("span", "", t("core.propertyRegistry.dateAndTime")));
     const time = document.createElement("input");
     time.type = "datetime-local";
     time.step = "60";
@@ -820,25 +821,25 @@ export class PublicationView {
     timeField.append(time);
 
     const commentsField = el("label", "publication-comments-option");
-    commentsField.append(el("span", "", "Комментарии"));
+    commentsField.append(el("span", "", t("publications.publicationView.comments")));
     const comments = document.createElement("select");
-    comments.append(new Option("Включены", "enabled"), new Option("Отключены", "disabled"));
+    comments.append(new Option(t("publications.publicationView.enabled"), "enabled"), new Option(t("publications.publicationView.disabled"), "disabled"));
     commentsField.append(comments);
     const syncComments = () => {
       const target = targets.find(item => Number(item.chatId) === Number(targetSelect.value));
       commentsField.hidden = !(target?.type === "channel" && target.commentsEnabled);
       comments.disabled = commentsField.hidden;
-      commentsField.title = "Чтобы отключить комментарии, боту нужно право удалять сообщения в группе обсуждения";
+      commentsField.title = t("publications.publicationView.toDisableCommentsTheBotNeedsPermission");
     };
     targetSelect.onchange = syncComments;
     syncComments();
 
     const actions = el("div", "format-config-actions");
-    const cancel = button("Отмена", () => dialog.close("cancel"));
-    const schedule = button("Отложить", async () => {
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+    const schedule = button(t("editor.draftListView.postpone"), async () => {
       const scheduledAt = new Date(time.value).getTime();
       if (!Number.isFinite(scheduledAt) || scheduledAt <= Date.now()) {
-        time.setCustomValidity("Укажите время в будущем");
+        time.setCustomValidity(t("publications.publicationView.specifyAFutureTime"));
         time.reportValidity();
         return;
       }
@@ -857,12 +858,12 @@ export class PublicationView {
         this.sourceFilter = "project";
         dialog.close("scheduled");
         this.render();
-        this.notifications?.show?.({ message: `Отложено: ${post.title || "Пост"}`, type: "success" });
+        this.notifications?.show?.({ message: t("publications.publicationView.postponed", { 0: post.title || t("editor.blockInspector.post") }), type: "success" });
       } catch (error) {
         schedule.disabled = cancel.disabled = time.disabled = false;
         targetSelect.disabled = targetWasDisabled;
         syncComments();
-        this.notifications?.show?.({ message: `Отложенная публикация: ${error?.message || error}`, type: "error", duration: 7000 });
+        this.notifications?.show?.({ message: t("publications.publicationView.postponedPublication", { 0: error?.message || error }), type: "error", duration: 7000 });
       }
     }, "primary");
     actions.append(cancel, schedule);
@@ -891,7 +892,7 @@ export class PublicationView {
 
   #dateRangeEditor() {
     const range = el("div", "publication-date-range");
-    for (const [key, label] of [["from", "С"], ["to", "По"]]) {
+    for (const [key, label] of [["from", t("publications.publicationView.from")], ["to", t("publications.publicationView.to")]]) {
       const field = el("label", "publication-date-field");
       field.append(el("span", "", label));
       const input = document.createElement("input");
@@ -906,16 +907,16 @@ export class PublicationView {
 
   #bindingCard() {
     const card = el("div", "publication-binding-card");
-    card.append(el("strong", "", "Код подключения"));
-    card.append(el("span", "", "Отправьте этот код сообщением от имени канала или в группе, где бот является администратором."));
+    card.append(el("strong", "", t("publications.publicationView.connectionCode")));
+    card.append(el("span", "", t("publications.publicationView.sendThisCodeAsAMessageOn")));
     const code = el("code", "", this.session.code);
     const actions = el("div", "publication-binding-actions");
     actions.append(
-      button("Копировать", async () => {
+      button(t("publications.publicationView.copy"), async () => {
         await navigator.clipboard?.writeText?.(this.session.code);
-        this.notifications?.show?.({ message: "Код подключения скопирован", type: "success" });
+        this.notifications?.show?.({ message: t("publications.publicationView.connectionCodeCopied"), type: "success" });
       }),
-      button("Отмена", () => this.telegramCore.publications.cancelBinding())
+      button(t("core.cardDeleteConfirmation.cancel"), () => this.telegramCore.publications.cancelBinding())
     );
     card.append(code, actions);
     return card;
@@ -928,21 +929,21 @@ export class PublicationView {
     const head = el("div", "publication-target-head");
     head.append(el("strong", "", target.title || String(target.chatId)));
     const badges = el("div", "publication-target-badges");
-    badges.append(el("span", "publication-target-kind", target.type === "channel" ? "Канал" : "Группа"));
+    badges.append(el("span", "publication-target-kind", target.type === "channel" ? t("publications.publicationView.channel") : t("publications.publicationView.group")));
     if (target.type === "channel") {
       const visibility = target.visibility || (target.username ? "public" : "private");
       badges.append(el(
         "span",
         `publication-target-visibility ${visibility}`,
-        visibility === "public" ? "Публичный" : "Приватный"
+        visibility === "public" ? t("publications.publicationView.public") : t("publications.publicationView.private")
       ));
     }
     head.append(badges);
     const meta = el("div", "publication-target-meta");
-    meta.append(el("span", "", target.status === "ready" ? "Бот готов к публикации" : `Недоступно: ${target.reason || "нет прав"}`));
+    meta.append(el("span", "", target.status === "ready" ? t("publications.publicationView.botReadyForPublishing") : t("publications.publicationView.unavailable", { 0: target.reason || t("publications.publicationView.noPermissions") })));
     const metrics = el("div", "publication-target-metrics");
     const members = el("span", "publication-target-metric publication-target-members", `👥 ${formatCount(target.memberCount)}`);
-    members.title = target.memberCount === null ? "Количество участников неизвестно" : `Участников: ${target.memberCount}`;
+    members.title = target.memberCount === null ? t("publications.publicationView.numberOfParticipantsUnknown") : t("publications.publicationView.participants", { 0: target.memberCount });
     members.setAttribute("aria-label", members.title);
     metrics.append(members);
     if (target.type === "channel") {
@@ -951,12 +952,12 @@ export class PublicationView {
         `publication-target-metric publication-target-comments ${target.commentsEnabled ? "connected" : "disconnected"}`,
         "💬"
       );
-      comments.title = target.commentsEnabled ? "Группа комментариев подключена" : "Группа комментариев не подключена";
+      comments.title = target.commentsEnabled ? t("publications.publicationView.commentGroupConnected") : t("publications.publicationView.commentGroupNotConnected");
       comments.setAttribute("aria-label", comments.title);
       metrics.append(comments);
       if (target.commentsEnabled) {
-        const discussion = el("span", "publication-target-discussion", `↳ ${target.linkedDiscussionTitle || "Группа обсуждения"}`);
-        discussion.title = "Связанная группа обсуждения";
+        const discussion = el("span", "publication-target-discussion", `↳ ${target.linkedDiscussionTitle || t("publications.publicationView.discussionGroup")}`);
+        discussion.title = t("publications.publicationView.linkedDiscussionGroup");
         meta.append(discussion);
       }
     }
@@ -964,15 +965,15 @@ export class PublicationView {
     const actions = el("div", "publication-target-actions");
     const cleanupEnabled = target.deleteServiceMessages === true;
     const cleanup = button(
-      "🧹 Удалять сервисные",
+      t("publications.publicationView.deleteService"),
       () => this.#toggleServiceMessageCleanup(target),
       `publication-target-cleanup${cleanupEnabled ? " active" : ""}`
     );
     cleanup.setAttribute("aria-pressed", String(cleanupEnabled));
     cleanup.title = cleanupEnabled
-      ? "Удаление сервисных сообщений включено"
-      : "Удаление сервисных сообщений выключено";
-    actions.append(cleanup, button("Проверить", () => this.#refresh(target.chatId)));
+      ? t("publications.publicationView.deletingServiceMessagesEnabled")
+      : t("publications.publicationView.deletingServiceMessagesDisabled");
+    actions.append(cleanup, button(t("publications.publicationView.check"), () => this.#refresh(target.chatId)));
     card.append(head, meta, actions);
     card.onclick = event => {
       if (event.target.closest("button")) return;
@@ -988,13 +989,13 @@ export class PublicationView {
       this.session = await this.telegramCore.publications.startBinding();
       this.render();
     } catch (error) {
-      this.notifications?.show?.({ message: `Подключение: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.connection", { 0: error?.message || error }), type: "error" });
     }
   }
 
   async #refresh(chatId) {
     try { await this.telegramCore.publications.refreshTarget(chatId); }
-    catch (error) { this.notifications?.show?.({ message: `Проверка: ${error?.message || error}`, type: "error" }); }
+    catch (error) { this.notifications?.show?.({ message: t("publications.publicationView.check2", { 0: error?.message || error }), type: "error" }); }
   }
 
   async #toggleServiceMessageCleanup(target) {
@@ -1002,18 +1003,18 @@ export class PublicationView {
     try {
       await this.telegramCore.publications.setServiceMessageCleanup(target.chatId, enabled);
       this.notifications?.show?.({
-        message: enabled ? "Удаление сервисных сообщений включено" : "Удаление сервисных сообщений выключено",
+        message: enabled ? t("publications.publicationView.deletingServiceMessagesEnabled") : t("publications.publicationView.deletingServiceMessagesDisabled"),
         type: "success"
       });
     } catch (error) {
-      this.notifications?.show?.({ message: `Сервисные сообщения: ${error?.message || error}`, type: "error" });
+      this.notifications?.show?.({ message: t("publications.publicationView.serviceMessages", { 0: error?.message || error }), type: "error" });
     }
   }
 }
 
 function formatCount(value) {
   const count = Number(value);
-  return Number.isFinite(count) ? count.toLocaleString("ru-RU") : "—";
+  return Number.isFinite(count) ? count.toLocaleString(getLocale()) : "—";
 }
 
 function reactionEmoji(type = {}) {
@@ -1024,9 +1025,9 @@ function reactionEmoji(type = {}) {
 }
 
 function reactionTitle(type, count) {
-  if (type?.type === "custom_emoji") return `Custom emoji · ${count}`;
-  if (type?.type === "paid") return `Платных реакций: ${count}`;
-  return `Реакций ${type?.emoji || ""}: ${count}`;
+  if (type?.type === "custom_emoji") return t("publications.publicationView.customEmojiCount", { 0: count });
+  if (type?.type === "paid") return t("publications.publicationView.paidReactions", { 0: count });
+  return t("publications.publicationView.reactions2", { 0: type?.emoji || "", 1: count });
 }
 
 function appendDetailData(list, label, value) {
@@ -1036,7 +1037,7 @@ function appendDetailData(list, label, value) {
 function formatPublicationDate(value) {
   const date = new Date(Number(value || 0));
   if (Number.isNaN(date.getTime()) || !Number(value)) return "—";
-  return new Intl.DateTimeFormat("ru-RU", { dateStyle: "short", timeStyle: "short" }).format(date);
+  return new Intl.DateTimeFormat(getLocale(), { dateStyle: "short", timeStyle: "short" }).format(date);
 }
 
 function datetimeLocalValue(value) {
@@ -1069,13 +1070,13 @@ function summarizePublication(ast) {
     const text = richTextToPlain(props.text ?? props.caption).replace(/\s+/g, " ").trim();
     if (text) lines.push(text);
     else if (["photo", "video", "document"].includes(node.type)) {
-      lines.push(node.type === "photo" ? "Фото" : node.type === "video" ? "Видео" : "Документ");
+      lines.push(node.type === "photo" ? t("app.appNotifications.photo") : node.type === "video" ? t("app.appNotifications.video") : t("project.projectPostCard.document"));
     }
     for (const child of node.children || []) visit(child);
   };
   visit(ast);
   const summary = lines.join("\n").trim();
-  return summary || "Локальная копия содержимого публикации отсутствует.";
+  return summary || t("publications.publicationView.localCopyOfThePostContentIs");
 }
 
 function createLinkTargetButton(target, { targetKey, linkedTargets, onSelect, onOpenLinkedSource }) {

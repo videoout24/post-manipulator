@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
 const ASSET_PREFIX = "asset_";
@@ -10,7 +11,7 @@ export class GalleryStore {
   }
 
   async ingest(media) {
-    if (!media?.type || !media?.fileId) throw new Error("Gallery: media event не содержит type/fileId");
+    if (!media?.type || !media?.fileId) throw new Error(t("gallery.galleryStore.galleryMediaEventDoesNotContainType"));
     const sourceEventKey = media.source?.chatId && media.source?.messageId
       ? `${Number(media.source.chatId)}:${Number(media.source.messageId)}`
       : null;

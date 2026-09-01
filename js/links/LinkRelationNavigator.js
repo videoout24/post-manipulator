@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { linkTargetKey } from "./LinkTarget.js?v=1.5.9";
 
 // Target cards intentionally do not mutate relations.  Their green ↙ is a
@@ -23,30 +24,30 @@ export class LinkRelationNavigator {
 
   async openTarget(target) {
     const relation = await this.#latestRelationForTarget(target);
-    if (!relation) throw new Error("Связь для этой карточки уже не найдена");
+    if (!relation) throw new Error(t("links.linkRelationNavigator.connectionForThisCardIsNoLonger"));
     return this.openRelation(relation);
   }
 
   async openRelation(relation) {
     const source = relation?.source || {};
     if (source.kind === "draft") {
-      if (!this.documents?.openDraft) throw new Error("Editor не может открыть черновик-источник");
+      if (!this.documents?.openDraft) throw new Error(t("links.linkRelationNavigator.editorCannotOpenDraftSource"));
       await this.documents.openDraft(source.id);
     } else if (source.kind === "project_post") {
       const address = projectPostAddress(source);
-      if (!address) throw new Error("Не удалось определить Project post-источник связи");
-      if (!this.documents?.openProjectPost) throw new Error("Editor не может открыть Project post-источник");
+      if (!address) throw new Error(t("links.linkRelationNavigator.failedToDetermineProjectPostSourceOf"));
+      if (!this.documents?.openProjectPost) throw new Error(t("links.linkRelationNavigator.editorCannotOpenProjectPostSource"));
       await this.documents.openProjectPost(address.projectId, address.postId);
     } else if (source.kind === "publication") {
       const draft = await this.publications?.createEditDraft?.(source.id);
-      if (!draft) throw new Error("Не удалось открыть публикацию-источник связи");
+      if (!draft) throw new Error(t("links.linkRelationNavigator.failedToOpenPublicationSourceOfConnection"));
       await this.events?.emitAsync?.("publication:edit-draft-requested", draft);
     } else if (source.kind === "editor") {
       if (!this.controller?.tree?.find?.(source.nodeId)) {
-        throw new Error("Исходное сообщение доступно только в текущем Editor");
+        throw new Error(t("links.linkRelationNavigator.originalMessageIsAvailableOnlyInThe"));
       }
     } else {
-      throw new Error("Тип источника связи не поддерживается");
+      throw new Error(t("links.linkRelationNavigator.typeOfConnectionSourceIsNotSupported"));
     }
 
     this.navigation?.activateTab?.("editor");
@@ -74,7 +75,7 @@ export class LinkRelationNavigator {
 
   #report(error) {
     this.events?.emit?.("ui:toast", {
-      message: `Связь: ${error?.message || error}`,
+      message: t("links.linkRelationNavigator.connection", { 0: error?.message || error }),
       type: "error"
     });
   }

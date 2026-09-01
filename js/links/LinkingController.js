@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { replaceRichTextRange, richTextToPlain, sliceRichText } from "../core/RichText.js?v=1.5.9";
 import { findLinkRelationAtRange, unwrapLinkRelation } from "./LinkRelationAst.js?v=1.5.9";
 import { internalLinkUrl, linkTargetKey, normalizeLinkTarget, sameLinkTarget } from "./LinkTarget.js?v=1.5.9";
@@ -59,7 +60,7 @@ export class LinkingController {
 
   async toggleTarget(rawTarget) {
     const target = normalizeLinkTarget(rawTarget);
-    if (!target) throw new Error("Не удалось определить цель ссылки");
+    if (!target) throw new Error(t("links.linkingController.failedToDetermineLinkTarget"));
 
     // Only idle/yellow cards dispatch this event. A green card opens its source
     // through LinkRelationNavigator and must never change or delete the slot.
@@ -80,7 +81,7 @@ export class LinkingController {
     const start = Number(source.start ?? 0);
     const end = Number(source.end ?? start);
     const existing = findLinkRelationAtRange(current, start, end);
-    if (end <= start && !existing) throw new Error("Выделите текст, который нужно связать");
+    if (end <= start && !existing) throw new Error(t("editor.blockInspector.selectTheTextToLink"));
     if (existing) {
       const removed = await this.detachRelation(existing.relationId, { notify: true, confirm: true });
       if (!removed) return { cancelled: true, relationId: existing.relationId };
@@ -141,7 +142,7 @@ export class LinkingController {
   async detachRelation(id, { notify = true, confirm = false } = {}) {
     if (!id) return false;
     const relation = this.relations.get(String(id)) || await this.linkRelations.get?.(id) || null;
-    if (confirm && this.confirm?.(`Разорвать связь${relation?.label ? ` «${relation.label}»` : ""}?`) === false) return false;
+    if (confirm && this.confirm?.(t("links.linkingController.breakTheLink", { 0: relation?.label ? ` «${relation.label}»` : "" })) === false) return false;
     this.#clearRelationFromCurrentTree(relation, id);
     await this.linkRelations.remove?.(id);
     this.relations.delete(String(id));
@@ -163,14 +164,14 @@ export class LinkingController {
 
   #sourceNode(source) {
     const node = this.tree?.find?.(source?.nodeId);
-    if (!node) throw new Error("Исходный текст больше не найден");
+    if (!node) throw new Error(t("links.linkingController.originalTextNotFoundAnymore"));
     return node;
   }
 
   #requireTarget(source = this.#sourceDocument({})) {
-    if (!this.targetSlot) throw new Error("Сначала выберите цель кнопкой ↙");
+    if (!this.targetSlot) throw new Error(t("links.linkingController.firstSelectATargetWithTheButton"));
     const target = structuredClone(this.targetSlot);
-    if (this.#isSelfTarget(target, source)) throw new Error("Нельзя связать сообщение с самим собой");
+    if (this.#isSelfTarget(target, source)) throw new Error(t("links.linkingController.cannotLinkAMessageToItself"));
     return target;
   }
 
@@ -274,7 +275,7 @@ export class LinkingController {
   }
 
   #report(error) {
-    this.events?.emit?.("ui:toast", { message: `Связь: ${error?.message || error}`, type: "error" });
+    this.events?.emit?.("ui:toast", { message: t("links.linkRelationNavigator.connection", { 0: error?.message || error }), type: "error" });
   }
 }
 

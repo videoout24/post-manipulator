@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { TelegramClient } from "./TelegramClient.js?v=1.5.9";
 
 const IDENTITY_STORE = "bindings";
@@ -5,8 +6,8 @@ const IDENTITY_KEY = "botIdentity";
 export class BotIdentityMismatchError extends Error {
   constructor(expectedId, actualBot) {
     const actualId = Number(actualBot?.id || 0);
-    const actualName = actualBot?.username ? `@${actualBot.username}` : String(actualBot?.first_name || "неизвестный бот");
-    super(`В браузере открыта база для другого бота (bot ID ${expectedId}). Введён токен ${actualName}, bot ID ${actualId}.`);
+    const actualName = actualBot?.username ? `@${actualBot.username}` : String(actualBot?.first_name || t("telegram.botIdentityService.unknownBot"));
+    super(t("telegram.botIdentityService.theDatabaseForAnotherBotIsOpen", { 0: expectedId, 1: actualName, 2: actualId }));
     this.name = "BotIdentityMismatchError";
     this.expectedId = Number(expectedId);
     this.actualId = actualId;
@@ -16,7 +17,7 @@ export class BotIdentityMismatchError extends Error {
 
 export class BotIdentityProbeTimeoutError extends Error {
   constructor() {
-    super("Telegram не ответил при проверке token");
+    super(t("telegram.botIdentityService.telegramDidNotRespondWhenCheckingToken"));
     this.name = "BotIdentityProbeTimeoutError";
   }
 }
@@ -47,7 +48,7 @@ export class BotIdentityService {
 
   async inspectToken(token, { timeoutMs = 15_000, signal = null } = {}) {
     const clean = String(token || "").trim();
-    if (!clean) throw new Error("Введите токен Telegram");
+    if (!clean) throw new Error(t("telegram.botIdentityService.enterTelegramToken"));
     const probe = new TelegramClient({ token: clean, apiBase: this.client?.apiBase || "https://api.telegram.org" });
     const controller = new AbortController();
     const abort = () => controller.abort();
@@ -74,7 +75,7 @@ export class BotIdentityService {
   }
 
   async adoptVerifiedBot(bot, { source = "verified_getMe" } = {}) {
-    if (!bot?.id) throw new Error("Telegram getMe не вернул bot.id");
+    if (!bot?.id) throw new Error(t("telegram.botIdentityService.telegramGetMeDidNotReturnBotId"));
     const existing = await this.db.get(IDENTITY_STORE, IDENTITY_KEY, null);
     if (existing?.id && Number(existing.id) !== Number(bot.id)) {
       throw new BotIdentityMismatchError(existing.id, bot);
@@ -90,7 +91,7 @@ export class BotIdentityService {
   }
 
   async verifyCurrentClient() {
-    if (!this.client?.hasToken()) throw new Error("Токен Telegram не задан");
+    if (!this.client?.hasToken()) throw new Error(t("telegram.botIdentityService.telegramTokenNotSet"));
     const bot = await this.client.getMe();
     await this.assertMatches(bot);
     await this.adoptVerifiedBot(bot, { source: "runtime_getMe" });

@@ -1,3 +1,4 @@
+import { getLocale, t } from "../i18n/index.js?v=1.8.0";
 import { createProjectPostCard } from "./ProjectPostCard.js?v=1.7.12";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
@@ -91,13 +92,13 @@ export class ProjectLibraryView {
 
     const head = el("div", "project-library-sidebar-head");
     const title = el("div", "project-library-sidebar-title");
-    title.append(el("strong", "", "Проекты"), el("span", "", `${projects.length} в библиотеке`));
-    head.append(title, button("+ Создать", () => this.#createProject(), "primary"));
+    title.append(el("strong", "", t("project.projectLibraryView.projects")), el("span", "", t("project.projectLibraryView.inLibrary", { 0: projects.length })));
+    head.append(title, button(t("project.projectLibraryView.create"), () => this.#createProject(), "primary"));
 
     const list = el("div", "project-library-list");
     if (!projects.length) {
       const empty = el("div", "project-library-empty compact");
-      empty.append(el("strong", "", "Проектов пока нет"), el("span", "", "Создайте первый проект."));
+      empty.append(el("strong", "", t("project.projectLibraryView.noProjectsYet")), el("span", "", t("project.projectLibraryView.createTheFirstProject")));
       list.append(empty);
     }
 
@@ -127,16 +128,16 @@ export class ProjectLibraryView {
       identity.append(el("strong", "", project.title), el("span", "project-library-count", `${project.posts.length}`));
       const tools = el("div", "project-library-item-tools");
       const rename = button("✎", () => showProjectRenameOverlay(item, project, (source, title) => this.#renameProject(source, title)));
-      rename.title = "Переименовать проект";
+      rename.title = t("project.projectLibraryView.renameProject");
       const hasPublished = hasPublishedPosts(project);
       const remove = button("🗑", () => showCardDeleteConfirmation(item, {
-        message: `Удалить проект «${project?.title || "Проект"}» и все его посты?`,
+        message: t("project.projectLibraryView.deleteProjectAndAllItsPosts", { 0: project?.title || t("project.projectLibraryView.project") }),
         onConfirm: () => this.#deleteProject(project)
       }), "danger-soft");
       remove.disabled = hasPublished;
       remove.title = hasPublished
-        ? "Сначала удалите все опубликованные посты из Публикаций"
-        : "Удалить проект";
+        ? t("project.projectLibraryView.firstDeleteAllPublishedPostsFromPublications")
+        : t("project.projectLibraryView.deleteProject");
       tools.append(rename, remove);
       line.append(identity, tools);
       const meta = el("div", "project-library-item-meta");
@@ -146,8 +147,8 @@ export class ProjectLibraryView {
       item.append(line, meta);
       if (this.onPublishProject && hasUnpublishedPosts(project)) {
         const publication = el("div", "project-library-item-publication");
-        const publish = button("Опубликовать проект", () => this.#publishProject(project), "primary");
-        publish.title = "Опубликовать все ещё не опубликованные посты Project";
+        const publish = button(t("project.projectLibraryView.publishProject"), () => this.#publishProject(project), "primary");
+        publish.title = t("project.projectLibraryView.publishAllStillUnpublishedPostsProject");
         publication.append(publish);
         item.append(publication);
       }
@@ -163,7 +164,7 @@ export class ProjectLibraryView {
     root.innerHTML = "";
     if (!project) {
       const empty = el("div", "project-library-detail-empty");
-      empty.append(el("strong", "", "Выберите проект"), el("span", "", "В центральной области появится обзор его постов."));
+      empty.append(el("strong", "", t("project.projectLibraryView.selectProject")), el("span", "", t("project.projectLibraryView.anOverviewOfItsPostsWillAppear")));
       root.append(empty);
       return;
     }
@@ -173,27 +174,27 @@ export class ProjectLibraryView {
     const heading = el("div", "project-library-detail-heading");
     const titleLine = el("div", "project-library-detail-title-line");
     titleLine.append(el("h1", "", project.title));
-    if (hasPreviewDeployment(project)) titleLine.append(el("span", "project-preview-badge", "Preview channel"));
-    if (project.id === activeId) titleLine.append(el("span", "project-active-badge", "Открыт в Editor"));
-    heading.append(titleLine, el("p", "", "Read-only обзор постов. Иконка карандаша открывает выбранный пост в Editor."));
+    if (hasPreviewDeployment(project)) titleLine.append(el("span", "project-preview-badge", t("html.previewChannel")));
+    if (project.id === activeId) titleLine.append(el("span", "project-active-badge", t("project.projectLibraryView.openInEditor")));
+    heading.append(titleLine, el("p", "", t("project.projectLibraryView.readOnlyPostOverviewThePencilIcon")));
     head.append(heading);
 
     const meta = el("div", "project-library-detail-meta");
     meta.append(
-      el("span", "", `${project.posts.length} пост${plural(project.posts.length)}`),
-      el("span", "", `Изменён: ${formatDate(project.updatedAt)}`)
+      el("span", "", t("editor.projectPostListView.post", { 0: project.posts.length, 1: plural(project.posts.length) })),
+      el("span", "", t("project.projectLibraryView.modified", { 0: formatDate(project.updatedAt) }))
     );
 
     const cards = el("div", "project-library-posts");
     const projectIndex = new ProjectIndex(project);
     if (!project.posts.length) {
-      cards.append(el("div", "project-library-detail-empty", "В проекте нет постов"));
+      cards.append(el("div", "project-library-detail-empty", t("project.projectLibraryView.thereAreNoPostsInTheProject")));
     }
     for (const post of project.posts) {
       const eligibility = getProjectPostPublicationEligibility(project, post.id, projectIndex);
       let card = null;
       const deleteButton = this.#postDeleteButton(project, post, () => showCardDeleteConfirmation(card, {
-        message: `Удалить «${post.title || "Пост"}» из проекта?`,
+        message: t("editor.projectPostListView.deleteFromProject", { 0: post.title || t("editor.blockInspector.post") }),
         onConfirm: () => this.#deletePost(project, post)
       }));
       card = createProjectPostCard({
@@ -243,13 +244,13 @@ export class ProjectLibraryView {
     root.classList.toggle("visible", Boolean(project && selectedPostId));
 
     if (!project) {
-      root.append(createPanelEmpty("Выберите проект", "Здесь появятся данные выбранного поста."));
+      root.append(createPanelEmpty(t("project.projectLibraryView.selectProject"), t("project.projectLibraryView.dataOfTheSelectedPostWillAppear")));
       return;
     }
 
     const post = project.posts.find(item => item.id === selectedPostId) || null;
     if (!post) {
-      root.append(createPanelEmpty("Выберите пост", "Выберите карточку поста в обзоре проекта."));
+      root.append(createPanelEmpty(t("project.projectLibraryView.selectPost"), t("project.projectLibraryView.selectAPostCardInTheProject")));
       return;
     }
 
@@ -259,38 +260,38 @@ export class ProjectLibraryView {
     const head = el("div", "post-detail-panel-head");
     const heading = el("div", "post-detail-panel-heading");
     heading.append(
-      el("span", "post-detail-panel-kicker", "Пост проекта"),
-      el("h2", "", post.title || "Пост"),
+      el("span", "post-detail-panel-kicker", t("editor.projectPostListView.projectPost")),
+      el("h2", "", post.title || t("editor.blockInspector.post")),
       el("span", `post-detail-panel-state ${post?.publication?.state || "draft"}`, postStateLabel(post))
     );
     const close = button("×", () => this.#clearSelectedPost(project, activeId), "post-detail-panel-close");
-    close.title = "Закрыть панель выбранного поста";
+    close.title = t("project.projectLibraryView.closeTheSelectedPostPanel");
     close.setAttribute("aria-label", close.title);
     head.append(heading, close);
 
     const actions = el("div", "post-detail-panel-actions");
-    const open = button("Открыть в Editor", () => this.#openProject(project, post), "primary");
-    open.title = "Открыть выбранный пост в Editor";
+    const open = button(t("project.projectLibraryView.openInEditor2"), () => this.#openProject(project, post), "primary");
+    open.title = t("project.projectLibraryView.openTheSelectedPostInEditor");
     actions.append(open);
     const remove = this.#postDeleteButton(project, post, () => showCardDeleteConfirmation(root, {
-      message: `Удалить «${post.title || "Пост"}» из проекта?`,
+      message: t("editor.projectPostListView.deleteFromProject", { 0: post.title || t("editor.blockInspector.post") }),
       onConfirm: () => this.#deletePost(project, post)
-    }), { label: "Удалить пост" });
+    }), { label: t("editor.projectPostListView.deletePost") });
     actions.append(remove);
 
     const data = el("dl", "post-detail-panel-data");
-    appendPostData(data, "Проект", project.title);
-    appendPostData(data, "Позиция", `${postNumber} из ${project.posts.length}`);
-    appendPostData(data, "Статус", postStateLabel(post));
-    appendPostData(data, "Блоки", String(stats.blocks));
-    appendPostData(data, "Медиа", stats.media ? String(stats.media) : "Нет");
-    appendPostData(data, "Создан", formatDate(post.createdAt));
-    appendPostData(data, "Изменён", formatDate(post.updatedAt));
-    if (post.deployments?.preview?.messageId) appendPostData(data, "Preview", "Выгружен");
-    if (project.id === activeId && post.id === this.session.activePostId) appendPostData(data, "Editor", "Сейчас открыт");
+    appendPostData(data, t("project.projectLibraryView.project"), project.title);
+    appendPostData(data, t("project.projectLibraryView.position"), t("project.projectLibraryView.of", { 0: postNumber, 1: project.posts.length }));
+    appendPostData(data, t("project.projectLibraryView.status"), postStateLabel(post));
+    appendPostData(data, t("editor.editorWorkspaceView.blocks"), String(stats.blocks));
+    appendPostData(data, t("core.propertyRegistry.media"), stats.media ? String(stats.media) : t("core.propertyRegistry.none"));
+    appendPostData(data, t("project.projectLibraryView.created"), formatDate(post.createdAt));
+    appendPostData(data, t("project.projectLibraryView.modified2"), formatDate(post.updatedAt));
+    if (post.deployments?.preview?.messageId) appendPostData(data, "Preview", t("project.projectLibraryView.exported"));
+    if (project.id === activeId && post.id === this.session.activePostId) appendPostData(data, "Editor", t("project.projectLibraryView.currentlyOpen"));
 
     const content = el("section", "post-detail-panel-content");
-    content.append(el("h3", "", "Содержимое"));
+    content.append(el("h3", "", t("core.propertyRegistry.content")));
     content.append(createProjectPostCard({
       post,
       variant: "overview",
@@ -412,7 +413,7 @@ export class ProjectLibraryView {
   async #deleteProject(project) {
     return this.#run(async () => {
       if (hasPublishedPosts(project)) {
-        throw new Error("Сначала удалите все опубликованные посты из Публикаций");
+        throw new Error(t("project.projectLibraryView.firstDeleteAllPublishedPostsFromPublications"));
       }
       if (this.session.activeProjectId === project.id) await this.session.closeProject();
       await this.store.deleteProject(project.id);
@@ -428,10 +429,10 @@ export class ProjectLibraryView {
     const isPublished = post?.publication?.state === "published" || Boolean(post?.deployments?.production?.messageId);
     remove.disabled = isRoot || isPublished;
     remove.title = isRoot
-      ? "Стартовый пост содержит карту и удаляется только вместе с проектом"
+      ? t("editor.projectPostListView.theStartingPostContainsAMapAnd")
       : isPublished
-        ? "Сначала удалите публикацию поста"
-        : "Удалить пост из проекта";
+        ? t("editor.projectPostListView.firstDeleteThePostPublication")
+        : t("editor.projectPostListView.deletePostFromProject");
     remove.setAttribute("aria-label", remove.title);
     return remove;
   }
@@ -463,23 +464,23 @@ function requestNewProjectTitle() {
     const form = document.createElement("form");
     form.method = "dialog";
     const head = el("div", "dialog-head");
-    head.append(el("strong", "", "Новый проект"));
+    head.append(el("strong", "", t("project.projectLibraryView.newProject")));
     head.append(button("×", () => dialog.close("cancel")));
     const body = el("div", "project-create-dialog-body");
     const field = el("label", "project-create-dialog-field");
-    field.append(el("span", "", "Название проекта"));
+    field.append(el("span", "", t("project.projectLibraryView.projectName")));
     const input = document.createElement("input");
     input.type = "text";
     input.maxLength = 160;
-    input.value = "Новый проект";
-    input.setAttribute("aria-label", "Название проекта");
+    input.value = t("project.projectLibraryView.newProject");
+    input.setAttribute("aria-label", t("project.projectLibraryView.projectName"));
     field.append(input);
     const error = el("div", "project-create-dialog-error");
     const actions = el("div", "format-config-actions");
-    const cancel = button("Отмена", () => dialog.close("cancel"));
-    const create = button("Создать", () => {
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+    const create = button(t("editor.editorCommandController.create"), () => {
       if (!input.value.trim()) {
-        error.textContent = "Введите название проекта";
+        error.textContent = t("project.projectLibraryView.enterProjectName");
         input.classList.add("invalid");
         input.focus();
         return;
@@ -511,8 +512,8 @@ function requestNewProjectTitle() {
 
 function projectPostOpenButton(handler) {
   const item = button("✎", handler, "project-post-open-editor");
-  item.title = "Редактировать этот пост в Editor";
-  item.setAttribute("aria-label", "Редактировать пост в Editor");
+  item.title = t("project.projectLibraryView.editThisPostInEditor");
+  item.setAttribute("aria-label", t("project.projectLibraryView.editPostInEditor"));
   return item;
 }
 
@@ -522,7 +523,7 @@ function projectPostLinkButton(project, post, { targetKey, linkedTargets, onSele
     id: `${project.id}:${post.id}`,
     projectId: project.id,
     postId: post.id,
-    title: post.title || "Пост проекта"
+    title: post.title || t("editor.projectPostListView.projectPost")
   };
   const state = linkTargetVisualState(target, { targetKey, linkedTargets });
   const action = state === "linked" ? onOpenLinkedSource : onSelect;
@@ -542,11 +543,11 @@ function showProjectRenameOverlay(card, project, onRename) {
   input.className = "project-post-rename-input";
   input.type = "text";
   input.value = project?.title || "";
-  input.placeholder = "Название проекта";
-  input.setAttribute("aria-label", "Название проекта");
+  input.placeholder = t("project.projectLibraryView.projectName");
+  input.setAttribute("aria-label", t("project.projectLibraryView.projectName"));
   const actions = el("div", "project-post-card-overlay-actions");
-  const cancel = button("Отмена", () => overlay.remove());
-  const save = button("Сохранить", async () => {
+  const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => overlay.remove());
+  const save = button(t("core.darkDialog.save"), async () => {
     const title = input.value.trim();
     if (!title) {
       input.classList.add("invalid");
@@ -576,7 +577,7 @@ function showProjectRenameOverlay(card, project, onRename) {
 function formatDate(value) {
   const date = new Date(Number(value || 0));
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("ru-RU", { dateStyle: "short", timeStyle: "short" }).format(date);
+  return new Intl.DateTimeFormat(getLocale(), { dateStyle: "short", timeStyle: "short" }).format(date);
 }
 
 function createPanelEmpty(title, message) {
@@ -605,18 +606,18 @@ function collectPostStats(ast) {
 
 function postStateLabel(post) {
   const state = post?.publication?.state || "draft";
-  if (state === "published") return "Опубликован";
-  if (state === "scheduled") return post?.schedule ? `Запланирован · ${post.schedule}` : "Запланирован";
-  return "Черновик";
+  if (state === "published") return t("project.projectLibraryView.published");
+  if (state === "scheduled") return post?.schedule ? t("project.projectLibraryView.scheduled", { 0: post.schedule }) : t("project.projectLibraryView.scheduled2");
+  return t("editor.draftListView.draft");
 }
 
 function plural(count) {
   const n = Math.abs(Number(count) || 0) % 100;
   const n1 = n % 10;
-  if (n > 10 && n < 20) return "ов";
-  if (n1 > 1 && n1 < 5) return "а";
+  if (n > 10 && n < 20) return t("editor.projectPostListView.ov");
+  if (n1 > 1 && n1 < 5) return t("editor.projectPostListView.a");
   if (n1 === 1) return "";
-  return "ов";
+  return t("editor.projectPostListView.ov");
 }
 
 function button(text, handler, className = "") {

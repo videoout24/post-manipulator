@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class SessionTextareaSizing {
   constructor() {
     this.preferredRows = new Map();
@@ -15,7 +16,7 @@ export class SessionTextareaSizing {
     textarea.style.overflowX = "hidden";
     textarea.rows = 1;
     if (!autoShrink) {
-      textarea.title = [textarea.title, "Alt+↑ — ниже на строку; Alt+↓ — выше на строку"].filter(Boolean).join(" · ");
+      textarea.title = [textarea.title, t("editor.sessionTextareaSizing.altDownOneLineAltUpOne")].filter(Boolean).join(" · ");
     }
 
     const refresh = () => this.refresh(textarea, { key: storageKey, defaultRows: initial, minRows: minimum, autoShrink });

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
 export class TelegramApiError extends Error {
@@ -52,7 +53,7 @@ export class TelegramClient {
   }
 
   async #callNow(method, params = {}, { signal } = {}) {
-    if (!this.#token) throw new TelegramApiError("Токен Telegram не задан", { method, errorCode: 401 });
+    if (!this.#token) throw new TelegramApiError(t("telegram.botIdentityService.telegramTokenNotSet"), { method, errorCode: 401 });
     const url = `${this.apiBase}/bot${this.#token}/${method}`;
     let response;
     const trackActivity = method !== "getUpdates";
@@ -68,7 +69,7 @@ export class TelegramClient {
       if (cause?.name === "AbortError") throw cause;
       if (trackActivity) this.events?.emit?.("telegram:request-network-error", { method, error: cause });
       throw new TelegramApiError(
-        "Не удалось обратиться к Telegram Bot API. Для file:// проверьте, разрешает ли браузер прямой CORS-запрос к api.telegram.org.",
+        t("telegram.telegramClient.failedToContactTelegramBotAPIFor"),
         { method, cause }
       );
     } finally {
@@ -81,7 +82,7 @@ export class TelegramClient {
     let payload = null;
     try { payload = await response.json(); }
     catch (cause) {
-      throw new TelegramApiError(`Telegram вернул не-JSON ответ (${response.status})`, { method, errorCode: response.status, cause });
+      throw new TelegramApiError(t("telegram.telegramClient.telegramReturnedANonJSONResponse", { 0: response.status }), { method, errorCode: response.status, cause });
     }
 
     if (!response.ok || !payload?.ok) {
@@ -103,9 +104,9 @@ export class TelegramClient {
   getUpdates(params = {}, options) { return this.call("getUpdates", params, options); }
   getFile(fileId, options) { return this.call("getFile", { file_id: fileId }, options); }
   buildFileUrl(filePath) {
-    if (!this.#token) throw new TelegramApiError("Токен Telegram не задан", { method: "getFileUrl", errorCode: 401 });
+    if (!this.#token) throw new TelegramApiError(t("telegram.botIdentityService.telegramTokenNotSet"), { method: "getFileUrl", errorCode: 401 });
     const normalizedPath = String(filePath || "").replace(/^\/+/, "");
-    if (!normalizedPath) throw new TelegramApiError("Telegram не вернул file_path", { method: "getFileUrl" });
+    if (!normalizedPath) throw new TelegramApiError(t("telegram.telegramClient.telegramDidNotReturnFilePath"), { method: "getFileUrl" });
     return `${this.apiBase}/file/bot${this.#token}/${normalizedPath}`;
   }
 
@@ -114,7 +115,7 @@ export class TelegramClient {
   // response does not expose CORS headers. Use buildFileUrl() + <img src> in UI.
   async downloadFileBlob() {
     throw new TelegramApiError(
-      "Прямой fetch Telegram file endpoint заблокирован CORS в браузере. Используйте buildFileUrl() для отображения файла.",
+      t("telegram.telegramClient.directFetchOfTelegramFileEndpointIs"),
       { method: "downloadFile" }
     );
   }
@@ -136,7 +137,7 @@ export class TelegramClient {
   getChat(chatId, options) { return this.call("getChat", { chat_id: chatId }, options); }
   getChatMemberCount(chatId, options) { return this.call("getChatMemberCount", { chat_id: chatId }, options); }
   uploadMedia({ chatId, messageThreadId = null, file, caption = "", type = null } = {}, options = {}) {
-    if (!(file instanceof Blob)) throw new TelegramApiError("Файл для загрузки не выбран", { method: "uploadMedia" });
+    if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "uploadMedia" });
     const media = uploadMediaMethod(file, type);
     return this.scheduler.schedule(
       () => this.#callMultipart(media.method, {
@@ -149,7 +150,7 @@ export class TelegramClient {
     );
   }
   uploadDocument({ chatId, messageThreadId = null, file, caption = "" } = {}, options = {}) {
-    if (!(file instanceof Blob)) throw new TelegramApiError("Файл для загрузки не выбран", { method: "sendDocument" });
+    if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "sendDocument" });
     return this.scheduler.schedule(
       () => this.#callMultipart("sendDocument", {
         chat_id: chatId,
@@ -193,7 +194,7 @@ export class TelegramClient {
   }
 
   async #callMultipart(method, params, { signal } = {}) {
-    if (!this.#token) throw new TelegramApiError("Токен Telegram не задан", { method, errorCode: 401 });
+    if (!this.#token) throw new TelegramApiError(t("telegram.botIdentityService.telegramTokenNotSet"), { method, errorCode: 401 });
     const body = new FormData();
     for (const [key, value] of Object.entries(params || {})) {
       if (value === undefined || value === null || value === "") continue;
@@ -207,7 +208,7 @@ export class TelegramClient {
     } catch (cause) {
       if (cause?.name === "AbortError") throw cause;
       this.events?.emit?.("telegram:request-network-error", { method, error: cause });
-      throw new TelegramApiError("Не удалось загрузить файл в Telegram Bot API", { method, cause });
+      throw new TelegramApiError(t("telegram.telegramClient.failedToUploadFileToTelegramBot"), { method, cause });
     } finally {
       this.events?.emit?.("telegram:request-end", { method });
     }
@@ -215,7 +216,7 @@ export class TelegramClient {
     let payload;
     try { payload = await response.json(); }
     catch (cause) {
-      throw new TelegramApiError(`Telegram вернул не-JSON ответ (${response.status})`, { method, errorCode: response.status, cause });
+      throw new TelegramApiError(t("telegram.telegramClient.telegramReturnedANonJSONResponse", { 0: response.status }), { method, errorCode: response.status, cause });
     }
     if (!response.ok || !payload?.ok) {
       throw new TelegramApiError(payload?.description || `Telegram API ${response.status}`, {

@@ -16,8 +16,8 @@ assert(!lifecycle.includes("restoreTelegramPolling"));
 assert.doesNotMatch(database, /telegramToken|"secrets"/);
 assert.match(authorization, /cloudStorage\.setItem\(storageKey, container\)/);
 assert.doesNotMatch(authorization, /db\.put\([^\n]*token/i);
-assert.doesNotMatch(html, /id="tgSessionTokenDialog"|tgRememberToken|IndexedDB этого браузера/);
-assert.match(html, /Telegram CloudStorage/);
+assert.doesNotMatch(html, /id="tgSessionTokenDialog"|tgRememberToken/);
+assert.match(html, /data-i18n="html\.tokenStorageHint"/);
 assert.match(html, /id="networkPanelStartExpanded"/);
 
 console.log("telegram_session_token_contract_smoke: cloud credential UI contract OK");

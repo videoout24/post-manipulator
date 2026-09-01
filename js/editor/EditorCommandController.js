@@ -1,3 +1,4 @@
+import { getLocale, t } from "../i18n/index.js?v=1.8.0";
 export class EditorCommandController {
   constructor({
     newButton = null,
@@ -69,10 +70,10 @@ export class EditorCommandController {
     const hasContent = (this.tree?.root?.children || this.tree?.toJSON?.()?.children || []).length > 0;
     if (this.newButton) {
       const saveProjectCopy = projectActive && hasContent;
-      this.newButton.textContent = saveProjectCopy ? "Сохранить как черновик" : "Новый черновик";
+      this.newButton.textContent = saveProjectCopy ? t("editor.editorCommandController.saveAsDraft") : t("editor.editorCommandController.newDraft");
       this.newButton.title = saveProjectCopy
-        ? "Создать отдельный черновик из текущего поста проекта"
-        : "Создать новый черновик с автоматическим сохранением";
+        ? t("editor.editorCommandController.createASeparateDraftFromTheCurrent")
+        : t("editor.editorCommandController.createANewDraftWithAutomaticSaving");
       this.newButton.dataset.action = saveProjectCopy ? "save-as-draft" : "new-draft";
     }
   }
@@ -89,20 +90,20 @@ export class EditorCommandController {
     this.openDraftsButton.disabled = lockedOpen;
     this.openDraftsButton.setAttribute("aria-pressed", String(active));
     this.openDraftsButton.title = active
-      ? (this.projectSession?.isProjectActive?.() ? "Вернуться к постам проекта" : "Панель черновиков открыта")
-      : "Показать локальные черновики";
+      ? (this.projectSession?.isProjectActive?.() ? t("editor.editorCommandController.returnToProjectPosts") : t("editor.editorCommandController.draftPanelOpened"))
+      : t("editor.editorCommandController.showLocalDrafts");
   }
 
   async saveDocument() {
     return this.#run(async () => {
       if (this.projectSession.isProjectActive()) {
         await this.projectSession.saveNow();
-        this.#toast({ message: "Пост проекта сохранён", type: "success" });
+        this.#toast({ message: t("editor.editorCommandController.projectPostSaved"), type: "success" });
       } else if (this.draftSession.isActive()) {
         await this.draftSession.saveNow();
-        this.#toast({ message: `Черновик сохранён: ${this.draftSession.draft?.title || "Черновик"}`, type: "success" });
+        this.#toast({ message: t("editor.editorCommandController.draftSaved", { 0: this.draftSession.draft?.title || t("editor.draftListView.draft") }), type: "success" });
       } else {
-        throw new Error("Откройте или создайте черновик");
+        throw new Error(t("editor.editorCommandController.openOrCreateADraft"));
       }
     });
   }
@@ -129,7 +130,7 @@ export class EditorCommandController {
         if (!draft) return null;
       }
       return this.controller?.addBlock?.(type, parentId, index, options) || null;
-    }, "Черновик");
+    }, t("editor.draftListView.draft"));
     this.pendingDraftBlockRequest = task;
     try { return await task; }
     finally { this.pendingDraftBlockRequest = null; }
@@ -139,20 +140,20 @@ export class EditorCommandController {
     return this.#run(async () => {
       if (this.draftSession.isActive() && !this.projectSession.isProjectActive()) {
         await this.draftSession.saveNow();
-        this.#toast({ message: `Черновик сохранён: ${this.draftSession.draft?.title || "Черновик"}`, type: "success" });
+        this.#toast({ message: t("editor.editorCommandController.draftSaved", { 0: this.draftSession.draft?.title || t("editor.draftListView.draft") }), type: "success" });
         return this.draftSession.draft;
       }
 
       await this.documents.saveCurrentContext();
       const state = this.projectSession.snapshot();
       const activePost = state.project?.posts?.find(post => post.id === state.activePostId) || null;
-      if (!activePost) throw new Error("Откройте пост проекта или создайте новый черновик");
+      if (!activePost) throw new Error(t("editor.editorCommandController.openAProjectPostOrCreateA"));
       const defaultTitle = activePost
-        ? `${state.project?.title || "Project"} — ${activePost.title || "Пост"}`
-        : `Черновик ${formatTime(this.now())}`;
+        ? `${state.project?.title || t("project.projectLibraryView.project")} — ${activePost.title || t("editor.blockInspector.post")}`
+        : t("editor.editorCommandController.draft", { 0: formatTime(this.now()) });
       const title = await this.requestDraftTitleFn({
         mode: "save-copy",
-        prompt: "Название черновика",
+        prompt: t("editor.draftListView.draftTitle"),
         defaultTitle
       });
       if (title === null) return null;
@@ -168,24 +169,24 @@ export class EditorCommandController {
         messageAst: this.tree.toJSON(),
         source
       });
-      this.#toast({ message: `Черновик сохранён: ${draft.title}`, type: "success" });
+      this.#toast({ message: t("editor.editorCommandController.draftSaved", { 0: draft.title }), type: "success" });
       return draft;
-    }, "Черновик");
+    }, t("editor.draftListView.draft"));
   }
 
   async #createDraft({ messageAst = emptyDocument(), reason = "new-draft" } = {}) {
     await this.documents?.saveCurrentContext?.();
-    const defaultTitle = `Черновик ${formatTime(this.now())}`;
+    const defaultTitle = t("editor.editorCommandController.draft", { 0: formatTime(this.now()) });
     const title = await this.requestDraftTitleFn({
       mode: "create",
-      prompt: "Название нового черновика",
+      prompt: t("editor.editorCommandController.newDraftTitle"),
       defaultTitle
     });
     if (title === null) return null;
 
     if (this.draftSession.isActive()) await this.draftSession.deactivate({ flush: false, reason: "new-draft" });
     const draft = await this.draftStore.create({
-      title: title.trim() || "Черновик",
+      title: title.trim() || t("editor.draftListView.draft"),
       messageAst: structuredClone(messageAst),
       source: { kind: "draft" }
     });
@@ -195,7 +196,7 @@ export class EditorCommandController {
     this.textareaSizing?.clear?.();
     this.rightPanel?.showDrafts?.();
     this.workspace?.render?.();
-    this.#toast({ message: `Создан черновик: ${draft.title}`, type: "success" });
+    this.#toast({ message: t("editor.editorCommandController.draftCreated", { 0: draft.title }), type: "success" });
     return draft;
   }
 
@@ -222,14 +223,14 @@ export class EditorCommandController {
 }
 
 function formatTime(date) {
-  return date.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleString(getLocale(), { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
 function emptyDocument() {
   return { id: "root", type: "document", props: {}, children: [] };
 }
 
-function requestDraftTitle({ mode = "create", defaultTitle = "Черновик" } = {}) {
+function requestDraftTitle({ mode = "create", defaultTitle = t("editor.draftListView.draft") } = {}) {
   return new Promise(resolve => {
     const savingCopy = mode === "save-copy";
     const dialog = document.createElement("dialog");
@@ -237,23 +238,23 @@ function requestDraftTitle({ mode = "create", defaultTitle = "Черновик" 
     const form = document.createElement("form");
     form.method = "dialog";
     const head = element("div", "dialog-head");
-    head.append(element("strong", "", savingCopy ? "Сохранить как черновик" : "Новый черновик"));
+    head.append(element("strong", "", savingCopy ? t("editor.editorCommandController.saveAsDraft") : t("editor.editorCommandController.newDraft")));
     head.append(dialogButton("×", () => dialog.close("cancel")));
     const body = element("div", "draft-create-dialog-body");
     const field = element("label", "draft-create-dialog-field");
-    field.append(element("span", "", "Название черновика"));
+    field.append(element("span", "", t("editor.draftListView.draftTitle")));
     const input = document.createElement("input");
     input.type = "text";
     input.maxLength = 160;
     input.value = defaultTitle;
-    input.setAttribute("aria-label", "Название черновика");
+    input.setAttribute("aria-label", t("editor.draftListView.draftTitle"));
     field.append(input);
     const error = element("div", "draft-create-dialog-error");
     const actions = element("div", "format-config-actions");
-    const cancel = dialogButton("Отмена", () => dialog.close("cancel"));
-    const submit = dialogButton(savingCopy ? "Сохранить" : "Создать", () => {
+    const cancel = dialogButton(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+    const submit = dialogButton(savingCopy ? t("core.darkDialog.save") : t("editor.editorCommandController.create"), () => {
       if (!input.value.trim()) {
-        error.textContent = "Введите название черновика";
+        error.textContent = t("editor.editorCommandController.enterDraftTitle");
         input.classList.add("invalid");
         input.focus();
         return;

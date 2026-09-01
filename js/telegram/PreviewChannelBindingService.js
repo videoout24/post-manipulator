@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomBytes } from "../core/Random.js?v=1.5.9";
 
 const SLOT_KEY = "previewChannel";
@@ -7,7 +8,7 @@ const LIVE_PLACEHOLDER = Object.freeze({
   blocks: Object.freeze([
     Object.freeze({
       type: "paragraph",
-      text: "Предпросмотр текущего сообщения появится здесь после включения синхронизации."
+      text: t("telegram.previewChannelBindingService.thePreviewOfTheCurrentMessageWill")
     })
   ])
 });
@@ -25,10 +26,10 @@ export class PreviewChannelBindingService {
 
   async startBinding({ ttlMs = 30 * 60 * 1000 } = {}) {
     const owner = await this.ownerBinding.getOwner();
-    if (!owner) throw new Error("Сначала привяжите владельца");
+    if (!owner) throw new Error(t("telegram.previewChannelBindingService.bindTheOwnerFirst"));
     const slot = await this.getSlot();
     if (slot?.status === "bound" || slot?.status === "unavailable") {
-      throw new Error("Слот канала предпросмотра уже занят. Сначала отвяжите текущий канал.");
+      throw new Error(t("telegram.previewChannelBindingService.thePreviewChannelSlotIsAlreadyOccupied"));
     }
     const session = {
       status: "binding",
@@ -130,7 +131,7 @@ export class PreviewChannelBindingService {
 
     const candidate = {
       chatId: Number(change.chat.id),
-      title: change.chat.title || "Private channel",
+      title: change.chat.title || t("security.common.privateChannel"),
       detectedAt: Date.now(),
       rights: availability.rights
     };
@@ -149,18 +150,18 @@ export class PreviewChannelBindingService {
 
     const session = await this.#activeSession();
     if (!session || post.text.trim() !== session.code) return false;
-    if (post.chat.username) throw new Error("Канал предпросмотра проекта должен быть приватным");
+    if (post.chat.username) throw new Error(t("telegram.previewChannelBindingService.theProjectPreviewChannelMustBePrivate"));
     if (session.candidate && Number(session.candidate.chatId) !== Number(post.chat.id)) return false;
 
     const verified = await this.#verifyBotRights(post.chat.id);
-    if (!verified.ok) throw new Error(`Недостаточно прав бота в канале: ${verified.reason}`);
+    if (!verified.ok) throw new Error(t("telegram.previewChannelBindingService.theBotDoesNotHaveEnoughPermissions", { 0: verified.reason }));
 
     try { await this.client.deleteMessage(post.chat.id, post.message_id); }
     catch { /* confirmation post cleanup is best effort */ }
 
     await this.#bindChannel({
       ...post.chat,
-      title: post.chat.title || session.candidate?.title || "Preview channel"
+      title: post.chat.title || session.candidate?.title || t("html.previewChannel")
     }, verified.rights, { source: "confirmation_code" });
     return true;
   }
@@ -170,7 +171,7 @@ export class PreviewChannelBindingService {
     const bound = {
       status: "bound",
       chatId: Number(chat.id),
-      title: chat.title || "Preview channel",
+      title: chat.title || t("html.previewChannel"),
       boundAt: Date.now(),
       checkedAt: Date.now(),
       rights,
@@ -192,7 +193,7 @@ export class PreviewChannelBindingService {
     this.events?.emit("telegram:preview-channel", bound);
     this.events?.emit("telegram:preview-status", {
       state: "ready",
-      message: "Закреплённое сообщение live-preview создано в канале",
+      message: t("telegram.previewChannelBindingService.thePinnedLivePreviewMessageIsCreated"),
       preview: await this.db.get("preview", LIVE_MESSAGE_KEY, null)
     });
     return bound;

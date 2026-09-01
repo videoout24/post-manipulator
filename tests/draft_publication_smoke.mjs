@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { PublicationService, isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../js/telegram/PublicationService.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 class MemoryDb {
   constructor() { this.stores = new Map(); }
@@ -81,7 +82,10 @@ client.pinChatMessage = async (chatId, messageId, options) => {
   if (chatId === -2001) throw new Error("discussion pin denied");
   return true;
 };
-await assert.rejects(service.setPinned(record.id, true), /Не удалось синхронизировать закрепление/);
+await assert.rejects(
+  service.setPinned(record.id, true),
+  error => error.message === t("telegram.publicationService.failedToSynchronizePinningOfThePost", { 0: "discussion pin denied" })
+);
 assert.deepEqual(pinned.slice(-3).map(item => item.slice(0, 3)), [
   ["pin", -1001, 42],
   ["pin", -2001, 70],

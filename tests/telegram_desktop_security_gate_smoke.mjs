@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 import { webcrypto } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { AuthBootstrapController } from "../js/security/AuthBootstrapController.js?v=1.7.5";
@@ -235,7 +236,7 @@ async function controllerTests() {
   assert.equal((await wrongClock.prepare()).state, "UNLOCK_PASSWORD");
   await assert.rejects(wrongClock.unlock({ password: "Пароль123" }), {
     code: "BLOCKED_INIT_DATA_TIME_INVALID",
-    message: "Системные часы отстают от времени запуска Telegram."
+    message: t("security.authBootstrapController.theSystemClockIsBehindTheTelegram")
   });
 
   const recoveredRecords = new Map();

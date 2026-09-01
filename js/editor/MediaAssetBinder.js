@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const BLOCK_TO_GALLERY = Object.freeze({
   photo: ["photo"],
   video: ["video"],
@@ -43,14 +44,14 @@ export class MediaAssetBinder {
 
   async assign(nodeId, assetOrId) {
     const node = this.tree.find(nodeId);
-    if (!node) throw new Error("Media block не найден");
+    if (!node) throw new Error(t("editor.mediaAssetBinder.mediaBlockNotFound"));
     const asset = typeof assetOrId === "string" ? await this.gallery.getAsset(assetOrId) : assetOrId;
-    if (!asset) throw new Error("Gallery asset не найден");
+    if (!asset) throw new Error(t("editor.mediaAssetBinder.galleryAssetNotFound"));
     if (!this.accepts(node, asset.type)) {
-      throw new Error(`${this.registry.get(node.type)?.name || node.type} не принимает Gallery type: ${asset.type}`);
+      throw new Error(t("editor.mediaAssetBinder.doesNotAcceptGalleryType", { 0: this.registry.get(node.type)?.name || node.type, 1: asset.type }));
     }
     const fileId = String(asset.telegram?.fileId || "").trim();
-    if (!fileId) throw new Error("У Gallery asset отсутствует Telegram file_id");
+    if (!fileId) throw new Error(t("editor.mediaAssetBinder.galleryAssetIsMissingTelegramFileId"));
 
     const patch = makeAssetPatch(asset, fileId);
     if (this.isCollection(node)) {
@@ -64,7 +65,7 @@ export class MediaAssetBinder {
 
   #appendChild(container, asset, patch) {
     const childType = ASSET_TO_BLOCK[asset.type];
-    if (!childType) throw new Error(`${container.type} пока не умеет создавать RichBlock для Gallery type: ${asset.type}`);
+    if (!childType) throw new Error(t("editor.mediaAssetBinder.cannotYetCreateRichBlockForGalleryType", { 0: container.type, 1: asset.type }));
 
     const collectionPatch = { ...patch };
     delete collectionPatch.caption;
@@ -72,7 +73,7 @@ export class MediaAssetBinder {
       props: collectionPatch,
       select: false
     });
-    if (!child) throw new Error(`Не удалось добавить ${asset.type} в ${container.type}`);
+    if (!child) throw new Error(t("editor.mediaAssetBinder.failedToAddTo", { 0: asset.type, 1: container.type }));
 
     // Keep the collection selected so the left Gallery picker stays open for rapid multi-add.
     this.controller.select(container.id);

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { buildSemanticRichText, defaultDateTimeLocal, listAnchors } from "../core/SemanticRichText.js?v=1.5.9";
 import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 
@@ -27,7 +28,7 @@ export class BlockPalette {
       groups.get(b.category || "Other").push(b);
     }
     for (const [category, blocks] of groups) {
-      if (category === "Content") blocks.sort(compareContentBlocks);
+      if (category === t("blocks.category.content")) blocks.sort(compareContentBlocks);
     }
 
     for (const [category, blocks] of groups) {
@@ -52,7 +53,7 @@ export class BlockPalette {
           remove.type = "button";
           remove.className = "palette-meta-delete";
           remove.textContent = "🗑";
-          remove.title = "Удалить Meta Block";
+          remove.title = t("editor.blockPalette.deleteMetaBlock");
           remove.onclick = event => {
             event.preventDefault();
             event.stopPropagation();
@@ -62,8 +63,8 @@ export class BlockPalette {
         }
         el.append(head, type);
         el.title = b.semantic?.inline
-          ? `${b.type} — при активном курсоре вставляется в Paragraph, иначе создаётся блок`
-          : `${b.type} — перетащите или нажмите`;
+          ? t("editor.blockPalette.whenTheCursorIsActiveItIs", { 0: b.type })
+          : t("editor.blockPalette.dragOrClick", { 0: b.type });
         el.onclick = () => this.activateBlock(b);
         el.ondragstart = e => {
           this.dragState.nodeId = "";
@@ -90,16 +91,16 @@ export class BlockPalette {
     const overlay = document.createElement("div");
     overlay.className = "palette-meta-delete-overlay";
     const message = document.createElement("span");
-    message.textContent = `Удалить «${definition.name || definition.type}»?`;
+    message.textContent = t("editor.blockPalette.delete", { 0: definition.name || definition.type });
     const actions = document.createElement("div");
     const cancel = document.createElement("button");
     cancel.type = "button";
-    cancel.textContent = "Отмена";
+    cancel.textContent = t("core.cardDeleteConfirmation.cancel");
     cancel.onclick = event => { event.stopPropagation(); overlay.remove(); };
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "danger";
-    remove.textContent = "Удалить";
+    remove.textContent = t("core.cardDeleteConfirmation.delete");
     remove.onclick = event => {
       event.stopPropagation();
       this.metaRegistry.remove(definition.type);
@@ -127,7 +128,7 @@ export class BlockPalette {
     const categories = [...new Set(blocks.map(block => block.category || "Other"))];
     if (this.category !== "all" && !categories.includes(this.category)) this.category = "all";
     this.categoryRoot.replaceChildren();
-    for (const [value, label] of [["all", "Все"], ...categories.map(category => [category, category])]) {
+    for (const [value, label] of [["all", t("editor.blockPalette.all")], ...categories.map(category => [category, category])]) {
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = `palette-category-chip${this.category === value ? " active" : ""}`;
@@ -159,7 +160,7 @@ export class BlockPalette {
     const head = document.createElement("div");
     head.className = "dialog-head";
     const title = document.createElement("strong");
-    title.textContent = `Вставить: ${definition.name}`;
+    title.textContent = t("editor.blockPalette.insert", { 0: definition.name });
     const close = document.createElement("button");
     close.type = "button"; close.textContent = "×";
     close.onclick = () => dialog.close("cancel");
@@ -182,15 +183,15 @@ export class BlockPalette {
     const actions = document.createElement("div");
     actions.className = "format-config-actions";
     const cancel = document.createElement("button");
-    cancel.type = "button"; cancel.textContent = "Отмена"; cancel.onclick = () => dialog.close("cancel");
+    cancel.type = "button"; cancel.textContent = t("core.cardDeleteConfirmation.cancel"); cancel.onclick = () => dialog.close("cancel");
     const apply = document.createElement("button");
-    apply.type = "button"; apply.className = "primary"; apply.textContent = "Вставить за курсором";
+    apply.type = "button"; apply.className = "primary"; apply.textContent = t("editor.blockPalette.insertAfterCursor");
     apply.onclick = () => {
       const missing = bindings.find(schema => schema.required && !String(values[schema.key] ?? "").trim());
-      if (missing) { error.textContent = `Заполните: ${missing.label || missing.key}`; return; }
+      if (missing) { error.textContent = t("editor.blockPalette.fillIn", { 0: missing.label || missing.key }); return; }
       try {
         const entity = buildSemanticRichText(definition.type, values, this.controller.tree);
-        if (!activeState.insertValue?.(entity)) throw new Error("Активное текстовое поле больше недоступно");
+        if (!activeState.insertValue?.(entity)) throw new Error(t("editor.blockPalette.theActiveTextFieldIsNoLonger"));
         dialog.close("inserted");
       } catch (e) {
         error.textContent = e.message || String(e);
@@ -215,7 +216,7 @@ export class BlockPalette {
     if (editor === "datetime-local") {
       const picker = createDateTimePicker({
         value: values[schema.key] ?? "",
-        label: schema.label || "Дата и время",
+        label: schema.label || t("core.propertyRegistry.dateAndTime"),
         onChange: value => { values[schema.key] = value; }
       });
       wrap.append(label, picker);
@@ -231,7 +232,7 @@ export class BlockPalette {
       }
     } else if (editor === "anchor-select") {
       input = document.createElement("select");
-      const top = document.createElement("option"); top.value = ""; top.textContent = "В начало сообщения"; input.append(top);
+      const top = document.createElement("option"); top.value = ""; top.textContent = t("core.semanticRichText.toTheBeginningOfTheMessage"); input.append(top);
       for (const anchor of listAnchors(this.controller.tree)) {
         const item = document.createElement("option"); item.value = anchor.id; item.textContent = `⚓ ${anchor.label}`; input.append(item);
       }

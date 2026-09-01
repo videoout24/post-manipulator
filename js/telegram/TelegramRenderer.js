@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { buildSemanticRichText, makeUrlButton } from "../core/SemanticRichText.js?v=1.5.9";
 import { renderableRichText } from "../links/LinkRelationAst.js?v=1.5.9";
 
@@ -118,10 +119,10 @@ export class TelegramRenderer {
       case "voice_note":
         return compactObject({ type: "voice_note", voice_note: makeInputMedia("voice_note", (p.fileId || p.url)), caption: caption() });
       case "thinking":
-        if (!options.allowThinking) throw new Error("Блок Thinking можно отправлять только через sendRichMessageDraft, а не в постоянном предпросмотре");
+        if (!options.allowThinking) throw new Error(t("telegram.telegramRenderer.thinkingBlockCanOnlyBeSentVia"));
         return { type: "thinking", text: richText(p.text) };
       default:
-        throw new Error(`Telegram renderer: неизвестный тип блока ${node.type}`);
+        throw new Error(t("telegram.telegramRenderer.telegramRendererUnknownBlockType", { 0: node.type }));
     }
   }
 

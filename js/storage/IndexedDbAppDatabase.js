@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const DATABASE_VERSION = 1;
 const RECORDS_STORE = "records";
 const BY_STORE_INDEX = "by_store";
@@ -28,10 +29,10 @@ export class IndexedDbAppDatabase {
   open() {
     if (this.openPromise) return this.openPromise;
     if (!this.databaseName) {
-      return Promise.reject(new Error("Не задано имя IndexedDB для выбранного бота"));
+      return Promise.reject(new Error(t("storage.indexedDbAppDatabase.noIndexedDBNameSpecifiedForTheSelected")));
     }
     if (!this.indexedDb?.open) {
-      return Promise.reject(new Error("Telegram Desktop не поддерживает IndexedDB, необходимый для локальных данных"));
+      return Promise.reject(new Error(t("storage.indexedDbAppDatabase.telegramDesktopDoesNotSupportIndexedDBRequired")));
     }
     this.openPromise = new Promise((resolve, reject) => {
       let request;
@@ -56,8 +57,8 @@ export class IndexedDbAppDatabase {
         });
         resolve(this.info);
       };
-      request.onerror = () => reject(request.error || new Error("Не удалось открыть IndexedDB"));
-      request.onblocked = () => reject(new Error("Закройте другие окна Post Manipulator и откройте Mini App заново"));
+      request.onerror = () => reject(request.error || new Error(t("storage.indexedDbAppDatabase.failedToOpenIndexedDB")));
+      request.onblocked = () => reject(new Error(t("storage.indexedDbAppDatabase.closeOtherPostManipulatorWindowsAndReopen")));
     }).catch(error => {
       this.openPromise = null;
       throw error;
@@ -165,7 +166,7 @@ export class IndexedDbAppDatabase {
 }
 
 function validateStore(store) {
-  if (!VALID_STORES.has(store)) throw new Error(`Неизвестное хранилище IndexedDB: ${store}`);
+  if (!VALID_STORES.has(store)) throw new Error(t("storage.indexedDbAppDatabase.unknownIndexedDBStorage", { 0: store }));
 }
 
 function indexValue(store, value, indexName) {
@@ -178,7 +179,7 @@ function indexValue(store, value, indexName) {
     case "bySourceEventKey": return store === "gallery" ? nullableText(object.sourceEventKey) : null;
     case "byLastAccessedAt": return store === "thumbnail_cache" ? nullableNumber(object.lastAccessedAt) : null;
     case "byByteSize": return store === "thumbnail_cache" ? nullableNumber(object.byteSize) : null;
-    default: throw new Error(`Неизвестный индекс IndexedDB: ${indexName}`);
+    default: throw new Error(t("storage.indexedDbAppDatabase.unknownIndexedDBIndex", { 0: indexName }));
   }
 }
 
@@ -193,15 +194,15 @@ function toPublicRow(record) { return { key: record.key, value: record.value, up
 function requestResult(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error || new Error("Операция IndexedDB не выполнена"));
+    request.onerror = () => reject(request.error || new Error(t("storage.indexedDbAppDatabase.indexeddbOperationNotCompleted")));
   });
 }
 
 function transactionDone(transaction) {
   return new Promise((resolve, reject) => {
     transaction.oncomplete = () => resolve();
-    transaction.onerror = () => reject(transaction.error || new Error("Транзакция IndexedDB не выполнена"));
-    transaction.onabort = () => reject(transaction.error || new Error("Транзакция IndexedDB отменена"));
+    transaction.onerror = () => reject(transaction.error || new Error(t("storage.indexedDbAppDatabase.indexeddbTransactionNotCompleted")));
+    transaction.onabort = () => reject(transaction.error || new Error(t("storage.indexedDbAppDatabase.indexeddbTransactionCanceled")));
   });
 }
 
@@ -217,20 +218,20 @@ function parseBackup(input) {
     const bytes = input instanceof Uint8Array ? input : new Uint8Array(input || 0);
     parsed = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes), backupReviver);
   } catch {
-    throw new Error("Файл не является резервной копией IndexedDB Post Manipulator");
+    throw new Error(t("storage.indexedDbAppDatabase.fileIsNotAnIndexedDBPostManipulator"));
   }
   if (parsed?.format !== BACKUP_FORMAT || parsed.version !== BACKUP_VERSION || !Array.isArray(parsed.records)) {
-    throw new Error("Это не совместимая резервная копия IndexedDB Post Manipulator");
+    throw new Error(t("storage.indexedDbAppDatabase.thisIsAnIncompatibleIndexedDBPostManipulator"));
   }
   const records = parsed.records.map(record => {
     if (!VALID_STORES.has(record?.store) || typeof record?.key !== "string") {
-      throw new Error("Резервная копия IndexedDB повреждена");
+      throw new Error(t("storage.indexedDbAppDatabase.indexeddbBackupIsCorrupted"));
     }
     return { store: record.store, key: record.key, value: record.value, updatedAt: Number(record.updatedAt || 0) };
   });
   const createdAt = Number(parsed.createdAt || 0);
   if (!Number.isFinite(createdAt) || createdAt <= 0) {
-    throw new Error("Резервная копия IndexedDB не содержит корректную дату создания");
+    throw new Error(t("storage.indexedDbAppDatabase.indexeddbBackupDoesNotContainAValid"));
   }
   return { createdAt, records };
 }

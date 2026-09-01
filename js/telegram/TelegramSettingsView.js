@@ -1,3 +1,4 @@
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.0";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
 
 const NATIVE_INTEGRATION_KEY = "telegramNativeIntegration";
@@ -59,23 +60,27 @@ export class TelegramSettingsView {
     });
     this.events?.on("telegram:channel-binding-rejected", payload => {
       const reason = payload?.reason === "public_channel"
-        ? "Этот слот принимает только приватный канал"
-        : `Канал не подходит: ${payload?.reason || "недостаточно прав"}`;
+        ? t("telegram.telegramSettingsView.thisSlotAcceptsOnlyAPrivateChannel")
+        : t("telegram.telegramSettingsView.channelNotSuitable", { 0: payload?.reason || t("telegram.telegramSettingsView.insufficientPermissions") });
       this.#notice(reason, true);
       refresh();
     });
   }
 
   #bind() {
+    this.root.querySelector("#appLanguagePreference")?.addEventListener("change", event => {
+      setLanguagePreference(event.target.value);
+      globalThis.location?.reload?.();
+    });
     this.root.querySelector("#requestPersistentStorage")?.addEventListener("click", () => this.#requestPersistentStorage());
     this.root.querySelector("#tgStart")?.addEventListener("click", () => this.#run(() => this.runtime.start()));
     this.root.querySelector("#tgStop")?.addEventListener("click", () => this.#run(() => this.runtime.stop()));
     this.root.querySelector("#tgClearWebhook")?.addEventListener("click", () => this.#run(async () => {
       await this.runtime.clearWebhook();
-      this.#notice("Webhook отключён. Long polling можно запускать.");
+      this.#notice(t("telegram.telegramSettingsView.webhookDisabledLongPollingCanBeStarted"));
     }));
     this.root.querySelector("#tgOpenBotFather")?.addEventListener("click", () => {
-      if (!this.navigation?.openBot?.("BotFather")) this.#notice("Не удалось открыть BotFather", true);
+      if (!this.navigation?.openBot?.("BotFather")) this.#notice(t("telegram.telegramSettingsView.failedToOpenBotFather"), true);
     });
 
     this.root.querySelector("#tgUnbindOwner")?.addEventListener("click", () => this.#unbindOwner());
@@ -112,9 +117,9 @@ export class TelegramSettingsView {
 
   async #unbindOwner() {
     if (!await confirmDarkDialog({
-      title: "Отвязать владельца?",
-      message: "Канал предпросмотра также будет отвязан.",
-      confirmLabel: "Отвязать",
+      title: t("telegram.telegramSettingsView.unlinkOwner"),
+      message: t("telegram.telegramSettingsView.thePreviewChannelWillAlsoBeUnlinked"),
+      confirmLabel: t("telegram.telegramSettingsView.unlink"),
       danger: true
     })) return;
     await this.#run(async () => {
@@ -128,7 +133,7 @@ export class TelegramSettingsView {
     await this.#run(async () => {
       if (!this.runtime.getStatus().running) await this.runtime.start();
       await this.previewChannelBinding.startBinding();
-      this.#notice("Ожидаю добавление бота администратором приватного канала и код подтверждения.");
+      this.#notice(t("telegram.telegramSettingsView.waitingForTheBotToBeAdded"));
     });
   }
 
@@ -153,23 +158,25 @@ export class TelegramSettingsView {
     const hasToken = this.client.hasToken();
 
     const persistence = this.storagePersistence;
+    const languagePreference = this.root.querySelector("#appLanguagePreference");
+    if (languagePreference) languagePreference.value = getLanguagePreference();
     setText(this.root, "#storagePersistenceState", !persistence.supported
-      ? "Браузер не поддерживает запрос постоянного хранилища"
+      ? t("telegram.telegramSettingsView.browserDoesNotSupportPersistentStorageRequest")
       : persistence.granted
-        ? "Постоянное хранилище включено"
-        : "IndexedDB пока может быть автоматически удалена браузером");
+        ? t("telegram.telegramSettingsView.persistentStorageIsEnabled")
+        : t("telegram.telegramSettingsView.indexeddbCanStillBeAutomaticallyDeletedBy"));
     setText(this.root, "#storagePersistenceUsage", formatStorageUsage(persistence.usage, persistence.quota));
     setDisabled(this.root, "#requestPersistentStorage", !persistence.supported || persistence.granted);
     setHidden(this.root, "#requestPersistentStorage", persistence.granted);
 
     setText(this.root, "#tgTokenStored", hasToken
-      ? "Token зашифрован в Telegram CloudStorage и активен только в памяти этого запуска"
-      : "Защищённый token недоступен; перезапустите Mini App");
+      ? t("telegram.telegramSettingsView.tokenIsEncryptedInTelegramCloudStorageAnd")
+      : t("telegram.telegramSettingsView.protectedTokenIsUnavailableRestartTheMini"));
     const networkPanelStartExpanded = this.root.querySelector("#networkPanelStartExpanded");
     if (networkPanelStartExpanded) networkPanelStartExpanded.checked = this.networkPanelStartExpanded;
     setText(this.root, "#tgBotIdentity", this.bot
       ? `@${this.bot.username || "—"} · id ${this.bot.id}`
-      : "Бот не проверен");
+      : t("telegram.telegramSettingsView.botIsNotVerified"));
 
     const statusEl = this.root.querySelector("#tgRuntimeStatus");
     if (statusEl) {
@@ -180,14 +187,14 @@ export class TelegramSettingsView {
     setDisabled(this.root, "#tgStop", !runtimeStatus.running);
 
     setText(this.root, "#tgOwnerState", owner
-      ? `Привязан: ${owner.firstName || owner.username || owner.userId} · user ${owner.userId} · chat ${owner.chatId}`
-      : "Владелец не привязан");
+      ? t("telegram.telegramSettingsView.linkedUserChat", { 0: owner.firstName || owner.username || owner.userId, 1: owner.userId, 2: owner.chatId })
+      : t("telegram.telegramSettingsView.ownerIsNotLinked"));
     setHidden(this.root, "#tgUnbindOwner", !owner);
 
     const channelReady = slot?.status === "bound";
     setText(this.root, "#tgPreviewChannelState", channelReady
-      ? `Live-preview публикуется в «${slot.title || slot.chatId}»`
-      : "Live-preview недоступен без приватного канала");
+      ? t("telegram.telegramSettingsView.livePreviewIsPublishedIn", { 0: slot.title || slot.chatId })
+      : t("telegram.telegramSettingsView.livePreviewIsUnavailableWithoutAPrivate"));
     const live = this.root.querySelector("#tgLivePreview");
     if (live) {
       live.checked = liveEnabled;
@@ -197,15 +204,15 @@ export class TelegramSettingsView {
     if (nativeIntegration) nativeIntegration.checked = Boolean(nativeEnabled);
     setDisabled(this.root, "#tgPreviewSync", !channelReady || !liveEnabled);
     setDisabled(this.root, "#tgPreviewOpen", !channelReady || !liveMessage?.messageId || Number(liveMessage.chatId) !== Number(slot.chatId));
-    setText(this.root, "#tgPreviewStatus", this.previewStatus?.message || "Live-preview ещё не синхронизировался");
+    setText(this.root, "#tgPreviewStatus", this.previewStatus?.message || t("telegram.telegramSettingsView.livePreviewHasNotSyncedYet"));
 
     for (const input of this.root.querySelectorAll("[data-owner-media]")) input.checked = Boolean(media[input.dataset.ownerMedia]);
 
     const slotText = slot?.status === "bound"
-      ? `Привязан: ${slot.title || slot.chatId} · ${slot.chatId}`
+      ? t("telegram.telegramSettingsView.linked", { 0: slot.title || slot.chatId, 1: slot.chatId })
       : slot?.status === "unavailable"
-        ? `Недоступен: ${slot.title || slot.chatId} · ${slot.reason || "нет прав"}`
-        : owner ? "Слот свободен" : "Станет доступен после привязки владельца";
+        ? t("telegram.telegramSettingsView.unavailable", { 0: slot.title || slot.chatId, 1: slot.reason || t("publications.publicationView.noPermissions") })
+        : owner ? t("telegram.telegramSettingsView.slotIsFree") : t("telegram.telegramSettingsView.willBecomeAvailableAfterOwnerLinkage");
     setText(this.root, "#tgChannelState", slotText);
     setHidden(this.root, "#tgStartChannelBind", !owner || slot?.status === "bound" || slot?.status === "unavailable" || Boolean(channelSession));
     setHidden(this.root, "#tgUnbindChannel", !owner || !(slot?.status === "bound" || slot?.status === "unavailable"));
@@ -214,8 +221,8 @@ export class TelegramSettingsView {
     const code = this.root.querySelector("#tgChannelBindCode");
     if (code) code.value = channelSession?.code || "";
     setText(this.root, "#tgChannelCandidate", channelSession?.candidate
-      ? `Кандидат: ${channelSession.candidate.title} · ${channelSession.candidate.chatId}. Теперь опубликуйте код подтверждения.`
-      : channelSession ? "Кандидат ещё не обнаружен. Добавьте бота администратором приватного канала, затем опубликуйте код." : "");
+      ? t("telegram.telegramSettingsView.candidateNowPublishTheConfirmationCode", { 0: channelSession.candidate.title, 1: channelSession.candidate.chatId })
+      : channelSession ? t("telegram.telegramSettingsView.candidateNotDetectedYetAddTheBot") : "");
 
     const addLink = this.root.querySelector("#tgAddToChannelLink");
     if (addLink) {
@@ -258,11 +265,11 @@ export class TelegramSettingsView {
 
   async #requestPersistentStorage() {
     await this.#run(async () => {
-      if (!this.storageManager?.persist) throw new Error("Браузер не поддерживает постоянное хранилище");
+      if (!this.storageManager?.persist) throw new Error(t("telegram.telegramSettingsView.browserDoesNotSupportPersistentStorage"));
       const granted = await this.storageManager.persist();
       await this.#refreshStoragePersistence();
-      if (!granted) throw new Error("Браузер не предоставил постоянное хранилище");
-      this.#notice("IndexedDB защищена от автоматического удаления браузером");
+      if (!granted) throw new Error(t("telegram.telegramSettingsView.browserDidNotProvidePersistentStorage"));
+      this.#notice(t("telegram.telegramSettingsView.indexeddbIsProtectedFromAutomaticDeletionBy"));
     });
   }
 
@@ -270,16 +277,16 @@ export class TelegramSettingsView {
     if (!value) return;
     try {
       await navigator.clipboard.writeText(value);
-      this.#notice("Скопировано");
+      this.#notice(t("telegram.telegramSettingsView.copied"));
     } catch {
-      this.#notice("Не удалось скопировать автоматически", true);
+      this.#notice(t("telegram.telegramSettingsView.failedToCopyAutomatically"), true);
     }
   }
 
   async #openPreview() {
     const message = await this.previewController.getMessage();
     if (!message?.chatId || !message?.messageId || !this.navigation?.openPrivateMessage(message)) {
-      this.#notice("Предпросмотр ещё не создан в канале", true);
+      this.#notice(t("editor.editorTelegramControls.previewNotYetCreatedInTheChannel"), true);
     }
   }
 
@@ -307,11 +314,11 @@ function formatStorageUsage(usage, quota) {
   if (usage == null && quota == null) return "";
   const used = usage == null ? "—" : formatBytes(usage);
   const available = quota == null ? "—" : formatBytes(quota);
-  return `Использовано ${used} из ${available}`;
+  return t("telegram.telegramSettingsView.usedOf", { 0: used, 1: available });
 }
 
 function formatBytes(value) {
-  const units = ["Б", "КБ", "МБ", "ГБ"];
+  const units = [t("telegram.telegramSettingsView.b"), t("telegram.telegramSettingsView.kb"), t("telegram.telegramSettingsView.mb"), t("telegram.telegramSettingsView.gb")];
   let amount = Math.max(0, Number(value) || 0);
   let unit = 0;
   while (amount >= 1024 && unit < units.length - 1) { amount /= 1024; unit += 1; }

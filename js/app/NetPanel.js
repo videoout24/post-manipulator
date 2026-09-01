@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class NetPanel {
   constructor({ root, onPollingChange = null, onOfflineClick = null } = {}) {
     if (!root) throw new Error("NetPanel requires a root element");
@@ -27,7 +28,7 @@ export class NetPanel {
         </svg>
       </button>
       <span class="net-panel__items" id="${itemId}">
-        <span class="net-panel__triangle-button" title="Активность Telegram API" aria-hidden="true">
+        <span class="net-panel__triangle-button" title="${t("app.netPanel.telegramAPIActivity")}" aria-hidden="true">
           <svg class="net-panel__triangle net-panel__triangle--request" viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </span>
         <button class="net-panel__triangle-button net-panel__polling-button" type="button">
@@ -135,9 +136,9 @@ export class NetPanel {
     this.root.classList.toggle("net-panel--expanded", this.state.available && this.state.expanded);
     this.networkButton.setAttribute("aria-expanded", String(this.state.available && this.state.expanded));
     this.networkButton.title = this.state.available
-      ? (this.state.expanded ? "Свернуть индикаторы соединения" : "Развернуть индикаторы соединения")
-      : "Нет подключения к сети";
-    this.pollingButton.title = this.state.pollingEnabled ? "Остановить фоновый опрос" : "Запустить фоновый опрос";
+      ? (this.state.expanded ? t("app.netPanel.collapseConnectionIndicators") : t("app.netPanel.expandConnectionIndicators"))
+      : t("app.netPanel.noNetworkConnection");
+    this.pollingButton.title = this.state.pollingEnabled ? t("app.netPanel.stopBackgroundPolling") : t("app.netPanel.startBackgroundPolling");
     this.#renderTriangles();
   }
 }

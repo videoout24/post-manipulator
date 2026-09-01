@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { createDraftListView } from "./DraftListView.js?v=1.7.13";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.7.12";
 
@@ -166,7 +167,7 @@ export class EditorRightPanel {
     const fresh = await this.documents.openDraft(draft.id);
     this.mode = "drafts";
     this.events?.emit?.("editor:right-panel-mode", { mode: this.mode });
-    this.onToast?.({ message: `Черновик открыт: ${fresh.title}`, type: "success" });
+    this.onToast?.({ message: t("editor.editorRightPanel.draftOpened", { 0: fresh.title }), type: "success" });
   }
 
   #selectLinkTarget(target) {
@@ -181,8 +182,8 @@ export class EditorRightPanel {
     return this.#run(async () => {
       await this.documents?.saveCurrentContext?.();
       const fresh = await this.drafts?.get?.(draft.id);
-      if (!fresh) throw new Error("Черновик не найден");
-      if (!fresh.messageAst?.children?.length) throw new Error("Добавьте хотя бы один блок перед публикацией");
+      if (!fresh) throw new Error(t("editor.editorRightPanel.draftNotFound"));
+      if (!fresh.messageAst?.children?.length) throw new Error(t("editor.editorRightPanel.addAtLeastOneBlockBeforePublishing"));
       if (this.onPublishDraft) return this.onPublishDraft(fresh);
       this.events?.emit?.("publication:draft-requested", fresh);
       return true;
@@ -193,8 +194,8 @@ export class EditorRightPanel {
     return this.#run(async () => {
       await this.documents?.saveCurrentContext?.();
       const fresh = await this.drafts?.get?.(draft.id);
-      if (!fresh) throw new Error("Черновик не найден");
-      if (!fresh.messageAst?.children?.length) throw new Error("Добавьте хотя бы один блок перед публикацией");
+      if (!fresh) throw new Error(t("editor.editorRightPanel.draftNotFound"));
+      if (!fresh.messageAst?.children?.length) throw new Error(t("editor.editorRightPanel.addAtLeastOneBlockBeforePublishing"));
       if (this.onScheduleDraft) return this.onScheduleDraft(fresh);
       this.events?.emit?.("publication:draft-schedule-requested", fresh);
       return true;
@@ -207,25 +208,25 @@ export class EditorRightPanel {
       const record = await this.onApplyDraftChanges?.(draft.id);
       if (!record) return record;
       const discarded = await this.#finishPublicationEdit(draft, "publication-edit-applied");
-      if (!discarded) throw new Error("Публикация обновлена, но не удалось очистить редактор");
-      this.onToast?.({ message: `Публикация обновлена: ${record.source?.title || draft.title}`, type: "success" });
+      if (!discarded) throw new Error(t("editor.editorRightPanel.publicationUpdatedButFailedToClearEditor"));
+      this.onToast?.({ message: t("editor.editorRightPanel.publicationUpdated", { 0: record.source?.title || draft.title }), type: "success" });
       return record;
     });
   }
 
   async #applyProjectChanges(post) {
     return this.#run(async () => {
-      if (!this.session?.activeProjectId || !post?.id) throw new Error("Project post не выбран");
+      if (!this.session?.activeProjectId || !post?.id) throw new Error(t("editor.editorRightPanel.projectPostNotSelected"));
       const result = await this.onApplyProjectChanges?.(this.session.activeProjectId, post.id);
       if (!result) return result;
-      this.onToast?.({ message: `Изменения применены: ${post.title || "Пост"}`, type: "success" });
+      this.onToast?.({ message: t("editor.editorRightPanel.changesApplied", { 0: post.title || t("editor.blockInspector.post") }), type: "success" });
       return result;
     });
   }
 
   async #publishProjectPost(post) {
     return this.#run(async () => {
-      if (!this.session?.activeProjectId || !post?.id) throw new Error("Project post не выбран");
+      if (!this.session?.activeProjectId || !post?.id) throw new Error(t("editor.editorRightPanel.projectPostNotSelected"));
       const project = this.session.snapshot?.().project;
       const result = await this.onPublishProjectPost?.(project, post);
       return result;
@@ -234,7 +235,7 @@ export class EditorRightPanel {
 
   async #scheduleProjectPost(post) {
     return this.#run(async () => {
-      if (!this.session?.activeProjectId || !post?.id) throw new Error("Project post не выбран");
+      if (!this.session?.activeProjectId || !post?.id) throw new Error(t("editor.editorRightPanel.projectPostNotSelected"));
       const project = this.session.snapshot?.().project;
       return this.onScheduleProjectPost?.(project, post);
     });
@@ -242,9 +243,9 @@ export class EditorRightPanel {
 
   async #cancelProjectPostSchedule(post) {
     return this.#run(async () => {
-      if (!this.session?.activeProjectId || !post?.id) throw new Error("Project post не выбран");
+      if (!this.session?.activeProjectId || !post?.id) throw new Error(t("editor.editorRightPanel.projectPostNotSelected"));
       const result = await this.onCancelProjectPostSchedule?.(this.session.activeProjectId, post.id);
-      if (result) this.onToast?.({ message: `Отложенная публикация отменена: ${post.title || "Пост"}`, type: "success" });
+      if (result) this.onToast?.({ message: t("editor.editorRightPanel.scheduledPublicationCanceled", { 0: post.title || t("editor.blockInspector.post") }), type: "success" });
       return result;
     });
   }
@@ -252,8 +253,8 @@ export class EditorRightPanel {
   async #cancelPublicationEdit(draft) {
     return this.#run(async () => {
       const discarded = await this.#finishPublicationEdit(draft, "publication-edit-cancelled");
-      if (!discarded) throw new Error("Не удалось закрыть редактирование публикации");
-      this.onToast?.({ message: "Редактирование публикации отменено", type: "info" });
+      if (!discarded) throw new Error(t("editor.editorRightPanel.failedToClosePostEditing"));
+      this.onToast?.({ message: t("editor.editorRightPanel.postEditingCanceled"), type: "info" });
       return true;
     });
   }
@@ -276,7 +277,7 @@ export class EditorRightPanel {
       const active = this.draftSession?.activeDraftId === draft.id;
       if (active && this.documents?.discardDraft) {
         const discarded = await this.documents.discardDraft(draft.id, { reason: "deleted" });
-        if (!discarded) throw new Error("Не удалось закрыть черновик");
+        if (!discarded) throw new Error(t("editor.editorRightPanel.failedToCloseDraft"));
       } else {
         if (active) await this.draftSession.deactivate({ flush: false, reason: "deleted" });
         await this.drafts.delete(draft.id);
@@ -289,7 +290,7 @@ export class EditorRightPanel {
   async #moveDraftToProject(draft) {
     const projects = await this.projects?.listProjects?.() || [];
     if (!projects.length) {
-      this.onToast?.({ message: "Сначала создайте Project", type: "warning" });
+      this.onToast?.({ message: t("editor.editorRightPanel.createAProjectFirst"), type: "warning" });
       return;
     }
     const projectId = await chooseProject(projects, this.session?.activeProjectId || null);
@@ -300,7 +301,7 @@ export class EditorRightPanel {
       this.mode = "project";
       await this.render();
       this.events?.emit?.("editor:right-panel-mode", { mode: this.mode });
-      this.onToast?.({ message: `Черновик перенесён в Project: ${fresh.title}`, type: "success" });
+      this.onToast?.({ message: t("editor.editorRightPanel.draftMovedToProject", { 0: fresh.title }), type: "success" });
     });
   }
 
@@ -326,26 +327,26 @@ function chooseProject(projects, preferredId = null) {
     const form = document.createElement("form");
     form.method = "dialog";
     const head = el("div", "dialog-head");
-    head.append(el("strong", "", "Перенести черновик в Project"));
-    const close = button("×", "Закрыть", () => dialog.close("cancel"));
+    head.append(el("strong", "", t("editor.draftListView.moveDraftToProject")));
+    const close = button("×", t("core.darkDialog.close"), () => dialog.close("cancel"));
     head.append(close);
 
     const body = el("div", "draft-project-dialog-body");
     const label = el("label", "draft-project-select-field");
-    label.append(el("span", "", "Project"));
+    label.append(el("span", "", t("project.projectLibraryView.project")));
     const select = document.createElement("select");
     for (const project of projects) {
       const option = document.createElement("option");
       option.value = project.id;
-      option.textContent = `${project.title} · ${project.posts?.length || 0} постов`;
+      option.textContent = t("editor.editorRightPanel.posts", { 0: project.title, 1: project.posts?.length || 0 });
       if (project.id === preferredId) option.selected = true;
       select.append(option);
     }
     label.append(select);
     const actions = el("div", "format-config-actions");
     actions.append(
-      button("Отмена", "Отмена", () => dialog.close("cancel")),
-      button("В проект", "Перенести", () => dialog.close("move"))
+      button(t("core.cardDeleteConfirmation.cancel"), t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel")),
+      button(t("editor.draftListView.toProject"), t("editor.editorRightPanel.move"), () => dialog.close("move"))
     );
     actions.lastElementChild?.classList.add("primary");
     body.append(label, actions);

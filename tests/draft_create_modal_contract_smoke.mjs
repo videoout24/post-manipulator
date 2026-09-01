@@ -8,7 +8,7 @@ const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
 assert.match(commands, /await this\.requestDraftTitleFn\(\{[\s\S]*?mode: "create"/);
 assert.match(commands, /await this\.requestDraftTitleFn\(\{[\s\S]*?mode: "save-copy"/);
 assert.match(commands, /dialog\.className = "draft-create-dialog"/);
-assert.match(commands, /savingCopy \? "Сохранить как черновик" : "Новый черновик"/);
+assert.match(commands, /savingCopy \? t\("editor\.editorCommandController\.saveAsDraft"\) : t\("editor\.editorCommandController\.newDraft"\)/);
 assert.match(commands, /dialog\.showModal\(\)/);
 assert.match(shell, /promptFn = null/);
 assert.match(css, /\.draft-create-dialog/);

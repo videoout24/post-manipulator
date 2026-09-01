@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { OwnerBindingService } from "../js/telegram/OwnerBindingService.js?v=1.6.5";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const records = new Map();
 const events = [];
@@ -28,7 +29,10 @@ assert.deepEqual(await ownerBinding.getOwner(), {
   source: "verified_mini_app"
 });
 assert.equal((await ownerBinding.bindVerifiedMiniAppUser(123456789)).boundAt, owner.boundAt);
-await assert.rejects(ownerBinding.bindVerifiedMiniAppUser(987654321), /другому владельцу/);
+await assert.rejects(
+  ownerBinding.bindVerifiedMiniAppUser(987654321),
+  error => error.message === t("telegram.ownerBindingService.thisLocalDatabaseIsAlreadyBoundTo")
+);
 assert.deepEqual(await ownerBinding.handleUpdate({ update_id: 5 }), { handled: false, updateId: 5 });
 assert.equal(events.filter(([name]) => name === "telegram:owner-bound").length, 1);
 

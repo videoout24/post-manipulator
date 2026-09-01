@@ -3,6 +3,7 @@ import { EventBus } from '../js/core/EventBus.js?v=1.5.9';
 import { BlockTree } from '../js/core/BlockTree.js?v=1.5.9';
 import { ProjectStore } from '../js/project/ProjectStore.js?v=1.5.9';
 import { ProjectEditorSession } from '../js/project/ProjectEditorSession.js?v=1.5.9';
+import { t } from '../js/i18n/index.js?v=1.8.0';
 
 class MemoryDb {
   constructor(){ this.stores=new Map(); }
@@ -33,7 +34,7 @@ assert.equal(backlink.props.targetSlotId,slot.id);
 await session.openProject(project.id,{postId:child.id});
 await assert.rejects(
   () => session.rebindBacklinkRelation(backlink.id,{targetMapId:'another-map',targetSlotId:'another-slot'}),
-  /не перепривязывается/
+  error => error.message === t('project.projectEditorSession.backToMapAlwaysLeadsToThe')
 );
 
 // Even a malformed direct save is repaired to the only allowed target.

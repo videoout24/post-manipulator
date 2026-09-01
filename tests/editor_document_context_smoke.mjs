@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js?v=1.5.9";
 import { BlockTree } from "../js/core/BlockTree.js?v=1.5.9";
 import { EditorController } from "../js/editor/EditorController.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const events = new EventBus();
 const tree = new BlockTree();
@@ -27,7 +28,7 @@ controller.setDocumentContextResolver(() => false);
 assert.equal(controller.addBlock("paragraph"), null);
 assert.equal(tree.root.children.length, 0, "a block must not enter a nameless Canvas");
 assert.equal(request.type, "paragraph");
-assert.equal(controller.mutationError("property"), "Сначала откройте или создайте черновик");
+assert.equal(controller.mutationError("property"), t("editor.editorController.firstOpenOrCreateADraft"));
 
 controller.setDocumentContextResolver(() => true);
 const block = controller.addBlock("paragraph");

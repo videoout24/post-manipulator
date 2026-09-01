@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class FormattingRegistry {
   constructor() {
     this.formats = new Map();
@@ -28,76 +29,76 @@ export function createTelegramFormattingRegistry() {
   // Toolbar = visual formatting plus the date/time wrapper. Other parameterized
   // semantic entities stay in the registry for wire compatibility and are exposed
   // as dedicated palette elements.
-  wrapper("bold", "Жирный", "B");
-  wrapper("italic", "Курсив", "I");
-  wrapper("underline", "Подчёркивание", "U");
-  wrapper("strikethrough", "Зачёркивание", "S");
-  wrapper("spoiler", "Спойлер", "◫");
-  wrapper("subscript", "Нижний индекс", "x₂");
-  wrapper("superscript", "Верхний индекс", "x²");
-  wrapper("marked", "Выделение", "▣");
-  wrapper("code", "Моноширинный код", "</>");
+  wrapper("bold", t("core.formattingRegistry.bold"), "B");
+  wrapper("italic", t("core.formattingRegistry.italic"), "I");
+  wrapper("underline", t("core.formattingRegistry.underline"), "U");
+  wrapper("strikethrough", t("core.formattingRegistry.strikethrough"), "S");
+  wrapper("spoiler", t("core.formattingRegistry.spoiler"), "◫");
+  wrapper("subscript", t("core.formattingRegistry.subscript"), "x₂");
+  wrapper("superscript", t("core.formattingRegistry.superscript"), "x²");
+  wrapper("marked", t("core.formattingRegistry.highlight"), "▣");
+  wrapper("code", t("core.formattingRegistry.monospaceCode"), "</>");
 
-  semanticWrapper("date_time", "Дата / время", "🕒", {
+  semanticWrapper("date_time", t("core.formattingRegistry.dateTime"), "🕒", {
     toolbar: true,
     metadataEditor: "date-time",
     inheritMetadata: true,
     replaceExisting: true,
     fields: [
-      field("unix_time", "Unix time", "integer", { required: true }),
-      field("date_time_format", "Формат даты/времени", "text", { required: true })
+      field("unix_time", t("core.formattingRegistry.unixTime"), "integer", { required: true }),
+      field("date_time_format", t("core.formattingRegistry.dateTimeFormat"), "text", { required: true })
     ]
   });
-  semanticWrapper("text_mention", "Упоминание пользователя", "@id", {
-    fields: [field("user", "User JSON", "json", { required: true })]
+  semanticWrapper("text_mention", t("core.formattingRegistry.userMention"), "@id", {
+    fields: [field("user", t("core.formattingRegistry.userJson"), "json", { required: true })]
   });
-  semanticWrapper("url", "Ссылка", "🔗", {
+  semanticWrapper("url", t("core.formattingRegistry.link"), "🔗", {
     fields: [field("url", "URL", "url", { required: true })]
   });
   semanticWrapper("email_address", "E-mail", "✉", {
     fields: [field("email_address", "E-mail", "text", { required: true })]
   });
-  semanticWrapper("phone_number", "Телефон", "☎", {
-    fields: [field("phone_number", "Телефон", "text", { required: true })]
+  semanticWrapper("phone_number", t("core.formattingRegistry.phone"), "☎", {
+    fields: [field("phone_number", t("core.formattingRegistry.phone"), "text", { required: true })]
   });
-  semanticWrapper("bank_card_number", "Номер карты", "▰", {
-    fields: [field("bank_card_number", "Номер карты", "text", { required: true })]
+  semanticWrapper("bank_card_number", t("core.formattingRegistry.cardNumber"), "▰", {
+    fields: [field("bank_card_number", t("core.formattingRegistry.cardNumber"), "text", { required: true })]
   });
-  semanticWrapper("mention", "Упоминание @username", "@", {
+  semanticWrapper("mention", t("core.formattingRegistry.mentionUsername"), "@", {
     fields: [field("username", "Username", "text", { required: true })]
   });
-  semanticWrapper("hashtag", "Хэштег", "#", {
+  semanticWrapper("hashtag", t("core.formattingRegistry.hashtag"), "#", {
     fields: [field("hashtag", "Hashtag", "text", { required: true })]
   });
   semanticWrapper("cashtag", "Cashtag", "$", {
     fields: [field("cashtag", "Cashtag", "text", { required: true })]
   });
-  semanticWrapper("bot_command", "Команда бота", "/", {
-    fields: [field("bot_command", "Команда", "text", { required: true })]
+  semanticWrapper("bot_command", t("core.formattingRegistry.botCommand"), "/", {
+    fields: [field("bot_command", t("core.formattingRegistry.command"), "text", { required: true })]
   });
-  semanticWrapper("anchor_link", "Ссылка на якорь", "⚓→", {
-    fields: [field("anchor_name", "Имя якоря", "text")]
+  semanticWrapper("anchor_link", t("blocks.registerCoreBlocks.anchorLink"), "⚓→", {
+    fields: [field("anchor_name", t("core.formattingRegistry.anchorName"), "text")]
   });
-  semanticWrapper("reference", "Ссылка-источник", "[ ]", {
-    fields: [field("name", "Имя ссылки", "text", { required: true })]
+  semanticWrapper("reference", t("core.formattingRegistry.sourceLink"), "[ ]", {
+    fields: [field("name", t("core.formattingRegistry.linkName"), "text", { required: true })]
   });
-  semanticWrapper("reference_link", "Переход к ссылке-источнику", "↗ref", {
-    fields: [field("reference_name", "Имя ссылки", "text", { required: true })]
+  semanticWrapper("reference_link", t("core.formattingRegistry.goToSourceLink"), "↗ref", {
+    fields: [field("reference_name", t("core.formattingRegistry.linkName"), "text", { required: true })]
   });
 
   r.register("mathematical_expression", {
-    label: "Математическое выражение",
+    label: t("core.formattingRegistry.mathematicalExpression"),
     shortLabel: "∑",
     toolbar: false,
     semantic: true,
     fields: [field("expression", "LaTeX", "text", { required: true })]
   });
   r.register("anchor", {
-    label: "Якорь",
+    label: t("core.formattingRegistry.anchor"),
     shortLabel: "⚓",
     toolbar: false,
     semantic: true,
-    fields: [field("name", "Имя якоря", "text", { required: true })]
+    fields: [field("name", t("core.formattingRegistry.anchorName"), "text", { required: true })]
   });
 
   return r;

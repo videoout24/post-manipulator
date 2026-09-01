@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.6.5";
 
 export class MetaBlockDialog {
@@ -12,8 +13,8 @@ export class MetaBlockDialog {
   open() {
     if (!(this.tree.root?.children || []).length) {
       void showDarkMessage({
-        title: "Canvas пуст",
-        message: "Добавьте хотя бы один блок."
+        title: t("editor.metaBlockDialog.canvasIsEmpty"),
+        message: t("editor.metaBlockDialog.addAtLeastOneBlock")
       });
       return;
     }
@@ -23,7 +24,7 @@ export class MetaBlockDialog {
   create() {
     const type = this.dialog.querySelector("#metaType").value.trim();
     const name = this.dialog.querySelector("#metaName").value.trim();
-    const category = this.dialog.querySelector("#metaCategory").value.trim() || "Custom";
+    const category = this.dialog.querySelector("#metaCategory").value.trim() || t("core.metaBlockRegistry.custom");
     const form = this.dialog.querySelector("form");
     if (!type || !name) {
       form?.reportValidity?.();
@@ -37,15 +38,15 @@ export class MetaBlockDialog {
     const overlay = document.createElement("div");
     overlay.className = "meta-create-confirmation";
     const message = document.createElement("strong");
-    message.textContent = `Создать Meta Block «${name}» из текущего Canvas?`;
+    message.textContent = t("editor.metaBlockDialog.createMetaBlockFromCurrentCanvas", { 0: name });
     const detail = document.createElement("span");
-    detail.textContent = `В шаблон войдёт ${this.tree.root?.children?.length || 0} ${pluralBlocks(this.tree.root?.children?.length || 0)} верхнего уровня.`;
+    detail.textContent = t("editor.metaBlockDialog.theTemplateWillIncludeTopLevel", { 0: this.tree.root?.children?.length || 0, 1: pluralBlocks(this.tree.root?.children?.length || 0) });
     const actions = document.createElement("div");
     actions.className = "format-config-actions";
     const cancel = document.createElement("button");
-    cancel.type = "button"; cancel.textContent = "Отмена"; cancel.onclick = () => overlay.remove();
+    cancel.type = "button"; cancel.textContent = t("core.cardDeleteConfirmation.cancel"); cancel.onclick = () => overlay.remove();
     const confirm = document.createElement("button");
-    confirm.type = "button"; confirm.className = "primary"; confirm.textContent = "Создать";
+    confirm.type = "button"; confirm.className = "primary"; confirm.textContent = t("editor.editorCommandController.create");
     confirm.onclick = () => {
       this.confirmCreate({ type, name, category });
       overlay.remove();
@@ -73,8 +74,8 @@ export class MetaBlockDialog {
 function pluralBlocks(count) {
   const value = Math.abs(Number(count) || 0) % 100;
   const last = value % 10;
-  if (value > 10 && value < 20) return "блоков";
-  if (last === 1) return "блок";
-  if (last > 1 && last < 5) return "блока";
-  return "блоков";
+  if (value > 10 && value < 20) return t("editor.metaBlockDialog.blocks");
+  if (last === 1) return t("editor.metaBlockDialog.block");
+  if (last > 1 && last < 5) return t("editor.metaBlockDialog.ofBlock");
+  return t("editor.metaBlockDialog.blocks");
 }

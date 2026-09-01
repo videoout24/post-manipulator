@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class EditorDocumentCoordinator {
   constructor({ projectSession, draftSession, drafts, projects, graphReconciler = null, tree = null, storage = null } = {}) {
     this.projectSession = projectSession;
@@ -20,7 +21,7 @@ export class EditorDocumentCoordinator {
       return null;
     }
     const draft = await this.drafts.create({
-      title: "Восстановленный черновик",
+      title: t("editor.editorDocumentCoordinator.restoredDraft"),
       messageAst: ast,
       source: { kind: "draft" }
     });
@@ -44,14 +45,14 @@ export class EditorDocumentCoordinator {
   async openDraft(draftId) {
     await this.saveCurrentContext();
     const draft = await this.drafts.get(draftId);
-    if (!draft) throw new Error(`Черновик не найден: ${draftId}`);
+    if (!draft) throw new Error(t("editor.editorDocumentCoordinator.draftNotFound", { 0: draftId }));
     await this.projectSession.openStandaloneAst(draft.messageAst, { reason: "draft-opened", persist: false });
     this.draftSession?.activate?.(draft, { reason: "opened" });
     return draft;
   }
 
   async openProjectPost(projectId, postId) {
-    if (!projectId || !postId) throw new Error("Не указан Project post");
+    if (!projectId || !postId) throw new Error(t("editor.editorDocumentCoordinator.projectPostNotSpecified"));
     await this.saveCurrentContext();
     if (this.draftSession?.isActive?.()) {
       await this.draftSession.deactivate({ flush: false, reason: "project-opened" });
@@ -64,9 +65,9 @@ export class EditorDocumentCoordinator {
   async moveDraftToProject(draftId, projectId) {
     await this.saveCurrentContext();
     const draft = await this.drafts.get(draftId);
-    if (!draft) throw new Error(`Черновик не найден: ${draftId}`);
+    if (!draft) throw new Error(t("editor.editorDocumentCoordinator.draftNotFound", { 0: draftId }));
     const { post } = await this.projects.createPost(projectId, {
-      title: draft.title || "Пост",
+      title: draft.title || t("editor.blockInspector.post"),
       messageAst: draft.messageAst
     });
     await this.graphReconciler?.reconcile?.(projectId);

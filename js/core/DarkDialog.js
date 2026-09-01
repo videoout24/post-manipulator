@@ -1,6 +1,7 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 /** Browser-native prompt, alert and confirm windows ignore the app theme.
  * These helpers keep short interactions inside the same dark dialog system. */
-export function requestTextDialog({ title, label = "Значение", value = "", placeholder = "", submitLabel = "Сохранить" } = {}) {
+export function requestTextDialog({ title, label = t("core.darkDialog.value"), value = "", placeholder = "", submitLabel = t("core.darkDialog.save") } = {}) {
   return new Promise(resolve => {
     const dialog = createDialog(title, resolve);
     const body = document.createElement("div");
@@ -30,14 +31,14 @@ export function requestTextDialog({ title, label = "Значение", value = "
   });
 }
 
-export function confirmDarkDialog({ title = "Подтвердите действие", message, confirmLabel = "Продолжить", danger = false } = {}) {
+export function confirmDarkDialog({ title = t("core.darkDialog.confirmAction"), message, confirmLabel = t("app.continue"), danger = false } = {}) {
   return new Promise(resolve => {
     const dialog = createDialog(title, resolve);
     const body = document.createElement("div");
     body.className = "app-modal-dialog-body";
     const copy = document.createElement("p");
     copy.className = "app-modal-dialog-copy";
-    copy.textContent = message || "Продолжить?";
+    copy.textContent = message || t("core.darkDialog.continue");
     const actions = createActions(dialog, {
       confirmLabel,
       danger,
@@ -50,7 +51,7 @@ export function confirmDarkDialog({ title = "Подтвердите действ
   });
 }
 
-export function showDarkMessage({ title = "Сообщение", message, closeLabel = "Понятно" } = {}) {
+export function showDarkMessage({ title = t("core.darkDialog.message"), message, closeLabel = t("core.darkDialog.gotIt") } = {}) {
   return new Promise(resolve => {
     const dialog = createDialog(title, resolve);
     const body = document.createElement("div");
@@ -77,7 +78,7 @@ function createDialog(title) {
   const heading = document.createElement("strong");
   heading.textContent = title || "Post Manipulator";
   const close = button("×", "", () => dialog.close("cancel"));
-  close.setAttribute("aria-label", "Закрыть");
+  close.setAttribute("aria-label", t("core.darkDialog.close"));
   head.append(heading, close);
   dialog.append(head);
   document.body.append(dialog);
@@ -89,7 +90,7 @@ function createActions(dialog, { confirmLabel, onConfirm, danger = false }) {
   const actions = document.createElement("div");
   actions.className = "app-modal-dialog-actions";
   actions.append(
-    button("Отмена", "", () => dialog.close("cancel")),
+    button(t("core.cardDeleteConfirmation.cancel"), "", () => dialog.close("cancel")),
     button(confirmLabel, danger ? "danger" : "primary", onConfirm)
   );
   return actions;

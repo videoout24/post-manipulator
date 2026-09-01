@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { defaultDateTimeLocal } from "../core/SemanticRichText.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import {
@@ -218,17 +219,17 @@ export class EditorController {
     }
     const nextChildren = nextDef.children || {};
     if (nextChildren.allowed === false && (node.children || []).length) {
-      this.reportError(`${nextDef.name || nextType} не принимает вложенные блоки`);
+      this.reportError(t("editor.editorController.doesNotAcceptNestedBlocks", { 0: nextDef.name || nextType }));
       return null;
     }
     if (Number.isFinite(nextChildren.maxItems) && (node.children || []).length > nextChildren.maxItems) {
-      this.reportError(`${nextDef.name || nextType}: максимум ${nextChildren.maxItems} вложенных блоков`);
+      this.reportError(t("editor.editorController.maximumNestedBlocks", { 0: nextDef.name || nextType, 1: nextChildren.maxItems }));
       return null;
     }
     if (Array.isArray(nextChildren.types)) {
       const incompatible = (node.children || []).find(child => !nextChildren.types.includes(child.type));
       if (incompatible) {
-        this.reportError(`${nextDef.name || nextType} не принимает ${incompatible.type}`);
+        this.reportError(t("editor.editorController.doesNotAccept", { 0: nextDef.name || nextType, 1: incompatible.type }));
         return null;
       }
     }
@@ -275,13 +276,13 @@ export class EditorController {
   acceptError(parentId, childType, movingNodeId = null) {
     const parent = this.tree.find(parentId);
     const def = this.registry.get(childType);
-    if (!parent) return "Parent block was not found";
+    if (!parent) return t("editor.editorController.parentBlockNotFound");
     if (!def) return `Unknown block type: ${childType}`;
-    if (parentId === movingNodeId) return "A block cannot be nested inside itself";
+    if (parentId === movingNodeId) return t("editor.editorController.blockCannotNestInsideItself");
 
     if (movingNodeId) {
       const movingNode = this.tree.find(movingNodeId);
-      if (!movingNode) return "Dragged block was not found";
+      if (!movingNode) return t("editor.editorController.draggedBlockNotFound");
       return this.subtreeAcceptError(parentId, movingNode, { movingNodeId });
     }
 
@@ -303,13 +304,13 @@ export class EditorController {
 
   subtreeAcceptError(parentId, node, { movingNodeId = null, copy = false } = {}) {
     const parent = this.tree.find(parentId);
-    if (!parent || !node) return "Destination was not found";
-    if (parentId === movingNodeId || parentId === node.id) return "A block cannot be nested inside itself";
+    if (!parent || !node) return t("editor.editorController.destinationNotFound");
+    if (parentId === movingNodeId || parentId === node.id) return t("editor.editorController.blockCannotNestInsideItself");
 
     if (movingNodeId) {
       let cursor = parent;
       while (cursor) {
-        if (cursor.id === movingNodeId) return "A block cannot be moved inside its own descendant";
+        if (cursor.id === movingNodeId) return t("editor.editorController.blockCannotMoveIntoDescendant");
         cursor = this.tree.parentOf(cursor.id);
       }
     }
@@ -385,7 +386,7 @@ export class EditorController {
   }
 
   mutationError(action, payload = {}) {
-    if (!this.hasDocumentContext()) return "Сначала откройте или создайте черновик";
+    if (!this.hasDocumentContext()) return t("editor.editorController.firstOpenOrCreateADraft");
     return this.mutationGuard?.({ action, ...payload }) || "";
   }
 

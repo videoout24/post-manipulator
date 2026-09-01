@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver } from "./ProjectDeploymentResolver.js?v=1.5.9";
@@ -6,7 +7,7 @@ import { projectMapEntryText } from "./ProjectMapText.js?v=1.7.11";
 export class ProjectCompiler {
   compilePost(project, postId, { deployment = "preview", index = null, resolver = null, sourceAst = null } = {}) {
     const post = project?.posts?.find(item => item.id === postId);
-    if (!post) throw new Error(`Project post not found: ${postId}`);
+    if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
     const projectIndex = index || new ProjectIndex(project);
     const deploymentResolver = resolver || new ProjectDeploymentResolver({ project, index: projectIndex, deployment });
     const ast = sourceAst || post.messageAst;
@@ -36,7 +37,7 @@ export class ProjectCompiler {
     const props = node.props || {};
     const slots = Array.isArray(props.slots) ? props.slots : [];
     if (!slots.length) {
-      return [paragraph(`${statusEmoji("empty")} ${String(props.emptyText || "Карта пока пуста")}`, `${node.id}:empty`)];
+      return [paragraph(`${statusEmoji("empty")} ${String(props.emptyText || t("core.propertyRegistry.mapIsCurrentlyEmpty"))}`, `${node.id}:empty`)];
     }
 
     return slots.map((slot, index) => {
@@ -57,7 +58,7 @@ export class ProjectCompiler {
 
   #compileBacklink(node, context) {
     const props = node.props || {};
-    const text = String(props.text || "Назад");
+    const text = String(props.text || t("core.propertyRegistry.back"));
     const resolved = props.targetMapId ? context.resolver.resolveMap(String(props.targetMapId)) : null;
     return paragraph(resolved?.url ? { type: "url", text, url: resolved.url } : text, `${node.id}:compiled`);
   }

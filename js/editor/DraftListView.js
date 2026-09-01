@@ -1,3 +1,4 @@
+import { getLocale, t } from "../i18n/index.js?v=1.8.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -25,12 +26,12 @@ export function createDraftListView({
     && drafts[0].id === activeDraftId
     && drafts[0].source?.kind === "publication";
   titleWrap.append(
-    el("strong", "", publicationContext ? "Редактирование публикации" : "Черновики"),
-    el("span", "", publicationContext ? (drafts[0].source?.targetTitle || "Telegram") : `${drafts.length} сохранено`)
+    el("strong", "", publicationContext ? t("editor.draftListView.editPublication") : t("editor.draftListView.drafts")),
+    el("span", "", publicationContext ? (drafts[0].source?.targetTitle || "Telegram") : t("editor.draftListView.saved", { 0: drafts.length }))
   );
   const close = button(
     "×",
-    publicationContext ? "Отменить редактирование публикации" : "Закрыть черновики",
+    publicationContext ? t("editor.draftListView.cancelEditingThePublication") : t("editor.draftListView.closeDrafts"),
     () => publicationContext ? onCancelPublicationEdit?.(drafts[0]) : onClose?.()
   );
   close.className = "project-panel-close";
@@ -39,7 +40,7 @@ export function createDraftListView({
   const list = el("div", "project-post-list draft-list");
   if (!drafts.length) {
     const empty = el("div", "draft-panel-empty");
-    empty.append(el("strong", "", "Черновиков пока нет"), el("span", "", "Кнопка «Новый» создаёт именованный черновик."));
+    empty.append(el("strong", "", t("editor.draftListView.noDraftsYet")), el("span", "", t("editor.draftListView.theNewButtonCreatesANamedDraft")));
     list.append(empty);
   } else {
     for (const draft of drafts) {
@@ -79,7 +80,7 @@ function createDraftCard({
 
   const head = el("div", "draft-card-head");
   const body = el("div", "draft-card-body");
-  body.append(el("strong", "", draft.title || "Черновик"));
+  body.append(el("strong", "", draft.title || t("editor.draftListView.draft")));
   body.append(el("span", "draft-card-meta", `${sourceLabel(draft.source)} · ${formatTime(draft.updatedAt)}`));
   head.append(body);
   const tools = el("div", "draft-card-tools");
@@ -87,8 +88,8 @@ function createDraftCard({
   tools.append(createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }));
   if (!publicationCopy) {
     tools.append(
-      button("✎", "Переименовать черновик", () => showRenameEditor(card, draft, onRename)),
-      button("🗑", "Удалить черновик", () => showCardDeleteConfirmation(card, { message: `Удалить «${draft?.title || "Черновик"}»?`, onConfirm: () => onDelete?.(draft) }))
+      button("✎", t("editor.draftListView.renameDraft"), () => showRenameEditor(card, draft, onRename)),
+      button("🗑", t("editor.draftListView.deleteDraft"), () => showCardDeleteConfirmation(card, { message: t("editor.blockPalette.delete", { 0: draft?.title || t("editor.draftListView.draft") }), onConfirm: () => onDelete?.(draft) }))
     );
     tools.lastElementChild?.classList.add("danger-soft");
   }
@@ -100,18 +101,18 @@ function createDraftCard({
     actions.classList.add("publication-edit-actions");
     const scheduledCopy = Boolean(draft.source?.scheduledAt);
     const apply = button(
-      "Применить изменения",
-      scheduledCopy ? "Обновить содержимое отложенной публикации" : "Обновить опубликованное сообщение",
+      t("editor.draftListView.applyChanges"),
+      scheduledCopy ? t("editor.draftListView.updateTheContentOfTheScheduledPublication") : t("editor.draftListView.updatePublishedMessage"),
       () => onApplyChanges?.(draft)
     );
     apply.classList.add("publication-edit-apply");
-    const cancel = button("Отмена", "Отменить редактирование и удалить рабочую копию", () => onCancelPublicationEdit?.(draft));
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), t("editor.draftListView.cancelEditingAndDeleteWorkingCopy"), () => onCancelPublicationEdit?.(draft));
     cancel.classList.add("publication-edit-cancel");
     actions.append(apply, cancel);
   } else if (draftHasBlocks(draft)) {
-    actions.append(button("В проект", "Перенести черновик в Project", () => onMoveToProject?.(draft)));
-    actions.append(button("Опубликовать", "Опубликовать черновик", () => onPublish?.(draft)));
-    actions.append(button("Отложить", "Запланировать публикацию черновика", () => onSchedule?.(draft)));
+    actions.append(button(t("editor.draftListView.toProject"), t("editor.draftListView.moveDraftToProject"), () => onMoveToProject?.(draft)));
+    actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
+    actions.append(button(t("editor.draftListView.postpone"), t("editor.draftListView.scheduleDraftPublication"), () => onSchedule?.(draft)));
   }
   if (actions.childElementCount) card.append(actions);
   else card.classList.add("no-footer-actions");
@@ -145,13 +146,13 @@ function linkTargetForDraft(draft) {
     return {
       kind: "publication",
       id: draft.source.publicationId,
-      title: draft.title || draft.source.targetTitle || "Публикация"
+      title: draft.title || draft.source.targetTitle || t("editor.draftListView.publication")
     };
   }
   return {
     kind: "draft",
     id: draft.id,
-    title: draft.title || "Черновик"
+    title: draft.title || t("editor.draftListView.draft")
   };
 }
 
@@ -167,12 +168,12 @@ function showRenameEditor(card, draft, onRename) {
   input.className = "project-post-rename-input";
   input.type = "text";
   input.maxLength = 160;
-  input.value = String(draft?.title || "Черновик");
-  input.placeholder = "Название черновика";
-  input.setAttribute("aria-label", "Название черновика");
+  input.value = String(draft?.title || t("editor.draftListView.draft"));
+  input.placeholder = t("editor.draftListView.draftTitle");
+  input.setAttribute("aria-label", t("editor.draftListView.draftTitle"));
   const actions = el("div", "project-post-card-overlay-actions");
-  const cancel = button("Отмена", "Отменить переименование", () => overlay.remove());
-  const save = button("Сохранить", "Сохранить название черновика", async () => {
+  const cancel = button(t("core.cardDeleteConfirmation.cancel"), t("editor.draftListView.cancelRenaming"), () => overlay.remove());
+  const save = button(t("core.darkDialog.save"), t("editor.draftListView.saveDraftTitle"), async () => {
     const title = input.value.trim();
     if (!title) {
       input.classList.add("invalid");
@@ -206,14 +207,16 @@ function showRenameEditor(card, draft, onRename) {
 }
 
 function sourceLabel(source) {
-  if (source?.kind === "project") return source.postTitle ? `Project · ${source.postTitle}` : "Project post";
-  if (source?.kind === "publication") return source.targetTitle ? `Публикация · ${source.targetTitle}` : "Публикация";
+  if (source?.kind === "project") return source.postTitle
+    ? t("editor.draftListView.projectPostTitle", { 0: source.postTitle })
+    : t("editor.draftListView.projectPost");
+  if (source?.kind === "publication") return source.targetTitle ? t("editor.draftListView.publication2", { 0: source.targetTitle }) : t("editor.draftListView.publication");
   return "Draft";
 }
 
 function formatTime(value) {
   const date = new Date(Number(value || Date.now()));
-  try { return date.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+  try { return date.toLocaleString(getLocale(), { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
   catch { return date.toISOString(); }
 }
 

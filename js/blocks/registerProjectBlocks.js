@@ -1,12 +1,13 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });
 
 export function registerProjectBlocks(registry) {
   const blocks = [
     {
       type: "project_post_map",
-      name: "Post Map",
-      paletteLabel: "Post Map",
-      category: "Project",
+      name: t("blocks.registerProjectBlocks.postMap"),
+      paletteLabel: t("blocks.registerProjectBlocks.postMap"),
+      category: t("blocks.category.project"),
       projectVirtual: true,
       accepts: { properties: [
         prop("project.map.id", "mapId"),
@@ -22,9 +23,9 @@ export function registerProjectBlocks(registry) {
     },
     {
       type: "project_map_backlink",
-      name: "Back to Map",
-      paletteLabel: "Back to Map",
-      category: "Project",
+      name: t("blocks.registerProjectBlocks.backToMap"),
+      paletteLabel: t("blocks.registerProjectBlocks.backToMap"),
+      category: t("blocks.category.project"),
       projectVirtual: true,
       accepts: { properties: [
         prop("project.backlink.relation", "targetMapId"),

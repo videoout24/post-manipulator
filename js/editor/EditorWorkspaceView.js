@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class EditorWorkspaceView {
   constructor({
     tree,
@@ -83,8 +84,8 @@ export class EditorWorkspaceView {
     }
     const stats = this.validator.stats(this.tree);
     this.statsRoot.replaceChildren(
-      this.#makeStat("Блоки", stats.blockCount, stats.maxBlocks),
-      this.#makeStat("Глубина", stats.maxDepth, stats.maxDepthLimit)
+      this.#makeStat(t("editor.editorWorkspaceView.blocks"), stats.blockCount, stats.maxBlocks),
+      this.#makeStat(t("editor.editorWorkspaceView.depth"), stats.maxDepth, stats.maxDepthLimit)
     );
   }
 
@@ -126,10 +127,10 @@ export class EditorWorkspaceView {
     if (!this.toggleAllBlocksButton) return;
     const current = state || { total: 0, allCollapsed: false };
     this.toggleAllBlocksButton.disabled = !current.total;
-    this.toggleAllBlocksButton.textContent = current.allCollapsed ? "Развернуть все" : "Свернуть все";
+    this.toggleAllBlocksButton.textContent = current.allCollapsed ? t("editor.editorWorkspaceView.expandAll") : t("editor.editorWorkspaceView.collapseAll");
     this.toggleAllBlocksButton.title = current.allCollapsed
-      ? "Развернуть все блоки на Canvas"
-      : "Свернуть все блоки на Canvas";
+      ? t("editor.editorWorkspaceView.expandAllBlocksOnCanvas")
+      : t("editor.editorWorkspaceView.collapseAllBlocksOnCanvas");
   }
 
   #makeStat(label, value, limit) {
@@ -137,7 +138,7 @@ export class EditorWorkspaceView {
     const ratio = limit ? value / limit : 0;
     item.className = `canvas-stat${value > limit ? " invalid" : ratio >= 0.9 ? " warning" : ""}`;
     item.textContent = `${label}: ${value} / ${limit}`;
-    item.title = `${label}: текущее значение ${value}, лимит ${limit}`;
+    item.title = t("editor.editorWorkspaceView.currentValueLimit", { 0: label, 1: value, 2: limit });
     return item;
   }
 }

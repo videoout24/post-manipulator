@@ -1,21 +1,22 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const SETTINGS_KEY = "formulaTemplateLibrary";
 
 const DEFAULT_LIBRARY = Object.freeze({
   sections: [
     {
-      title: "Физика",
+      title: t("editor.formulaTemplateLibrary.physics"),
       subsections: [
-        { title: "Механика", templates: [
-          { label: "Второй закон Ньютона", latex: "F=ma" },
-          { label: "Кинетическая энергия", latex: "E_k=\\frac{mv^2}{2}" }
+        { title: t("editor.formulaTemplateLibrary.mechanics"), templates: [
+          { label: t("editor.formulaTemplateLibrary.newtonSSecondLaw"), latex: "F=ma" },
+          { label: t("editor.formulaTemplateLibrary.kineticEnergy"), latex: "E_k=\\frac{mv^2}{2}" }
         ] }
       ]
     },
     {
-      title: "Химия",
+      title: t("editor.formulaTemplateLibrary.chemistry"),
       subsections: [
-        { title: "Общее", templates: [
-          { label: "Количество вещества", latex: "n=\\frac{m}{M}" }
+        { title: t("core.propertyRegistry.general"), templates: [
+          { label: t("editor.formulaTemplateLibrary.amountOfSubstance"), latex: "n=\\frac{m}{M}" }
         ] }
       ]
     }
@@ -42,7 +43,7 @@ export class FormulaTemplateLibrary {
       const payload = String(asset.caption || "").trim();
       if (!payload.startsWith("{")) return;
       this.importJson(payload, { source: `telegram:${asset.id}` })
-        .then(result => this.events?.emit("ui:editor-notice", { message: `LaTeX-шаблоны импортированы: ${result.added}`, type: "success" }))
+        .then(result => this.events?.emit("ui:editor-notice", { message: t("editor.formulaTemplateLibrary.latexTemplatesImported", { 0: result.added }), type: "success" }))
         .catch(error => this.events?.emit("ui:editor-notice", { message: `LaTeX JSON: ${error.message}`, type: "error" }));
     });
   }
@@ -98,14 +99,14 @@ function normalizeLibrary(input) {
   const sourceSections = Array.isArray(input?.sections) ? input.sections : [];
   const sections = [];
   for (const section of sourceSections) {
-    const title = String(section?.title || "Раздел").trim() || "Раздел";
+    const title = String(section?.title || t("editor.formulaTemplateLibrary.section")).trim() || t("editor.formulaTemplateLibrary.section");
     const rawSubs = Array.isArray(section?.subsections)
       ? section.subsections
-      : [{ title: "Общее", templates: Array.isArray(section?.templates) ? section.templates : [] }];
+      : [{ title: t("core.propertyRegistry.general"), templates: Array.isArray(section?.templates) ? section.templates : [] }];
     const subsections = rawSubs.map(sub => ({
-      title: String(sub?.title || "Общее").trim() || "Общее",
+      title: String(sub?.title || t("core.propertyRegistry.general")).trim() || t("core.propertyRegistry.general"),
       templates: (Array.isArray(sub?.templates) ? sub.templates : [])
-        .map(template => ({ label: String(template?.label || template?.latex || "Шаблон"), latex: String(template?.latex || "") }))
+        .map(template => ({ label: String(template?.label || template?.latex || t("editor.formulaTemplateLibrary.template")), latex: String(template?.latex || "") }))
         .filter(template => template.latex)
     })).filter(sub => sub.templates.length);
     if (subsections.length) sections.push({ title, subsections });

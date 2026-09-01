@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
 
@@ -37,7 +38,7 @@ export class ProjectPreviewSync {
   // affectedPostIds === null means an explicit/full project sync. Automatic Editor
   // changes pass the edited post ids and are expanded only through ProjectIndex.
   sync(projectId, { automatic = false, affectedPostIds = null } = {}) {
-    if (!projectId) return Promise.reject(new Error("Project id is required"));
+    if (!projectId) return Promise.reject(new Error(t("project.common.projectIdRequired")));
     const affected = normalizePostIds(affectedPostIds);
     if (this.running.has(projectId)) {
       this.#queueResync(projectId, { automatic, affectedPostIds: affected });
@@ -66,14 +67,14 @@ export class ProjectPreviewSync {
   }
 
   async remove(projectId) {
-    if (!projectId) throw new Error("Project id is required");
+    if (!projectId) throw new Error(t("project.common.projectIdRequired"));
     clearTimeout(this.timers.get(projectId));
     this.timers.delete(projectId);
     this.scheduledAffected.delete(projectId);
     this.scheduledFull.delete(projectId);
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     const project = await this.store.getProject(projectId);
-    if (!project) throw new Error(`Project not found: ${projectId}`);
+    if (!project) throw new Error(t("project.common.projectNotFound", { 0: projectId }));
 
     // Removal is deliberately best-effort and per-post. Telegram staging is a
     // projection/cache of Project state: an incomplete or manually modified channel
@@ -159,7 +160,7 @@ export class ProjectPreviewSync {
       const result = await this.remove(project.id);
       results.push({ projectId: project.id, ...result });
       if (result.partial) {
-        const error = new Error(`Не удалось полностью очистить выгрузку проекта «${project.title || project.id}»: осталось ${result.remaining}`);
+        const error = new Error(t("project.projectPreviewSync.failedToCompletelyClearProjectUploadRemaining", { 0: project.title || project.id, 1: result.remaining }));
         error.cleanupResults = results;
         throw error;
       }
@@ -240,7 +241,7 @@ export class ProjectPreviewSync {
         ? await this.transport.syncEnvelope(previous.messageId, envelope)
         : { action: "sent", message: await this.transport.sendEnvelope(envelope) };
       const messageId = Number(result.message?.message_id || result.messageId || previous?.messageId);
-      if (!messageId) throw new Error(`Telegram не вернул message_id для ${post.title || post.id}`);
+      if (!messageId) throw new Error(t("project.projectPreviewSync.telegramDidNotReturnMessageIdFor", { 0: post.title || post.id }));
       project = await this.#saveDeployment(project, post.id, channel.chatId, messageId);
       this.#emit("materializing", project, { current: i + 1, total: project.posts.length, postId: post.id, action: result.action || "sent", channel, automatic, full: true });
     }
@@ -278,7 +279,7 @@ export class ProjectPreviewSync {
       const envelope = this.transport.render(tree);
       const message = await this.transport.sendEnvelope(envelope);
       const messageId = Number(message?.message_id);
-      if (!messageId) throw new Error(`Telegram не вернул message_id для ${post.title || post.id}`);
+      if (!messageId) throw new Error(t("project.projectPreviewSync.telegramDidNotReturnMessageIdFor", { 0: post.title || post.id }));
       project = await this.#saveDeployment(project, post.id, channel.chatId, messageId);
       // A newly materialized post has acquired a Telegram identity. Backlinks to Maps
       // hosted by it (and Map links to it) now need their compiled URL refreshed.
@@ -334,7 +335,7 @@ export class ProjectPreviewSync {
   async #loadValidated(projectId, automatic) {
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     const project = await this.store.getProject(projectId);
-    if (!project) throw new Error(`Project not found: ${projectId}`);
+    if (!project) throw new Error(t("project.common.projectNotFound", { 0: projectId }));
     const index = new ProjectIndex(project);
     const sourceErrors = this.validator?.validate?.(project, index) || [];
     if (!sourceErrors.length) return { project, index };
@@ -342,7 +343,7 @@ export class ProjectPreviewSync {
       this.#emit("waiting", project, { validationErrors: sourceErrors, total: project.posts.length });
       return { project: null, index: { project, skipped: "invalid", validationErrors: sourceErrors } };
     }
-    const error = new Error(`Project не прошёл source validation: ${sourceErrors.length} ошибок`);
+    const error = new Error(t("project.projectPreviewSync.projectDidNotPassSourceValidationErrors", { 0: sourceErrors.length }));
     error.validationErrors = sourceErrors;
     throw error;
   }

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const PREFIX = "draft_";
 
 export class DraftStore {
@@ -23,7 +24,7 @@ export class DraftStore {
     const now = Date.now();
     const draft = normalizeDraft({
       id: makeId(),
-      title: title || "Черновик",
+      title: title || t("editor.draftListView.draft"),
       messageAst,
       source,
       createdAt: now,
@@ -40,7 +41,7 @@ export class DraftStore {
     const now = Date.now();
     const draft = normalizeDraft({
       id,
-      title: title || "Черновик",
+      title: title || t("editor.draftListView.draft"),
       messageAst,
       source,
       createdAt: Number(createdAt || now),
@@ -64,7 +65,7 @@ export class DraftStore {
   async rename(id, title) {
     const current = await this.get(id);
     if (!current) throw new Error(`Draft not found: ${id}`);
-    current.title = String(title || "").trim() || current.title || "Черновик";
+    current.title = String(title || "").trim() || current.title || t("editor.draftListView.draft");
     current.updatedAt = Date.now();
     await this.db?.put?.("drafts", id, current);
     this.events?.emit?.("draft:changed", { reason: "renamed", draft: structuredClone(current), draftId: id });
@@ -82,7 +83,7 @@ function normalizeDraft(value, fallbackId = "") {
   const input = value && typeof value === "object" ? value : {};
   return {
     id: String(input.id || fallbackId || makeId()),
-    title: String(input.title || "Черновик"),
+    title: String(input.title || t("editor.draftListView.draft")),
     messageAst: normalizeAst(input.messageAst),
     source: input.source && typeof input.source === "object" ? structuredClone(input.source) : null,
     createdAt: Number(input.createdAt || Date.now()),

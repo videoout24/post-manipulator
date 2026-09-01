@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { base64UrlDecode, base64UrlEncode } from "./TokenStorageKey.js?v=1.7.0";
 
 const TEXT_ENCODER = new TextEncoder();
@@ -10,7 +11,7 @@ const IV_LENGTH = 12;
 const MAX_CIPHERTEXT_LENGTH = 16 * 1024;
 
 export class TokenCryptoError extends Error {
-  constructor(code, message = "Не удалось расшифровать защищённый token", { cause = null } = {}) {
+  constructor(code, message = t("security.tokenCrypto.failedToDecryptProtectedToken"), { cause = null } = {}) {
     super(message, cause ? { cause } : undefined);
     this.name = "TokenCryptoError";
     this.code = code;
@@ -19,7 +20,7 @@ export class TokenCryptoError extends Error {
 
 export async function encryptToken({ token, password, iterations = TOKEN_KDF_ITERATIONS, cryptoApi = globalThis.crypto } = {}) {
   const cleanToken = String(token || "").trim();
-  if (!cleanToken) throw new TokenCryptoError("INPUT_INVALID", "Не удалось зашифровать token");
+  if (!cleanToken) throw new TokenCryptoError("INPUT_INVALID", t("security.tokenCrypto.failedToEncryptToken"));
   const parameters = validateParameters({ iterations });
   ensureCrypto(cryptoApi);
   const salt = cryptoApi.getRandomValues(new Uint8Array(SALT_LENGTH));
@@ -41,7 +42,7 @@ export async function encryptToken({ token, password, iterations = TOKEN_KDF_ITE
     });
   } catch (error) {
     if (error instanceof TokenCryptoError) throw error;
-    throw new TokenCryptoError("ENCRYPT_FAILED", "Не удалось зашифровать token", { cause: error });
+    throw new TokenCryptoError("ENCRYPT_FAILED", t("security.tokenCrypto.failedToEncryptToken"), { cause: error });
   } finally {
     passwordBytes?.fill(0);
     tokenBytes?.fill(0);
@@ -78,16 +79,16 @@ export async function decryptToken({ container, password, cryptoApi = globalThis
 
 export function parseTokenContainer(container) {
   if (typeof container !== "string" || container.length > MAX_CIPHERTEXT_LENGTH) {
-    throw new TokenCryptoError("CONTAINER_INVALID", "Защищённая запись повреждена");
+    throw new TokenCryptoError("CONTAINER_INVALID", t("security.tokenCrypto.protectedRecordIsCorrupted"));
   }
   let parsed;
   try { parsed = JSON.parse(container); }
-  catch { throw new TokenCryptoError("CONTAINER_INVALID", "Защищённая запись повреждена"); }
+  catch { throw new TokenCryptoError("CONTAINER_INVALID", t("security.tokenCrypto.protectedRecordIsCorrupted")); }
   if (!hasExactKeys(parsed, ["v", "kdf", "cipher"]) ||
       !hasExactKeys(parsed.kdf, ["iterations", "salt"]) ||
       !hasExactKeys(parsed.cipher, ["iv", "ciphertext"]) ||
       parsed.v !== 2) {
-    throw new TokenCryptoError("CONTAINER_INVALID", "Защищённая запись несовместима");
+    throw new TokenCryptoError("CONTAINER_INVALID", t("security.tokenCrypto.protectedRecordIsIncompatible"));
   }
   const iterations = Number(parsed.kdf.iterations);
   validateParameters({ iterations });
@@ -96,9 +97,9 @@ export function parseTokenContainer(container) {
     salt = base64UrlDecode(parsed.kdf.salt);
     iv = base64UrlDecode(parsed.cipher.iv);
     ciphertext = base64UrlDecode(parsed.cipher.ciphertext);
-  } catch { throw new TokenCryptoError("CONTAINER_INVALID", "Защищённая запись повреждена"); }
+  } catch { throw new TokenCryptoError("CONTAINER_INVALID", t("security.tokenCrypto.protectedRecordIsCorrupted")); }
   if (salt.byteLength !== SALT_LENGTH || iv.byteLength !== IV_LENGTH || ciphertext.byteLength < 17 || ciphertext.byteLength > MAX_CIPHERTEXT_LENGTH) {
-    throw new TokenCryptoError("CONTAINER_INVALID", "Защищённая запись повреждена");
+    throw new TokenCryptoError("CONTAINER_INVALID", t("security.tokenCrypto.protectedRecordIsCorrupted"));
   }
   return { iterations, salt, iv, ciphertext };
 }
@@ -110,12 +111,12 @@ async function deriveAesKey(passwordBytes, salt, iterations, cryptoApi) {
 
 function aad() { return TEXT_ENCODER.encode("rmb:publisher-token:v2"); }
 function ensureCrypto(cryptoApi) {
-  if (!cryptoApi?.subtle || typeof cryptoApi.getRandomValues !== "function") throw new TokenCryptoError("CRYPTO_UNAVAILABLE", "Web Crypto недоступен");
+  if (!cryptoApi?.subtle || typeof cryptoApi.getRandomValues !== "function") throw new TokenCryptoError("CRYPTO_UNAVAILABLE", t("security.initDataVerifier.webCryptoIsUnavailable"));
 }
 function validateParameters({ iterations }) {
   const count = Number(iterations);
   if (!Number.isSafeInteger(count) || count < MIN_KDF_ITERATIONS || count > MAX_KDF_ITERATIONS) {
-    throw new TokenCryptoError("CONTAINER_INVALID", "Недопустимые параметры защищённой записи");
+    throw new TokenCryptoError("CONTAINER_INVALID", t("security.tokenCrypto.invalidProtectedRecordParameters"));
   }
   return { iterations: count };
 }

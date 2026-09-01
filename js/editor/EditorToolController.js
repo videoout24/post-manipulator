@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { MetaBlockDialog } from "./MetaBlockDialog.js?v=1.6.5";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.6.5";
 
@@ -47,7 +48,7 @@ export class EditorToolController {
       onCreated: definition => {
         palette?.render?.();
         controller?.select?.(null);
-        this.alertFn(`Создан Meta Block: ${definition.name}`);
+        this.alertFn(t("editor.editorToolController.createdMetaBlock", { 0: definition.name }));
       }
     }) : null);
     this.openMetaButton = openMetaButton;
@@ -87,14 +88,14 @@ export class EditorToolController {
     event.preventDefault();
     this.controller.removeSelected();
     this.notifications?.show?.({
-      message: selected.length === 1 ? "Блок удалён" : `Удалено блоков: ${selected.length}`,
+      message: selected.length === 1 ? t("editor.editorToolController.blockDeleted") : t("editor.editorToolController.blocksRemoved", { 0: selected.length }),
       type: "info"
     });
     return true;
   }
 
   exportJson() {
-    if (this.dialogTitle) this.dialogTitle.textContent = "Internal AST";
+    if (this.dialogTitle) this.dialogTitle.textContent = t("editor.editorToolController.internalAst");
     if (this.jsonOutput) this.jsonOutput.textContent = JSON.stringify(this.tree.toJSON(), null, 2);
     this.jsonDialog?.showModal?.();
   }
@@ -103,7 +104,7 @@ export class EditorToolController {
     if (this.dialogTitle) {
       this.dialogTitle.textContent = this.projectSession?.isProjectActive?.()
         ? "Telegram Rich Message · compiled Project post"
-        : "Telegram Rich Message";
+        : t("editor.editorToolController.telegramRichMessage");
     }
     try {
       const previewTree = this.buildPreviewTree();

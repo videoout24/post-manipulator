@@ -23,21 +23,21 @@ assert.match(lifecycle, /bindSplitter\?\.\(this\.documentRoot\.querySelector\("#
 assert.match(lifecycle, /bindSplitter\?\.\(this\.documentRoot\.querySelector\("#projectLibraryPostSplitter"\),\s*\{\s*key:\s*"projectLibraryRight",\s*edge:\s*"right"\s*\}\)/);
 
 assert.match(library, /project-library-sidebar-head/);
-assert.match(library, /\+ Создать/);
+assert.match(library, /t\("project\.projectLibraryView\.create"\)/);
 assert.match(library, /requestNewProjectTitle/);
 assert.match(library, /className = "project-create-dialog"/);
-assert.doesNotMatch(library, /prompt\("Название проекта", "Новый проект"\)/);
+assert.doesNotMatch(library, /prompt\(/);
 assert.match(library, /projectPostOpenButton/);
-assert.match(library, /Редактировать этот пост в Editor/);
+assert.match(library, /t\("project\.projectLibraryView\.editThisPostInEditor"\)/);
 assert.match(library, /showProjectRenameOverlay/);
 assert.match(library, /showCardDeleteConfirmation/);
-assert.doesNotMatch(library, /confirm\(`Удалить проект/);
-assert.doesNotMatch(library, /prompt\("Название проекта", project\.title\)/);
+assert.doesNotMatch(library, /confirm\(/);
+assert.doesNotMatch(library, /prompt\(/);
 assert.match(library, /selectedPosts = new Map\(\)/);
 assert.match(library, /session\.openProject\(projectId, \{ postId \}\)/);
 assert.match(library, /#renderPostPanel/);
 assert.match(library, /post-detail-panel-data/);
-assert.match(library, /Открыть в Editor/);
+assert.match(library, /t\("project\.projectLibraryView\.openInEditor2"\)/);
 
 assert.match(cards, /variant === "overview"/);
 assert.match(cards, /case "heading"/);

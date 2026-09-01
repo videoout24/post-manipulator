@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const BUSY_STATES = new Set(["materializing", "updating", "resolving", "removing"]);
 
 // Editor -> Telegram navigation is deliberately manual-only. Background autosave,
@@ -83,13 +84,13 @@ export class EditorTelegramControls {
     const project = this.session.project;
     if (this.session.isProjectActive()) {
       const opened = this.navigation?.openProjectPost?.(project, this.session.activePostId, "preview") || false;
-      if (!opened) this.onToast?.({ message: "Сначала выгрузите проект в канал предпросмотра", type: "warning" });
+      if (!opened) this.onToast?.({ message: t("editor.editorTelegramControls.uploadTheProjectToThePreviewChannel"), type: "warning" });
       return opened;
     }
     const opened = this.livePreviewMessage
       ? (this.navigation?.openPrivateMessage?.(this.livePreviewMessage) || false)
       : false;
-    if (!opened) this.onToast?.({ message: "Предпросмотр ещё не создан в канале", type: "warning" });
+    if (!opened) this.onToast?.({ message: t("editor.editorTelegramControls.previewNotYetCreatedInTheChannel"), type: "warning" });
     return opened;
   }
 
@@ -104,21 +105,21 @@ export class EditorTelegramControls {
       this.manualButton.hidden = false;
       this.manualButton.disabled = active ? !hasCurrentPostDeployment(this.session) : !this.livePreviewMessage?.messageId;
       this.manualButton.title = active
-        ? (hasCurrentPostDeployment(this.session) ? "Открыть текущий preview post в Telegram" : "Сначала выгрузите проект")
-        : (this.livePreviewMessage?.messageId ? "Открыть закреплённый live-preview в Telegram" : "Live-preview ещё не создан в канале");
+        ? (hasCurrentPostDeployment(this.session) ? t("editor.editorTelegramControls.openCurrentPreviewPostInTelegram") : t("editor.editorTelegramControls.firstUnloadTheProject"))
+        : (this.livePreviewMessage?.messageId ? t("editor.editorTelegramControls.openPinnedLivePreviewInTelegram") : t("editor.editorTelegramControls.livePreviewHasNotYetBeenCreated"));
     }
     if (this.deploymentButton) {
       this.deploymentButton.hidden = !active;
       this.deploymentButton.disabled = !active || busy || !this.previewSync;
       this.deploymentButton.classList.toggle("danger-soft", deployed && !busy);
-      this.deploymentButton.textContent = deployed ? "Удалить выгрузку" : "Выгрузить проект";
+      this.deploymentButton.textContent = deployed ? t("editor.editorTelegramControls.deleteUpload") : t("editor.editorTelegramControls.unloadProject");
       this.deploymentButton.title = deployed
-        ? "Удалить Telegram staging deployment, сохранив локальный Project"
-        : "Выгрузить весь Project в приватный preview channel";
+        ? t("editor.editorTelegramControls.deleteTelegramStagingDeploymentWhileKeepingLocal")
+        : t("editor.editorTelegramControls.uploadAllProjectToPrivatePreviewChannel");
     }
     if (this.statusElement) {
       const busyStatus = busy ? syncStatusLabel(relevantSyncState) : "";
-      const status = busyStatus || this.lastNotice?.message || syncStatusLabel(relevantSyncState) || "Готово";
+      const status = busyStatus || this.lastNotice?.message || syncStatusLabel(relevantSyncState) || t("editor.editorTelegramControls.done");
       const statusType = busyStatus ? "progress" : (this.lastNotice?.type || syncStatusType(relevantSyncState?.state));
       this.statusElement.hidden = false;
       this.statusElement.textContent = status;
@@ -157,11 +158,11 @@ export class EditorTelegramControls {
         await this.session.refreshProject();
         if (removal?.partial) {
           this.onToast?.({
-            message: `Выгрузка удалена частично: осталось ${removal.remaining || removal.failed.length} Telegram-проекций. Можно повторить удаление.`,
+            message: t("editor.editorTelegramControls.uploadPartiallyDeletedTelegramProjectionsRemainYou", { 0: removal.remaining || removal.failed.length }),
             type: "warning"
           });
         } else {
-          this.onToast?.({ message: "Выгрузка проекта удалена", type: "success" });
+          this.onToast?.({ message: t("editor.editorTelegramControls.projectUploadDeleted"), type: "success" });
         }
       } else {
         await this.session.flush();
@@ -169,7 +170,7 @@ export class EditorTelegramControls {
         await this.session.refreshProject({ reloadActiveAst: true });
         await this.previewSync.sync(projectId);
         await this.session.refreshProject();
-        this.onToast?.({ message: "Проект выгружен в канал предпросмотра", type: "success" });
+        this.onToast?.({ message: t("editor.editorTelegramControls.projectUploadedToPreviewChannel"), type: "success" });
       }
     } catch (error) {
       this.onError?.(error);
@@ -191,21 +192,21 @@ export function hasCurrentPostDeployment(session) {
 function busyLabel(status = {}) {
   const current = Number(status.current || 0);
   const total = Number(status.total || 0);
-  if (status.state === "removing") return total ? `Удаление ${current}/${total}` : "Удаление…";
-  if (status.state === "materializing") return total ? `Выгрузка ${current}/${total}` : "Выгрузка…";
-  if (status.state === "updating") return total ? `Обновление ${current}/${total}` : "Обновление…";
-  if (status.state === "resolving") return total ? `Связи ${current}/${total}` : "Связи…";
+  if (status.state === "removing") return total ? t("editor.editorTelegramControls.delete", { 0: current, 1: total }) : t("core.cardDeleteConfirmation.deleting");
+  if (status.state === "materializing") return total ? t("editor.editorTelegramControls.upload", { 0: current, 1: total }) : t("editor.editorTelegramControls.upload2");
+  if (status.state === "updating") return total ? t("editor.editorTelegramControls.update", { 0: current, 1: total }) : t("editor.editorTelegramControls.update2");
+  if (status.state === "resolving") return total ? t("editor.editorTelegramControls.links", { 0: current, 1: total }) : t("editor.editorTelegramControls.links2");
   return "Telegram…";
 }
 
 export function syncStatusLabel(status = null) {
   if (!status?.state) return "";
   if (BUSY_STATES.has(status.state)) return busyLabel(status);
-  if (status.state === "synced") return "Синхронизировано";
-  if (status.state === "waiting") return "Ожидает исправлений";
-  if (status.state === "removed") return "Выгрузка удалена";
-  if (status.state === "remove-partial") return "Удалено частично";
-  if (status.state === "error" || status.state === "cleanup-error") return "Ошибка синхронизации";
+  if (status.state === "synced") return t("editor.editorTelegramControls.synced");
+  if (status.state === "waiting") return t("editor.editorTelegramControls.waitingForFixes");
+  if (status.state === "removed") return t("editor.editorTelegramControls.uploadRemoved");
+  if (status.state === "remove-partial") return t("editor.editorTelegramControls.partiallyDeleted");
+  if (status.state === "error" || status.state === "cleanup-error") return t("editor.editorTelegramControls.syncError");
   return status.message || "";
 }
 

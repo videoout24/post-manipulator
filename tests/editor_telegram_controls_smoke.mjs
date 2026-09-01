@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { EditorTelegramControls, hasPreviewDeployment, hasCurrentPostDeployment, syncStatusLabel } from '../js/editor/EditorTelegramControls.js?v=1.5.9';
+import { t } from '../js/i18n/index.js?v=1.8.0';
 
 const project = {
   posts: [
@@ -15,8 +16,8 @@ assert.equal(hasCurrentPostDeployment({
   activePostId: '7'
 }), true);
 assert.equal(hasPreviewDeployment({ posts: [] }), false);
-assert.equal(syncStatusLabel({ state: 'resolving', current: 2, total: 4 }), 'Связи 2/4');
-assert.equal(syncStatusLabel({ state: 'synced' }), 'Синхронизировано');
+assert.equal(syncStatusLabel({ state: 'resolving', current: 2, total: 4 }), t('editor.editorTelegramControls.links', { 0: 2, 1: 4 }));
+assert.equal(syncStatusLabel({ state: 'synced' }), t('editor.editorTelegramControls.synced'));
 assert.equal(syncStatusLabel(null), '');
 
 const destinations = [];

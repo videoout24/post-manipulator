@@ -1,35 +1,36 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const STATE_COPY = Object.freeze({
-  CHECKING_ENVIRONMENT: ["Проверяем защищённый запуск", "Пожалуйста, подождите…"],
-  OPENING_DATABASE: ["Открываем локальную базу", "Данные остаются на этом устройстве."],
-  BLOCKED_NOT_TELEGRAM: ["Откройте из Telegram", "Post Manipulator запускается только как Telegram Mini App."],
-  BLOCKED_NOT_DESKTOP: [ "Неподдерживаемое окружение.", "Поддерживается только Telegram Desktop-клиент."],
-  BLOCKED_INIT_DATA_MISSING: ["Нет безопасных данных запуска", "Закройте Mini App и откройте её заново из Telegram."],
-  BLOCKED_INIT_DATA_INVALID: ["Не удалось подтвердить запуск", "Закройте Mini App и откройте её заново из Telegram."],
-  BLOCKED_INIT_DATA_EXPIRED: ["Запуск устарел", "Закройте Mini App и откройте её заново из Telegram."],
-  BLOCKED_INIT_DATA_TIME_INVALID: ["Проверьте время устройства", "Время запуска Telegram не совпадает с системными часами."],
-  BLOCKED_TELEGRAM_USER_INVALID: ["Пользователь Telegram не подтверждён", "Закройте Mini App и откройте её заново из Telegram."],
-  BLOCKED_TELEGRAM_USER_MISMATCH: ["Эта локальная база привязана к другому аккаунту Telegram", "Пароль и token не будут запрошены. Данные не изменены."],
-  BLOCKED_CRYPTO_UNSUPPORTED: ["Криптография клиента не поддерживается", "Обновите Telegram Desktop и повторите попытку."],
-  BLOCKED_CLOUD_STORAGE_UNSUPPORTED: ["CloudStorage не поддерживается", "Telegram Desktop сообщил, что облачное хранилище недоступно. Обновите клиент."],
-  BLOCKED_CLOUD_STORAGE_TIMEOUT: ["CloudStorage не ответил", "Telegram Desktop не ответил на запрос к облачному хранилищу. Закройте Mini App и откройте её снова."],
-  BLOCKED_CLOUD_STORAGE_ERROR: ["Ошибка CloudStorage", "Telegram Desktop вернул ошибку при проверке облачного хранилища. Данные не изменены."],
-  DATABASE_ERROR: ["Не удалось открыть локальную базу", "Рабочая область не была запущена."],
-  STARTING_APPLICATION: ["Запускаем Post Manipulator", "Защищённый token остаётся только в памяти этого запуска."],
-  TOKEN_ENCRYPTING: ["Сохраняем защищённый token", "Проверяем запись Telegram CloudStorage…"],
-  TOKEN_ROTATING: ["Обновляем защищённый token", "Создаём новую соль и IV для этого входа…"]
+  CHECKING_ENVIRONMENT: [t("security.securityGateView.checkingSecureLaunch"), t("security.securityGateView.pleaseWait")],
+  OPENING_DATABASE: [t("security.securityGateView.openingLocalDatabase"), t("security.securityGateView.dataRemainsOnThisDevice")],
+  BLOCKED_NOT_TELEGRAM: [t("security.securityGateView.openFromTelegram"), t("security.securityGateView.postManipulatorRunsOnlyAsATelegram")],
+  BLOCKED_NOT_DESKTOP: [ t("security.securityGateView.unsupportedEnvironment"), t("security.securityGateView.onlyTelegramDesktopClientIsSupported")],
+  BLOCKED_INIT_DATA_MISSING: [t("security.securityGateView.noSecureLaunchData"), t("security.securityGateView.closeTheMiniAppAndOpenIt")],
+  BLOCKED_INIT_DATA_INVALID: [t("security.securityGateView.failedToConfirmLaunch"), t("security.securityGateView.closeTheMiniAppAndOpenIt")],
+  BLOCKED_INIT_DATA_EXPIRED: [t("security.securityGateView.launchIsOutdated"), t("security.securityGateView.closeTheMiniAppAndOpenIt")],
+  BLOCKED_INIT_DATA_TIME_INVALID: [t("security.securityGateView.checkDeviceTime"), t("security.securityGateView.telegramLaunchTimeDoesNotMatchSystem")],
+  BLOCKED_TELEGRAM_USER_INVALID: [t("security.securityGateView.telegramUserNotVerified"), t("security.securityGateView.closeTheMiniAppAndOpenIt")],
+  BLOCKED_TELEGRAM_USER_MISMATCH: [t("security.authBootstrapController.thisLocalDatabaseIsLinkedToAnother"), t("security.securityGateView.passwordAndTokenWillNotBeRequested")],
+  BLOCKED_CRYPTO_UNSUPPORTED: [t("security.securityGateView.clientCryptographyNotSupported"), t("security.securityGateView.updateTelegramDesktopAndTryAgain")],
+  BLOCKED_CLOUD_STORAGE_UNSUPPORTED: [t("security.securityGateView.cloudstorageNotSupported"), t("security.securityGateView.telegramDesktopReportedThatCloudStorageIs")],
+  BLOCKED_CLOUD_STORAGE_TIMEOUT: [t("security.securityGateView.cloudstorageDidNotRespond"), t("security.securityGateView.telegramDesktopDidNotRespondToThe")],
+  BLOCKED_CLOUD_STORAGE_ERROR: [t("security.securityGateView.cloudstorageError"), t("security.securityGateView.telegramDesktopReturnedAnErrorWhileChecking")],
+  DATABASE_ERROR: [t("security.securityGateView.failedToOpenLocalDatabase"), t("security.securityGateView.workspaceWasNotLaunched")],
+  STARTING_APPLICATION: [t("security.securityGateView.launchingPostManipulator"), t("security.securityGateView.protectedTokenRemainsOnlyInMemoryFor")],
+  TOKEN_ENCRYPTING: [t("security.securityGateView.savingProtectedToken"), t("security.securityGateView.checkingTelegramCloudStorageEntry")],
+  TOKEN_ROTATING: [t("security.securityGateView.updatingProtectedToken"), t("security.securityGateView.creatingNewSaltAndIVForThis")]
 });
 
 const DEVICE_TIME_HINT_STATES = new Set([
   "BLOCKED_INIT_DATA_EXPIRED",
   "BLOCKED_INIT_DATA_TIME_INVALID"
 ]);
-const DEVICE_TIME_HINT = "Проверьте автоматическую синхронизацию даты, времени и часового пояса в настройках системы. Затем закройте Mini App и откройте её заново.";
+const DEVICE_TIME_HINT = t("security.securityGateView.checkAutomaticSynchronizationOfDateTimeAnd");
 const LAUNCH_WINDOW_HINT_STATES = new Set([
   "CHECKING_ENVIRONMENT",
   "FIRST_SETUP_PASSWORD",
   "UNLOCK_PASSWORD"
 ]);
-const LAUNCH_WINDOW_HINT = "Данные запуска проверяются в 30-секундном окне. Время открытия уже зафиксировано: после появления формы можно вводить пароль и token без спешки.";
+const LAUNCH_WINDOW_HINT = t("security.securityGateView.launchDataIsCheckedWithinA30");
 
 const BUSY_STATES = new Set([
   "CHECKING_ENVIRONMENT",
@@ -42,12 +43,12 @@ const BUSY_STATES = new Set([
 ]);
 
 const ACTION_PROGRESS = Object.freeze({
-  onFirstPassword: ["PROCESSING_PASSWORD", "Проверяем и принимаем пароль…"],
-  onUnlock: ["PROCESSING_PASSWORD", "Расшифровываем token и проверяем защищённый запуск…"],
-  onRecoveryPassword: ["PROCESSING_PASSWORD", "Подготавливаем новые защищённые credentials…"],
-  onFirstToken: ["PROCESSING_TOKEN", "Telegram проверяет Publisher Bot, затем token будет зашифрован…"],
-  onRecoveryToken: ["PROCESSING_TOKEN", "Telegram проверяет Publisher Bot, затем token будет сохранён…"],
-  onReplacementToken: ["PROCESSING_TOKEN", "Telegram проверяет новый token и принадлежность бота…"]
+  onFirstPassword: ["PROCESSING_PASSWORD", t("security.securityGateView.checkingAndAcceptingPassword")],
+  onUnlock: ["PROCESSING_PASSWORD", t("security.securityGateView.decryptingTokenAndCheckingProtectedLaunch")],
+  onRecoveryPassword: ["PROCESSING_PASSWORD", t("security.securityGateView.preparingNewProtectedCredentials")],
+  onFirstToken: ["PROCESSING_TOKEN", t("security.securityGateView.telegramChecksThePublisherBotThenThe")],
+  onRecoveryToken: ["PROCESSING_TOKEN", t("security.securityGateView.telegramChecksThePublisherBotThenThe2")],
+  onReplacementToken: ["PROCESSING_TOKEN", t("security.securityGateView.telegramChecksTheNewTokenAndBot")]
 });
 
 /** Presentational UI only; transitions live in AuthBootstrapController. */
@@ -78,7 +79,7 @@ export class SecurityGateView {
     if (content.detail) card.append(element("p", "security-gate-detail", content.detail));
     if (BUSY_STATES.has(state)) {
       card.setAttribute("aria-busy", "true");
-      const progress = element("div", "security-gate-progress", "Операция выполняется");
+      const progress = element("div", "security-gate-progress", t("security.securityGateView.operationIsInProgress"));
       progress.setAttribute("role", "status");
       progress.setAttribute("aria-live", "polite");
       progress.prepend(element("span", "security-gate-spinner"));
@@ -145,7 +146,7 @@ export class SecurityGateView {
     // Do not present a non-functional “close” control outside Telegram.
     if (!this.canCloseMiniApp || typeof this.webApp?.close !== "function") return null;
     const actions = element("div", "security-gate-actions");
-    const close = element("button", "", "Закрыть Mini App");
+    const close = element("button", "", t("security.securityGateView.closeMiniApp"));
     close.type = "button";
     close.addEventListener("click", () => this.webApp?.close?.());
     actions.append(close);
@@ -154,67 +155,67 @@ export class SecurityGateView {
 }
 
 function contentForState(view, state, payload) {
-  const [defaultTitle, defaultCopy] = STATE_COPY[state] || ["Защищённый запуск", "Пожалуйста, подождите…"];
+  const [defaultTitle, defaultCopy] = STATE_COPY[state] || [t("security.securityGateView.secureLaunch"), t("security.securityGateView.pleaseWait")];
   const result = { title: defaultTitle, copy: payload.message || defaultCopy, detail: "", form: null, actions: null };
   if (DEVICE_TIME_HINT_STATES.has(state)) result.detail = DEVICE_TIME_HINT;
   else if (LAUNCH_WINDOW_HINT_STATES.has(state)) result.detail = LAUNCH_WINDOW_HINT;
   if (state === "PROCESSING_PASSWORD") {
-    result.title = "Проверяем credentials";
+    result.title = t("security.securityGateView.checkingCredentials");
   } else if (state === "PROCESSING_TOKEN") {
-    result.title = "Подключаем Publisher Bot";
+    result.title = t("security.securityGateView.connectingPublisherBot");
   } else if (state === "FIRST_SETUP_PASSWORD") {
-    result.title = "Создайте пароль";
+    result.title = t("security.securityGateView.createAPassword");
     result.copy = payload.existingData
-      ? "Локальные данные сохранены. Пароль зашифрует token перед сохранением в Telegram CloudStorage."
-      : "Пароль зашифрует token перед сохранением в Telegram CloudStorage.";
+      ? t("security.securityGateView.localDataSavedThePasswordWillEncrypt")
+      : t("security.securityGateView.thePasswordWillEncryptTheTokenBefore");
     result.form = view.form({
       fields: [
-        { name: "password", label: "Пароль", autocomplete: "new-password" },
-        { name: "confirmation", label: "Повторите пароль", autocomplete: "new-password" }
-      ], submitLabel: "Продолжить", action: "onFirstPassword"
+        { name: "password", label: t("security.securityGateView.password"), autocomplete: "new-password" },
+        { name: "confirmation", label: t("security.securityGateView.repeatPassword"), autocomplete: "new-password" }
+      ], submitLabel: t("app.continue"), action: "onFirstPassword"
     });
   } else if (state === "FIRST_SETUP_TOKEN") {
-    result.title = "Подключите Publisher Bot";
-    result.copy = "Token будет проверен через getMe, зашифрован и сохранён только в Telegram CloudStorage.";
-    result.form = view.form({ fields: [{ name: "token", label: "Bot API token", autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: "Проверить и сохранить", action: "onFirstToken" });
+    result.title = t("security.securityGateView.connectPublisherBot");
+    result.copy = t("security.securityGateView.theTokenWillBeVerifiedViaGetMe");
+    result.form = view.form({ fields: [{ name: "token", label: t("security.securityGateView.botApiToken"), autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: t("security.securityGateView.verifyAndSave"), action: "onFirstToken" });
   } else if (state === "UNLOCK_PASSWORD") {
-    result.title = "Разблокируйте Publisher";
-    result.copy = "Введите пароль. После проверки защищённая запись будет повторно зашифрована с новой солью и IV.";
+    result.title = t("security.securityGateView.unlockPublisher");
+    result.copy = t("security.securityGateView.enterThePasswordAfterVerificationTheProtected");
     result.form = view.form({
-      fields: [{ name: "password", label: "Пароль", autocomplete: "current-password" }],
-      submitLabel: "Разблокировать", action: "onUnlock", secondary: { label: "Не помню пароль", action: "onShowRecovery" }
+      fields: [{ name: "password", label: t("security.securityGateView.password"), autocomplete: "current-password" }],
+      submitLabel: t("security.securityGateView.unlock"), action: "onUnlock", secondary: { label: t("security.securityGateView.iDonTRememberThePassword"), action: "onShowRecovery" }
     });
   } else if (state === "RECOVERY_PASSWORD") {
     result.title = payload.reason === "record_not_found"
-      ? "Запись CloudStorage не найдена"
+      ? t("security.securityGateView.cloudstorageRecordNotFound")
       : payload.reason === "decrypt_failed"
-        ? "Запись CloudStorage не расшифрована"
-        : "Восстановление credentials";
-    result.copy = "Создайте и подтвердите пароль. Затем введите актуальный token этого же бота: он будет зашифрован и сохранён в CloudStorage.";
+        ? t("security.securityGateView.cloudstorageRecordNotDecrypted")
+        : t("security.securityGateView.restoringCredentials");
+    result.copy = t("security.securityGateView.createAndConfirmThePasswordThenEnter");
     result.form = view.form({ fields: [
-      { name: "password", label: "Новый пароль", autocomplete: "new-password" },
-      { name: "confirmation", label: "Повторите новый пароль", autocomplete: "new-password" }
-    ], submitLabel: "Продолжить", action: "onRecoveryPassword" });
+      { name: "password", label: t("security.securityGateView.newPassword"), autocomplete: "new-password" },
+      { name: "confirmation", label: t("security.securityGateView.repeatNewPassword"), autocomplete: "new-password" }
+    ], submitLabel: t("app.continue"), action: "onRecoveryPassword" });
   } else if (state === "RECOVERY_TOKEN") {
-    result.title = "Введите актуальный token";
-    result.copy = "Token обязан принадлежать уже привязанному Publisher Bot.";
-    result.form = view.form({ fields: [{ name: "token", label: "Bot API token", autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: "Проверить и сохранить", action: "onRecoveryToken" });
+    result.title = t("security.securityGateView.enterTheCurrentToken");
+    result.copy = t("security.securityGateView.theTokenMustBelongToAnAlready");
+    result.form = view.form({ fields: [{ name: "token", label: t("security.securityGateView.botApiToken"), autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: t("security.securityGateView.verifyAndSave"), action: "onRecoveryToken" });
   } else if (state === "TOKEN_REVOKED") {
-    result.title = "Token отозван или недействителен";
-    result.copy = "Локальная база и прежняя защищённая запись сохранены. Введите новый token того же бота.";
-    result.form = view.form({ fields: [{ name: "token", label: "Новый Bot API token", autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: "Заменить token", action: "onReplacementToken" });
+    result.title = t("security.authBootstrapController.tokenRevokedOrInvalid");
+    result.copy = t("security.securityGateView.theLocalDatabaseAndThePreviousProtected");
+    result.form = view.form({ fields: [{ name: "token", label: t("security.securityGateView.newBotAPIToken"), autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: t("security.securityGateView.replaceToken"), action: "onReplacementToken" });
   } else if (state === "TOKEN_INVALID") {
-    result.title = "Telegram не принял token";
-    result.copy = "Проверьте token и повторите попытку.";
+    result.title = t("security.securityGateView.telegramDidNotAcceptTheToken");
+    result.copy = t("security.securityGateView.checkTheTokenAndTryAgain");
     const action = payload.flow === "recovery" ? "onRecoveryToken" : payload.flow === "token_replacement" ? "onReplacementToken" : "onFirstToken";
-    result.form = view.form({ fields: [{ name: "token", label: "Bot API token", autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: "Повторить", action });
+    result.form = view.form({ fields: [{ name: "token", label: t("security.securityGateView.botApiToken"), autocomplete: "off", placeholder: "123456:ABC…" }], submitLabel: t("security.securityGateView.retry"), action });
   } else if (state === "TOKEN_BOT_MISMATCH") {
-    result.title = "Token принадлежит другому боту";
-    result.copy = "Эта локальная база уже привязана к другому Publisher Bot. Данные не изменены.";
+    result.title = t("security.securityGateView.theTokenBelongsToAnotherBot");
+    result.copy = t("security.securityGateView.thisLocalDatabaseIsAlreadyLinkedTo");
     result.actions = view.closeActions();
   } else if (state === "CLOUD_STORAGE_READING" || state === "CLOUD_STORAGE_WRITE_ERROR" || state === "TOKEN_NETWORK_ERROR") {
-    result.title = "Операцию не удалось завершить";
-    result.copy = payload.message || "Проверьте сеть и Telegram Desktop, затем повторите попытку.";
+    result.title = t("security.securityGateView.theOperationCouldNotBeCompleted");
+    result.copy = payload.message || t("security.securityGateView.checkYourNetworkAndTelegramDesktopThen");
     result.actions = view.closeActions();
   } else if (state.startsWith("BLOCKED_")) {
     result.actions = view.closeActions();

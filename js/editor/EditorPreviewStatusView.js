@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const PROJECT_BUSY_STATES = ["materializing", "updating", "resolving", "removing"];
 
 export class EditorPreviewStatusView {
@@ -27,7 +28,7 @@ export class EditorPreviewStatusView {
     const deployed = (project?.posts || []).some(post => post.deployments?.preview?.messageId);
     this.showProject(
       deployed ? "synced" : "removed",
-      deployed ? "Project channel: staging deployment существует" : "Project channel: проект ещё не выгружен"
+      deployed ? t("editor.editorPreviewStatusView.projectChannelStagingDeploymentExists") : t("editor.editorPreviewStatusView.projectChannelProjectNotYetUploaded")
     );
   }
 
@@ -39,19 +40,19 @@ export class EditorPreviewStatusView {
       : state === "error" ? "error"
       : "idle";
     this.root.dataset.state = normalized;
-    this.root.textContent = state === "synced" ? "Project: ✓"
-      : PROJECT_BUSY_STATES.includes(state) ? "Project: …"
-      : state === "waiting" ? "Project: ◌"
-      : state === "error" ? "Project: ×"
-      : "Project: —";
-    this.root.title = message || "Project preview channel";
+    this.root.textContent = state === "synced" ? t("editor.editorPreviewStatusView.projectSynced")
+      : PROJECT_BUSY_STATES.includes(state) ? t("editor.editorPreviewStatusView.projectSyncing")
+      : state === "waiting" ? t("editor.editorPreviewStatusView.projectWaiting")
+      : state === "error" ? t("editor.editorPreviewStatusView.projectError")
+      : t("editor.editorPreviewStatusView.projectIdle");
+    this.root.title = message || t("editor.editorPreviewStatusView.projectPreviewChannel");
   }
 
   showLivePreviewSetting(enabled) {
     if (!this.root || this.projectSession?.isProjectActive?.() || enabled) return;
     this.root.dataset.state = "idle";
-    this.root.textContent = "Preview: выкл.";
-    this.root.title = "Telegram live-preview выключен";
+    this.root.textContent = t("editor.editorPreviewStatusView.previewOff");
+    this.root.title = t("editor.editorPreviewStatusView.telegramLivePreviewOff");
   }
 
   #handleProjectSync(status) {
@@ -59,16 +60,16 @@ export class EditorPreviewStatusView {
     const state = status?.state || "idle";
     const current = status?.current || 0;
     const total = status?.total || this.projectSession.project?.posts?.length || 0;
-    const message = state === "synced" ? "Project channel: синхронизирован"
-      : state === "materializing" ? `Project channel: выгрузка ${current}/${total}`
-      : state === "updating" ? `Project channel: точечное обновление ${current}/${total}`
-      : state === "resolving" ? `Project channel: обновление связей ${current}/${total}`
-      : state === "removing" ? `Project channel: удаление ${current}/${total}`
-      : state === "removed" ? "Project channel: выгрузка удалена"
-      : state === "remove-partial" ? `Project channel: частичное удаление, осталось ${status?.remaining || 0}`
-      : state === "waiting" ? "Project channel: ожидает валидного AST"
-      : state === "error" ? `Project channel: ${status?.message || "ошибка"}`
-      : "Project channel";
+    const message = state === "synced" ? t("editor.editorPreviewStatusView.projectChannelSynchronized")
+      : state === "materializing" ? t("editor.editorPreviewStatusView.projectChannelUploading", { 0: current, 1: total })
+      : state === "updating" ? t("editor.editorPreviewStatusView.projectChannelSpotUpdate", { 0: current, 1: total })
+      : state === "resolving" ? t("editor.editorPreviewStatusView.projectChannelUpdatingLinks", { 0: current, 1: total })
+      : state === "removing" ? t("editor.editorPreviewStatusView.projectChannelDeleting", { 0: current, 1: total })
+      : state === "removed" ? t("editor.editorPreviewStatusView.projectChannelUploadDeleted")
+      : state === "remove-partial" ? t("editor.editorPreviewStatusView.projectChannelPartialDeletionRemaining", { 0: status?.remaining || 0 })
+      : state === "waiting" ? t("editor.editorPreviewStatusView.projectChannelExpectingAValidAST")
+      : state === "error" ? t("editor.editorPreviewStatusView.projectChannelError", { 0: status?.message || t("editor.editorPreviewStatusView.error") })
+      : t("editor.editorPreviewStatusView.projectChannel");
     this.showProject(state, message);
   }
 
@@ -87,11 +88,11 @@ export class EditorPreviewStatusView {
     }
     if (!this.root) return;
     this.root.dataset.state = state;
-    this.root.textContent = state === "synced" ? "Preview: ✓"
-      : state === "syncing" ? "Preview: …"
-      : state === "waiting" || state === "invalid" ? "Preview: ◌"
-      : state === "error" || state === "unavailable" ? "Preview: ×"
-      : "Preview: —";
-    this.root.title = message || "Telegram live-preview";
+    this.root.textContent = state === "synced" ? t("editor.editorPreviewStatusView.previewSynced")
+      : state === "syncing" ? t("editor.editorPreviewStatusView.previewSyncing")
+      : state === "waiting" || state === "invalid" ? t("editor.editorPreviewStatusView.previewWaiting")
+      : state === "error" || state === "unavailable" ? t("editor.editorPreviewStatusView.previewError")
+      : t("editor.editorPreviewStatusView.previewIdle");
+    this.root.title = message || t("editor.editorPreviewStatusView.telegramLivePreview");
   }
 }

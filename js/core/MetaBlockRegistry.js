@@ -1,3 +1,5 @@
+import { t } from "../i18n/index.js?v=1.8.0";
+
 export class MetaBlockRegistry {
   constructor(blockRegistry, options = "rich-message-meta-blocks") {
     this.blockRegistry = blockRegistry;
@@ -41,12 +43,12 @@ export class MetaBlockRegistry {
     }
   }
 
-  create({ type, name, category = "Custom", sourceNodeIds, tree, parameters = [] }) {
-    if (!type || !name) throw new Error("Meta block requires type and name");
-    if (this.blockRegistry.has(type)) throw new Error(`Block type already exists: ${type}`);
+  create({ type, name, category = t("core.metaBlockRegistry.custom"), sourceNodeIds, tree, parameters = [] }) {
+    if (!type || !name) throw new Error(t("core.metaBlockRegistry.metaBlockRequiresTypeAndName"));
+    if (this.blockRegistry.has(type)) throw new Error(t("core.metaBlockRegistry.blockTypeAlreadyExists", { 0: type }));
 
     const rootNodes = selectedRoots(tree, sourceNodeIds);
-    if (!rootNodes.length) throw new Error("Select at least one block");
+    if (!rootNodes.length) throw new Error(t("core.metaBlockRegistry.selectAtLeastOneBlock"));
 
     const paths = new Map();
     const template = rootNodes.map((node, rootIndex) =>
@@ -55,7 +57,7 @@ export class MetaBlockRegistry {
 
     const bindings = parameters.map(p => {
       const path = paths.get(p.nodeId);
-      if (!path) throw new Error(`Cannot bind property: source node ${p.nodeId} is outside the selected template`);
+      if (!path) throw new Error(t("core.metaBlockRegistry.cannotBindProperty", { 0: p.nodeId }));
       return {
         key: p.key,
         path,
@@ -73,7 +75,7 @@ export class MetaBlockRegistry {
             type: p.type || "string",
             editor: p.type === "rich-text" ? "rich-text" : undefined,
             label: p.label || p.key,
-            group: p.group || "Meta Block",
+            group: p.group || t("core.metaBlockRegistry.metaBlock"),
             default: structuredClone(p.default ?? "")
           });
         }
@@ -82,7 +84,7 @@ export class MetaBlockRegistry {
         property: propertyId,
         key: p.key,
         label: p.label || p.key,
-        group: p.group || "Meta Block",
+        group: p.group || t("core.metaBlockRegistry.metaBlock"),
         default: structuredClone(p.default ?? ""),
         ...(p.formats?.length ? { formats: structuredClone(p.formats) } : {})
       };
@@ -219,7 +221,7 @@ function catalogueMetaProperties(definition, propertyRegistry) {
         type: schema.type || "string",
         editor: schema.editor || (schema.type === "rich-text" ? "rich-text" : undefined),
         label: schema.label || key,
-        group: schema.group || "Meta Block",
+        group: schema.group || t("core.metaBlockRegistry.metaBlock"),
         default: structuredClone(schema.default ?? "")
       });
     }
@@ -228,7 +230,7 @@ function catalogueMetaProperties(definition, propertyRegistry) {
       property: propertyId,
       key,
       label: schema.label || key,
-      group: schema.group || "Meta Block",
+      group: schema.group || t("core.metaBlockRegistry.metaBlock"),
       default: structuredClone(schema.default ?? ""),
       ...(schema.formats?.length ? { formats: structuredClone(schema.formats) } : {})
     });

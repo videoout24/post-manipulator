@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
@@ -18,17 +18,17 @@
 <div aria-hidden="true" id="appShell" inert>
 <header class="topbar">
 <div class="topbar-left">
-<div class="brand"><button aria-label="Открыть настройки Post Manipulator" class="brand-settings-trigger" id="openSettingsFromBrand" title="Открыть настройки" type="button"><strong>Post Manipulator</strong></button>
+<div class="brand"><button class="brand-settings-trigger" data-i18n-aria-label="html.openPostManipulatorSettings" data-i18n-title="html.openSettings" id="openSettingsFromBrand" type="button"><strong>Post Manipulator</strong></button>
 
 <span class="muted">build 1.7.13</span>
 </div>
-<nav aria-label="Разделы Post Manipulator" class="top-tabs">
+<nav class="top-tabs" data-i18n-aria-label="html.postManipulatorSections">
 
-<button class="top-tab backup-tab" id="createTelegramBackup" title="Создать резервную копию IndexedDB и отправить в Telegram" type="button">Резервная копия</button>
-<button aria-selected="false" class="top-tab" data-tab="gallery">Галерея</button>
-<button aria-selected="true" class="top-tab active" data-tab="editor">Редактор</button>
-<button aria-selected="false" class="top-tab" data-tab="project">Проекты</button>
-<button aria-selected="false" class="top-tab" data-tab="publications">Публикации</button>
+<button class="top-tab backup-tab" data-i18n="html.backup" data-i18n-title="html.createAndSendBackup" id="createTelegramBackup" type="button"></button>
+<button aria-selected="false" class="top-tab" data-i18n="html.gallery" data-tab="gallery"></button>
+<button aria-selected="true" class="top-tab active" data-i18n="html.editor" data-tab="editor"></button>
+<button aria-selected="false" class="top-tab" data-i18n="html.projects" data-tab="project"></button>
+<button aria-selected="false" class="top-tab" data-i18n="html.publications" data-tab="publications"></button>
 </nav>
 </div>
 <div class="topbar-network" id="appNetPanel"></div>
@@ -36,106 +36,110 @@
 <main class="workspace">
 <section class="tab-page settings-page" data-tab-page="settings"><div class="settings-shell" id="telegramSettings">
 <div class="settings-layout">
-<aside aria-label="Разделы настроек" class="settings-sidebar">
+<aside class="settings-sidebar" data-i18n-aria-label="html.settingsSections">
 <div class="settings-sidebar-head">
-<div class="settings-sidebar-title">Настройки</div>
+<div class="settings-sidebar-title" data-i18n="html.settings"></div>
 <div class="settings-sidebar-subtitle">Post Manipulator</div>
 </div>
 <nav class="settings-sections">
-<button aria-selected="true" class="settings-section-button active" data-settings-section="general" type="button">Основные</button>
+<button aria-selected="true" class="settings-section-button active" data-i18n="html.general" data-settings-section="general" type="button"></button>
 </nav>
 </aside>
 <section class="settings-content">
 <div class="settings-content-head">
 <div>
-<h1>Основные</h1>
-<p>Основные настройки Publisher и Telegram Core. Новые разделы будут добавляться в левую панель.</p>
+<h1 data-i18n="html.general"></h1>
+<p data-i18n="html.generalSettingsDescription"></p>
 </div>
-<div class="runtime-pill" data-state="stopped" id="tgRuntimeStatus">Остановлен</div>
+<div class="runtime-pill" data-i18n="html.stopped" data-state="stopped" id="tgRuntimeStatus"></div>
 </div>
 <div class="settings-panel active" data-settings-panel="general">
 <div class="settings-cards"><section class="settings-card">
-<h2>Локальные данные</h2>
-<div class="settings-state" id="storagePersistenceState">Проверка защиты хранилища…</div>
+<h2 data-i18n="html.language"></h2>
+<label class="settings-field"><span data-i18n="html.interfaceLanguage"></span><select id="appLanguagePreference"><option data-i18n="html.languageTelegram" value="auto"></option><option data-i18n="html.languageRussian" value="ru"></option><option data-i18n="html.languageEnglish" value="en"></option></select></label>
+<p class="settings-hint" data-i18n="html.languageHint"></p>
+</section><section class="settings-card">
+<h2 data-i18n="html.localData"></h2>
+<div class="settings-state" data-i18n="html.checkingStorageProtection" id="storagePersistenceState"></div>
 <div class="settings-meta" id="storagePersistenceUsage"></div>
-<div class="settings-actions"><button class="primary" id="requestPersistentStorage" type="button">Защитить локальные данные</button></div>
-<p class="settings-hint">Постоянное хранилище защищает IndexedDB от автоматического удаления браузером при нехватке места. Пользователь всё равно может удалить данные сайта вручную.</p>
+<div class="settings-actions"><button class="primary" data-i18n="html.protectLocalData" id="requestPersistentStorage" type="button"></button></div>
+<p class="settings-hint" data-i18n="html.persistentStorageHint"></p>
 </section><section class="settings-card">
-<h2>Резервные копии</h2>
-<div class="settings-state" id="telegramBackupState">Последняя закреплённая копия ещё не проверена</div>
+<h2 data-i18n="html.backups"></h2>
+<div class="settings-state" data-i18n="html.lastPinnedBackupNotChecked" id="telegramBackupState"></div>
 <div class="settings-actions">
-<button class="primary" id="telegramBackupCheckPinned" type="button">Проверить закреп</button>
-<button id="telegramBackupRestoreManual" type="button">Восстановить из файла</button>
+<button class="primary" data-i18n="html.checkPinned" id="telegramBackupCheckPinned" type="button"></button>
+<button data-i18n="html.restoreFromFile" id="telegramBackupRestoreManual" type="button"></button>
 </div>
-<p class="settings-hint">Проверка использует самую новую закреплённую запись по дате отправки. Ручное восстановление перезапускает защищённый вход и импортирует файл до запуска приложения; Bot API token остаётся в CloudStorage.</p>
+<p class="settings-hint" data-i18n="html.backupHint"></p>
 </section><section class="settings-card">
-<h2>Бот и long polling</h2>
-<div class="settings-meta" id="tgTokenStored">Токен не задан</div>
-<div class="settings-meta" id="tgBotIdentity">Бот не проверен</div>
+<h2 data-i18n="html.botAndLongPolling"></h2>
+<div class="settings-meta" data-i18n="html.tokenNotSet" id="tgTokenStored"></div>
+<div class="settings-meta" data-i18n="html.botNotVerified" id="tgBotIdentity"></div>
 <div class="settings-actions settings-runtime-actions">
-<button class="primary" id="tgStart">Запустить</button>
-<button id="tgStop">Остановить</button>
-<button id="tgClearWebhook">Отключить webhook</button>
-<button class="settings-action-end" id="tgOpenBotFather">Открыть BotFather</button>
+<button class="primary" data-i18n="html.start" id="tgStart"></button>
+<button data-i18n="html.stop" id="tgStop"></button>
+<button data-i18n="html.disableWebhook" id="tgClearWebhook"></button>
+<button class="settings-action-end" data-i18n="html.openBotFather" id="tgOpenBotFather"></button>
 </div>
-<p class="settings-hint">Token проходит проверку при безопасном запуске и постоянно хранится только в зашифрованном виде в Telegram CloudStorage. В IndexedDB и резервные копии token не записывается.</p>
-<p class="settings-hint">Runtime принимает updates через <code>getUpdates</code>. Активный webhook блокирует long polling.</p>
+<p class="settings-hint" data-i18n="html.tokenStorageHint"></p>
+<p class="settings-hint" data-i18n="html.longPollingHint"></p>
 </section><section class="settings-card">
-<h2>Владелец</h2>
-<div class="settings-state" id="tgOwnerState">Владелец не привязан</div>
+<h2 data-i18n="html.owner"></h2>
+<div class="settings-state" data-i18n="html.ownerNotLinked" id="tgOwnerState"></div>
 <div class="settings-actions">
-<button class="danger" hidden="" id="tgUnbindOwner">Отвязать владельца</button>
+<button class="danger" data-i18n="html.unlinkOwner" hidden="" id="tgUnbindOwner"></button>
 </div>
-<p class="settings-hint">Владелец привязывается сразу по подписанному Telegram <code>initData</code>. Чтобы бот мог отправлять резервные копии и принимать media, один раз нажмите Start в его личном чате.</p>
+<p class="settings-hint" data-i18n="html.ownerHint"></p>
 </section><section class="settings-card">
-<h2>Что принимать от владельца</h2>
+<h2 data-i18n="html.acceptFromOwner"></h2>
 <div class="check-grid">
-<label><input data-owner-media="photo" type="checkbox"/> Фото</label>
-<label><input data-owner-media="video" type="checkbox"/> Видео</label>
-<label><input data-owner-media="audio" type="checkbox"/> Аудио</label>
-<label><input data-owner-media="voice" type="checkbox"/> Голосовые</label>
-<label><input data-owner-media="document" type="checkbox"/> Файлы</label>
+<label><input data-owner-media="photo" type="checkbox"/> <span data-i18n="html.photo"></span></label>
+<label><input data-owner-media="video" type="checkbox"/> <span data-i18n="html.video"></span></label>
+<label><input data-owner-media="audio" type="checkbox"/> <span data-i18n="html.audio"></span></label>
+<label><input data-owner-media="voice" type="checkbox"/> <span data-i18n="html.voice"></span></label>
+<label><input data-owner-media="document" type="checkbox"/> <span data-i18n="html.files"></span></label>
 </div>
-<p class="settings-hint">Текст, кружочки, стикеры и остальные типы намеренно игнорируются. Принятые media уже выходят из ядра нормализованным событием для будущей Gallery.</p>
+<p class="settings-hint" data-i18n="html.ownerMediaHint"></p>
 </section><section class="settings-card">
-<h2>Предпросмотр сообщения</h2>
-<div class="settings-state" id="tgPreviewChannelState">Live-preview недоступен без приватного канала</div>
-<label class="toggle-line"><input id="tgLivePreview" type="checkbox"/> Live-preview текущего Rich Message</label>
-<div class="settings-meta" id="tgPreviewStatus">Live-preview ещё не синхронизировался</div>
+<h2 data-i18n="html.messagePreview"></h2>
+<div class="settings-state" data-i18n="html.livePreviewUnavailable" id="tgPreviewChannelState"></div>
+<label class="toggle-line"><input id="tgLivePreview" type="checkbox"/> <span data-i18n="html.currentRichMessageLivePreview"></span></label>
+<div class="settings-meta" data-i18n="html.livePreviewNotSynced" id="tgPreviewStatus"></div>
 <div class="settings-actions">
-<button id="tgPreviewSync">Синхронизировать сейчас</button>
-<button id="tgPreviewOpen">Открыть предпросмотр</button>
+<button data-i18n="html.syncNow" id="tgPreviewSync"></button>
+<button data-i18n="html.openPreview" id="tgPreviewOpen"></button>
 </div>
-<p class="settings-hint">Live-preview хранится отдельным сообщением в приватном канале. Если сообщение удалено, следующая синхронизация создаст новое. Диалог с ботом используется для загрузки медиа и управления.</p>
+<p class="settings-hint" data-i18n="html.livePreviewHint"></p>
 </section><section class="settings-card">
-<h2>Навигация Telegram</h2>
-<label class="toggle-line"><input id="tgNativeIntegration" type="checkbox"/> Использовать нативный Telegram-клиент</label>
-<p class="settings-hint">ON использует <code>tg://</code>. OFF использует <code>https://t.me/</code> там, где web-переход возможен. Все модули открывают Telegram только через общий navigation layer.</p>
+<h2 data-i18n="html.telegramNavigation"></h2>
+<label class="toggle-line"><input id="tgNativeIntegration" type="checkbox"/> <span data-i18n="html.useNativeTelegramClient"></span></label>
+<p class="settings-hint" data-i18n="html.telegramNavigationHint"></p>
 </section><section class="settings-card">
-<h2>Индикатор сети</h2>
-<label class="toggle-line"><input id="networkPanelStartExpanded" type="checkbox"/> Разворачивать индикатор сети при запуске</label>
-<p class="settings-hint">Сохраняется в настройках этого приложения. Индикатор всегда можно развернуть или свернуть кнопкой в верхней панели.</p>
+<h2 data-i18n="html.networkIndicator"></h2>
+<label class="toggle-line"><input id="networkPanelStartExpanded" type="checkbox"/> <span data-i18n="html.expandNetworkIndicatorOnLaunch"></span></label>
+<p class="settings-hint" data-i18n="html.networkIndicatorHint"></p>
 </section><section class="settings-card">
-<h2>Канал предпросмотра</h2>
-<div class="settings-state" id="tgChannelState">Слот свободен</div>
+<h2 data-i18n="html.previewChannel"></h2>
+<div class="settings-state" data-i18n="html.slotAvailable" id="tgChannelState"></div>
 <div class="settings-actions">
-<button class="primary" id="tgStartChannelBind">Привязать вручную</button>
-<button class="danger" hidden="" id="tgUnbindChannel">Отвязать канал</button>
+<button class="primary" data-i18n="html.linkManually" id="tgStartChannelBind"></button>
+<button class="danger" data-i18n="html.unlinkChannel" hidden="" id="tgUnbindChannel"></button>
 </div>
 <div class="binding-box" hidden="" id="tgChannelBindingBox">
 <div class="settings-actions">
-<a class="button-link" href="#" id="tgAddToChannelLink" rel="noreferrer" target="_blank">Добавить бота администратором</a>
+<a class="button-link" data-i18n="html.addBotAsAdministrator" href="#" id="tgAddToChannelLink" rel="noreferrer" target="_blank"></a>
 </div>
 <label class="settings-field">
-<span>Код подтверждения</span>
+<span data-i18n="html.confirmationCode"></span>
 <div class="inline-field">
 <input id="tgChannelBindCode" readonly=""/>
-<button id="tgCopyChannelCode">Копировать</button>
+<button data-i18n="html.copy" id="tgCopyChannelCode"></button>
 </div>
 </label>
 <div class="settings-meta" id="tgChannelCandidate"></div>
-<button id="tgCancelChannelBind">Отменить привязку</button>
-<p class="settings-hint">Канал привяжется автоматически, если он приватный, бот добавлен администратором, а участники — только бот и текущий владелец. В остальных случаях используйте ручное подтверждение случайным кодом. После привязки приложение создаст и закрепит отдельное сообщение live-preview; публикации проектов будут размещаться после него.</p>
+<button data-i18n="html.cancelLinking" id="tgCancelChannelBind"></button>
+<p class="settings-hint" data-i18n="html.previewChannelHint"></p>
 </div>
 </section></div>
 </div>
@@ -145,8 +149,8 @@
 <section class="tab-page gallery-page" data-tab-page="gallery">
 <div class="gallery-app" id="galleryApp">
 <div class="gallery-bootstrap">
-<strong>Галерея</strong>
-<span>Инициализация Gallery Core…</span>
+<strong data-i18n="html.gallery"></strong>
+<span data-i18n="html.initializingGalleryCore"></span>
 <code>build 1.7.13</code>
 </div>
 </div>
@@ -156,39 +160,39 @@
 <aside class="panel palette" id="editorLeftPanel">
 <div class="left-panel-mode" id="blockPaletteMode">
 <div class="panel-fixed-head">
-<div class="panel-title palette-title-row"><span>Блоки</span><button class="palette-context-button" hidden="" id="openAssetPicker">Галерея</button></div>
+<div class="panel-title palette-title-row"><span data-i18n="html.blocks"></span><button class="palette-context-button" data-i18n="html.gallery" hidden="" id="openAssetPicker"></button></div>
 <div class="palette-search-wrap">
-<input class="search" id="blockSearch" placeholder="Поиск блока…"/>
+<input class="search" data-i18n-placeholder="html.searchBlock" id="blockSearch"/>
 </div>
-<div class="palette-category-filters" id="blockCategoryFilters" aria-label="Категории блоков"></div>
+<div class="palette-category-filters" data-i18n-aria-label="html.blockCategories" id="blockCategoryFilters"></div>
 </div>
 <div class="panel-scroll palette-scroll" id="palette"></div>
 </div>
 <div class="left-panel-mode" hidden="" id="assetPickerMode"></div>
 </aside>
-<div class="layout-splitter" id="editorLeftSplitter" title="Изменить ширину левой панели"></div>
+<div class="layout-splitter" data-i18n-title="html.resizeLeftPanel" id="editorLeftSplitter"></div>
 <section class="panel canvas-panel">
 <div class="canvas-header">
 <div class="panel-title canvas-title">
-<span>Canvas</span>
-<div class="canvas-title-right"><button id="exportJson" type="button">JSON</button><button id="previewTelegram" type="button">Telegram JSON</button><span class="editor-preview-state" data-state="idle" id="editorPreviewState">Preview: выкл.</span><div aria-live="polite" class="canvas-stats" id="canvasStats"></div></div>
+<span data-i18n="html.canvas"></span>
+<div class="canvas-title-right"><button data-i18n="html.json" id="exportJson" type="button"></button><button data-i18n="html.telegramJson" id="previewTelegram" type="button"></button><span class="editor-preview-state" data-i18n="html.previewOff" data-state="idle" id="editorPreviewState"></span><div aria-live="polite" class="canvas-stats" id="canvasStats"></div></div>
 </div>
 <div class="canvas-editor-bar" id="canvasEditorBar">
-<button id="newDoc" type="button">Новый черновик</button>
-<button id="saveMeta" type="button">Сохранить как блок</button>
-<button id="openDrafts" type="button">Черновики</button>
+<button data-i18n="html.newDraft" id="newDoc" type="button"></button>
+<button data-i18n="html.saveAsBlock" id="saveMeta" type="button"></button>
+<button data-i18n="html.drafts" id="openDrafts" type="button"></button>
 <span class="canvas-command-spacer"></span>
-<div aria-label="История изменений" class="canvas-history-actions">
-<button disabled="" id="editorUndo" type="button">↶ Отменить</button>
-<button disabled="" id="editorRedo" type="button">↷ Повторить</button>
+<div class="canvas-history-actions" data-i18n-aria-label="html.changeHistory">
+<button disabled="" id="editorUndo" type="button">↶ <span data-i18n="html.undo"></span></button>
+<button disabled="" id="editorRedo" type="button">↷ <span data-i18n="html.redo"></span></button>
 </div>
 </div>
 <div class="canvas-context-bar" id="canvasContextBar">
-<label class="canvas-context-toggle" title="При выборе блока сворачивать остальные ветки Canvas"><input checked="" id="editorAutoCollapseInactive" type="checkbox"/><span>Сворачивать неактивные</span></label>
-<button id="editorToggleAllBlocks" type="button">Свернуть все</button>
-<button id="editorOpenTelegram" type="button">Открыть Telegram</button>
+<label class="canvas-context-toggle" data-i18n-title="html.autoCollapseHint"><input checked="" id="editorAutoCollapseInactive" type="checkbox"/><span data-i18n="html.collapseInactive"></span></label>
+<button data-i18n="html.collapseAll" id="editorToggleAllBlocks" type="button"></button>
+<button data-i18n="html.openTelegram" id="editorOpenTelegram" type="button"></button>
 <span aria-live="polite" class="editor-project-sync-status" hidden="" id="editorProjectSyncStatus"></span>
-<button hidden="" id="editorProjectDeployment" type="button">Выгрузить проект</button>
+<button data-i18n="html.deployProject" hidden="" id="editorProjectDeployment" type="button"></button>
 </div>
 </div>
 <div class="canvas-scroll">
@@ -196,7 +200,7 @@
 <div aria-hidden="true" class="canvas-bottom-spacer"></div>
 </div>
 </section>
-<div class="layout-splitter project-panel-splitter" hidden="" id="editorProjectSplitter" title="Изменить ширину панели проекта"></div>
+<div class="layout-splitter project-panel-splitter" data-i18n-title="html.resizeProjectPanel" hidden="" id="editorProjectSplitter"></div>
 <aside class="panel project-post-panel" hidden="" id="editorProjectPanel"></aside>
 </div>
 </section>
@@ -204,22 +208,22 @@
 <div class="project-library-layout" id="projectLibrary">
 <aside class="project-library-sidebar" id="projectLibrarySidebar">
 <div class="project-library-bootstrap">
-<strong>Проекты</strong>
-<span>Инициализация Project Core…</span>
+<strong data-i18n="html.projects"></strong>
+<span data-i18n="html.initializingProjectCore"></span>
 </div>
 </aside>
-<div class="layout-splitter project-library-splitter" id="projectLibrarySplitter" title="Изменить ширину панели проектов"></div>
+<div class="layout-splitter project-library-splitter" data-i18n-title="html.resizeProjectsPanel" id="projectLibrarySplitter"></div>
 <section class="project-library-detail" id="projectLibraryDetail">
 <div class="project-library-bootstrap">
-<strong>Обзор проекта</strong>
-<span>Выберите проект слева.</span>
+<strong data-i18n="html.projectOverview"></strong>
+<span data-i18n="html.selectProjectOnLeft"></span>
 </div>
 </section>
-<div class="layout-splitter project-library-post-splitter" id="projectLibraryPostSplitter" title="Изменить ширину панели выбранного поста"></div>
-<aside aria-label="Данные выбранного поста" class="project-library-post-panel" id="projectLibraryPostPanel">
+<div class="layout-splitter project-library-post-splitter" data-i18n-title="html.resizeSelectedPostPanel" id="projectLibraryPostSplitter"></div>
+<aside class="project-library-post-panel" data-i18n-aria-label="html.selectedPostData" id="projectLibraryPostPanel">
 <div class="project-library-bootstrap">
-<strong>Данные поста</strong>
-<span>Выберите пост в обзоре проекта.</span>
+<strong data-i18n="html.postData"></strong>
+<span data-i18n="html.selectPostInOverview"></span>
 </div>
 </aside>
 </div>
@@ -228,7 +232,7 @@
 </main>
 <dialog id="jsonDialog">
 <div class="dialog-head">
-<strong id="dialogTitle">JSON</strong>
+<strong data-i18n="html.json" id="dialogTitle"></strong>
 <button id="closeDialog">×</button>
 </div>
 <pre id="jsonOutput"></pre>
@@ -236,26 +240,26 @@
 <dialog id="metaDialog">
 <form id="metaForm" method="dialog">
 <div class="dialog-head">
-<strong>Создать Meta Block</strong>
+<strong data-i18n="html.createMetaBlock"></strong>
 <button type="submit" value="cancel" formnovalidate>×</button>
 </div>
 <div style="padding:16px">
 <div class="prop">
-<label>Название</label>
-<input id="metaName" placeholder="Product Card" required=""/>
+<label data-i18n="html.name"></label>
+<input data-i18n-placeholder="html.metaNamePlaceholder" id="metaName" required=""/>
 </div>
 <div class="prop">
-<label>Type</label>
-<input id="metaType" placeholder="product_card" required=""/>
+<label data-i18n="html.type"></label>
+<input data-i18n-placeholder="html.metaTypePlaceholder" id="metaType" required=""/>
 </div>
 <div class="prop">
-<label>Категория</label>
-<input id="metaCategory" value="Custom"/>
+<label data-i18n="html.category"></label>
+<input data-i18n-value="html.custom" id="metaCategory"/>
 </div>
-<div class="hint">В Meta Block войдут все блоки Canvas с текущими свойствами и вложенностью.</div>
+<div class="hint" data-i18n="html.metaBlockHint"></div>
 <div style="margin-top:14px;display:flex;gap:7px;justify-content:flex-end">
-<button type="submit" value="cancel" formnovalidate>Отмена</button>
-<button id="createMeta" value="default">Создать</button>
+<button data-i18n="html.cancel" type="submit" value="cancel" formnovalidate></button>
+<button data-i18n="html.create" id="createMeta" value="default"></button>
 </div>
 </div>
 </form>
@@ -264,17 +268,17 @@
 </div>
 <dialog class="session-token-dialog" id="telegramBackupRestoreDialog">
 <form method="dialog">
-<div class="dialog-head"><strong id="telegramBackupRestoreTitle">Найдена резервная копия</strong></div>
+<div class="dialog-head"><strong data-i18n="html.backupFound" id="telegramBackupRestoreTitle"></strong></div>
 <div class="session-token-dialog-body">
-<p id="telegramBackupRestoreHint">В закреплённом сообщении есть резервная копия.</p>
-<p class="settings-hint">Скачайте нужный файл из чата с ботом, затем выберите его здесь. Восстановление полностью заменит локальную базу и продолжит запуск без перезагрузки страницы.</p>
-<label class="settings-field"><span>Файл резервной копии</span><input accept=".json,application/json" id="telegramBackupRestoreFile" type="file"/></label>
-<div class="settings-actions"><button class="primary" id="telegramBackupRestoreApply" type="button">Восстановить</button><button id="telegramBackupRestoreOpen" type="button">Открыть Telegram</button><button id="telegramBackupRestoreSkip" type="button">Позже</button></div>
+<p data-i18n="html.pinnedMessageHasBackup" id="telegramBackupRestoreHint"></p>
+<p class="settings-hint" data-i18n="html.restoreDialogHint"></p>
+<label class="settings-field"><span data-i18n="html.backupFile"></span><input accept=".json,application/json" id="telegramBackupRestoreFile" type="file"/></label>
+<div class="settings-actions"><button class="primary" data-i18n="html.restore" id="telegramBackupRestoreApply" type="button"></button><button data-i18n="html.openTelegram" id="telegramBackupRestoreOpen" type="button"></button><button data-i18n="html.later" id="telegramBackupRestoreSkip" type="button"></button></div>
 </div>
 </form>
 </dialog>
 <section aria-live="polite" aria-modal="true" id="securityGate" role="dialog">
-<div class="security-gate-card"><h1 class="security-gate-title">Защищённый запуск</h1><p class="security-gate-copy">Проверяем окружение Telegram…</p><p class="security-gate-detail">Данные запуска проверяются в 30-секундном окне. После появления формы можно вводить пароль и token без спешки.</p></div>
+<div class="security-gate-card"><h1 class="security-gate-title" data-i18n="html.secureLaunch"></h1><p class="security-gate-copy" data-i18n="html.checkingTelegramEnvironment"></p><p class="security-gate-detail" data-i18n="html.launchWindowHint"></p></div>
 </section>
 <script src="./js/bootstrap.js?v=1.7.13" type="module"></script>
 </body>

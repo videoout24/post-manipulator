@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { ProjectStore } from "../js/project/ProjectStore.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 class MemoryDb {
   constructor() { this.stores = new Map(); }
@@ -20,11 +21,11 @@ await store.savePostProduction(project.id, postId, {
 
 await assert.rejects(
   store.deleteProject(project.id),
-  /Нельзя удалить Project, пока в нём есть опубликованные посты/
+  error => error.message === t("project.projectStore.youCannotDeleteTheProjectWhileIt")
 );
 await assert.rejects(
   store.deletePost(project.id, postId),
-  /Нельзя удалить опубликованный Project post/
+  error => error.message === t("project.projectStore.cannotDeleteAPublishedProjectPostFirst")
 );
 assert.ok(await store.getProject(project.id), "the published Project must remain available for publication cleanup");
 

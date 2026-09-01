@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { TelegramApiError } from "./TelegramClient.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
@@ -27,7 +28,7 @@ export class TelegramRuntime {
     this.loopPromise = null;
     this.startPromise = null;
     this.bot = null;
-    this.status = { state: "stopped", message: "Остановлен" };
+    this.status = { state: "stopped", message: t("telegram.telegramRuntime.stopped") };
   }
 
   getStatus() { return { ...this.status, running: this.running, bot: this.bot ? { ...this.bot } : null }; }
@@ -41,15 +42,15 @@ export class TelegramRuntime {
   }
 
   async #startRuntime() {
-    this.#setStatus("starting", "Проверка Telegram…");
+    this.#setStatus("starting", t("telegram.telegramRuntime.checkingTelegram"));
     try {
       this.bot = this.botIdentity
         ? await this.botIdentity.verifyCurrentClient()
         : await this.client.getMe();
       const webhook = await this.client.getWebhookInfo();
       if (webhook?.url) {
-        this.#setStatus("error", "У бота активен webhook. Отключите его для long polling.", { webhookUrl: webhook.url });
-        throw new TelegramApiError("getUpdates недоступен, пока установлен webhook", {
+        this.#setStatus("error", t("telegram.telegramRuntime.theBotHasAnActiveWebhookDisable"), { webhookUrl: webhook.url });
+        throw new TelegramApiError(t("telegram.telegramRuntime.getupdatesIsUnavailableWhileWebhookIsSet"), {
           method: "getUpdates",
           errorCode: 409,
           description: `Active webhook: ${webhook.url}`
@@ -63,14 +64,14 @@ export class TelegramRuntime {
       this.loopPromise = this.#pollLoop(this.abortController.signal);
       return this.getStatus();
     } catch (error) {
-      if (this.status.state !== "error") this.#setStatus("error", error?.message || "Не удалось запустить Telegram runtime", { error });
+      if (this.status.state !== "error") this.#setStatus("error", error?.message || t("telegram.telegramRuntime.failedToStartTelegramRuntime"), { error });
       throw error;
     }
   }
 
   async stop() {
     if (!this.running && !this.loopPromise) {
-      this.#setStatus("stopped", "Остановлен");
+      this.#setStatus("stopped", t("telegram.telegramRuntime.stopped"));
       return;
     }
     this.running = false;
@@ -78,7 +79,7 @@ export class TelegramRuntime {
     try { await this.loopPromise; } catch { /* loop reports its own errors */ }
     this.loopPromise = null;
     this.abortController = null;
-    this.#setStatus("stopped", "Остановлен");
+    this.#setStatus("stopped", t("telegram.telegramRuntime.stopped"));
   }
 
   async restart() {
@@ -125,7 +126,7 @@ export class TelegramRuntime {
           try {
             await this.#processUpdate(update);
           } catch (error) {
-            this.#log("error", `Ошибка обработки update ${update?.update_id ?? "?"}`, error);
+            this.#log("error", t("telegram.telegramRuntime.errorProcessingUpdate", { 0: update?.update_id ?? "?" }), error);
             if (error?.retryTelegramUpdate) throw error;
           }
           offset = Number(update.update_id) + 1;
@@ -135,19 +136,19 @@ export class TelegramRuntime {
       } catch (error) {
         if (signal.aborted || error?.name === "AbortError") break;
         failures += 1;
-        this.#log("error", "Ошибка long polling", error);
+        this.#log("error", t("telegram.telegramRuntime.longPollingError"), error);
 
         if (error instanceof TelegramApiError && error.isAuthError()) {
           this.running = false;
-          this.#setStatus("error", "Неверный или отозванный токен", { error });
+          this.#setStatus("error", t("telegram.telegramRuntime.invalidOrRevokedToken"), { error });
           break;
         }
 
         const delay = Math.min(15000, 500 * (2 ** Math.min(failures, 5)));
         const conflict = error instanceof TelegramApiError && error.isConflict();
         this.#setStatus("retrying", conflict
-          ? `Конфликт getUpdates, повтор через ${Math.ceil(delay / 1000)} с`
-          : `Повтор подключения через ${Math.ceil(delay / 1000)} с`, { error });
+          ? t("telegram.telegramRuntime.getupdatesConflictRetryingInWith", { 0: Math.ceil(delay / 1000) })
+          : t("telegram.telegramRuntime.reconnectingInWith", { 0: Math.ceil(delay / 1000) }), { error });
         await sleep(delay, signal).catch(() => {});
         if (this.running && !signal.aborted) this.#setStatus("running", `Long polling: @${this.bot?.username || this.bot?.id || "bot"}`);
       }

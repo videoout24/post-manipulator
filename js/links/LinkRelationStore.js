@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { telegramMessageUrl } from "../project/ProjectDeploymentResolver.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst } from "./LinkRelationAst.js?v=1.5.9";
@@ -13,8 +14,8 @@ export class LinkRelationStore {
   constructor({ db, events = null } = {}) { this.db = db; this.events = events; }
 
   async create({ source, target, label = "" } = {}) {
-    validateEndpoint(source, "источник");
-    validateEndpoint(target, "цель");
+    validateEndpoint(source, t("links.linkRelationStore.source"));
+    validateEndpoint(target, t("links.linkRelationStore.target"));
     const relation = {
       id: `link_${randomUUID()}`,
       source: structuredClone(source),
@@ -61,7 +62,7 @@ export class LinkRelationStore {
           ...relation.target,
           kind: "publication",
           id: String(publication.id),
-          title: relation.target.title || publication.source?.title || "Публикация"
+          title: relation.target.title || publication.source?.title || t("editor.draftListView.publication")
         };
       }
       const url = await this.resolveTargetUrl(relation.target);
@@ -160,7 +161,7 @@ export class LinkRelationStore {
     const relation = await this.get(id);
     if (!relation) return null;
     relation.status = LINK_RELATION_STATUS.FAILED;
-    relation.error = String(error?.message || error || "Не удалось обновить ссылку");
+    relation.error = String(error?.message || error || t("links.linkRelationStore.failedToUpdateLink"));
     relation.updatedAt = Date.now();
     await this.db.put("link_relations", id, relation);
     this.events?.emit("links:changed", { reason: "failed", relation: structuredClone(relation) });
@@ -184,8 +185,8 @@ export class LinkRelationStore {
 }
 
 function validateEndpoint(value, label) {
-  if (!value?.kind) throw new Error(`Не указан ${label} связи`);
-  if (value.kind === "external" ? !value.url : !value.id) throw new Error(`Не указан идентификатор: ${label}`);
+  if (!value?.kind) throw new Error(t("links.linkRelationStore.ofConnectionIsNotSpecified", { 0: label }));
+  if (value.kind === "external" ? !value.url : !value.id) throw new Error(t("links.linkRelationStore.identifierNotSpecified", { 0: label }));
 }
 
 function applyResolved(relation, url) {

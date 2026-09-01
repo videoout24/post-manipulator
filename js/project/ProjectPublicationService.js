@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";
@@ -42,10 +43,10 @@ export class ProjectPublicationService {
   }
 
   async publishProject(projectId, targetChatId, { commentsEnabled = true } = {}) {
-    if (!projectId) throw new Error("Project id is required");
+    if (!projectId) throw new Error(t("project.common.projectIdRequired"));
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     let project = await this.store.getProject(projectId);
-    if (!project) throw new Error("Проект не найден");
+    if (!project) throw new Error(t("project.projectPublicationService.projectNotFound"));
     const target = await this.#requireTarget(targetChatId);
     this.#validate(project);
     this.#assertCommentsConfig(target, commentsEnabled);
@@ -86,15 +87,15 @@ export class ProjectPublicationService {
   }
 
   async applyChanges(projectId, postId) {
-    if (!projectId || !postId) throw new Error("Не указан Project post");
+    if (!projectId || !postId) throw new Error(t("editor.editorDocumentCoordinator.projectPostNotSpecified"));
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     let project = await this.store.getProject(projectId);
-    if (!project) throw new Error("Проект не найден");
+    if (!project) throw new Error(t("project.projectPublicationService.projectNotFound"));
     this.#validate(project);
     const post = project.posts.find(item => String(item.id) === String(postId));
     const deployment = post?.deployments?.production;
     if (!deployment?.chatId || !deployment?.messageId) {
-      throw new Error("Этот пост ещё не опубликован в production");
+      throw new Error(t("project.projectPublicationService.thisPostHasNotYetBeenPublished"));
     }
     const target = await this.#requireTarget(deployment.chatId);
     const index = new ProjectIndex(project);
@@ -107,7 +108,7 @@ export class ProjectPublicationService {
   }
 
   async syncPublishedStructure(projectId, affectedPostIds = []) {
-    if (!projectId) throw new Error("Project id is required");
+    if (!projectId) throw new Error(t("project.common.projectIdRequired"));
     let project = await this.store.getProject(projectId);
     if (!project) return { project: null, postIds: [], skipped: "project-missing" };
     const requested = new Set((affectedPostIds || []).filter(Boolean).map(String));
@@ -118,7 +119,7 @@ export class ProjectPublicationService {
 
     this.#validate(project);
     const chatIds = new Set(postIds.map(id => Number(project.posts.find(post => String(post.id) === id)?.deployments?.production?.chatId || 0)).filter(Boolean));
-    if (chatIds.size !== 1) throw new Error("Структурные посты Project опубликованы в разных каналах");
+    if (chatIds.size !== 1) throw new Error(t("project.projectPublicationService.projectStructuralPostsArePublishedInDifferent"));
     const target = await this.#requireTarget([...chatIds][0]);
     this.#emit("updating", project, { target, total: postIds.length, current: 0, postIds, structural: true });
     project = await this.#syncPosts(project, postIds, target, { allowCreate: false, phase: "updating" });
@@ -127,19 +128,19 @@ export class ProjectPublicationService {
   }
 
   async publishPost(projectId, postId, targetChatId, { commentsEnabled = true } = {}) {
-    if (!projectId || !postId) throw new Error("Не указан Project post");
+    if (!projectId || !postId) throw new Error(t("editor.editorDocumentCoordinator.projectPostNotSpecified"));
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     let project = await this.store.getProject(projectId);
-    if (!project) throw new Error("Проект не найден");
+    if (!project) throw new Error(t("project.projectPublicationService.projectNotFound"));
     const post = project.posts.find(item => String(item.id) === String(postId));
-    if (!post) throw new Error("Пост проекта не найден");
+    if (!post) throw new Error(t("project.projectPublicationService.projectPostNotFound"));
     const target = await this.#requireTarget(targetChatId);
     this.#validate(project);
     this.#assertCommentsConfig(target, commentsEnabled);
     this.#assertSingleProductionTarget(project, target.chatId);
     const eligibility = getProjectPostPublicationEligibility(project, post.id, new ProjectIndex(project));
     if (!eligibility.eligible) {
-      throw new Error("Сначала опубликуйте Post Map, от которого зависит этот пост");
+      throw new Error(t("project.projectPublicationService.firstPublishThePostMapOnWhich"));
     }
 
     this.#emit("publishing", project, { target, total: 1, current: 0, postId: post.id, postIds: [post.id] });
@@ -163,24 +164,24 @@ export class ProjectPublicationService {
   }
 
   async schedulePost(projectId, postId, targetChatId, { scheduledAt, commentsEnabled = true } = {}) {
-    if (!projectId || !postId) throw new Error("Не указан Project post");
+    if (!projectId || !postId) throw new Error(t("editor.editorDocumentCoordinator.projectPostNotSpecified"));
     const publishAt = Number(scheduledAt || 0);
     if (!Number.isFinite(publishAt) || publishAt <= Date.now()) {
-      throw new Error("Укажите время отложенной публикации в будущем");
+      throw new Error(t("project.projectPublicationService.specifyAFutureScheduledPublicationTime"));
     }
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     let project = await this.store.getProject(projectId);
-    if (!project) throw new Error("Проект не найден");
+    if (!project) throw new Error(t("project.projectPublicationService.projectNotFound"));
     const post = project.posts.find(item => String(item.id) === String(postId));
-    if (!post) throw new Error("Пост проекта не найден");
-    if (post.deployments?.production?.messageId) throw new Error("Этот пост уже опубликован");
+    if (!post) throw new Error(t("project.projectPublicationService.projectPostNotFound"));
+    if (post.deployments?.production?.messageId) throw new Error(t("project.projectPublicationService.thisPostHasAlreadyBeenPublished"));
     const target = await this.#requireTarget(targetChatId);
     this.#validate(project);
     this.#assertCommentsConfig(target, commentsEnabled);
     this.#assertSingleProductionTarget(project, target.chatId);
     const eligibility = getProjectPostPublicationEligibility(project, post.id, new ProjectIndex(project));
     if (!eligibility.eligible) {
-      throw new Error("Сначала опубликуйте Post Map, от которого зависит этот пост");
+      throw new Error(t("project.projectPublicationService.firstPublishThePostMapOnWhich"));
     }
 
     const schedule = {
@@ -200,13 +201,13 @@ export class ProjectPublicationService {
   }
 
   async cancelPostSchedule(projectId, postId) {
-    if (!projectId || !postId) throw new Error("Не указан Project post");
+    if (!projectId || !postId) throw new Error(t("editor.editorDocumentCoordinator.projectPostNotSpecified"));
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     const project = await this.store.getProject(projectId);
-    if (!project) throw new Error("Проект не найден");
+    if (!project) throw new Error(t("project.projectPublicationService.projectNotFound"));
     const post = project.posts.find(item => String(item.id) === String(postId));
     if (!post?.schedule || post.publication?.state !== "scheduled") {
-      throw new Error("Этот Project post не отложен");
+      throw new Error(t("project.projectPublicationService.thisProjectPostIsNotScheduled"));
     }
     const target = await this.#requireTarget(post.schedule.chatId);
     this.#clearSchedule(project.id, post.id);
@@ -223,7 +224,7 @@ export class ProjectPublicationService {
   async unpublishPost(projectId, postId) {
     const context = await this.#getPublishedPostContext(projectId, postId);
     if (!isPublicationDeleteAvailable(context.publication || { publishedAt: context.deployment.publishedAt })) {
-      throw new Error("48-часовой срок удаления публикации в Telegram истёк");
+      throw new Error(t("project.projectPublicationService.the48HourPeriodForDeletingA"));
     }
     this.#emit("unpublishing", context.project, { target: context.target, total: 1, current: 0, postId: context.post.id, postIds: [context.post.id] });
     try {
@@ -247,7 +248,7 @@ export class ProjectPublicationService {
   async checkExpiredUnpublish(projectId, postId) {
     const context = await this.#getPublishedPostContext(projectId, postId);
     if (isPublicationDeleteAvailable(context.publication || { publishedAt: context.deployment.publishedAt })) {
-      throw new Error("Для этого Project post ещё доступно обычное удаление");
+      throw new Error(t("project.projectPublicationService.normalDeletionIsStillAvailableForThis"));
     }
     try {
       await this.client.deleteMessage(context.deployment.chatId, context.deployment.messageId);
@@ -276,14 +277,14 @@ export class ProjectPublicationService {
   }
 
   async #getPublishedPostContext(projectId, postId) {
-    if (!projectId || !postId) throw new Error("Не указан Project post");
+    if (!projectId || !postId) throw new Error(t("editor.editorDocumentCoordinator.projectPostNotSpecified"));
     if (this.editorSession?.activeProjectId === projectId) await this.editorSession.flush();
     const project = await this.store.getProject(projectId);
-    if (!project) throw new Error("Проект не найден");
+    if (!project) throw new Error(t("project.projectPublicationService.projectNotFound"));
     const post = project.posts.find(item => String(item.id) === String(postId));
     const deployment = post?.deployments?.production;
     if (!post || !deployment?.chatId || !deployment?.messageId) {
-      throw new Error("Этот Project post не опубликован");
+      throw new Error(t("project.projectPublicationService.thisProjectPostIsNotPublished"));
     }
     this.#assertMapCanBeUnpublished(project, post);
     const [publication, target] = await Promise.all([
@@ -324,11 +325,11 @@ export class ProjectPublicationService {
 
     const titles = activeDependents
       .slice(0, 3)
-      .map(candidate => `«${candidate.title || "Пост"}»`)
+      .map(candidate => `«${candidate.title || t("editor.blockInspector.post")}»`)
       .join(", ");
-    const remainder = activeDependents.length > 3 ? ` и ещё ${activeDependents.length - 3}` : "";
+    const remainder = activeDependents.length > 3 ? t("project.projectPublicationService.andMore", { 0: activeDependents.length - 3 }) : "";
     throw new Error(
-      `Нельзя удалить карту проекта раньше связанных постов. Сначала удалите или отмените их публикации: ${titles}${remainder}.`
+      t("project.projectPublicationService.youCannotDeleteTheProjectMapBefore", { 0: titles, 1: remainder })
     );
   }
 
@@ -381,13 +382,13 @@ export class ProjectPublicationService {
 
   async #syncPost(project, postId, target, { allowCreate = false, commentsEnabled = undefined } = {}) {
     const post = project.posts.find(item => String(item.id) === String(postId));
-    if (!post) throw new Error(`Project post не найден: ${postId}`);
+    if (!post) throw new Error(t("project.projectPublicationService.projectPostNotFound2", { 0: postId }));
     const previous = post.deployments?.production || null;
     if (previous?.chatId && Number(previous.chatId) !== Number(target.chatId)) {
-      throw new Error("Production-канал уже отличается от выбранного");
+      throw new Error(t("project.projectPublicationService.theProductionChannelAlreadyDiffersFromThe"));
     }
     if (!previous?.messageId && !allowCreate) {
-      throw new Error(`У поста «${post.title || post.id}» отсутствует production-проекция`);
+      throw new Error(t("project.projectPublicationService.thePostHasNoProductionProjection", { 0: post.title || post.id }));
     }
 
     const index = new ProjectIndex(project);
@@ -396,7 +397,7 @@ export class ProjectPublicationService {
     const envelope = this.renderer.renderEnvelope(tree);
     const result = await this.#sendOrEdit(previous, target, envelope, { allowCreate });
     const messageId = Number(result.messageId || result.message?.message_id || previous?.messageId || 0);
-    if (!messageId) throw new Error(`Telegram не вернул message_id для «${post.title || post.id}»`);
+    if (!messageId) throw new Error(t("project.projectPublicationService.telegramDidNotReturnMessageIdFor", { 0: post.title || post.id }));
 
     const publishedAt = Number(result.message?.date || previous?.publishedAt || post.publication?.publishedAt || Date.now() / 1000) * 1000;
     const deployment = {
@@ -431,7 +432,7 @@ export class ProjectPublicationService {
         if (!allowCreate) throw error;
       }
     }
-    if (!allowCreate) throw new Error("Production message не найден");
+    if (!allowCreate) throw new Error(t("project.projectPublicationService.productionMessageNotFound"));
     const message = await this.client.sendRichMessage({
       chatId: target.chatId,
       richMessage: envelope.richMessage,
@@ -443,7 +444,7 @@ export class ProjectPublicationService {
 
   async #writePublicationRecord(project, postId, target, messageAst, deployment, publishedAt, commentsEnabled = undefined) {
     const post = project.posts.find(item => String(item.id) === String(postId));
-    if (!post) throw new Error(`Project post не найден: ${postId}`);
+    if (!post) throw new Error(t("project.projectPublicationService.projectPostNotFound2", { 0: postId }));
     const id = projectPublicationId(project.id, post.id);
     const existing = await this.db.get("publications", id, null);
     const record = {
@@ -453,8 +454,8 @@ export class ProjectPublicationService {
         kind: "project",
         projectId: String(project.id),
         postId: String(post.id),
-        title: post.title || "Пост проекта",
-        projectTitle: project.title || "Проект"
+        title: post.title || t("editor.projectPostListView.projectPost"),
+        projectTitle: project.title || t("project.projectLibraryView.project")
       },
       messageAst: structuredClone(messageAst),
       target: structuredClone(target),
@@ -487,7 +488,7 @@ export class ProjectPublicationService {
 
   async #writeScheduledPublicationRecord(project, postId, target, schedule) {
     const post = project.posts.find(item => String(item.id) === String(postId));
-    if (!post) throw new Error(`Project post не найден: ${postId}`);
+    if (!post) throw new Error(t("project.projectPublicationService.projectPostNotFound2", { 0: postId }));
     const id = projectPublicationId(project.id, post.id);
     const record = {
       id,
@@ -495,8 +496,8 @@ export class ProjectPublicationService {
         kind: "project",
         projectId: String(project.id),
         postId: String(post.id),
-        title: post.title || "Пост проекта",
-        projectTitle: project.title || "Проект"
+        title: post.title || t("editor.projectPostListView.projectPost"),
+        projectTitle: project.title || t("project.projectLibraryView.project")
       },
       messageAst: structuredClone(post.messageAst),
       target: structuredClone(target),
@@ -525,7 +526,7 @@ export class ProjectPublicationService {
 
   async #requireTarget(chatId) {
     const target = (await this.targets.list()).find(item => Number(item.chatId) === Number(chatId));
-    if (!target || target.status !== "ready") throw new Error("Канал или группа недоступны для публикации");
+    if (!target || target.status !== "ready") throw new Error(t("project.projectPublicationService.channelOrGroupNotAvailableForPublishing"));
     return target;
   }
 
@@ -533,22 +534,22 @@ export class ProjectPublicationService {
     const targets = new Set((project.posts || [])
       .map(post => Number(post.deployments?.production?.chatId || post.schedule?.chatId || 0))
       .filter(Boolean));
-    if (targets.size > 1) throw new Error("В Project обнаружено несколько production-каналов");
+    if (targets.size > 1) throw new Error(t("project.projectPublicationService.severalProductionChannelsDetectedInProject"));
     if (targets.size === 1 && !targets.has(Number(chatId))) {
-      throw new Error("Project уже опубликован в другом канале или группе");
+      throw new Error(t("project.projectPublicationService.projectIsAlreadyPublishedInAnotherChannel"));
     }
   }
 
   #assertCommentsConfig(target, commentsEnabled) {
     if (target.type === "channel" && target.commentsEnabled && commentsEnabled === false && !target.discussionRights?.canDelete) {
-      throw new Error("Для отключения комментариев боту нужно право удаления сообщений в группе обсуждения");
+      throw new Error(t("project.projectPublicationService.toDisableCommentsTheBotNeedsThe"));
     }
   }
 
   #validate(project) {
     const errors = this.validator?.validate?.(project, new ProjectIndex(project)) || [];
     if (!errors.length) return;
-    const error = new Error(`Project не прошёл проверку: ${errors.length} ошибок`);
+    const error = new Error(t("project.projectPublicationService.projectDidNotPassTheCheckErrors", { 0: errors.length }));
     error.validationErrors = errors;
     throw error;
   }

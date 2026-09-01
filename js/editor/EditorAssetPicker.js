@@ -1,9 +1,10 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const META = Object.freeze({
-  photo: { label: "Фото", icon: "▧" },
-  video: { label: "Видео", icon: "▶" },
-  audio: { label: "Аудио", icon: "♪" },
-  voice: { label: "Голосовые", icon: "◖" },
-  document: { label: "Файлы", icon: "▤" }
+  photo: { label: t("app.appNotifications.photo"), icon: "▧" },
+  video: { label: t("app.appNotifications.video"), icon: "▶" },
+  audio: { label: t("app.appNotifications.audio"), icon: "♪" },
+  voice: { label: t("editor.editorAssetPicker.voice"), icon: "◖" },
+  document: { label: t("editor.editorAssetPicker.files"), icon: "▤" }
 });
 
 export class EditorAssetPicker {
@@ -74,22 +75,7 @@ export class EditorAssetPicker {
     });
     const title = accepted.map(type => META[type]?.label || type).join(" / ");
 
-    this.root.innerHTML = `
-      <div class="asset-picker-head">
-        <div class="asset-picker-title-row">
-          <button class="asset-picker-back" id="assetPickerBack" title="Вернуться к списку блоков">←</button>
-          <div><strong>${escapeHtml(title)}</strong><span>${filtered.length} из Gallery</span></div>
-        </div>
-        <input id="assetPickerSearch" class="asset-picker-search" placeholder="Поиск ресурса…" value="${escapeAttr(this.search)}">
-        <select id="assetPickerTopic" class="asset-picker-topic">
-          <option value="all" ${this.thread === "all" ? "selected" : ""}>Все топики</option>
-          <option value="none" ${this.thread === "none" ? "selected" : ""}>Без топика</option>
-          ${topics.map(topic => `<option value="${topic.threadId}" ${String(this.thread) === String(topic.threadId) ? "selected" : ""}>${escapeHtml(topic.name)}</option>`).join("")}
-        </select>
-      </div>
-      <div class="asset-picker-scroll">
-        ${filtered.length ? filtered.map(asset => this.#card(asset, node, topicMap)).join("") : `<div class="asset-picker-empty">Нет подходящих ресурсов.<br>Добавьте их через Telegram → Gallery.</div>`}
-      </div>`;
+    this.root.innerHTML = t("editor.editorAssetPicker.ofGalleryAllTopicsNoTopic", { 0: escapeHtml(title), 1: filtered.length, 2: escapeAttr(this.search), 3: this.thread === "all" ? "selected" : "", 4: this.thread === "none" ? "selected" : "", 5: topics.map(topic => `<option value="${topic.threadId}" ${String(this.thread) === String(topic.threadId) ? "selected" : ""}>${escapeHtml(topic.name)}</option>`).join(""), 6: filtered.length ? filtered.map(asset => this.#card(asset, node, topicMap)).join("") : t("editor.editorAssetPicker.noSuitableResourcesAddThemViaTelegram") });
 
     this.root.querySelector("#assetPickerBack")?.addEventListener("click", () => this.onBack?.(node.id));
     this.root.querySelector("#assetPickerSearch")?.addEventListener("input", event => {
@@ -108,8 +94,8 @@ export class EditorAssetPicker {
       card.addEventListener("click", async () => {
         try {
           await this.binder.assign(node.id, asset);
-          const action = this.binder.isCollection(node) ? "добавлено" : "назначено блоку";
-          this.#notice(`${META[asset.type]?.label || "Ресурс"} ${action}`, "success");
+          const action = this.binder.isCollection(node) ? t("editor.editorAssetPicker.added") : t("editor.editorAssetPicker.assignedToBlock");
+          this.#notice(`${META[asset.type]?.label || t("app.appNotifications.resource")} ${action}`, "success");
         } catch (error) { this.#notice(error.message, "error"); }
       });
       card.draggable = true;
@@ -145,10 +131,7 @@ export class EditorAssetPicker {
     const topic = topicMap.get(Number(asset.topicThreadId));
     const selected = node.props?.galleryId === asset.id;
     const title = asset.caption || asset.fileName || meta.label;
-    return `<article class="asset-picker-card ${selected ? "selected" : ""}" data-editor-gallery-asset="${asset.id}" title="Клик — выбрать, drag — бросить в media-блок">
-      <div class="asset-picker-thumb" data-editor-asset-thumb="${asset.id}"><span>${meta.icon}</span>${selected ? `<b>✓</b>` : ""}</div>
-      <div class="asset-picker-card-body"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(topic?.name || (asset.topicThreadId ? `Topic ${asset.topicThreadId}` : "Без топика"))}</span></div>
-    </article>`;
+    return t("editor.editorAssetPicker.message", { 0: selected ? "selected" : "", 1: asset.id, 2: asset.id, 3: meta.icon, 4: selected ? `<b>✓</b>` : "", 5: escapeHtml(title), 6: escapeHtml(topic?.name || (asset.topicThreadId ? `Topic ${asset.topicThreadId}` : t("editor.editorAssetPicker.noTopic"))) });
   }
 
   #notice(message, type = "info") { this.events?.emit?.("ui:editor-notice", { message, type }); }

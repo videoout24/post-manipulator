@@ -5,7 +5,7 @@ const inspector = fs.readFileSync(new URL("../js/editor/BlockInspector.js", impo
 const sizing = fs.readFileSync(new URL("../js/editor/SessionTextareaSizing.js", import.meta.url), "utf8");
 const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
 
-assert.match(sizing, /Alt\+↑ — ниже на строку; Alt\+↓ — выше на строку/);
+assert.match(sizing, /t\("editor\.sessionTextareaSizing\.altDownOneLineAltUpOne"\)/);
 assert.match(sizing, /event\.key === "ArrowDown" \? current \+ 1/);
 assert.match(inspector, /\["ControlLeft", "ControlRight"\]\.includes\(event\.code\)/);
 assert.match(inspector, /tableCtrlKeys\.add\(event\.code\)/);

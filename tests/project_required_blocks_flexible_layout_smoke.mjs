@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { ProjectStore, getProjectRootMap, protectedProjectNodeError } from '../js/project/ProjectStore.js?v=1.5.9';
 import { ProjectIndex } from '../js/project/ProjectIndex.js?v=1.5.9';
 import { ProjectValidator } from '../js/project/ProjectValidator.js?v=1.5.9';
+import { t } from '../js/i18n/index.js?v=1.8.0';
 
 class MemoryDb {
   constructor(){ this.stores = new Map(); }
@@ -57,7 +58,10 @@ assert.deepEqual(savedChild.messageAst.children.map(node => node.id), ['child_in
 assert.deepEqual(savedChild.messageAst.children[1].children.map(node => node.type), ['project_map_backlink','heading']);
 assert.equal(protectedProjectNodeError(project,childId,{ action:'move',nodeId:childBacklink.id }), '');
 assert.equal(protectedProjectNodeError(project,childId,{ action:'property',nodeId:childHeading.id,key:'text' }), '');
-assert.match(protectedProjectNodeError(project,childId,{ action:'remove',nodeId:childBacklink.id }), /обязателен/);
+assert.equal(
+  protectedProjectNodeError(project,childId,{ action:'remove',nodeId:childBacklink.id }),
+  t('project.projectStore.theBackToMapBlockIsMandatory')
+);
 assert.equal(new ProjectValidator().validate(project,new ProjectIndex(project)).length,0);
 
 console.log('project_required_blocks_flexible_layout_smoke: OK');

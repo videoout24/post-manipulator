@@ -1,3 +1,4 @@
+import { getLocale, t } from "../i18n/index.js?v=1.8.0";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { hasUnappliedProductionChanges } from "./ProjectPublicationState.js?v=1.5.9";
 import { projectMapEntryText } from "./ProjectMapText.js?v=1.7.11";
@@ -35,7 +36,7 @@ export function createProjectPostCard({
 
   const head = el("div", "project-post-card-head");
   const body = el("div", "project-post-card-body");
-  body.append(el("strong", "", post?.title || "Пост"), el("span", "project-post-state", stateLabel(post)));
+  body.append(el("strong", "", post?.title || t("editor.blockInspector.post")), el("span", "project-post-state", stateLabel(post)));
   head.append(body);
 
   if (actions.length) {
@@ -61,8 +62,8 @@ export function createProjectPostCard({
     const publish = document.createElement("button");
     publish.type = "button";
     publish.className = "project-publication-publish";
-    publish.textContent = "Опубликовать";
-    publish.title = "Опубликовать этот Project post в Telegram";
+    publish.textContent = t("editor.draftListView.publish");
+    publish.title = t("project.projectPostCard.publishThisProjectPostOnTelegram");
     publish.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
@@ -70,7 +71,7 @@ export function createProjectPostCard({
     };
     footer.append(
       publish,
-      onSchedule ? scheduleButton(post, onSchedule) : placeholderButton("Отложить", "Publications: отложенная публикация будет подключена позже")
+      onSchedule ? scheduleButton(post, onSchedule) : placeholderButton(t("editor.draftListView.postpone"), t("project.projectPostCard.publicationsTheScheduledPublicationWillBeConnected"))
     );
     card.append(footer);
   } else if (scheduled && showPublicationActions && onCancelSchedule) {
@@ -78,8 +79,8 @@ export function createProjectPostCard({
     const cancel = document.createElement("button");
     cancel.type = "button";
     cancel.className = "project-publication-cancel-schedule";
-    cancel.textContent = "Отменить отложку";
-    cancel.title = "Отменить отложенную публикацию";
+    cancel.textContent = t("project.projectPostCard.cancelTheScheduling");
+    cancel.title = t("project.projectPostCard.cancelTheScheduledPublication");
     cancel.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
@@ -92,8 +93,8 @@ export function createProjectPostCard({
     const apply = document.createElement("button");
     apply.type = "button";
     apply.className = "project-publication-apply";
-    apply.textContent = "Применить изменения";
-    apply.title = "Обновить опубликованный Project post в Telegram";
+    apply.textContent = t("editor.draftListView.applyChanges");
+    apply.title = t("project.projectPostCard.updateThePublishedProjectPostOnTelegram");
     apply.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
@@ -104,8 +105,8 @@ export function createProjectPostCard({
   } else if (!published && !scheduled && showPublicationActions) {
     const footer = el("div", "project-post-publication-actions");
     footer.append(
-      placeholderButton("Опубликовать", "Publications: публикация будет подключена позже"),
-      placeholderButton("Отложить", "Publications: отложенная публикация будет подключена позже")
+      placeholderButton(t("editor.draftListView.publish"), t("project.projectPostCard.publicationsThePublicationWillBeConnectedLater")),
+      placeholderButton(t("editor.draftListView.postpone"), t("project.projectPostCard.publicationsTheScheduledPublicationWillBeConnected"))
     );
     card.append(footer);
   }
@@ -132,7 +133,7 @@ function createOverviewPreview(post, context) {
   const wrap = el("div", "project-post-overview");
   const entries = collectPreviewEntries(post?.messageAst, PREVIEW_LIMIT);
   if (!entries.length) {
-    wrap.append(el("div", "project-post-preview-empty", "Пустой пост"));
+    wrap.append(el("div", "project-post-preview-empty", t("project.projectPostCard.emptyPost")));
     return wrap;
   }
 
@@ -180,7 +181,7 @@ function collectPreviewEntries(ast, limit) {
         if (canAddOrdinary && pushText(out, node.type, richTextToPlain(p.text))) ordinaryCount += 1;
         break;
       case "document":
-        if (canAddOrdinary && pushText(out, "document", richTextToPlain(p.caption) || "Документ")) ordinaryCount += 1;
+        if (canAddOrdinary && pushText(out, "document", richTextToPlain(p.caption) || t("project.projectPostCard.document"))) ordinaryCount += 1;
         break;
       case "list": {
         if (!canAddOrdinary) break;
@@ -247,13 +248,13 @@ function renderMapPreview(node, { project, onNavigatePost } = {}) {
   const wrap = el("section", "project-post-preview-map");
   wrap.dataset.mapId = mapId;
   const head = el("div", "project-post-preview-map-head");
-  head.append(el("strong", "", "Post Map"));
+  head.append(el("strong", "", t("blocks.registerProjectBlocks.postMap")));
   if (mapId) head.append(el("span", "", shortId(mapId)));
   wrap.append(head);
 
   const slots = Array.isArray(props.slots) ? props.slots : [];
   if (!slots.length) {
-    wrap.append(el("div", "project-post-preview-map-empty", props.emptyText || "Карта пока пуста"));
+    wrap.append(el("div", "project-post-preview-map-empty", props.emptyText || t("core.propertyRegistry.mapIsCurrentlyEmpty")));
     return wrap;
   }
 
@@ -267,7 +268,7 @@ function renderMapPreview(node, { project, onNavigatePost } = {}) {
     if (target && onNavigatePost) {
       const link = buttonLike(label || target.title || `Post ${index + 1}`, "project-post-preview-nav-link");
       link.dataset.targetPostId = target.id;
-      link.title = `Перейти к карточке: ${target.title || target.id}`;
+      link.title = t("project.projectPostCard.goToCard", { 0: target.title || target.id });
       link.onclick = event => {
         event.preventDefault();
         event.stopPropagation();
@@ -289,11 +290,11 @@ function renderBacklinkPreview(node, { projectIndex, onNavigateMap } = {}) {
   const wrap = el("div", "project-post-preview-backlink");
   wrap.dataset.targetMapId = targetMapId;
   wrap.append(el("span", "project-post-preview-backlink-icon", "↩"));
-  const text = String(props.text || "Назад");
+  const text = String(props.text || t("core.propertyRegistry.back"));
   const hostPostId = targetMapId ? projectIndex?.hostPostForMap?.(targetMapId) : null;
   if (hostPostId && onNavigateMap) {
     const link = buttonLike(text, "project-post-preview-nav-link backlink");
-    link.title = "Перейти к карте";
+    link.title = t("project.projectPostCard.goToMap");
     link.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
@@ -322,20 +323,20 @@ function renderMiniTable(node) {
     }
     table.append(tr);
   }
-  if (!rows.length) wrap.append(el("div", "project-post-preview-empty", "Пустая таблица"));
+  if (!rows.length) wrap.append(el("div", "project-post-preview-empty", t("project.projectPostCard.emptyTable")));
   else wrap.append(table);
   return wrap;
 }
 
 function renderMediaPreview(node) {
-  const type = node?.type === "video" ? "Видео" : "Фото";
+  const type = node?.type === "video" ? t("app.appNotifications.video") : t("app.appNotifications.photo");
   const wrap = el("div", `project-post-preview-media ${node?.type || "media"}`);
   const visual = el("div", "project-post-preview-media-thumb");
   visual.dataset.galleryId = String(node?.props?.galleryId || "");
   visual.append(el("span", "project-post-preview-media-icon", node?.type === "video" ? "▶" : "▧"));
   const meta = el("div", "project-post-preview-media-meta");
   const caption = richTextToPlain(node?.props?.caption);
-  meta.append(el("strong", "", type), el("span", "", truncate(caption || node?.props?.galleryId || "Gallery media", 120)));
+  meta.append(el("strong", "", type), el("span", "", truncate(caption || node?.props?.galleryId || t("project.projectPostCard.galleryMedia"), 120)));
   wrap.append(visual, meta);
   return wrap;
 }
@@ -348,10 +349,10 @@ async function hydrateMediaPreview(wrap, node, { gallery, thumbnails }) {
     if (!asset || !wrap.isConnected) return;
     const meta = wrap.querySelector(".project-post-preview-media-meta");
     if (meta) {
-      const type = node.type === "video" ? "Видео" : "Фото";
+      const type = node.type === "video" ? t("app.appNotifications.video") : t("app.appNotifications.photo");
       meta.replaceChildren(
         el("strong", "", asset.caption || asset.fileName || type),
-        el("span", "", asset.fileName || asset.mimeType || asset.type || "Gallery media")
+        el("span", "", asset.fileName || asset.mimeType || asset.type || t("project.projectPostCard.galleryMedia"))
       );
     }
     if (!asset.telegram?.thumbnailFileId || !thumbnails?.getUrl) return;
@@ -406,15 +407,15 @@ function looseBlockText(block) {
 
 function stateLabel(post) {
   const state = post?.publication?.state || "draft";
-  if (state === "published") return "👉 Опубликован";
-  if (state === "scheduled") return post.schedule ? `🕒 Запланирован · ${formatSchedule(post.schedule)}` : "🕒 Запланирован";
-  return "📝 Черновик";
+  if (state === "published") return t("project.projectPostCard.published");
+  if (state === "scheduled") return post.schedule ? t("project.projectPostCard.scheduled", { 0: formatSchedule(post.schedule) }) : t("project.projectPostCard.scheduled2");
+  return t("project.projectPostCard.draft");
 }
 
 function formatSchedule(schedule) {
   const scheduledAt = Number(schedule?.scheduledAt || schedule || 0);
   if (!scheduledAt) return "";
-  return new Intl.DateTimeFormat("ru-RU", { dateStyle: "short", timeStyle: "short" }).format(new Date(scheduledAt));
+  return new Intl.DateTimeFormat(getLocale(), { dateStyle: "short", timeStyle: "short" }).format(new Date(scheduledAt));
 }
 
 function truncate(value, max) {
@@ -441,8 +442,8 @@ function scheduleButton(post, onSchedule) {
   const node = document.createElement("button");
   node.type = "button";
   node.className = "publication-placeholder-action project-publication-schedule";
-  node.textContent = "Отложить";
-  node.title = "Настроить время отложенной публикации";
+  node.textContent = t("editor.draftListView.postpone");
+  node.title = t("project.projectPostCard.setTheScheduledPublicationTime");
   node.onclick = event => {
     event.preventDefault();
     event.stopPropagation();

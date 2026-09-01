@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 // A link target can come from several screens, but it has one stable identity
 // everywhere in the editor.  Keeping this outside the views prevents a draft
 // and a publication with a coincidentally similar title from sharing a slot.
@@ -33,11 +34,11 @@ export function isInternalLinkUrl(value) {
 }
 
 export function defaultTargetTitle(kind) {
-  if (kind === "publication") return "Публикация";
-  if (kind === "project_post") return "Пост проекта";
-  if (kind === "draft") return "Черновик";
-  if (kind === "external") return "Внешняя ссылка";
-  return "Сообщение";
+  if (kind === "publication") return t("editor.draftListView.publication");
+  if (kind === "project_post") return t("editor.projectPostListView.projectPost");
+  if (kind === "draft") return t("editor.draftListView.draft");
+  if (kind === "external") return t("links.linkTarget.externalLink");
+  return t("core.darkDialog.message");
 }
 
 export function linkTargetVisualState(target, { targetKey = "", linkedTargets = {} } = {}) {
@@ -47,13 +48,13 @@ export function linkTargetVisualState(target, { targetKey = "", linkedTargets = 
 }
 
 export function linkTargetTooltip(target, state, linkedTargets = {}) {
-  const title = normalizeLinkTarget(target)?.title || "Сообщение";
-  if (state === "selected") return `Выбрано для связи: ${title}. Нажмите ещё раз, чтобы отменить.`;
+  const title = normalizeLinkTarget(target)?.title || t("core.darkDialog.message");
+  if (state === "selected") return t("links.linkTarget.selectedForConnectionClickAgainToCancel", { 0: title });
   if (state === "linked") {
     const count = Number(linkedTargets?.[linkTargetKey(target)]?.count || 1);
     return count > 1
-      ? `Связано с ${count} фрагментами: ${title}. Нажмите, чтобы открыть источник последней связи в Editor.`
-      : `Связано с: ${title}. Нажмите, чтобы открыть источник связи в Editor.`;
+      ? t("links.linkTarget.connectedWithFragmentsClickToOpenThe", { 0: count, 1: title })
+      : t("links.linkTarget.connectedWithClickToOpenTheSource", { 0: title });
   }
-  return `Выбрать как цель ссылки: ${title}`;
+  return t("links.linkTarget.selectAsLinkTarget", { 0: title });
 }

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { createProjectPostCard } from "./ProjectPostCard.js?v=1.7.12";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
@@ -42,13 +43,13 @@ export class ProjectPostPanel {
 
     const head = el("div", "project-panel-head");
     const titleWrap = el("div", "project-panel-heading");
-    titleWrap.append(el("strong", "", project.title), el("span", "", `${project.posts.length} пост${plural(project.posts.length)}`));
-    const close = button("×", "Закрыть проект", () => this.#run(() => this.session.closeProject()));
+    titleWrap.append(el("strong", "", project.title), el("span", "", t("editor.projectPostListView.post", { 0: project.posts.length, 1: plural(project.posts.length) })));
+    const close = button("×", t("editor.projectPostListView.closeProject"), () => this.#run(() => this.session.closeProject()));
     close.className = "project-panel-close";
     head.append(titleWrap, close);
 
     const actions = el("div", "project-panel-actions");
-    actions.append(button("+ Пост", "Создать пост", () => this.#createPost()));
+    actions.append(button(t("project.projectPostPanel.post"), t("project.projectPostPanel.createPost"), () => this.#createPost()));
 
     const list = el("div", "project-post-list");
     for (const post of project.posts) {
@@ -62,9 +63,9 @@ export class ProjectPostPanel {
           this.#run(() => this.session.openPost(selectedPost.id));
         },
         actions: [
-          button("✎", "Переименовать", () => this.#renamePost(post)),
-          button("🗑", "Удалить", () => showCardDeleteConfirmation(card, {
-            message: `Удалить «${post.title}»?`,
+          button("✎", t("editor.projectPostListView.rename"), () => this.#renamePost(post)),
+          button("🗑", t("core.cardDeleteConfirmation.delete"), () => showCardDeleteConfirmation(card, {
+            message: t("editor.blockPalette.delete", { 0: post.title }),
             onConfirm: () => this.#deletePost(post)
           }))
         ]
@@ -77,10 +78,10 @@ export class ProjectPostPanel {
 
   async #createPost() {
     const title = await requestTextDialog({
-      title: "Новый пост",
-      label: "Название поста",
-      value: `Пост ${(this.session.project?.posts?.length || 0) + 1}`,
-      submitLabel: "Создать"
+      title: t("project.projectPostPanel.newPost"),
+      label: t("editor.projectPostListView.postTitle"),
+      value: t("editor.blockInspector.post2", { 0: (this.session.project?.posts?.length || 0) + 1 }),
+      submitLabel: t("editor.editorCommandController.create")
     });
     if (title === null) return;
     await this.#run(() => this.session.createPost(title));
@@ -88,10 +89,10 @@ export class ProjectPostPanel {
 
   async #renamePost(post) {
     const title = await requestTextDialog({
-      title: "Переименовать пост",
-      label: "Название поста",
+      title: t("project.projectPostPanel.renamePost"),
+      label: t("editor.projectPostListView.postTitle"),
       value: post.title,
-      submitLabel: "Сохранить"
+      submitLabel: t("core.darkDialog.save")
     });
     if (title === null) return;
     await this.#run(() => this.session.renamePost(post.id, title));
@@ -110,10 +111,10 @@ export class ProjectPostPanel {
 function plural(count) {
   const n = Math.abs(Number(count) || 0) % 100;
   const n1 = n % 10;
-  if (n > 10 && n < 20) return "ов";
-  if (n1 > 1 && n1 < 5) return "а";
+  if (n > 10 && n < 20) return t("editor.projectPostListView.ov");
+  if (n1 > 1 && n1 < 5) return t("editor.projectPostListView.a");
   if (n1 === 1) return "";
-  return "ов";
+  return t("editor.projectPostListView.ov");
 }
 
 function button(text, title, handler) {

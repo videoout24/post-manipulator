@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const SETTINGS_KEY = "gallerySettings";
 const DEFAULT_SETTINGS = Object.freeze({
   deleteSourceAfterIndexing: false
@@ -91,7 +92,7 @@ export class GalleryCore {
 
   async deleteTopic(threadId) {
     const id = Number(threadId || 0);
-    if (!id) throw new Error("Некорректный message_thread_id");
+    if (!id) throw new Error(t("gallery.galleryCore.invalidMessageThreadId"));
     const remote = await this.telegramCore.topics.delete(id);
     const assets = await this.store.list({ threadId: id });
     if (assets.length) {
@@ -104,13 +105,13 @@ export class GalleryCore {
 
   async uploadFiles(files, { threadId, caption = "" } = {}) {
     const selected = [...(files || [])].filter(file => file instanceof Blob);
-    if (!selected.length) throw new Error("Выберите хотя бы один файл");
+    if (!selected.length) throw new Error(t("gallery.galleryCore.selectAtLeastOneFile"));
     const owner = await this.telegramCore.owner.getOwner();
-    if (!owner?.chatId) throw new Error("Сначала привяжите владельца Telegram");
+    if (!owner?.chatId) throw new Error(t("gallery.galleryCore.firstLinkATelegramOwner"));
     const topicId = Number(threadId || 0);
-    if (!topicId) throw new Error("Выберите topic для загрузки");
+    if (!topicId) throw new Error(t("gallery.galleryCore.selectATopicForUpload"));
     const normalizedCaption = String(caption || "").trim();
-    if ([...normalizedCaption].length > 1024) throw new Error("Caption не должен превышать 1024 символа");
+    if ([...normalizedCaption].length > 1024) throw new Error(t("gallery.galleryCore.captionMustNotExceed1024Characters"));
 
     const assets = [];
     const failures = [];
@@ -125,7 +126,7 @@ export class GalleryCore {
           caption: normalizedCaption
         });
         const media = extractOwnerMedia(message);
-        if (!media) throw new Error("Telegram не вернул поддерживаемый media-объект");
+        if (!media) throw new Error(t("gallery.galleryCore.telegramDidNotReturnASupportedMedia"));
         const asset = await this.ingest({
           ...media,
           source: {
@@ -144,7 +145,7 @@ export class GalleryCore {
     const result = { assets, failures, total: selected.length };
     this.events?.emit("gallery:upload-progress", { state: failures.length ? "partial" : "complete", ...result });
     if (failures.length) {
-      const error = new Error(`Загружено ${assets.length} из ${selected.length}; ошибок: ${failures.length}`);
+      const error = new Error(t("gallery.galleryCore.uploadedOfErrors", { 0: assets.length, 1: selected.length, 2: failures.length }));
       error.uploadResult = result;
       throw error;
     }
@@ -196,15 +197,15 @@ export class GalleryCore {
         add({
           kind: "project",
           projectId: this.projectSession.activeProjectId,
-          projectTitle: this.projectSession.project?.title || "Открытый проект",
+          projectTitle: this.projectSession.project?.title || t("gallery.galleryCore.openProject"),
           postId: this.projectSession.activePostId,
-          postTitle: this.projectSession.project?.posts?.find(post => post.id === this.projectSession.activePostId)?.title || "Открытый пост"
+          postTitle: this.projectSession.project?.posts?.find(post => post.id === this.projectSession.activePostId)?.title || t("gallery.galleryCore.openPost")
         });
       } else if (this.draftSession?.isActive?.()) {
         add({
           kind: "draft",
           draftId: this.draftSession.activeDraftId,
-          draftTitle: this.draftSession.draft?.title || "Открытый черновик"
+          draftTitle: this.draftSession.draft?.title || t("gallery.galleryCore.openDraft")
         });
       } else add({ kind: "editor" });
     }
@@ -229,7 +230,7 @@ export class GalleryCore {
 export class GalleryAssetInUseError extends Error {
   constructor(assetId, usages) {
     const details = usages.map(describeAssetUsage).join(", ");
-    super(`Нельзя удалить медиа: оно используется — ${details}`);
+    super(t("gallery.galleryCore.cannotDeleteMediaItIsUsed", { 0: details }));
     this.name = "GalleryAssetInUseError";
     this.assetId = assetId;
     this.usages = structuredClone(usages);
@@ -248,9 +249,9 @@ function astUsesGalleryAsset(ast, galleryId) {
 }
 
 function describeAssetUsage(usage) {
-  if (usage.kind === "published") return `опубликованный пост «${usage.postTitle || usage.postId}» проекта «${usage.projectTitle || usage.projectId}»`;
-  if (usage.kind === "project") return `пост «${usage.postTitle || usage.postId}» проекта «${usage.projectTitle || usage.projectId}»`;
-  if (usage.kind === "draft") return `черновик «${usage.draftTitle || usage.draftId}»`;
-  return "текущий документ редактора";
+  if (usage.kind === "published") return t("gallery.galleryCore.publishedPostOfProject", { 0: usage.postTitle || usage.postId, 1: usage.projectTitle || usage.projectId });
+  if (usage.kind === "project") return t("gallery.galleryCore.postOfProject", { 0: usage.postTitle || usage.postId, 1: usage.projectTitle || usage.projectId });
+  if (usage.kind === "draft") return t("gallery.galleryCore.draft", { 0: usage.draftTitle || usage.draftId });
+  return t("gallery.galleryCore.currentEditorDocument");
 }
 import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.5.9";

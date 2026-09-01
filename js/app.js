@@ -1,3 +1,4 @@
+import { getLocale, t } from "./i18n/index.js?v=1.8.0";
 import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.7.0";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.3";
@@ -154,7 +155,7 @@ const netPanel = new NetPanel({
     const operation = enabled ? telegramRuntime.start() : telegramRuntime.stop();
     operation.catch(error => showNetPanelNotice({ message: `Telegram runtime: ${error?.message || error}`, type: "error" }));
   },
-  onOfflineClick: () => showNetPanelNotice({ message: "Нет подключения к сети", type: "warning" })
+  onOfflineClick: () => showNetPanelNotice({ message: t("app.netPanel.noNetworkConnection"), type: "warning" })
 });
 let browserOnline = navigator.onLine !== false;
 let telegramConnectionAvailable = true;
@@ -315,10 +316,10 @@ createTelegramBackupButton?.addEventListener("click", async () => {
   createTelegramBackupButton.disabled = true;
   try {
     const result = await telegramBackups.createAndPin();
-    if (backupState) backupState.textContent = `Текущая копия создана ${formatBackupDate(result.createdAt)}.`;
-    notifications.show({ message: `Резервная копия отправлена и закреплена (${formatBackupSize(result.backup.bytes.byteLength)}).`, type: "success" });
+    if (backupState) backupState.textContent = t("app.currentCopyCreated", { 0: formatBackupDate(result.createdAt) });
+    notifications.show({ message: t("app.backupSentAndPinned", { 0: formatBackupSize(result.backup.bytes.byteLength) }), type: "success" });
   } catch (error) {
-    notifications.show({ message: `Резервная копия: ${error?.message || error}`, type: "error", duration: 7000 });
+    notifications.show({ message: t("app.backup", { 0: error?.message || error }), type: "error", duration: 7000 });
   } finally {
     createTelegramBackupButton.disabled = false;
   }
@@ -330,21 +331,21 @@ document.querySelector("#telegramBackupCheckPinned")?.addEventListener("click", 
   try {
     const inspection = await checkPinnedBackup({ owner: verifiedOwner });
     if (!inspection.backup) {
-      notifications.show({ message: "Самая новая закреплённая запись не является резервной копией Post Manipulator.", type: "warning" });
+      notifications.show({ message: t("app.theNewestPinnedEntryIsNotA"), type: "warning" });
     } else if (inspection.shouldOfferRestore) {
-      notifications.show({ message: "Найдена более свежая копия. Для безопасного импорта нажмите «Восстановить из файла».", type: "warning", duration: 7000 });
+      notifications.show({ message: t("app.aNewerCopyWasFoundForA"), type: "warning", duration: 7000 });
     }
   } catch (error) {
-    notifications.show({ message: `Проверка копии: ${error?.message || error}`, type: "error", duration: 7000 });
+    notifications.show({ message: t("app.copyCheck", { 0: error?.message || error }), type: "error", duration: 7000 });
   } finally {
     button.disabled = false;
   }
 });
 document.querySelector("#telegramBackupRestoreManual")?.addEventListener("click", async () => {
   if (!await confirmDarkDialog({
-    title: "Перейти к восстановлению?",
-    message: "Приложение перезапустит защищённый вход. После ввода пароля выберите JSON-файл; база будет восстановлена до запуска редактора.",
-    confirmLabel: "Продолжить",
+    title: t("app.goToRecovery"),
+    message: t("app.theApplicationWillRestartSecureLoginAfter"),
+    confirmLabel: t("app.continue"),
     danger: true
   })) return;
   const url = new URL(window.location.href);
@@ -353,7 +354,7 @@ document.querySelector("#telegramBackupRestoreManual")?.addEventListener("click"
 });
 
 async function checkPinnedBackup({ owner = null } = {}) {
-  if (backupState) backupState.textContent = "Проверяем самую новую закреплённую копию…";
+  if (backupState) backupState.textContent = t("app.checkingTheLatestPinnedCopy");
   const inspection = await telegramBackups.inspectPinnedBackup(owner);
   renderBackupInspection(inspection);
   return inspection;
@@ -361,15 +362,15 @@ async function checkPinnedBackup({ owner = null } = {}) {
 
 function renderBackupInspection(inspection) {
   if (!backupState) return;
-  const date = inspection.backup?.createdAt ? formatBackupDate(inspection.backup.createdAt) : "с неизвестной датой";
+  const date = inspection.backup?.createdAt ? formatBackupDate(inspection.backup.createdAt) : t("app.withAnUnknownDate");
   const messages = {
-    missing: "Самая новая закреплённая запись не является резервной копией Post Manipulator.",
-    current: `Закреплённая копия от ${date} уже соответствует этой локальной базе.`,
-    newer: `Закреплённая копия от ${date} новее локальной базы.`,
-    "not-newer": `Локальная база не старее закреплённой копии от ${date}.`,
-    "unknown-date": "Дата закреплённой копии недоступна; её можно восстановить вручную."
+    missing: t("app.theNewestPinnedEntryIsNotA"),
+    current: t("app.thePinnedCopyFromAlreadyMatchesThis", { 0: date }),
+    newer: t("app.thePinnedCopyFromIsNewerThan", { 0: date }),
+    "not-newer": t("app.theLocalDatabaseIsNotOlderThan", { 0: date }),
+    "unknown-date": t("app.theDateOfThePinnedCopyIs")
   };
-  backupState.textContent = messages[inspection.status] || "Состояние резервной копии неизвестно.";
+  backupState.textContent = messages[inspection.status] || t("app.backupStatusUnknown");
 }
 
 editorWorkspace.render();
@@ -422,11 +423,11 @@ const handle = Object.freeze({
 return handle;
 
 function formatBackupSize(bytes) {
-  return `${(Number(bytes || 0) / (1024 * 1024)).toFixed(1)} МБ`;
+  return t("app.mb", { 0: (Number(bytes || 0) / (1024 * 1024)).toFixed(1) });
 }
 
 function formatBackupDate(value) {
   const date = new Date(Number(value || 0));
-  return Number.isNaN(date.getTime()) ? "неизвестно" : date.toLocaleString("ru-RU");
+  return Number.isNaN(date.getTime()) ? t("app.unknown") : date.toLocaleString(getLocale());
 }
 }

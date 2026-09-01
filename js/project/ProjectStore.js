@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { createProjectHeading, syncHeadingFromPostTitle, syncPostTitleFromHeading } from "./ProjectPostHeading.js?v=1.5.9";
 import { projectGraphInputFingerprint } from "./ProjectGraphInputs.js?v=1.5.9";
@@ -26,7 +27,7 @@ export class ProjectStore {
     return value ? normalizeProject(value, projectId) : null;
   }
 
-  async createProject({ title = "Новый проект", firstPostTitle = "Пост 1" } = {}) {
+  async createProject({ title = t("project.projectLibraryView.newProject"), firstPostTitle = t("project.projectStore.post1") } = {}) {
     const now = Date.now();
     const rootPost = createPostRecord({ title: firstPostTitle, now });
     const rootMapId = `map_${randomUUID()}`;
@@ -34,7 +35,7 @@ export class ProjectStore {
     const project = {
       id: makeId("project"),
       schemaVersion: PROJECT_SCHEMA_VERSION,
-      title: cleanTitle(title, "Новый проект"),
+      title: cleanTitle(title, t("project.projectLibraryView.newProject")),
       structure: {
         mode: PROJECT_STRUCTURE_MODE,
         rootPostId: rootPost.id,
@@ -50,7 +51,7 @@ export class ProjectStore {
   }
 
   async saveProject(project) {
-    if (!project?.id) throw new Error("Project id is required");
+    if (!project?.id) throw new Error(t("project.common.projectIdRequired"));
     return this.#queue(project.id, async () => {
       const normalized = normalizeProject(project, project.id);
       normalized.updatedAt = Date.now();
@@ -67,7 +68,7 @@ export class ProjectStore {
       if (!current) return false;
       const publishedPost = (current.posts || []).find(isPublishedProductionPost);
       if (publishedPost) {
-        throw new Error("Нельзя удалить Project, пока в нём есть опубликованные посты. Сначала удалите их из Публикаций.");
+        throw new Error(t("project.projectStore.youCannotDeleteTheProjectWhileIt"));
       }
       await this.db.delete("projects", projectId);
       this.#emit("deleted", current);
@@ -78,7 +79,7 @@ export class ProjectStore {
 
   async renameProject(projectId, title) {
     return this.updateProject(projectId, project => {
-      project.title = cleanTitle(title, project.title || "Проект");
+      project.title = cleanTitle(title, project.title || t("project.projectLibraryView.project"));
     }, "renamed");
   }
 
@@ -86,11 +87,11 @@ export class ProjectStore {
     let created = null;
     const project = await this.updateProject(projectId, draft => {
       const nextNumber = (draft.posts?.length || 0) + 1;
-      created = createPostRecord({ title: cleanTitle(title, `Пост ${nextNumber}`), messageAst, now: Date.now() });
+      created = createPostRecord({ title: cleanTitle(title, t("editor.blockInspector.post2", { 0: nextNumber })), messageAst, now: Date.now() });
       if (isLinearProject(draft)) {
         const root = getProjectRootPost(draft);
         const map = getProjectRootMap(draft);
-        if (!root || !map) throw new Error("Карта проекта не найдена");
+        if (!root || !map) throw new Error(t("project.projectStore.projectMapNotFound"));
         const slotId = `slot_${randomUUID()}`;
         map.props.slots.push({
           id: slotId,
@@ -115,7 +116,7 @@ export class ProjectStore {
     let graphRelevantChanged = false;
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
       const nextAst = normalizeAst(messageAst);
       const sourceChanged = astSignature(post.messageAst) !== astSignature(nextAst);
       graphRelevantChanged = projectGraphInputFingerprint(post.messageAst) !== projectGraphInputFingerprint(nextAst);
@@ -127,10 +128,10 @@ export class ProjectStore {
   }
 
   async setPostDeployment(projectId, postId, deployment, record) {
-    if (!deployment) throw new Error("Deployment name is required");
+    if (!deployment) throw new Error(t("project.common.deploymentNameRequired"));
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
       post.deployments ||= {};
       if (record == null) delete post.deployments[deployment];
       else post.deployments[deployment] = structuredClone(record);
@@ -144,11 +145,11 @@ export class ProjectStore {
   // an address (or vice versa).
   async savePostProduction(projectId, postId, { deployment, publishedAt = Date.now(), productionContentSnapshot = null } = {}) {
     if (!deployment?.chatId || !deployment?.messageId) {
-      throw new Error("Production deployment requires chatId and messageId");
+      throw new Error(t("project.common.productionDeploymentRequiresIds"));
     }
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
       post.deployments ||= {};
       post.deployments.production = structuredClone(deployment);
       post.publication = {
@@ -168,12 +169,12 @@ export class ProjectStore {
 
   async savePostSchedule(projectId, postId, schedule) {
     if (!schedule?.scheduledAt || !schedule?.chatId) {
-      throw new Error("Schedule requires publication time and target chat");
+      throw new Error(t("project.common.scheduleRequiresTimeAndTarget"));
     }
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
-      if (post.deployments?.production?.messageId) throw new Error("Опубликованный пост нельзя отложить");
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
+      if (post.deployments?.production?.messageId) throw new Error(t("project.projectStore.aPublishedPostCannotBePostponed"));
       post.schedule = structuredClone(schedule);
       post.publication = {
         ...(post.publication || {}),
@@ -188,7 +189,7 @@ export class ProjectStore {
   async clearPostSchedule(projectId, postId) {
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
       if (!post.schedule && post.publication?.state !== "scheduled") return false;
       post.schedule = null;
       post.publication = { ...(post.publication || {}), state: "draft" };
@@ -201,7 +202,7 @@ export class ProjectStore {
   async clearPostProduction(projectId, postId) {
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
       if (!post.deployments?.production) return false;
       delete post.deployments.production;
       post.publication = { ...(post.publication || {}), state: "draft" };
@@ -212,7 +213,7 @@ export class ProjectStore {
 
 
   async clearProjectDeployment(projectId, deployment) {
-    if (!deployment) throw new Error("Deployment name is required");
+    if (!deployment) throw new Error(t("project.common.deploymentNameRequired"));
     return this.updateProject(projectId, project => {
       let changed = false;
       for (const post of project.posts || []) {
@@ -228,8 +229,8 @@ export class ProjectStore {
   async renamePost(projectId, postId, title) {
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
-      if (!post) throw new Error(`Project post not found: ${postId}`);
-      post.title = cleanTitle(title, post.title || "Пост");
+      if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
+      post.title = cleanTitle(title, post.title || t("editor.blockInspector.post"));
       syncHeadingFromPostTitle(post);
       markPostProductionChanges(post);
       post.updatedAt = Date.now();
@@ -238,10 +239,10 @@ export class ProjectStore {
 
   async deletePost(projectId, postId) {
     const current = await this.getProject(projectId);
-    if (!current) throw new Error(`Project not found: ${projectId}`);
+    if (!current) throw new Error(t("project.common.projectNotFound", { 0: projectId }));
     const targetPost = current.posts.find(item => String(item.id) === String(postId));
     if (isPublishedProductionPost(targetPost)) {
-      throw new Error("Нельзя удалить опубликованный Project post. Сначала удалите публикацию.");
+      throw new Error(t("project.projectStore.cannotDeleteAPublishedProjectPostFirst"));
     }
     if (isLinearProject(current)) {
       if (String(getProjectRootPost(current)?.id) === String(postId)) {
@@ -253,8 +254,8 @@ export class ProjectStore {
     const affectedPostIds = new Set([String(postId)]);
     const project = await this.updateProject(projectId, draft => {
       const index = draft.posts.findIndex(item => item.id === postId);
-      if (index < 0) throw new Error(`Project post not found: ${postId}`);
-      if (draft.posts.length <= 1) throw new Error("В проекте должен остаться хотя бы один пост");
+      if (index < 0) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
+      if (draft.posts.length <= 1) throw new Error(t("project.projectEditorSession.theProjectMustHaveAtLeastOne"));
       deletedPost = structuredClone(draft.posts[index]);
       for (const hostPost of draft.posts) {
         let containsTarget = false;
@@ -281,10 +282,10 @@ export class ProjectStore {
     if (!["up", "down"].includes(direction)) throw new Error(`Unknown post move direction: ${direction}`);
     let affectedPostIds = [];
     return this.updateProject(projectId, draft => {
-      if (!isLinearProject(draft)) throw new Error("Порядок можно менять только в структурированном проекте");
+      if (!isLinearProject(draft)) throw new Error(t("project.projectStore.theOrderCanOnlyBeChangedIn"));
       const root = getProjectRootPost(draft);
       const map = getProjectRootMap(draft);
-      if (!root || !map || String(postId) === String(root.id)) throw new Error("Стартовый пост проекта закреплён");
+      if (!root || !map || String(postId) === String(root.id)) throw new Error(t("project.projectStore.theProjectSInitialPostIsPinned"));
       const slots = map.props.slots;
       const index = slots.findIndex(slot => String(slot?.targetPostId) === String(postId));
       const nextIndex = direction === "up" ? index - 1 : index + 1;
@@ -298,10 +299,10 @@ export class ProjectStore {
   }
 
   async updateProject(projectId, mutate, reason = "saved", details = null) {
-    if (!projectId) throw new Error("Project id is required");
+    if (!projectId) throw new Error(t("project.common.projectIdRequired"));
     return this.#queue(projectId, async () => {
       const current = await this.getProject(projectId);
-      if (!current) throw new Error(`Project not found: ${projectId}`);
+      if (!current) throw new Error(t("project.common.projectNotFound", { 0: projectId }));
       const draft = structuredClone(current);
       const mutationResult = await mutate?.(draft);
       if (mutationResult === false) return structuredClone(current);
@@ -342,12 +343,12 @@ export function createEmptyDocumentAst() {
 function createPostRecord({ title, messageAst = null, now = Date.now() } = {}) {
   const post = {
     id: makeId("post"),
-    title: cleanTitle(title, "Пост"),
+    title: cleanTitle(title, t("editor.blockInspector.post")),
     messageAst: messageAst ? normalizeAst(messageAst) : {
       id: "root",
       type: "document",
       props: {},
-      children: [createProjectHeading(cleanTitle(title, "Пост"))]
+      children: [createProjectHeading(cleanTitle(title, t("editor.blockInspector.post")))]
     },
     schedule: null,
     publication: { state: "draft" },
@@ -396,28 +397,28 @@ export function protectedProjectNodeError(project, activePostId, { action, nodeI
   const protectedId = String(nodeId || "");
 
   if (action === "add") {
-    if (type === "project_post_map" || type === "project_map_backlink") return "Структурные блоки проекта создаются только автоматически";
+    if (type === "project_post_map" || type === "project_map_backlink") return t("project.projectStore.projectStructuralBlocksAreCreatedAutomaticallyOnly");
     return "";
   }
 
   if (action === "property" && ["targetMapId", "targetSlotId", "mapId", "slots"].includes(String(key || ""))) {
-    return "Связь и слоты управляются картой проекта";
+    return t("project.projectStore.linksAndSlotsAreManagedByThe");
   }
 
   // Required blocks may be edited, reordered, or nested like ordinary content.
   // Only removing or changing their block type is guarded.
   if (action === "move" || action === "property") return "";
-  if (String(postHeading?.id || "") === protectedId) return "Заголовок поста проекта обязателен";
-  if (isRoot && String(rootMap?.id || "") === protectedId) return "Карта проекта обязательна в первом посте";
+  if (String(postHeading?.id || "") === protectedId) return t("project.projectStore.projectPostTitleIsRequired");
+  if (isRoot && String(rootMap?.id || "") === protectedId) return t("project.projectStore.projectMapIsMandatoryInTheFirst");
   const node = findNode(active.messageAst, protectedId);
   const requiredBacklink = isRoot ? null : findBacklinkForMap(active.messageAst, rootMap?.props?.mapId);
-  if (String(requiredBacklink?.id || "") === protectedId) return "Блок «Назад к карте» обязателен и привязан к карте проекта";
+  if (String(requiredBacklink?.id || "") === protectedId) return t("project.projectStore.theBackToMapBlockIsMandatory");
   return "";
 }
 
 function enforceLinearProjectStructure(project) {
   if (!Array.isArray(project.posts) || !project.posts.length) {
-    const root = createPostRecord({ title: "Пост 1" });
+    const root = createPostRecord({ title: t("project.projectStore.post1") });
     project.posts = [root];
   }
   project.structure ||= { mode: PROJECT_STRUCTURE_MODE };
@@ -432,7 +433,7 @@ function enforceLinearProjectStructure(project) {
   // without flattening, stripping, or reordering the document.
   root.messageAst = normalizeAst(root.messageAst);
   syncPostTitleFromHeading(root);
-  root.title = cleanTitle(root.title, "Пост 1");
+  root.title = cleanTitle(root.title, t("project.projectStore.post1"));
   ensureProjectHeading(root, root.title);
 
   const configuredMapId = String(project.structure.rootMapId || "");
@@ -446,7 +447,7 @@ function enforceLinearProjectStructure(project) {
   map.children = [];
   map.props = {
     numbering: "numeric",
-    emptyText: "Карта пока пуста",
+    emptyText: t("core.propertyRegistry.mapIsCurrentlyEmpty"),
     ...(map.props && typeof map.props === "object" ? map.props : {}),
     mapId
   };
@@ -474,7 +475,7 @@ function enforceLinearProjectStructure(project) {
   for (const { post, slot } of orderedChildren) {
     post.messageAst = normalizeAst(post.messageAst);
     syncPostTitleFromHeading(post);
-    post.title = cleanTitle(post.title, "Пост");
+    post.title = cleanTitle(post.title, t("editor.blockInspector.post"));
     post.messageAst = createChildProjectAst(post.title, mapId, slot.id, post.messageAst);
   }
   project.posts = [root, ...orderedChildren.map(item => item.post)];
@@ -497,7 +498,7 @@ function createProjectMap(mapId) {
       mapId,
       slots: [],
       numbering: "numeric",
-      emptyText: "Карта пока пуста"
+      emptyText: t("core.propertyRegistry.mapIsCurrentlyEmpty")
     },
     children: []
   };
@@ -509,7 +510,7 @@ function createChildProjectAst(title, mapId, slotId, sourceAst = null) {
   const ast = holder.messageAst;
   if (heading && !String(heading.props?.text || "").trim()) {
     heading.props ||= {};
-    heading.props.text = cleanTitle(title, "Пост");
+    heading.props.text = cleanTitle(title, t("editor.blockInspector.post"));
   }
 
   // Reuse a Back to Map that already belongs to this Map so a move into a nested
@@ -530,7 +531,7 @@ function createChildProjectAst(title, mapId, slotId, sourceAst = null) {
     ...(backlink.props && typeof backlink.props === "object" ? backlink.props : {}),
     targetMapId: mapId,
     targetSlotId: slotId,
-    text: backlink.props?.text || "Назад",
+    text: backlink.props?.text || t("core.propertyRegistry.back"),
     managedByMap: true
   };
   backlink.children = [];
@@ -541,7 +542,7 @@ function normalizeProjectSlot(sourceSlot, post) {
   return {
     id: String(sourceSlot?.id || `slot_${randomUUID()}`),
     targetPostId: String(post.id),
-    text: cleanTitle(post.title, "Пост"),
+    text: cleanTitle(post.title, t("editor.blockInspector.post")),
     derivedFromPostId: String(post.id)
   };
 }
@@ -554,7 +555,7 @@ function ensureProjectHeading(post, title) {
     heading.children ||= [];
     return heading;
   }
-  const created = createProjectHeading(cleanTitle(title, "Пост"));
+  const created = createProjectHeading(cleanTitle(title, t("editor.blockInspector.post")));
   post.messageAst.children.push(created);
   return created;
 }
@@ -621,7 +622,7 @@ function normalizeProject(value, fallbackId) {
     ...source,
     id,
     schemaVersion: Number(source.schemaVersion || PROJECT_SCHEMA_VERSION),
-    title: cleanTitle(source.title, "Проект"),
+    title: cleanTitle(source.title, t("project.projectLibraryView.project")),
     posts,
     createdAt: Number(source.createdAt || now),
     updatedAt: Number(source.updatedAt || source.createdAt || now)
@@ -636,7 +637,7 @@ function normalizePost(value) {
   return {
     ...source,
     id: String(source.id || makeId("post")),
-    title: cleanTitle(source.title, "Пост"),
+    title: cleanTitle(source.title, t("editor.blockInspector.post")),
     messageAst: normalizeAst(source.messageAst),
     schedule: source.schedule ?? null,
     publication: normalizePublication(source.publication),

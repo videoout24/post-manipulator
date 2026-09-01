@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { APP_DATABASE_STORES, IndexedDbAppDatabase } from "./IndexedDbAppDatabase.js?v=1.7.1";
 
 export const APP_DATABASE_NAME_PREFIX = "post-manipulator-bot";
@@ -16,9 +17,9 @@ export class AppDatabase {
 
   async selectBot(botId) {
     const selectedBotId = validBotId(botId);
-    if (!selectedBotId) throw new Error("Некорректный Bot ID для локальной базы");
+    if (!selectedBotId) throw new Error(t("storage.appDatabase.invalidBotIDForLocalDatabase"));
     if (this.botId && this.botId !== selectedBotId) {
-      throw new Error("Нельзя переключить локальную базу на другого бота в активном запуске");
+      throw new Error(t("storage.appDatabase.cannotSwitchTheLocalDatabaseToAnother"));
     }
     if (!this.database) {
       this.botId = selectedBotId;
@@ -32,7 +33,7 @@ export class AppDatabase {
   }
 
   open() {
-    if (!this.database) return Promise.reject(new Error("Сначала необходимо выбрать Bot ID для локальной базы"));
+    if (!this.database) return Promise.reject(new Error(t("storage.appDatabase.youMustFirstSelectABotID")));
     return this.database.open();
   }
 
@@ -89,7 +90,7 @@ export class AppDatabase {
 
 export function databaseNameForBot(botId) {
   const selectedBotId = validBotId(botId);
-  if (!selectedBotId) throw new Error("Некорректный Bot ID для имени локальной базы");
+  if (!selectedBotId) throw new Error(t("storage.appDatabase.invalidBotIDForLocalDatabaseName"));
   return `${APP_DATABASE_NAME_PREFIX}-${selectedBotId}`;
 }
 

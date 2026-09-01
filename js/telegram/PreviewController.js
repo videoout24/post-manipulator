@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { TelegramApiError } from "./TelegramClient.js?v=1.5.9";
 
 const LIVE_PREVIEW_KEY = "livePreviewEnabled";
@@ -35,7 +36,7 @@ export class PreviewController {
   async setEnabled(enabled) {
     if (enabled) {
       const channel = await this.previewChannelBinding.getSlot();
-      if (channel?.status !== "bound") throw new Error("Сначала привяжите приватный канал предпросмотра");
+      if (channel?.status !== "bound") throw new Error(t("telegram.previewController.bindAPrivatePreviewChannelFirst"));
     }
     await this.db.put("settings", LIVE_PREVIEW_KEY, Boolean(enabled));
     this.events?.emit("telegram:live-preview-setting", { enabled: Boolean(enabled) });
@@ -86,7 +87,7 @@ export class PreviewController {
     const channel = await this.previewChannelBinding.getSlot();
     if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     if (channel?.status !== "bound") {
-      const status = { state: "unavailable", message: "Приватный канал предпросмотра не привязан или недоступен" };
+      const status = { state: "unavailable", message: t("telegram.previewController.thePrivatePreviewChannelIsNotBound") };
       this.events?.emit("telegram:preview-status", status);
       return { skipped: "channel_not_bound" };
     }
@@ -101,7 +102,7 @@ export class PreviewController {
       // a knowingly invalid Rich Message to Telegram; just wait for the next edit.
       this.events?.emit("telegram:preview-status", {
         state: "waiting",
-        message: `Предпросмотр ожидает заполнения: ${errors.length} ${errors.length === 1 ? "ошибка" : "ошибок"}`,
+        message: t("telegram.previewController.thePreviewIsWaitingToBeFilled", { 0: errors.length, 1: errors.length === 1 ? t("editor.editorPreviewStatusView.error") : t("telegram.previewController.errors") }),
         errors
       });
       return { skipped: "invalid", errors };
@@ -114,7 +115,7 @@ export class PreviewController {
     if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     if (!force && previous?.hash === hash && Number(previous.chatId) === Number(channel.chatId)) return { skipped: "unchanged", previous };
 
-    this.events?.emit("telegram:preview-status", { state: "syncing", message: "Обновление предпросмотра…" });
+    this.events?.emit("telegram:preview-status", { state: "syncing", message: t("telegram.previewController.updatingPreview") });
     if (previous?.messageId && Number(previous.chatId) === Number(channel.chatId)) {
       if (!this.#isSyncAllowed()) return { skipped: "guarded" };
       try {
@@ -125,13 +126,13 @@ export class PreviewController {
           replyMarkup
         });
         const state = await this.#saveMessage({ message: edited, channel, hash, mode: "edited" });
-        this.events?.emit("telegram:preview-status", { state: "synced", message: "Предпросмотр синхронизирован", preview: state });
+        this.events?.emit("telegram:preview-status", { state: "synced", message: t("telegram.previewController.previewSynchronized"), preview: state });
         return state;
       } catch (error) {
         if (error instanceof TelegramApiError && error.isNotModified()) {
           const state = { ...previous, hash, syncedAt: Date.now() };
           await this.db.put("preview", LIVE_MESSAGE_KEY, state);
-          this.events?.emit("telegram:preview-status", { state: "synced", message: "Предпросмотр синхронизирован", preview: state });
+          this.events?.emit("telegram:preview-status", { state: "synced", message: t("telegram.previewController.previewSynchronized"), preview: state });
           return state;
         }
         if (!(error instanceof TelegramApiError && error.isMessageMissing())) {
@@ -154,8 +155,8 @@ export class PreviewController {
     this.events?.emit("telegram:preview-status", {
       state: "synced",
       message: previous?.messageId
-        ? "Служебное сообщение предпросмотра восстановлено и закреплено"
-        : "Служебное сообщение предпросмотра создано и закреплено",
+        ? t("telegram.previewController.previewServiceMessageRestoredAndPinned")
+        : t("telegram.previewController.previewServiceMessageCreatedAndPinned"),
       preview: state
     });
     return state;

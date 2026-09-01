@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomBytes } from "../core/Random.js?v=1.5.9";
 
 const TARGETS_KEY = "publicationTargets";
@@ -77,7 +78,7 @@ export class PublicationTargetService {
     if (!session || message.text.trim() !== session.code) return false;
 
     const target = await this.refresh(message.chat.id, { chatHint: message.chat, discoveredBy: "confirmation_code" });
-    if (target.status !== "ready") throw new Error(`Бот не готов к публикации: ${target.reason}`);
+    if (target.status !== "ready") throw new Error(t("telegram.publicationTargetService.botIsNotReadyToPublish", { 0: target.reason }));
     await this.client.deleteMessage(message.chat.id, message.message_id).catch(() => {});
     await this.db.delete("runtime", SESSION_KEY);
     this.events?.emit("telegram:publication-binding", { status: "bound", target });
@@ -85,7 +86,7 @@ export class PublicationTargetService {
   }
 
   async refresh(chatId, { chatHint = null, memberHint = null, discoveredBy = "refresh" } = {}) {
-    if (await this.#isPreviewChannel(chatId)) throw new Error("Канал предпросмотра нельзя добавить в Публикации");
+    if (await this.#isPreviewChannel(chatId)) throw new Error(t("telegram.publicationTargetService.previewChannelCannotBeAddedToPublications"));
     const existing = (await this.list()).find(item => Number(item.chatId) === Number(chatId));
     const bot = await this.client.getMe();
     const [chat, member, memberCount] = await Promise.all([
@@ -93,7 +94,7 @@ export class PublicationTargetService {
       memberHint ? Promise.resolve(memberHint) : this.client.getChatMember(chatId, bot.id),
       this.client.getChatMemberCount(chatId).catch(() => null)
     ]);
-    if (!CHAT_TYPES.has(chat?.type)) throw new Error("Поддерживаются только каналы и группы");
+    if (!CHAT_TYPES.has(chat?.type)) throw new Error(t("telegram.publicationTargetService.onlyChannelsAndGroupsAreSupported"));
     const availability = publicationAvailability(member, chat.type);
     let discussionRights = null;
     let discussionChat = null;
@@ -148,7 +149,7 @@ export class PublicationTargetService {
   async setServiceMessageCleanup(chatId, enabled) {
     const targets = await this.list();
     const index = targets.findIndex(item => Number(item.chatId) === Number(chatId));
-    if (index < 0) throw new Error("Канал или группа не найдены");
+    if (index < 0) throw new Error(t("telegram.publicationTargetService.channelOrGroupNotFound"));
     targets[index] = {
       ...targets[index],
       deleteServiceMessages: enabled === true

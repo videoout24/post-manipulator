@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class PropertyRegistry {
   constructor(formattingRegistry = null) {
     this.properties = new Map();
@@ -7,7 +8,7 @@ export class PropertyRegistry {
 
   register(id, definition = {}) {
     if (!id) throw new Error("Property definition requires id");
-    const item = { id, kind: "property", label: id, group: "Общее", type: "string", editor: "text", ...structuredClone(definition) };
+    const item = { id, kind: "property", label: id, group: t("core.propertyRegistry.general"), type: "string", editor: "text", ...structuredClone(definition) };
     this.properties.set(id, item);
     return item;
   }
@@ -82,110 +83,110 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
 
   // ---------- Shared textual content ----------
   add("content.text", {
-    label: "Текст", group: "Текст", type: "rich-text", editor: "rich-text", default: ""
+    label: t("core.propertyRegistry.text"), group: t("core.propertyRegistry.text"), type: "rich-text", editor: "rich-text", default: ""
   });
   add("content.credit", {
-    label: "Автор / источник", group: "Текст", type: "rich-text", editor: "rich-text", default: ""
+    label: t("core.propertyRegistry.authorSource"), group: t("core.propertyRegistry.text"), type: "rich-text", editor: "rich-text", default: ""
   });
   add("content.caption", {
-    label: "Подпись", group: "Подпись", type: "rich-text", editor: "rich-text", default: ""
+    label: t("core.propertyRegistry.caption"), group: t("core.propertyRegistry.caption"), type: "rich-text", editor: "rich-text", default: ""
   });
   add("content.captionCredit", {
-    label: "Источник подписи", group: "Подпись", type: "rich-text", editor: "rich-text", default: ""
+    label: t("core.propertyRegistry.captionSource"), group: t("core.propertyRegistry.caption"), type: "rich-text", editor: "rich-text", default: ""
   });
 
   // ---------- Heading / preformatted / formula / anchor ----------
   add("heading.size", {
-    label: "Размер заголовка", group: "Заголовок", type: "integer", editor: "number", min: 1, max: 6, default: 2
+    label: t("core.propertyRegistry.headerSize"), group: t("core.propertyRegistry.header"), type: "integer", editor: "number", min: 1, max: 6, default: 2
   });
   add("preformatted.language", {
-    label: "Язык программирования", group: "Код", type: "string", editor: "text", default: ""
+    label: t("core.propertyRegistry.programmingLanguage"), group: t("core.propertyRegistry.code"), type: "string", editor: "text", default: ""
   });
   add("math.expression", {
-    label: "LaTeX выражение", group: "Формула", type: "string", editor: "formula", default: "x^2"
+    label: t("core.propertyRegistry.latexExpression"), group: t("core.propertyRegistry.formula"), type: "string", editor: "formula", default: "x^2"
   });
   add("anchor.name", {
-    label: "Имя якоря", group: "Якорь", type: "string", editor: "text", default: "anchor"
+    label: t("core.formattingRegistry.anchorName"), group: t("core.formattingRegistry.anchor"), type: "string", editor: "text", default: "anchor"
   });
 
   // ---------- Semantic RichText elements exposed as palette blocks ----------
   add("semantic.text", {
-    label: "Текст", group: "Содержимое", type: "string", editor: "text", default: ""
+    label: t("core.propertyRegistry.text"), group: t("core.propertyRegistry.content"), type: "string", editor: "text", default: ""
   });
   add("semantic.dateTime", {
-    label: "Дата и время", group: "Дата / время", type: "string", editor: "datetime-local", default: "", required: true
+    label: t("core.propertyRegistry.dateAndTime"), group: t("core.formattingRegistry.dateTime"), type: "string", editor: "datetime-local", default: "", required: true
   });
   add("semantic.dateTimeFormat", {
-    label: "Формат", group: "Дата / время", type: "enum", editor: "select", default: "DT",
+    label: t("core.propertyRegistry.format"), group: t("core.formattingRegistry.dateTime"), type: "enum", editor: "select", default: "DT",
     options: [
-      { value: "r", label: "Относительная дата" },
-      { value: "d", label: "Короткая дата" },
-      { value: "D", label: "Полная дата" },
-      { value: "t", label: "Короткое время" },
-      { value: "T", label: "Полное время" },
-      { value: "dt", label: "Короткие дата и время" },
-      { value: "DT", label: "Полные дата и время" },
-      { value: "wDT", label: "День недели, полная дата и время" }
+      { value: "r", label: t("core.propertyRegistry.relativeDate") },
+      { value: "d", label: t("core.propertyRegistry.shortDate") },
+      { value: "D", label: t("core.propertyRegistry.fullDate") },
+      { value: "t", label: t("core.propertyRegistry.shortTime") },
+      { value: "T", label: t("core.propertyRegistry.fullTime") },
+      { value: "dt", label: t("core.propertyRegistry.shortDateAndTime") },
+      { value: "DT", label: t("core.propertyRegistry.fullDateAndTime") },
+      { value: "wDT", label: t("core.propertyRegistry.dayOfTheWeekFullDateAnd") }
     ]
   });
   add("contact.phone", {
-    label: "Телефон", group: "Контакт", type: "string", editor: "text", default: "", required: true
+    label: t("core.formattingRegistry.phone"), group: t("core.propertyRegistry.contact"), type: "string", editor: "text", default: "", required: true
   });
   add("contact.email", {
-    label: "E-mail", group: "Контакт", type: "string", editor: "text", default: "", required: true
+    label: t("core.propertyRegistry.email"), group: t("core.propertyRegistry.contact"), type: "string", editor: "text", default: "", required: true
   });
   add("hashtag.value", {
-    label: "Хэштег", group: "Хэштег", type: "string", editor: "text", default: "#", required: true,
-    hint: "# добавляется автоматически, если его нет."
+    label: t("core.formattingRegistry.hashtag"), group: t("core.formattingRegistry.hashtag"), type: "string", editor: "text", default: "#", required: true,
+    hint: t("core.propertyRegistry.isAddedAutomaticallyIfItIsNot")
   });
   add("link.url", {
-    label: "URL", group: "Ссылка", type: "url", editor: "url", default: "", required: true
+    label: t("core.propertyRegistry.url"), group: t("core.formattingRegistry.link"), type: "url", editor: "url", default: "", required: true
   });
   add("anchor.target", {
-    label: "Якорь", group: "Якорь", type: "string", editor: "anchor-select", default: "",
-    hint: "Список строится автоматически из Anchor текущего Rich Message. Пустое значение ведёт в начало сообщения."
+    label: t("core.formattingRegistry.anchor"), group: t("core.formattingRegistry.anchor"), type: "string", editor: "anchor-select", default: "",
+    hint: t("core.propertyRegistry.theListIsBuiltAutomaticallyFromThe")
   });
   add("button.style", {
-    label: "Стиль", group: "Кнопка", type: "enum", editor: "select", default: "",
+    label: t("core.propertyRegistry.style"), group: t("core.propertyRegistry.button"), type: "enum", editor: "select", default: "",
     options: [
-      { value: "", label: "Обычный" },
-      { value: "primary", label: "Primary" },
-      { value: "success", label: "Success" },
-      { value: "danger", label: "Danger" }
+      { value: "", label: t("core.propertyRegistry.normal") },
+      { value: "primary", label: t("core.propertyRegistry.primary") },
+      { value: "success", label: t("core.propertyRegistry.success") },
+      { value: "danger", label: t("core.propertyRegistry.danger") }
     ]
   });
 
   // ---------- Lists and list items ----------
   // InputRichBlockListItem fields are catalogued independently and reused by the visual collection editor.
   add("list.item.blocks", {
-    label: "Блоки элемента", group: "Элемент списка", type: "block-array", editor: "block-array", default: [], telegramField: "blocks",
-    hint: "Array<RichBlock>. Для полноценной композиции блоки удобнее собирать на Canvas."
+    label: t("core.propertyRegistry.elementBlocks"), group: t("core.propertyRegistry.listItem"), type: "block-array", editor: "block-array", default: [], telegramField: "blocks",
+    hint: t("core.propertyRegistry.arrayForFullCompositionBlocksAreMore")
   });
   add("list.item.label", {
-    label: "Полученная метка", group: "Элемент списка", type: "string", editor: "text", scope: "received", telegramField: "label",
+    label: t("core.propertyRegistry.obtainedLabel"), group: t("core.propertyRegistry.listItem"), type: "string", editor: "text", scope: "received", telegramField: "label",
     readOnly: true
   });
   add("list.item.hasCheckbox", {
-    label: "Checkbox", group: "Элемент списка", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.propertyRegistry.checkbox"), group: t("core.propertyRegistry.listItem"), type: "boolean", editor: "checkbox", default: false,
     telegramField: "has_checkbox"
   });
   add("list.item.isChecked", {
-    label: "Отмечен", group: "Элемент списка", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.propertyRegistry.checked"), group: t("core.propertyRegistry.listItem"), type: "boolean", editor: "checkbox", default: false,
     telegramField: "is_checked"
   });
   add("list.item.value", {
-    label: "Числовое значение", group: "Элемент списка", type: "integer", editor: "number",
+    label: t("core.propertyRegistry.numericValue"), group: t("core.propertyRegistry.listItem"), type: "integer", editor: "number",
     telegramField: "value"
   });
   add("list.item.type", {
-    label: "Тип маркера", group: "Элемент списка", type: "enum", editor: "select",
-    values: [{value:"",label:"Нет"}, "1", "a", "A", "i", "I"], default: "", telegramField: "type"
+    label: t("core.propertyRegistry.markerType"), group: t("core.propertyRegistry.listItem"), type: "enum", editor: "select",
+    values: [{value:"",label:t("core.propertyRegistry.none")}, "1", "a", "A", "i", "I"], default: "", telegramField: "type"
   });
   add("list.items", {
-    label: "Элементы списка", group: "Список", type: "list-items", editor: "list-items", default: [],
+    label: t("core.propertyRegistry.listItems"), group: t("core.propertyRegistry.list"), type: "list-items", editor: "list-items", default: [],
     telegramField: "items",
     item: {
-      label: "Элемент",
+      label: t("core.propertyRegistry.item"),
       fields: [
         { property: "list.item.blocks", key: "blocks" },
         { property: "list.item.hasCheckbox", key: "has_checkbox" },
@@ -198,37 +199,37 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
 
   // Legacy/editor convenience. It is intentionally separate from the Telegram wire model.
   add("list.ordered", {
-    label: "Нумерованный список (legacy)", group: "Legacy", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.propertyRegistry.numberedListLegacy"), group: t("core.propertyRegistry.legacy"), type: "boolean", editor: "checkbox", default: false,
     scope: "editor", deprecated: true, groupCollapsed: true
   });
 
   // ---------- Table and cells ----------
   add("table.cell.text", {
-    label: "Текст ячейки", group: "Ячейка таблицы", type: "rich-text", editor: "rich-text", default: "", telegramField: "text",
+    label: t("core.propertyRegistry.cellText"), group: t("core.propertyRegistry.tableCell"), type: "rich-text", editor: "rich-text", default: "", telegramField: "text",
     formats: allFormats
   });
   add("table.cell.isHeader", {
-    label: "Заголовочная ячейка", group: "Ячейка таблицы", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.propertyRegistry.headerCell"), group: t("core.propertyRegistry.tableCell"), type: "boolean", editor: "checkbox", default: false,
     telegramField: "is_header"
   });
   add("table.cell.colspan", {
-    label: "Colspan", group: "Ячейка таблицы", type: "integer", editor: "number", min: 1, default: 1,
+    label: t("core.propertyRegistry.colspan"), group: t("core.propertyRegistry.tableCell"), type: "integer", editor: "number", min: 1, default: 1,
     telegramField: "colspan"
   });
   add("table.cell.rowspan", {
-    label: "Rowspan", group: "Ячейка таблицы", type: "integer", editor: "number", min: 1, default: 1,
+    label: t("core.propertyRegistry.rowspan"), group: t("core.propertyRegistry.tableCell"), type: "integer", editor: "number", min: 1, default: 1,
     telegramField: "rowspan"
   });
   add("table.cell.align", {
-    label: "Горизонтальное выравнивание", group: "Ячейка таблицы", type: "enum", editor: "select",
+    label: t("core.propertyRegistry.horizontalAlignment"), group: t("core.propertyRegistry.tableCell"), type: "enum", editor: "select",
     values: ["left", "center", "right"], default: "center", telegramField: "align"
   });
   add("table.cell.valign", {
-    label: "Вертикальное выравнивание", group: "Ячейка таблицы", type: "enum", editor: "select",
+    label: t("core.propertyRegistry.verticalAlignment"), group: t("core.propertyRegistry.tableCell"), type: "enum", editor: "select",
     values: ["top", "middle", "bottom"], default: "middle", telegramField: "valign"
   });
   add("table.cells", {
-    label: "Ячейки", group: "Таблица", type: "table", editor: "table", default: [], telegramField: "cells",
+    label: t("core.propertyRegistry.cells"), group: t("core.propertyRegistry.table"), type: "table", editor: "table", default: [], telegramField: "cells",
     cell: {
       fields: [
         { property: "table.cell.text", key: "text" },
@@ -241,121 +242,121 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
     }
   });
   add("table.isBordered", {
-    label: "Границы", group: "Таблица", type: "boolean", editor: "checkbox", default: true,
+    label: t("core.propertyRegistry.borders"), group: t("core.propertyRegistry.table"), type: "boolean", editor: "checkbox", default: true,
     telegramField: "is_bordered"
   });
   add("table.isStriped", {
-    label: "Чередование строк", group: "Таблица", type: "boolean", editor: "checkbox", default: true,
+    label: t("core.propertyRegistry.rowStriping"), group: t("core.propertyRegistry.table"), type: "boolean", editor: "checkbox", default: true,
     telegramField: "is_striped"
   });
   add("table.isCompact", {
-    label: "Компактная таблица", group: "Таблица", type: "boolean", editor: "checkbox", default: false,
-    hint: "Уменьшает внутренние отступы ячеек в Telegram", telegramField: "is_compact"
+    label: t("core.propertyRegistry.compactTable"), group: t("core.propertyRegistry.table"), type: "boolean", editor: "checkbox", default: false,
+    hint: t("core.propertyRegistry.reducesCellPaddingInTelegram"), telegramField: "is_compact"
   });
   add("table.columns", {
-    label: "Колонки в редакторе (legacy)", group: "Legacy", type: "integer", editor: "number", min: 1, max: 20, default: 2,
+    label: t("core.propertyRegistry.columnsInEditorLegacy"), group: t("core.propertyRegistry.legacy"), type: "integer", editor: "number", min: 1, max: 20, default: 2,
     scope: "editor", deprecated: true, groupCollapsed: true
   });
 
   // ---------- Details ----------
   add("details.summary", {
-    label: "Заголовок", group: "Details", type: "rich-text", editor: "rich-text", default: "Details",
+    label: t("core.propertyRegistry.header"), group: t("core.propertyRegistry.details"), type: "rich-text", editor: "rich-text", default: t("blocks.registerCoreBlocks.details"),
     telegramField: "summary"
   });
   add("details.isOpen", {
-    label: "Открыт по умолчанию", group: "Details", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.propertyRegistry.openByDefault"), group: t("core.propertyRegistry.details"), type: "boolean", editor: "checkbox", default: false,
     telegramField: "is_open"
   });
 
   // ---------- Map ----------
   add("map.location", {
-    label: "Location", group: "Карта", type: "location", editor: "location", default: { latitude: 0, longitude: 0 },
+    label: t("core.propertyRegistry.location"), group: t("core.propertyRegistry.map"), type: "location", editor: "location", default: { latitude: 0, longitude: 0 },
     telegramField: "location"
   });
   add("map.latitude", {
-    label: "Широта (legacy)", group: "Legacy", type: "number", editor: "number", min: -90, max: 90, default: 0,
+    label: t("core.propertyRegistry.latitudeLegacy"), group: t("core.propertyRegistry.legacy"), type: "number", editor: "number", min: -90, max: 90, default: 0,
     scope: "editor", deprecated: true, groupCollapsed: true
   });
   add("map.longitude", {
-    label: "Долгота (legacy)", group: "Legacy", type: "number", editor: "number", min: -180, max: 180, default: 0,
+    label: t("core.propertyRegistry.longitudeLegacy"), group: t("core.propertyRegistry.legacy"), type: "number", editor: "number", min: -180, max: 180, default: 0,
     scope: "editor", deprecated: true, groupCollapsed: true
   });
   add("map.zoom", {
-    label: "Zoom", group: "Карта", type: "integer", editor: "number", min: 0, max: 24, default: 12
+    label: t("core.propertyRegistry.zoom"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 0, max: 24, default: 12
   });
   add("map.width", {
-    label: "Ширина", group: "Карта", type: "integer", editor: "number", min: 0, max: 10000, default: 640
+    label: t("core.propertyRegistry.width"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 0, max: 10000, default: 640
   });
   add("map.height", {
-    label: "Высота", group: "Карта", type: "integer", editor: "number", min: 0, max: 10000, default: 360
+    label: t("core.propertyRegistry.height"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 0, max: 10000, default: 360
   });
 
   // ---------- Media ----------
   add("media.source", {
-    label: "Media / file_id / URL", group: "Ресурс", type: "media", editor: "media", default: "", scope: "editor", groupCollapsed: true
+    label: t("core.propertyRegistry.mediaSource"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", scope: "editor", groupCollapsed: true
   });
   add("media.galleryId", {
-    label: "Gallery ID", group: "Ресурс", type: "string", editor: "text", default: "", readOnly: true, scope: "editor", groupCollapsed: true,
-    hint: "Стабильная ссылка на ресурс в локальном каталоге Gallery."
+    label: t("core.propertyRegistry.galleryId"), group: t("app.appNotifications.resource"), type: "string", editor: "text", default: "", readOnly: true, scope: "editor", groupCollapsed: true,
+    hint: t("core.propertyRegistry.permanentLinkToResourceInLocalGallery")
   });
   add("media.fileId", {
-    label: "Telegram file_id", group: "Ресурс", type: "string", editor: "textarea", default: "", readOnly: true, required: true, groupCollapsed: true,
-    hint: "Подтягивается из Gallery и используется при preview/publish."
+    label: t("core.propertyRegistry.telegramFileId"), group: t("app.appNotifications.resource"), type: "string", editor: "textarea", default: "", readOnly: true, required: true, groupCollapsed: true,
+    hint: t("core.propertyRegistry.fetchedFromGalleryAndUsedInPreview")
   });
   // Legacy semantic media fields remain registered for compatibility with old Meta Blocks/extensions.
-  add("media.animation", { label: "Animation", group: "Ресурс", type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "animation" });
-  add("media.audio", { label: "Audio", group: "Ресурс", type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "audio" });
-  add("media.photo", { label: "Photo", group: "Ресурс", type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "photo" });
-  add("media.video", { label: "Video", group: "Ресурс", type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "video" });
-  add("media.voiceNote", { label: "Voice note", group: "Ресурс", type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "voice_note" });
+  add("media.animation", { label: t("blocks.registerCoreBlocks.animation"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "animation" });
+  add("media.audio", { label: t("blocks.registerCoreBlocks.audio"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "audio" });
+  add("media.photo", { label: t("blocks.registerCoreBlocks.photo"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "photo" });
+  add("media.video", { label: t("blocks.registerCoreBlocks.video"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "video" });
+  add("media.voiceNote", { label: t("blocks.registerCoreBlocks.voiceNote"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "voice_note" });
   add("media.hasSpoiler", {
-    label: "Спойлер", group: "Медиа", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.formattingRegistry.spoiler"), group: t("core.propertyRegistry.media"), type: "boolean", editor: "checkbox", default: false,
     telegramField: "has_spoiler"
   });
   add("collage.columns", {
-    label: "Колонки предпросмотра (legacy)", group: "Legacy", type: "integer", editor: "number", min: 1, max: 6, default: 2,
+    label: t("core.propertyRegistry.previewColumnsLegacy"), group: t("core.propertyRegistry.legacy"), type: "integer", editor: "number", min: 1, max: 6, default: 2,
     scope: "editor", deprecated: true
   });
   add("slideshow.autoplay", {
-    label: "Autoplay предпросмотра (legacy)", group: "Legacy", type: "boolean", editor: "checkbox", default: false,
+    label: t("core.propertyRegistry.previewAutoplayLegacy"), group: t("core.propertyRegistry.legacy"), type: "boolean", editor: "checkbox", default: false,
     scope: "editor", deprecated: true
   });
 
   // ---------- Project virtual blocks ----------
   add("project.map.id", {
-    label: "Map ID", group: "Project Map", type: "string", editor: "text", default: "", readOnly: true, scope: "project",
-    generateIdPrefix: "map", hint: "Стабильная внутренняя идентичность Map. Telegram URL здесь не хранится."
+    label: t("core.propertyRegistry.mapId"), group: t("core.propertyRegistry.projectMap"), type: "string", editor: "text", default: "", readOnly: true, scope: "project",
+    generateIdPrefix: "map", hint: t("core.propertyRegistry.stableInternalIdentityOfMapTelegramURL")
   });
   add("project.map.slots", {
-    label: "Слоты", group: "Project Map", type: "project-map-slots", editor: "project-map-slots", default: [], scope: "project",
-    hint: "Каждый слот создаёт один пост проекта. Порядок постов меняется стрелками в этой карте."
+    label: t("core.propertyRegistry.slots"), group: t("core.propertyRegistry.projectMap"), type: "project-map-slots", editor: "project-map-slots", default: [], scope: "project",
+    hint: t("core.propertyRegistry.eachSlotCreatesOneProjectPostPost")
   });
   add("project.map.numbering", {
-    label: "Нумерация", group: "Project Map", type: "enum", editor: "select", default: "numeric", scope: "project",
+    label: t("core.propertyRegistry.numbering"), group: t("core.propertyRegistry.projectMap"), type: "enum", editor: "select", default: "numeric", scope: "project",
     options: [
       { value: "numeric", label: "1, 2, 3…" },
       { value: "latin_upper", label: "A, B, C…" },
       { value: "roman_upper", label: "I, II, III…" },
-      { value: "none", label: "Без номера" }
+      { value: "none", label: t("core.propertyRegistry.noNumber") }
     ]
   });
   add("project.map.emptyText", {
-    label: "Текст пустой карты", group: "Project Map", type: "string", editor: "text", default: "Карта пока пуста", scope: "project"
+    label: t("core.propertyRegistry.emptyMapText"), group: t("core.propertyRegistry.projectMap"), type: "string", editor: "text", default: t("core.propertyRegistry.mapIsCurrentlyEmpty"), scope: "project"
   });
   add("project.backlink.targetMap", {
-    label: "Целевая Map", group: "Back to Map", type: "project-map-select", editor: "project-map-select", default: "", scope: "project", required: true
+    label: t("core.propertyRegistry.targetMap"), group: t("core.propertyRegistry.backToMap"), type: "project-map-select", editor: "project-map-select", default: "", scope: "project", required: true
   });
   add("project.backlink.relation", {
-    label: "Связь", group: "Back to Map", type: "project-backlink-relation", editor: "project-backlink-relation", default: "", scope: "project", required: true,
-    hint: "Связь создаётся вместе с постом и всегда ведёт к карте стартового поста проекта."
+    label: t("core.propertyRegistry.link"), group: t("core.propertyRegistry.backToMap"), type: "project-backlink-relation", editor: "project-backlink-relation", default: "", scope: "project", required: true,
+    hint: t("core.propertyRegistry.linkIsCreatedTogetherWithThePost")
   });
   add("project.backlink.text", {
-    label: "Текст", group: "Back to Map", type: "string", editor: "text", default: "Назад", scope: "project"
+    label: t("core.propertyRegistry.text"), group: t("core.propertyRegistry.backToMap"), type: "string", editor: "text", default: t("core.propertyRegistry.back"), scope: "project"
   });
 
   // ---------- System ----------
   add("thinking.text", {
-    label: "Thinking text", group: "System", type: "rich-text", editor: "rich-text", default: "Thinking…"
+    label: t("core.propertyRegistry.thinkingText"), group: t("core.propertyRegistry.system"), type: "rich-text", editor: "rich-text", default: t("blocks.registerCoreBlocks.thinkingDefault")
   });
 
   // Mirror every RichText operation into the master catalog. Parameterized
@@ -368,7 +369,7 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
       add(fieldProperty, {
         kind: "format-metadata",
         label: field.label || field.key,
-        group: `Форматирование / ${format.label || format.id}`,
+        group: t("core.propertyRegistry.formatting", { 0: format.label || format.id }),
         type: formatFieldType(field.editor),
         editor: normalizeFormatEditor(field.editor),
         required: !!field.required,
@@ -380,7 +381,7 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
     add(`format.${format.id}`, {
       kind: "formatting",
       label: format.label || format.id,
-      group: "Форматирование текста",
+      group: t("core.propertyRegistry.textFormatting"),
       type: "format-command",
       editor: "format-command",
       formatId: format.id,

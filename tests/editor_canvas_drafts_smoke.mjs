@@ -22,7 +22,7 @@ assert.doesNotMatch(html, /id="saveDoc"/);
 assert.doesNotMatch(html, /id="saveDraft"/);
 assert.ok(html.indexOf('id="exportJson"') < html.indexOf('id="canvasStats"'));
 assert.ok(html.indexOf('id="previewTelegram"') < html.indexOf('id="canvasStats"'));
-assert.match(html, /<button type="submit" value="cancel" formnovalidate>Отмена<\/button>/);
+assert.match(html, /data-i18n="html\.cancel"[^>]*type="submit" value="cancel"/);
 assert.ok(html.indexOf('id="canvasEditorBar"') < html.indexOf('id="canvasContextBar"'));
 assert.match(css, /\.canvas-editor-bar/);
 assert.match(css, /#openDrafts\.active/);

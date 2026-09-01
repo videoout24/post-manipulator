@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 
@@ -14,11 +15,11 @@ export function firstHeadingText(ast) {
   return node ? richTextToPlain(node.props?.text || "").trim() : "";
 }
 
-export function createProjectHeading(title = "Пост") {
+export function createProjectHeading(title = t("editor.blockInspector.post")) {
   return {
     id: randomUUID(),
     type: "heading",
-    props: { text: cleanTitle(title, "Пост"), level: 2 },
+    props: { text: cleanTitle(title, t("editor.blockInspector.post")), level: 2 },
     children: []
   };
 }
@@ -30,7 +31,7 @@ export function syncHeadingFromPostTitle(post) {
   if (!post) return false;
   post.messageAst ||= { id: "root", type: "document", props: {}, children: [] };
   post.messageAst.children ||= [];
-  const title = cleanTitle(post.title, "Пост");
+  const title = cleanTitle(post.title, t("editor.blockInspector.post"));
   let changed = String(post.title || "") !== title;
   post.title = title;
   const heading = firstHeadingNode(post.messageAst);

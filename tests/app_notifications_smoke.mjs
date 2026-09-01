@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js?v=1.5.9";
 import { AppNotifications } from "../js/app/AppNotifications.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const classes = new Set();
 const root = {
@@ -24,37 +25,41 @@ const notifications = new AppNotifications({
   clearTimer: timer => { cleared = timer; }
 }).start();
 
-events.emit("ui:toast", { message: "Готово", type: "success", duration: 50 });
-assert.equal(root.textContent, "Готово");
+events.emit("ui:toast", { message: "Custom message", type: "success", duration: 50 });
+assert.equal(root.textContent, "Custom message");
 assert.equal(root.dataset.type, "success");
-assert.deepEqual(lastShown, { message: "Готово", type: "success" });
+assert.deepEqual(lastShown, { message: "Custom message", type: "success" });
 assert(classes.has("visible"));
 assert.equal(scheduledDelay, 1200, "toast duration must respect the minimum visibility time");
 
 scheduled();
 assert(!classes.has("visible"));
 
-events.emit("ui:editor-notice", { message: "Тихий статус", type: "info" });
-assert.equal(lastShown.message, "Тихий статус");
+events.emit("ui:editor-notice", { message: "Silent status", type: "info" });
+assert.equal(lastShown.message, "Silent status");
 assert(!classes.has("visible"), "Editor notices must not open the global toast");
 
 events.emit("telegram:runtime-status", { state: "retrying" });
 assert.equal(root.dataset.type, "warning");
-assert.equal(root.textContent, "Telegram: повтор подключения…");
+assert.equal(root.textContent, t("app.appNotifications.telegramReconnecting"));
 const firstRuntimeMessage = root.textContent;
 events.emit("telegram:runtime-status", { state: "retrying", message: "duplicate" });
 assert.equal(root.textContent, firstRuntimeMessage, "identical runtime states must be deduplicated");
 
-events.emit("gallery:ingested", { type: "photo", caption: "Обложка" });
-assert.equal(root.textContent, "Фото проиндексировано: Обложка");
+const authorCaption = "Обложка автора";
+events.emit("gallery:ingested", { type: "photo", caption: authorCaption });
+assert.equal(root.textContent, t("app.appNotifications.indexed", {
+  0: t("app.appNotifications.photo"),
+  1: authorCaption
+}));
 assert.equal(root.dataset.type, "success");
 
-events.emit("gallery:source-delete-error", { error: new Error("нет прав") });
-assert.match(root.textContent, /исходное сообщение не удалено: нет прав/);
+events.emit("gallery:source-delete-error", { error: new Error("permission denied") });
+assert.equal(root.textContent, t("app.appNotifications.resourceSavedButTheOriginalMessageWas", { 0: "permission denied" }));
 assert.equal(root.dataset.type, "warning");
 
 events.emit("project:graph-error", { message: "broken edge" });
-assert.equal(root.textContent, "Project graph: broken edge");
+assert.equal(root.textContent, t("app.appNotifications.projectGraph", { 0: "broken edge" }));
 assert.equal(root.dataset.type, "error");
 
 notifications.stop();
@@ -85,8 +90,8 @@ const inlineRoot = {
   classList: { add: name => inlineClasses.add(name), remove: name => inlineClasses.delete(name) }
 };
 const inlineNotifications = new AppNotifications({ root: inlineRoot, events, inlineWhen: () => true });
-inlineNotifications.show({ message: "Только строка", type: "warning" });
-assert.equal(lastShown.message, "Только строка");
+inlineNotifications.show({ message: "Inline only", type: "warning" });
+assert.equal(lastShown.message, "Inline only");
 assert(!inlineClasses.has("visible"), "Active Editor must suppress every global toast");
 
 console.log("app_notifications_smoke: OK");

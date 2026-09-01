@@ -15,7 +15,7 @@ assert.throws(() => databaseNameForBot("not-a-bot"));
 
 assert.match(adapter, /new IndexedDbAppDatabase/);
 assert.match(adapter, /async selectBot\(botId\)/);
-assert.match(adapter, /Нельзя переключить локальную базу на другого бота/);
+assert.match(adapter, /t\("storage\.appDatabase\.cannotSwitchTheLocalDatabaseToAnother"\)/);
 assert.doesNotMatch(adapter, /Worker|OPFS|sqlite/i);
 assert.match(indexedDb, /Primary persistent storage for one publisher bot/);
 assert.match(indexedDb, /rich-current-indexeddb-backup/);

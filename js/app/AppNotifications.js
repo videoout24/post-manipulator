@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class AppNotifications {
   constructor({ root, events = null, setTimer = setTimeout, clearTimer = clearTimeout, inlineWhen = null } = {}) {
     this.root = root;
@@ -20,12 +21,12 @@ export class AppNotifications {
       this.events?.on?.("telegram:runtime-status", status => this.#showRuntimeStatus(status)),
       this.events?.on?.("gallery:ingested", asset => this.#showGalleryIngested(asset)),
       this.events?.on?.("gallery:source-delete-error", ({ error }) => this.show({
-        message: `Ресурс сохранён, но исходное сообщение не удалено: ${error?.message || error}`,
+        message: t("app.appNotifications.resourceSavedButTheOriginalMessageWas", { 0: error?.message || error }),
         type: "warning",
         duration: 5200
       })),
       this.events?.on?.("project:graph-error", ({ message }) => this.show({
-        message: `Project graph: ${message}`,
+        message: t("app.appNotifications.projectGraph", { 0: message }),
         type: "error",
         duration: 7000
       }))
@@ -60,15 +61,15 @@ export class AppNotifications {
     const state = status?.state || "";
     if (!state || state === this.lastRuntimeState) return;
     this.lastRuntimeState = state;
-    if (state === "running") this.show({ message: status?.message || "Telegram long polling запущен", type: "info" });
-    else if (state === "retrying") this.show({ message: status?.message || "Telegram: повтор подключения…", type: "warning", duration: 3600 });
-    else if (state === "error") this.show({ message: status?.message || "Ошибка Telegram runtime", type: "error" });
+    if (state === "running") this.show({ message: status?.message || t("app.appNotifications.telegramLongPollingStarted"), type: "info" });
+    else if (state === "retrying") this.show({ message: status?.message || t("app.appNotifications.telegramReconnecting"), type: "warning", duration: 3600 });
+    else if (state === "error") this.show({ message: status?.message || t("app.appNotifications.telegramRuntimeError"), type: "error" });
   }
 
   #showGalleryIngested(asset) {
-    const labels = { photo: "Фото", video: "Видео", audio: "Аудио", voice: "Голосовое", document: "Файл" };
-    const label = labels[asset?.type] || "Ресурс";
+    const labels = { photo: t("app.appNotifications.photo"), video: t("app.appNotifications.video"), audio: t("app.appNotifications.audio"), voice: t("app.appNotifications.voice"), document: t("app.appNotifications.file") };
+    const label = labels[asset?.type] || t("app.appNotifications.resource");
     const name = asset?.caption || asset?.fileName || label;
-    this.show({ message: `${label} проиндексировано: ${name}`, type: "success" });
+    this.show({ message: t("app.appNotifications.indexed", { 0: label, 1: name }), type: "success" });
   }
 }

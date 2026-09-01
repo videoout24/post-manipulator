@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { ProjectPreviewSync } from "../js/project/ProjectPreviewSync.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const projects = [
   { id: "project_a", title: "A", posts: [{ deployments: { preview: { chatId: -1001, messageId: 11 } } }] },
@@ -31,6 +32,9 @@ sync.remove = async projectId => ({
   partial: true,
   projectId
 });
-await assert.rejects(() => sync.clearAllDeployments(), /Не удалось полностью очистить выгрузку/);
+await assert.rejects(
+  () => sync.clearAllDeployments(),
+  error => error.message === t("project.projectPreviewSync.failedToCompletelyClearProjectUploadRemaining", { 0: "A", 1: 1 })
+);
 
 console.log("project_preview_single_monitor_smoke: OK");

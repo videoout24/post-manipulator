@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js";
 import { LinkingController } from "../js/links/LinkingController.js";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 // The ↗ control is a toggle for an existing internal link.  It must therefore
 // be possible to unlink with a collapsed caret inside the marker: requiring a
@@ -49,7 +50,7 @@ async function assertRejectsEmptyCaretOutsideRelation() {
       start: 0,
       end: 0
     }),
-    /Выделите текст, который нужно связать/
+    error => error.message === t("editor.blockInspector.selectTheTextToLink")
   );
 
   assert.equal(fixture.confirmations.length, 0, "an empty caret outside a relation must not open unlink confirmation");

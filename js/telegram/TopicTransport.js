@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class TopicTransport {
   constructor({ client, ownerBinding, events = null }) {
     this.client = client;
@@ -23,7 +24,7 @@ export class TopicTransport {
   async rename(threadId, name) {
     const owner = await this.#owner();
     const id = Number(threadId);
-    if (!Number.isFinite(id) || !id) throw new Error("Некорректный message_thread_id");
+    if (!Number.isFinite(id) || !id) throw new Error(t("gallery.galleryCore.invalidMessageThreadId"));
     const normalized = normalizeName(name);
     try {
       await this.client.editForumTopic(owner.chatId, id, { name: normalized });
@@ -39,7 +40,7 @@ export class TopicTransport {
   async delete(threadId) {
     const owner = await this.#owner();
     const id = Number(threadId);
-    if (!Number.isFinite(id) || !id) throw new Error("Некорректный message_thread_id");
+    if (!Number.isFinite(id) || !id) throw new Error(t("gallery.galleryCore.invalidMessageThreadId"));
     let alreadyMissing = false;
     try {
       await this.client.deleteForumTopic(owner.chatId, id);
@@ -54,7 +55,7 @@ export class TopicTransport {
 
   async #owner() {
     const owner = await this.ownerBinding.getOwner();
-    if (!owner) throw new Error("Сначала привяжите владельца");
+    if (!owner) throw new Error(t("telegram.previewChannelBindingService.bindTheOwnerFirst"));
     return owner;
   }
 }
@@ -66,8 +67,8 @@ function isMissingTopic(error) {
 
 function normalizeName(value) {
   const name = String(value || "").trim();
-  if (!name) throw new Error("Название topic не может быть пустым");
-  if ([...name].length > 128) throw new Error("Название topic не должно превышать 128 символов");
+  if (!name) throw new Error(t("telegram.topicTransport.theTopicNameCannotBeEmpty"));
+  if ([...name].length > 128) throw new Error(t("telegram.topicTransport.theTopicNameMustNotExceed128"));
   return name;
 }
 import { TelegramApiError } from "./TelegramClient.js?v=1.5.9";

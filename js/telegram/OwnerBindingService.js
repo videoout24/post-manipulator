@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const OWNER_KEY = "owner";
 
 export class OwnerBindingService {
@@ -15,11 +16,11 @@ export class OwnerBindingService {
    */
   async bindVerifiedMiniAppUser(telegramUserId) {
     const userId = validTelegramUserId(telegramUserId);
-    if (!userId) throw new Error("Telegram не подтвердил владельца Mini App");
+    if (!userId) throw new Error(t("telegram.ownerBindingService.telegramDidNotConfirmMiniAppOwner"));
     const existing = await this.getOwner();
     if (existing) {
       if (Number(existing.userId) === userId) return existing;
-      throw new Error("Эта локальная база уже привязана к другому владельцу Telegram");
+      throw new Error(t("telegram.ownerBindingService.thisLocalDatabaseIsAlreadyBoundTo"));
     }
     const owner = {
       userId,

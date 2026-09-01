@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 
@@ -14,7 +15,7 @@ export class PublicationService {
     this.linkUnsubscribe = this.events?.on?.("links:changed", event => {
       if (event?.reason !== "removed" || event?.relation?.source?.kind !== "publication") return;
       this.#removeRelationFromPublishedSource(event.relation).catch(error => {
-        this.events?.emit?.("ui:toast", { message: `Не удалось обновить отвязанную публикацию: ${error?.message || error}`, type: "error" });
+        this.events?.emit?.("ui:toast", { message: t("telegram.publicationService.failedToUpdateUnlinkedPublication", { 0: error?.message || error }), type: "error" });
       });
     });
     this.projectPublicationUnsubscribe = this.events?.on?.("telegram:project-publication-record", record => {
@@ -49,15 +50,15 @@ export class PublicationService {
   async scheduleDraft(draftId, targetChatId, { scheduledAt, commentsEnabled = true } = {}) {
     const publishAt = Number(scheduledAt || 0);
     if (!Number.isFinite(publishAt) || publishAt <= Date.now()) {
-      throw new Error("Укажите время отложенной публикации в будущем");
+      throw new Error(t("project.projectPublicationService.specifyAFutureScheduledPublicationTime"));
     }
     const [draft, target] = await Promise.all([
       this.drafts.get(draftId),
       this.#requireTarget(targetChatId)
     ]);
-    if (!draft) throw new Error("Черновик не найден");
-    if (draft.source?.kind === "publication") throw new Error("Рабочую копию публикации нельзя поставить в отложку");
-    if (!draft.messageAst?.children?.length) throw new Error("Пустой черновик нельзя отложить");
+    if (!draft) throw new Error(t("editor.editorRightPanel.draftNotFound"));
+    if (draft.source?.kind === "publication") throw new Error(t("telegram.publicationService.workingCopyOfThePublicationCannotBe"));
+    if (!draft.messageAst?.children?.length) throw new Error(t("telegram.publicationService.emptyDraftCannotBeScheduled"));
     this.#assertCommentsConfig(target, commentsEnabled);
     const errors = this.validator.validate(astTree(draft.messageAst));
     if (errors.length) throw new Error(errors.join("; "));
@@ -112,20 +113,20 @@ export class PublicationService {
     return this.#withRecordOperation(recordId, async () => {
       const record = await this.db.get("publications", recordId, null);
       if (!record?.scheduledAt || record.source?.kind !== "draft" || record.messageId) {
-        throw new Error("Этот черновик не находится в отложенных публикациях");
+        throw new Error(t("telegram.publicationService.thisDraftIsNotInTheScheduled"));
       }
       const editDrafts = (await this.drafts.list()).filter(draft =>
         draft.source?.kind === "publication" && String(draft.source.publicationId) === String(record.id)
       );
       if (editDrafts.some(draft => String(draft.id) === String(this.draftSession?.activeDraftId || ""))) {
-        throw new Error("Сначала примените или отмените редактирование отложенной публикации");
+        throw new Error(t("telegram.publicationService.firstApplyOrCancelTheEditingOf"));
       }
       this.#clearSchedule(record.id);
       await this.linkRelations?.reconcileSource?.({ kind: "publication", id: record.id }, record.messageAst);
       for (const draft of editDrafts) await this.drafts.delete(draft.id);
       const restored = await this.drafts.restore({
         id: record.source.draftId,
-        title: record.source.title || "Черновик",
+        title: record.source.title || t("editor.draftListView.draft"),
         messageAst: record.messageAst,
         source: record.source.draftSource || null,
         createdAt: record.source.draftCreatedAt,
@@ -145,11 +146,11 @@ export class PublicationService {
       this.drafts.get(draftId),
       this.targets.list().then(rows => rows.find(item => Number(item.chatId) === Number(targetChatId)))
     ]);
-    if (!draft) throw new Error("Черновик не найден");
-    if (!draft.messageAst?.children?.length) throw new Error("Пустой черновик нельзя опубликовать");
-    if (!target || target.status !== "ready") throw new Error("Канал или группа недоступны для публикации");
+    if (!draft) throw new Error(t("editor.editorRightPanel.draftNotFound"));
+    if (!draft.messageAst?.children?.length) throw new Error(t("telegram.publicationService.emptyDraftCannotBePublished"));
+    if (!target || target.status !== "ready") throw new Error(t("project.projectPublicationService.channelOrGroupNotAvailableForPublishing"));
     if (target.type === "channel" && target.commentsEnabled && commentsEnabled === false && !target.discussionRights?.canDelete) {
-      throw new Error("Для отключения комментариев боту нужно право удаления сообщений в группе обсуждения");
+      throw new Error(t("project.projectPublicationService.toDisableCommentsTheBotNeedsThe"));
     }
     const publishAst = await this.linkRelations?.materializeAst?.(draft.messageAst) || draft.messageAst;
     const tree = astTree(publishAst);
@@ -163,7 +164,7 @@ export class PublicationService {
       disableNotification: false
     });
     const messageId = Number(message?.message_id || 0);
-    if (!messageId) throw new Error("Telegram не вернул message_id для публикации");
+    if (!messageId) throw new Error(t("telegram.publicationService.telegramDidNotReturnMessageIdFor"));
     const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
     const record = {
       id: `publication_${randomUUID()}`,
@@ -273,7 +274,7 @@ export class PublicationService {
       disableNotification: false
     });
     const messageId = Number(message?.message_id || 0);
-    if (!messageId) throw new Error("Telegram не вернул message_id для отложенной публикации");
+    if (!messageId) throw new Error(t("telegram.publicationService.telegramDidNotReturnMessageIdFor2"));
     const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
     record.messageAst = structuredClone(publishAst);
     record.target = structuredClone(target);
@@ -298,13 +299,13 @@ export class PublicationService {
 
   async #requireTarget(chatId) {
     const target = (await this.targets.list()).find(item => Number(item.chatId) === Number(chatId));
-    if (!target || target.status !== "ready") throw new Error("Канал или группа недоступны для публикации");
+    if (!target || target.status !== "ready") throw new Error(t("project.projectPublicationService.channelOrGroupNotAvailableForPublishing"));
     return target;
   }
 
   #assertCommentsConfig(target, commentsEnabled) {
     if (target.type === "channel" && target.commentsEnabled && commentsEnabled === false && !target.discussionRights?.canDelete) {
-      throw new Error("Для отключения комментариев боту нужно право удаления сообщений в группе обсуждения");
+      throw new Error(t("project.projectPublicationService.toDisableCommentsTheBotNeedsThe"));
     }
   }
 
@@ -329,14 +330,14 @@ export class PublicationService {
 
   async setPinned(recordId, pinned) {
     const record = await this.db.get("publications", recordId, null);
-    if (!record) throw new Error("Публикация не найдена");
+    if (!record) throw new Error(t("telegram.publicationService.publicationNotFound"));
     if (record.scheduledAt || !record.chatId || !record.messageId) {
-      throw new Error("Можно закрепить только опубликованный пост");
+      throw new Error(t("telegram.publicationService.onlyPublishedPostsCanBePinned"));
     }
     const nextPinned = Boolean(pinned);
     if (nextPinned === Boolean(record.pinned)) return structuredClone(record);
     if (nextPinned && record.commentsEnabled && (!record.discussionChatId || !record.discussionMessageId)) {
-      throw new Error("Дождитесь появления сообщения в группе обсуждения");
+      throw new Error(t("telegram.publicationService.waitForTheMessageToAppearIn"));
     }
 
     const messages = [{ chatId: record.chatId, messageId: record.messageId }];
@@ -353,7 +354,7 @@ export class PublicationService {
       for (const message of changed.reverse()) {
         await this.#setMessagePinned(message, !nextPinned).catch(() => {});
       }
-      throw new Error(`Не удалось синхронизировать закрепление поста и комментариев: ${error?.message || error}`);
+      throw new Error(t("telegram.publicationService.failedToSynchronizePinningOfThePost", { 0: error?.message || error }));
     }
     record.pinned = nextPinned;
     record.pinnedAt = nextPinned ? Date.now() : null;
@@ -374,7 +375,7 @@ export class PublicationService {
     const record = await this.db.get("publications", recordId, null);
     if (!record) return false;
     if (!isPublicationDeleteAvailable(record)) {
-      throw new Error("48-часовой срок удаления публикации в Telegram истёк");
+      throw new Error(t("project.projectPublicationService.the48HourPeriodForDeletingA"));
     }
     try {
       await this.client.deleteMessage(record.chatId, record.messageId);
@@ -391,8 +392,8 @@ export class PublicationService {
 
   async checkExpiredDeletion(recordId) {
     const record = await this.db.get("publications", recordId, null);
-    if (!record) throw new Error("Публикация не найдена");
-    if (isPublicationDeleteAvailable(record)) throw new Error("Для этой публикации ещё доступно обычное удаление");
+    if (!record) throw new Error(t("telegram.publicationService.publicationNotFound"));
+    if (isPublicationDeleteAvailable(record)) throw new Error(t("telegram.publicationService.regularDeletionIsStillAvailableForThis"));
     try {
       await this.client.deleteMessage(record.chatId, record.messageId);
     } catch (error) {
@@ -414,14 +415,14 @@ export class PublicationService {
 
   async createEditDraft(recordId) {
     const record = await this.db.get("publications", recordId, null);
-    if (!record) throw new Error("Публикация не найдена");
-    if (!record.messageAst?.children) throw new Error("Для этой старой публикации нет локальной копии содержимого");
+    if (!record) throw new Error(t("telegram.publicationService.publicationNotFound"));
+    if (!record.messageAst?.children) throw new Error(t("telegram.publicationService.thereIsNoLocalCopyOfThe"));
     const existing = (await this.drafts.list()).find(draft =>
       draft.source?.kind === "publication" && draft.source?.publicationId === record.id
     );
     if (existing) return existing;
     return this.drafts.create({
-      title: `${record.source?.title || "Публикация"} · редактирование`,
+      title: t("telegram.publicationService.edit", { 0: record.source?.title || t("editor.draftListView.publication") }),
       messageAst: record.messageAst,
       source: {
         kind: "publication",
@@ -437,10 +438,10 @@ export class PublicationService {
   async applyDraftChanges(draftId) {
     const draft = await this.drafts.get(draftId);
     const publicationId = draft?.source?.kind === "publication" ? draft.source.publicationId : null;
-    if (!draft || !publicationId) throw new Error("Черновик не связан с публикацией");
+    if (!draft || !publicationId) throw new Error(t("telegram.publicationService.draftIsNotLinkedToAPublication"));
     return this.#withRecordOperation(publicationId, async () => {
       const record = await this.db.get("publications", publicationId, null);
-      if (!record) throw new Error("Исходная публикация не найдена");
+      if (!record) throw new Error(t("telegram.publicationService.originalPublicationNotFound"));
       const appliedAst = await this.linkRelations?.materializeAst?.(draft.messageAst) || draft.messageAst;
       const tree = astTree(appliedAst);
       const errors = this.validator.validate(tree);

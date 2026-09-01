@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 export class AppLifecycle {
   constructor({
     windowRoot = window,
@@ -99,12 +100,12 @@ export class AppLifecycle {
   #showGalleryError(error) {
     const root = this.documentRoot.querySelector("#galleryApp");
     if (!root) return;
-    root.innerHTML = `<div class="gallery-bootstrap error"><strong>Галерея не запустилась</strong><span>${escapeHtml(error)}</span><code>build ${escapeHtml(this.build)}</code></div>`;
+    root.innerHTML = t("app.appLifecycle.galleryDidNotStartBuild", { 0: escapeHtml(error), 1: escapeHtml(this.build) });
   }
 }
 
 function escapeHtml(value) {
-  return String(value?.message || value || "Unknown error")
+  return String(value?.message || value || t("app.appLifecycle.unknownError"))
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")

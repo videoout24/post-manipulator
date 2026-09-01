@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -61,9 +62,9 @@ export class TreeView {
     const empty = document.createElement("div");
     empty.className = "canvas-document-context-empty";
     const title = document.createElement("strong");
-    title.textContent = "Откройте черновик или Project";
+    title.textContent = t("editor.treeView.openADraftOrProject");
     const hint = document.createElement("span");
-    hint.textContent = "Выберите черновик справа или добавьте блок — сначала будет создан черновик.";
+    hint.textContent = t("editor.treeView.selectADraftOnTheRightOr");
     empty.append(title, hint);
     this.root.append(empty);
     this.onCollapseChange?.({ total: 0, collapsed: 0, allCollapsed: false });
@@ -118,8 +119,8 @@ export class TreeView {
       const structureLocked = Boolean(this.controller.mutationError?.("move", { nodeId: node.id, node }));
       head.draggable = !structureLocked;
       head.title = structureLocked
-        ? "Структурный блок проекта закреплён"
-        : "Перетащите блок для сортировки, вложения или удаления за пределами Canvas";
+        ? t("editor.treeView.structuralProjectBlockIsPinned")
+        : t("editor.treeView.dragTheBlockToSortNestOr");
       head.ondragstart = e => {
         e.stopPropagation();
         this.dragState.nodeId = node.id;
@@ -164,7 +165,7 @@ export class TreeView {
       const isUiCollapsed = this.collapsedNodes.has(node.id);
       collapse.className = "canvas-collapse-toggle";
       collapse.textContent = isUiCollapsed ? "▸" : "▾";
-      collapse.title = isUiCollapsed ? "Развернуть блок на Canvas" : "Свернуть блок на Canvas";
+      collapse.title = isUiCollapsed ? t("editor.treeView.expandBlockOnCanvas") : t("editor.treeView.collapseBlockOnCanvas");
       collapse.draggable = false;
       collapse.onclick = e => {
         e.stopPropagation();
@@ -172,7 +173,7 @@ export class TreeView {
       };
       const info = document.createElement("button");
       info.textContent = "ⓘ";
-      info.title = "Служебная информация блока";
+      info.title = t("editor.treeView.blockServiceInformation");
       info.draggable = false;
       info.onclick = e => {
         e.stopPropagation();
@@ -182,7 +183,7 @@ export class TreeView {
       };
       const duplicate = document.createElement("button");
       duplicate.textContent = "⧉";
-      duplicate.title = "Дублировать блок";
+      duplicate.title = t("editor.treeView.duplicateBlock");
       duplicate.draggable = false;
       duplicate.onclick = e => {
         e.stopPropagation();
@@ -191,17 +192,17 @@ export class TreeView {
       };
       const up = document.createElement("button");
       up.textContent = "↑";
-      up.title = "Выше";
+      up.title = t("editor.treeView.above");
       up.draggable = false;
       up.onclick = e => { e.stopPropagation(); this.move(node.id, -1); };
       const down = document.createElement("button");
       down.textContent = "↓";
-      down.title = "Ниже";
+      down.title = t("editor.treeView.below");
       down.draggable = false;
       down.onclick = e => { e.stopPropagation(); this.move(node.id, 1); };
       const remove = document.createElement("button");
       remove.textContent = "🗑";
-      remove.title = "Удалить блок";
+      remove.title = t("editor.treeView.deleteBlock");
       remove.className = "block-remove-button";
       remove.draggable = false;
       remove.onclick = e => { e.stopPropagation(); this.requestDeleteBlock(node.id); };
@@ -230,7 +231,7 @@ export class TreeView {
         } else if (this.canHaveChildren(node)) {
           const emptyNested = document.createElement("div");
           emptyNested.className = "empty-children-drop";
-          emptyNested.textContent = "Перетащите блок сюда";
+          emptyNested.textContent = t("editor.treeView.dragBlockHere");
           this.attachExplicitInsideDrop(emptyNested, node);
           el.append(emptyNested);
         }
@@ -297,8 +298,8 @@ export class TreeView {
     const card = this.root.querySelector(`.block[data-node-id="${CSS.escape(String(nodeId))}"]`);
     showCardDeleteConfirmation(card, {
       message: total > 1
-        ? `Удалить блок и ${total - 1} ${pluralBlocks(total - 1)} внутри? Всего будет удалено: ${total}.`
-        : "Удалить этот блок?",
+        ? t("editor.treeView.deleteBlockAndInsideTotalToBe", { 0: total - 1, 1: pluralBlocks(total - 1), 2: total })
+        : t("editor.treeView.deleteThisBlock"),
       onConfirm: () => this.controller.removeBlock(nodeId)
     });
   }
@@ -315,7 +316,7 @@ export class TreeView {
     const main = document.createElement("span");
     main.className = "canvas-collapsed-main";
     const text = this.preview(node);
-    main.textContent = text && text !== node.type ? text : "Содержимое скрыто на Canvas";
+    main.textContent = text && text !== node.type ? text : t("editor.treeView.contentHiddenOnCanvas");
     wrap.append(main);
 
     const counts = this.descendantTypeCounts(node);
@@ -457,7 +458,7 @@ export class TreeView {
   makeDropZone(parentId, index, isLast = false) {
     const zone = document.createElement("div");
     zone.className = "drop-zone" + (isLast ? " drop-zone-last" : "");
-    zone.title = "Вставить блок точно в эту позицию";
+    zone.title = t("editor.treeView.pasteBlockExactlyInThisPosition");
 
     zone.ondragover = e => {
       e.stopPropagation();
@@ -482,14 +483,14 @@ export class TreeView {
   makeTypeSwitch(node) {
     let options = null;
     if (["block_quotation", "expandable_block_quotation", "pull_quotation"].includes(node.type)) {
-      options = [["block_quotation", "Обычная"], ["expandable_block_quotation", "Сворачиваемая"], ["pull_quotation", "Pull quote"]];
+      options = [["block_quotation", t("editor.treeView.normal")], ["expandable_block_quotation", t("editor.treeView.collapsible")], ["pull_quotation", t("blocks.registerCoreBlocks.pullQuotation")]];
     } else if (["collage", "slideshow"].includes(node.type)) {
-      options = [["collage", "Collage"], ["slideshow", "Slideshow"]];
+      options = [["collage", t("blocks.registerCoreBlocks.collage")], ["slideshow", t("blocks.registerCoreBlocks.slideshow")]];
     }
     if (!options) return null;
     const select = document.createElement("select");
     select.className = "block-type-switch";
-    select.title = "Тип Telegram RichBlock";
+    select.title = t("editor.treeView.typeTelegramRichBlock");
     select.draggable = false;
     for (const [value, label] of options) {
       const option = document.createElement("option"); option.value = value; option.textContent = label; select.append(option);
@@ -510,7 +511,7 @@ export class TreeView {
     if (!this.registry.propertyBindings(def).some(binding => binding.property === "media.hasSpoiler")) return null;
     const label = document.createElement("label");
     label.className = "block-header-check";
-    label.title = "Спойлер";
+    label.title = t("core.formattingRegistry.spoiler");
     label.onclick = e => e.stopPropagation();
     label.onmousedown = e => e.stopPropagation();
     const input = document.createElement("input");
@@ -519,7 +520,7 @@ export class TreeView {
       e.stopPropagation();
       this.controller.updateNodeProperty(node.id, "hasSpoiler", input.checked, { inspectorSource: true });
     };
-    const text = document.createElement("span"); text.textContent = "Спойлер";
+    const text = document.createElement("span"); text.textContent = t("core.formattingRegistry.spoiler");
     label.append(input, text);
     return label;
   }
@@ -531,7 +532,7 @@ export class TreeView {
 
     const title = document.createElement("div");
     title.className = "block-info-title";
-    title.textContent = "Служебные данные";
+    title.textContent = t("editor.treeView.serviceData");
     pop.append(title);
 
     const rows = [
@@ -548,7 +549,7 @@ export class TreeView {
       key.textContent = label;
       const code = document.createElement("code");
       code.textContent = String(value);
-      code.title = "Нажмите, чтобы скопировать";
+      code.title = t("editor.treeView.clickToCopy");
       code.onclick = async e => {
         e.stopPropagation();
         try { await navigator.clipboard?.writeText?.(String(value)); } catch {}
@@ -567,9 +568,9 @@ export class TreeView {
       const photos = children.filter(child => child.type === "photo").length;
       const videos = children.filter(child => child.type === "video").length;
       const parts = [];
-      if (photos) parts.push(`Фото: ${photos}`);
-      if (videos) parts.push(`Видео: ${videos}`);
-      wrap.innerHTML = `<div class="media-collection-icon">${this.iconFor(node.type)}</div><div class="media-block-info"><strong>${children.length ? `${children.length} media` : "Пусто"}</strong><span>${escapeText(parts.join(" · ") || "Перетащите фото/видео из Gallery")}</span></div>`;
+      if (photos) parts.push(t("editor.treeView.photo", { 0: photos }));
+      if (videos) parts.push(t("editor.treeView.video", { 0: videos }));
+      wrap.innerHTML = `<div class="media-collection-icon">${this.iconFor(node.type)}</div><div class="media-block-info"><strong>${children.length ? `${children.length} media` : t("editor.treeView.empty")}</strong><span>${escapeText(parts.join(" · ") || t("editor.treeView.dragPhotoVideoFromGallery"))}</span></div>`;
       return wrap;
     }
     if (this.mediaBinder?.supports(node)) {
@@ -577,7 +578,7 @@ export class TreeView {
       wrap.className = "block-preview media-block-preview";
       const galleryId = node.props?.galleryId;
       if (!galleryId) {
-        wrap.innerHTML = `<div class="media-block-empty">${this.iconFor(node.type)} <span>Выберите ресурс слева или перетащите из Gallery</span></div>`;
+        wrap.innerHTML = t("editor.treeView.selectAResourceOnTheLeftOr", { 0: this.iconFor(node.type) });
         return wrap;
       }
       wrap.innerHTML = `<div class="media-block-thumb"><span>${this.iconFor(node.type)}</span></div><div class="media-block-info"><strong>Gallery</strong><span>${escapeText(galleryId)}</span></div>`;
@@ -621,22 +622,22 @@ export class TreeView {
 
   preview(node) {
     const p = node.props || {};
-    if (node.type === "details") return richTextToPlain(p.summary) || "Details";
+    if (node.type === "details") return richTextToPlain(p.summary) || t("blocks.registerCoreBlocks.details");
     if (node.type === "anchor") {
       let links = 0;
       this.tree.walk(candidate => { if (candidate.type === "anchor_link" && candidate.props?.targetAnchorId === node.id) links += 1; });
-      return `⚓ ${p.name || "anchor"}${links ? ` · ссылок: ${links}` : ""}`;
+      return `⚓ ${p.name || "anchor"}${links ? t("editor.treeView.links", { 0: links }) : ""}`;
     }
     if (node.type === "date_time") return p.dateTime ? `🕒 ${p.dateTime} · ${p.dateTimeFormat || "DT"}` : "Date / Time";
     if (node.type === "phone") return `☎ ${p.text || p.phoneNumber || "Phone"}`;
     if (node.type === "email") return `✉ ${p.text || p.email || "Email"}`;
     if (node.type === "hashtag") return String(p.hashtag || "#hashtag");
-    if (node.type === "text_link") return `🔗 ${p.text || p.url || "Text Link"}`;
+    if (node.type === "text_link") return `🔗 ${p.text || p.url || t("blocks.registerCoreBlocks.textLink")}`;
     if (node.type === "anchor_link") {
       const anchor = p.targetAnchorId ? this.tree.find(p.targetAnchorId) : null;
-      return `⚓→ ${p.text || "Перейти"} → ${anchor?.props?.name || (p.targetAnchorId ? "⚠ удалён" : "верх")}`;
+      return `⚓→ ${p.text || t("blocks.registerCoreBlocks.go")} → ${anchor?.props?.name || (p.targetAnchorId ? t("editor.treeView.deleted") : t("editor.treeView.top"))}`;
     }
-    if (node.type === "url_button") return `▣ ${p.text || "Открыть"} → ${p.url || "URL"}`;
+    if (node.type === "url_button") return `▣ ${p.text || t("blocks.registerCoreBlocks.open")} → ${p.url || "URL"}`;
     if (p.text) return richTextToPlain(p.text).slice(0, 180);
     if (p.summary) return richTextToPlain(p.summary);
     if (p.url) return p.url;
@@ -736,9 +737,9 @@ export class TreeView {
   blockWord(count) {
     const mod10 = count % 10;
     const mod100 = count % 100;
-    if (mod10 === 1 && mod100 !== 11) return "блок";
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "блока";
-    return "блоков";
+    if (mod10 === 1 && mod100 !== 11) return t("editor.metaBlockDialog.block");
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return t("editor.metaBlockDialog.ofBlock");
+    return t("editor.metaBlockDialog.blocks");
   }
 
   installExternalDeleteDnD() {
@@ -798,10 +799,10 @@ function countSubtree(node) {
 function pluralBlocks(count) {
   const value = Math.abs(Number(count) || 0) % 100;
   const last = value % 10;
-  if (value > 10 && value < 20) return "вложенных блоков";
-  if (last === 1) return "вложенный блок";
-  if (last > 1 && last < 5) return "вложенных блока";
-  return "вложенных блоков";
+  if (value > 10 && value < 20) return t("editor.treeView.nestedBlocks");
+  if (last === 1) return t("editor.treeView.nestedBlock");
+  if (last > 1 && last < 5) return t("editor.treeView.nestedBlocks2");
+  return t("editor.treeView.nestedBlocks");
 }
 
 function escapeText(value) {

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "./ProjectPostHeading.js?v=1.5.9";
 
@@ -63,7 +64,7 @@ export class ProjectGraphReconciler {
   }
 
   reconcile(projectId) {
-    if (!projectId) return Promise.reject(new Error("Project id is required"));
+    if (!projectId) return Promise.reject(new Error(t("project.common.projectIdRequired")));
     if (this.running.has(projectId)) {
       this.resync.add(projectId);
       return this.running.get(projectId);
@@ -168,7 +169,7 @@ export function reconcileProjectDraft(project, { changedPostIds = null } = {}) {
         props: {
           targetMapId: mapId,
           targetSlotId: slotId || null,
-          text: "Назад",
+          text: t("core.propertyRegistry.back"),
           managedByMap: true
         },
         children: []

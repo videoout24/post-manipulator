@@ -12,11 +12,11 @@ assert.match(view, /if \(progress\) this\.show\(progress\[0\], \{ message: progr
 assert.match(view, /aria-busy/);
 assert.match(view, /role", "status"/);
 assert.match(view, /BLOCKED_INIT_DATA_TIME_INVALID/);
-assert.match(view, /автоматическую синхронизацию даты, времени и часового пояса/);
+assert.match(view, /t\("security\.securityGateView\.checkAutomaticSynchronizationOfDateTimeAnd"\)/);
 assert.match(view, /DEVICE_TIME_HINT_STATES\.has\(state\)/);
-assert.match(view, /Время открытия уже зафиксировано/);
+assert.match(view, /t\("security\.securityGateView\.launchDataIsCheckedWithinA30"\)/);
 assert.match(view, /LAUNCH_WINDOW_HINT_STATES\.has\(state\)/);
-assert.match(html, /30-секундном окне[\s\S]*?без спешки/);
+assert.match(html, /data-i18n="html\.launchWindowHint"/);
 assert.match(config, /botApiTimeoutMs: 30_000/);
 assert.match(css, /\.security-gate-spinner \{/);
 assert.match(css, /@keyframes security-gate-spin/);

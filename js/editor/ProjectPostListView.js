@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.7.12";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "../project/ProjectPublicationEligibility.js?v=1.5.9";
@@ -24,8 +25,8 @@ export function createProjectPostListView({
   const head = el("div", "project-panel-head");
   const titleWrap = el("div", "project-panel-heading");
   const posts = project?.posts || [];
-  titleWrap.append(el("strong", "", project?.title || "Project"), el("span", "", `${posts.length} пост${plural(posts.length)}`));
-  const close = button("×", "Закрыть проект", () => onClose?.());
+  titleWrap.append(el("strong", "", project?.title || t("project.projectLibraryView.project")), el("span", "", t("editor.projectPostListView.post", { 0: posts.length, 1: plural(posts.length) })));
+  const close = button("×", t("editor.projectPostListView.closeProject"), () => onClose?.());
   close.className = "project-panel-close";
   head.append(titleWrap, close);
 
@@ -37,10 +38,10 @@ export function createProjectPostListView({
     let card = null;
     const cardActions = [
       createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }),
-      button("✎", "Переименовать", () => showRenameEditor(card, post, onRename))
+      button("✎", t("editor.projectPostListView.rename"), () => showRenameEditor(card, post, onRename))
     ];
-    const remove = button("🗑", "Удалить пост", () => showCardDeleteConfirmation(card, {
-      message: `Удалить «${post.title || "Пост"}» из проекта?`,
+    const remove = button("🗑", t("editor.projectPostListView.deletePost"), () => showCardDeleteConfirmation(card, {
+      message: t("editor.projectPostListView.deleteFromProject", { 0: post.title || t("editor.blockInspector.post") }),
       onConfirm: () => onDelete?.(post)
     }));
     remove.classList.add("danger-soft");
@@ -48,10 +49,10 @@ export function createProjectPostListView({
     const isPublished = post?.publication?.state === "published" || Boolean(post?.deployments?.production?.messageId);
     remove.disabled = isRoot || isPublished || !onDelete;
     remove.title = isRoot
-      ? "Стартовый пост содержит карту и удаляется только вместе с проектом"
+      ? t("editor.projectPostListView.theStartingPostContainsAMapAnd")
       : isPublished
-        ? "Сначала удалите публикацию поста"
-        : "Удалить пост из проекта";
+        ? t("editor.projectPostListView.firstDeleteThePostPublication")
+        : t("editor.projectPostListView.deletePostFromProject");
     cardActions.push(remove);
     card = createProjectPostCard({
       post,
@@ -81,7 +82,7 @@ function linkTargetForProjectPost(project, post) {
     id: `${project.id}:${post.id}`,
     projectId: project.id,
     postId: post.id,
-    title: post.title || "Пост проекта"
+    title: post.title || t("editor.projectPostListView.projectPost")
   };
 }
 
@@ -105,11 +106,11 @@ function showRenameEditor(card, post, onRename) {
   input.className = "project-post-rename-input";
   input.type = "text";
   input.value = String(post?.title || "");
-  input.placeholder = "Название поста";
-  input.setAttribute("aria-label", "Название поста");
+  input.placeholder = t("editor.projectPostListView.postTitle");
+  input.setAttribute("aria-label", t("editor.projectPostListView.postTitle"));
   const actions = el("div", "project-post-card-overlay-actions");
-  const cancel = button("Отмена", "Отменить переименование", () => overlay.remove());
-  const save = button("Сохранить", "Сохранить название поста", async () => {
+  const cancel = button(t("core.cardDeleteConfirmation.cancel"), t("editor.draftListView.cancelRenaming"), () => overlay.remove());
+  const save = button(t("core.darkDialog.save"), t("editor.projectPostListView.savePostTitle"), async () => {
     const title = input.value.trim();
     if (!title) {
       input.classList.add("invalid");
@@ -149,10 +150,10 @@ function showRenameEditor(card, post, onRename) {
 function plural(count) {
   const n = Math.abs(Number(count) || 0) % 100;
   const n1 = n % 10;
-  if (n > 10 && n < 20) return "ов";
-  if (n1 > 1 && n1 < 5) return "а";
+  if (n > 10 && n < 20) return t("editor.projectPostListView.ov");
+  if (n1 > 1 && n1 < 5) return t("editor.projectPostListView.a");
   if (n1 === 1) return "";
-  return "ов";
+  return t("editor.projectPostListView.ov");
 }
 
 function button(text, title, handler) {

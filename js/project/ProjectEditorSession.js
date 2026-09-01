@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import {
   createEmptyDocumentAst,
   getProjectRootMap,
@@ -92,7 +93,7 @@ export class ProjectEditorSession {
   }
 
   async openProject(projectId, { postId = null, preserveScratch = false, reason = "project-opened" } = {}) {
-    if (!projectId) throw new Error("Project id is required");
+    if (!projectId) throw new Error(t("project.common.projectIdRequired"));
     if (this.activeProjectId === projectId && this.project) {
       const target = postId || this.activePostId || this.project.posts?.[0]?.id || null;
       if (target && target !== this.activePostId) await this.openPost(target);
@@ -110,7 +111,7 @@ export class ProjectEditorSession {
     });
 
     const project = await this.store.getProject(projectId);
-    if (!project) throw new Error(`Project not found: ${projectId}`);
+    if (!project) throw new Error(t("project.common.projectNotFound", { 0: projectId }));
 
     this.project = project;
     this.activeProjectId = project.id;
@@ -151,13 +152,13 @@ export class ProjectEditorSession {
   }
 
   async openPost(postId) {
-    if (!this.activeProjectId) throw new Error("Project is not active");
+    if (!this.activeProjectId) throw new Error(t("project.common.projectNotActive"));
     if (postId === this.activePostId) return this.snapshot();
     await this.flush();
     const project = await this.store.getProject(this.activeProjectId);
-    if (!project) throw new Error(`Project not found: ${this.activeProjectId}`);
+    if (!project) throw new Error(t("project.common.projectNotFound", { 0: this.activeProjectId }));
     const post = project.posts.find(item => item.id === postId);
-    if (!post) throw new Error(`Project post not found: ${postId}`);
+    if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
     this.project = project;
     this.activePostId = post.id;
     this.#replaceTree(post.messageAst);
@@ -216,7 +217,7 @@ export class ProjectEditorSession {
   }
 
   async createPost(title = "") {
-    if (!this.activeProjectId) throw new Error("Project is not active");
+    if (!this.activeProjectId) throw new Error(t("project.common.projectNotActive"));
     await this.flush();
     const { project, post } = await this.store.createPost(this.activeProjectId, { title });
     this.project = project;
@@ -229,16 +230,16 @@ export class ProjectEditorSession {
 
   async createPostFromMapSlot(title = "") {
     if (!this.activeProjectId || !isLinearProject(this.project)) {
-      throw new Error("Посты структурированного проекта создаются только из карты проекта");
+      throw new Error(t("project.projectEditorSession.structuredProjectPostsAreOnlyCreatedFrom"));
     }
     const rootMap = getProjectRootMap(this.project);
     if (!rootMap || String(this.activePostId) !== String(this.project.structure?.rootPostId)) {
-      throw new Error("Новый пост можно добавить только из карты стартового поста");
+      throw new Error(t("project.projectEditorSession.aNewPostCanOnlyBeAdded"));
     }
     await this.flush();
     const nextNumber = (this.project.posts?.length || 0) + 1;
     const { project, post } = await this.store.createPost(this.activeProjectId, {
-      title: String(title || "").trim() || `Пост ${nextNumber}`
+      title: String(title || "").trim() || t("editor.blockInspector.post2", { 0: nextNumber })
     });
     this.project = project;
     // Adding a slot is an action in the Map, so keep the user in the start post
@@ -250,7 +251,7 @@ export class ProjectEditorSession {
   }
 
   async movePostInMap(postId, direction) {
-    if (!this.activeProjectId || !isLinearProject(this.project)) throw new Error("Карта проекта недоступна");
+    if (!this.activeProjectId || !isLinearProject(this.project)) throw new Error(t("project.projectEditorSession.projectMapUnavailable"));
     await this.flush();
     this.project = await this.store.movePost(this.activeProjectId, postId, direction);
     const active = this.project.posts?.find(post => String(post.id) === String(this.activePostId));
@@ -262,7 +263,7 @@ export class ProjectEditorSession {
   }
 
   async renamePost(postId, title) {
-    if (!this.activeProjectId) throw new Error("Project is not active");
+    if (!this.activeProjectId) throw new Error(t("project.common.projectNotActive"));
     await this.flush();
     this.project = await this.store.renamePost(this.activeProjectId, postId, title);
     const active = this.project.posts.find(post => post.id === this.activePostId);
@@ -272,19 +273,19 @@ export class ProjectEditorSession {
   }
 
   async deletePost(postId) {
-    if (!this.activeProjectId) throw new Error("Project is not active");
+    if (!this.activeProjectId) throw new Error(t("project.common.projectNotActive"));
     await this.flush();
     const current = await this.store.getProject(this.activeProjectId);
-    if (!current) throw new Error(`Project not found: ${this.activeProjectId}`);
+    if (!current) throw new Error(t("project.common.projectNotFound", { 0: this.activeProjectId }));
     if (isLinearProject(current)) {
       if (String(postId) === String(current.structure?.rootPostId)) {
         await this.store.deletePost(this.activeProjectId, postId);
         return this.closeProject({ reason: "project-deleted" });
       }
     }
-    if (current.posts.length <= 1) throw new Error("В проекте должен остаться хотя бы один пост");
+    if (current.posts.length <= 1) throw new Error(t("project.projectEditorSession.theProjectMustHaveAtLeastOne"));
     const index = current.posts.findIndex(post => post.id === postId);
-    if (index < 0) throw new Error(`Project post not found: ${postId}`);
+    if (index < 0) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
     const nextCandidate = current.posts[index + 1] || current.posts[index - 1];
     this.project = await this.store.deletePost(this.activeProjectId, postId);
     if (this.activePostId === postId) {
@@ -304,12 +305,12 @@ export class ProjectEditorSession {
 
   async rebindBacklinkRelation(backlinkNodeId, { targetMapId, targetSlotId } = {}) {
     if (isLinearProject(this.project)) {
-      throw new Error("«Назад к карте» всегда ведёт к единственной карте проекта и не перепривязывается");
+      throw new Error(t("project.projectEditorSession.backToMapAlwaysLeadsToThe"));
     }
-    if (!this.activeProjectId || !this.activePostId) throw new Error("Back to Map требует активный Project post");
+    if (!this.activeProjectId || !this.activePostId) throw new Error(t("editor.blockInspector.backToMapRequiresAnActiveProject2"));
     const nextMapId = cleanId(targetMapId);
     const nextSlotId = cleanId(targetSlotId);
-    if (!nextMapId || !nextSlotId) throw new Error("Выберите целевую Map и Slot");
+    if (!nextMapId || !nextSlotId) throw new Error(t("project.projectEditorSession.selectATargetMapAndSlot"));
 
     await this.flush();
     const projectId = this.activeProjectId;
@@ -318,24 +319,24 @@ export class ProjectEditorSession {
 
     const project = await this.store.updateProject(projectId, draft => {
       const activePost = draft.posts?.find(post => String(post.id) === String(activePostId));
-      if (!activePost) throw new Error(`Project post not found: ${activePostId}`);
+      if (!activePost) throw new Error(t("project.common.projectPostNotFound", { 0: activePostId }));
       const backlink = findAstNode(activePost.messageAst, backlinkNodeId);
-      if (!backlink || backlink.type !== "project_map_backlink") throw new Error("Back to Map block not found");
+      if (!backlink || backlink.type !== "project_map_backlink") throw new Error(t("project.common.backToMapBlockNotFound"));
 
       const oldMapId = cleanId(backlink.props?.targetMapId);
       const oldSlotId = cleanId(backlink.props?.targetSlotId);
       const maps = collectProjectMaps(draft);
       const nextMap = maps.find(item => item.mapId === nextMapId);
-      if (!nextMap) throw new Error("Целевая Map не найдена");
-      if (String(nextMap.hostPostId) === String(activePostId)) throw new Error("Map не может ссылаться на собственный пост-контейнер");
+      if (!nextMap) throw new Error(t("project.projectEditorSession.targetMapNotFound"));
+      if (String(nextMap.hostPostId) === String(activePostId)) throw new Error(t("project.projectEditorSession.mapCannotReferenceItsOwnPostContainer"));
 
       const duplicateBacklink = findBacklinkToMap(activePost.messageAst, nextMapId, backlinkNodeId);
-      if (duplicateBacklink) throw new Error("В этом посте уже есть Back to Map на выбранную Map");
+      if (duplicateBacklink) throw new Error(t("project.projectEditorSession.thisPostAlreadyHasABackTo"));
 
       const nextSlot = nextMap.slots.find(slot => cleanId(slot?.id) === nextSlotId);
-      if (!nextSlot) throw new Error("Целевой Slot не найден");
+      if (!nextSlot) throw new Error(t("project.projectEditorSession.targetSlotNotFound"));
       const occupiedBy = cleanId(nextSlot.targetPostId);
-      if (occupiedBy && occupiedBy !== String(activePostId)) throw new Error("Выбранный Slot уже занят другим постом");
+      if (occupiedBy && occupiedBy !== String(activePostId)) throw new Error(t("project.projectEditorSession.theSelectedSlotIsAlreadyOccupiedBy"));
 
       const oldMap = oldMapId ? maps.find(item => item.mapId === oldMapId) : null;
       const oldSlot = oldMap

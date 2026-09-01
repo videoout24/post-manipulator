@@ -1,8 +1,9 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 const CLOUD_STORAGE_KEY = /^[A-Za-z0-9_-]{1,128}$/;
 const MAX_CLOUD_STORAGE_VALUE_LENGTH = 4096;
 
 export class CloudStorageError extends Error {
-  constructor(code, message = "Облачное хранилище Telegram недоступно", { cause = null } = {}) {
+  constructor(code, message = t("security.cloudStorageAdapter.telegramCloudStorageIsUnavailable"), { cause = null } = {}) {
     super(message, cause ? { cause } : undefined);
     this.name = "CloudStorageError";
     this.code = code;
@@ -24,7 +25,7 @@ export class CloudStorageAdapter {
     // necessary nor part of the minimum bridge contract for this flow.
     for (const name of ["getItem", "setItem", "removeItem"]) {
       if (typeof storage?.[name] !== "function") {
-        throw new CloudStorageError("UNSUPPORTED", "Telegram CloudStorage не поддерживается этим клиентом");
+        throw new CloudStorageError("UNSUPPORTED", t("security.cloudStorageAdapter.telegramCloudStorageIsNotSupportedByThis"));
       }
     }
     return storage;
@@ -45,29 +46,29 @@ export class CloudStorageAdapter {
     assertKey(key);
     const stringValue = String(value);
     if (stringValue.length > MAX_CLOUD_STORAGE_VALUE_LENGTH) {
-      throw new CloudStorageError("VALUE_TOO_LARGE", "Зашифрованная запись превышает лимит Telegram CloudStorage");
+      throw new CloudStorageError("VALUE_TOO_LARGE", t("security.cloudStorageAdapter.encryptedEntryExceedsTheTelegramCloudStorageLimit"));
     }
     const [stored] = await this.#invoke("setItem", [key, stringValue]);
-    if (stored !== true) throw new CloudStorageError("WRITE_FAILED", "Telegram не подтвердил запись в облачное хранилище");
+    if (stored !== true) throw new CloudStorageError("WRITE_FAILED", t("security.cloudStorageAdapter.telegramDidNotConfirmTheCloudStorage"));
     return true;
   }
 
   async removeItem(key) {
     assertKey(key);
     const [removed] = await this.#invoke("removeItem", [key]);
-    if (removed !== true) throw new CloudStorageError("REMOVE_FAILED", "Telegram не подтвердил удаление записи из облачного хранилища");
+    if (removed !== true) throw new CloudStorageError("REMOVE_FAILED", t("security.cloudStorageAdapter.telegramDidNotConfirmTheDeletionOf"));
     return true;
   }
 
   async getKeys() {
     const [keys] = await this.#invoke("getKeys", []);
-    if (!Array.isArray(keys)) throw new CloudStorageError("READ_FAILED", "Telegram вернул некорректный список ключей CloudStorage");
+    if (!Array.isArray(keys)) throw new CloudStorageError("READ_FAILED", t("security.cloudStorageAdapter.telegramReturnedAnIncorrectCloudStorageKeyList"));
     return keys.map(key => String(key));
   }
 
   #invoke(method, args) {
     if (typeof this.storage?.[method] !== "function") {
-      return Promise.reject(new CloudStorageError("UNSUPPORTED", "Telegram CloudStorage не поддерживается этим клиентом"));
+      return Promise.reject(new CloudStorageError("UNSUPPORTED", t("security.cloudStorageAdapter.telegramCloudStorageIsNotSupportedByThis")));
     }
     return new Promise((resolve, reject) => {
       let settled = false;
@@ -78,7 +79,7 @@ export class CloudStorageAdapter {
         callback(value);
       };
       const timeout = this.timer.setTimeout?.(() => finish(reject)(
-        new CloudStorageError("TIMEOUT", "Telegram CloudStorage не ответил вовремя")
+        new CloudStorageError("TIMEOUT", t("security.cloudStorageAdapter.telegramCloudStorageDidNotRespondInTime"))
       ), this.timeoutMs);
       const callback = (error, ...result) => {
         if (error) {
@@ -95,7 +96,7 @@ export class CloudStorageAdapter {
 
 function assertKey(key) {
   if (typeof key !== "string" || !CLOUD_STORAGE_KEY.test(key)) {
-    throw new CloudStorageError("KEY_INVALID", "Недопустимый ключ Telegram CloudStorage");
+    throw new CloudStorageError("KEY_INVALID", t("security.cloudStorageAdapter.invalidTelegramCloudStorageKey"));
   }
 }
 
@@ -104,6 +105,6 @@ function normalizeTelegramStorageError(error) {
   const raw = typeof error === "string" ? error : error?.error || error?.message || String(error || "");
   const code = /UNSUPPORTED/i.test(raw) ? "UNSUPPORTED" : /CANCEL/i.test(raw) ? "CANCELLED" : "BRIDGE_ERROR";
   return new CloudStorageError(code, code === "UNSUPPORTED"
-    ? "Telegram CloudStorage не поддерживается этим клиентом"
-    : "Ошибка Telegram CloudStorage", { cause: error });
+    ? t("security.cloudStorageAdapter.telegramCloudStorageIsNotSupportedByThis")
+    : t("security.cloudStorageAdapter.telegramCloudStorageError"), { cause: error });
 }

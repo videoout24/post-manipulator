@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { TelegramApiError } from "../telegram/TelegramClient.js?v=1.5.9";
 import { BotIdentityMismatchError, BotIdentityProbeTimeoutError } from "../telegram/BotIdentityService.js?v=1.5.9";
 import { DatabaseStateInspector, MINI_APP_USER_IDENTITY_KEY, PUBLISHER_BOT_IDENTITY_KEY } from "../storage/DatabaseStateInspector.js?v=1.5.9";
@@ -45,7 +46,7 @@ export class AuthBootstrapController {
       protectedToken = await this.cloudStorage.getItem(TOKEN_STORAGE_KEY);
     }
     catch (error) {
-      throw new AuthBootstrapError("CLOUD_STORAGE_READING", "Не удалось найти защищённый token в CloudStorage", { cause: error });
+      throw new AuthBootstrapError("CLOUD_STORAGE_READING", t("security.authBootstrapController.failedToFindProtectedTokenInCloudStorage"), { cause: error });
     }
 
     // Telegram scopes CloudStorage by bot and user. The fixed key therefore
@@ -88,7 +89,7 @@ export class AuthBootstrapController {
       const storageKey = TOKEN_STORAGE_KEY;
       let record;
       try { record = await this.cloudStorage.getItem(storageKey); }
-      catch (error) { throw new AuthBootstrapError("CLOUD_STORAGE_READING", "Не удалось прочитать зашифрованную запись из CloudStorage", { cause: error }); }
+      catch (error) { throw new AuthBootstrapError("CLOUD_STORAGE_READING", t("security.authBootstrapController.failedToReadEncryptedRecordFromCloudStorage"), { cause: error }); }
       if (!record) return this.transition("RECOVERY_PASSWORD", { reason: "record_not_found" });
 
       let token;
@@ -100,7 +101,7 @@ export class AuthBootstrapController {
 
   async beginRecovery({ password, confirmation }) {
     return this.exclusive(async () => {
-      if (!["cloud-locked", "bound"].includes(this.profile?.kind)) throw new AuthBootstrapError("INVALID_STATE", "Восстановление сейчас недоступно");
+      if (!["cloud-locked", "bound"].includes(this.profile?.kind)) throw new AuthBootstrapError("INVALID_STATE", t("security.authBootstrapController.recoveryCurrentlyUnavailable"));
       this.clearSensitiveState();
       this.password = validateNewPassword(password, confirmation);
       return this.transition("RECOVERY_TOKEN", { expectedBotId: this.profile.botId || null });
@@ -173,27 +174,27 @@ export class AuthBootstrapController {
     await this.verifySignedLaunch(publisherBotId);
     this.profile = await this.loadBotDatabaseProfile(publisherBotId);
     if (this.profile.kind === "corrupt") {
-      throw new AuthBootstrapError("DATABASE_ERROR", "Привязка IndexedDB выбранного бота повреждена");
+      throw new AuthBootstrapError("DATABASE_ERROR", t("security.authBootstrapController.indexeddbBindingOfTheSelectedBotIs"));
     }
     if (this.profile.kind === "user-mismatch") {
-      throw new AuthBootstrapError("BLOCKED_TELEGRAM_USER_MISMATCH", "Эта локальная база привязана к другому аккаунту Telegram");
+      throw new AuthBootstrapError("BLOCKED_TELEGRAM_USER_MISMATCH", t("security.authBootstrapController.thisLocalDatabaseIsLinkedToAnother"));
     }
     return this.profile;
   }
 
   async loadBotDatabaseProfile(publisherBotId) {
     const botId = validId(publisherBotId);
-    if (!botId) throw new AuthBootstrapError("DATABASE_ERROR", "Некорректный Bot ID локальной базы");
+    if (!botId) throw new AuthBootstrapError("DATABASE_ERROR", t("security.authBootstrapController.incorrectBotIDOfTheLocalDatabase"));
     let profile;
     try {
       if (typeof this.db?.selectBot === "function") await this.db.selectBot(botId);
       profile = await this.inspector.inspect(this.telegramUserId || null);
     } catch (error) {
       if (error instanceof AuthBootstrapError) throw error;
-      throw new AuthBootstrapError("DATABASE_ERROR", "Не удалось открыть IndexedDB выбранного бота", { cause: error });
+      throw new AuthBootstrapError("DATABASE_ERROR", t("security.authBootstrapController.failedToOpenIndexedDBOfTheSelected"), { cause: error });
     }
     if (profile.botId && Number(profile.botId) !== botId) {
-      throw new AuthBootstrapError("DATABASE_ERROR", "IndexedDB содержит привязку другого бота");
+      throw new AuthBootstrapError("DATABASE_ERROR", t("security.authBootstrapController.indexeddbContainsABindingOfAnotherBot"));
     }
     return profile;
   }
@@ -227,14 +228,14 @@ export class AuthBootstrapController {
         await this.db.put("bindings", MINI_APP_USER_IDENTITY_KEY, { id: this.telegramUserId });
         const storedUser = await this.db.get("bindings", MINI_APP_USER_IDENTITY_KEY, null);
         if (Number(storedUser?.id) !== Number(this.telegramUserId)) {
-          throw new Error("Локальная привязка пользователя не прошла проверку чтением");
+          throw new Error(t("security.authBootstrapController.localUserBindingFailedVerificationByReading"));
         }
         this.userIdentityWritten = true;
       }
       if (!this.profile?.botId) await this.botIdentityService.adoptVerifiedBot(verifiedBot, { source });
       const storedBot = await this.db.get("bindings", PUBLISHER_BOT_IDENTITY_KEY, null);
       if (Number(storedBot?.id) !== Number(verifiedBot.id)) {
-        throw new Error("Локальная привязка бота не прошла проверку чтением");
+        throw new Error(t("security.authBootstrapController.localBotBindingFailedVerificationByReading"));
       }
       console.info("[Post Manipulator] Local identity binding saved", {
         userId: this.telegramUserId,
@@ -260,7 +261,7 @@ export class AuthBootstrapController {
         await this.db.delete("bindings", PUBLISHER_BOT_IDENTITY_KEY).catch(() => {});
       }
       this.userIdentityWritten = false;
-      throw new AuthBootstrapError("CLOUD_STORAGE_WRITE_ERROR", "Не удалось сохранить зашифрованный token в CloudStorage. Приложение не запущено.", { cause: error });
+      throw new AuthBootstrapError("CLOUD_STORAGE_WRITE_ERROR", t("security.authBootstrapController.failedToSaveEncryptedTokenToCloudStorage"), { cause: error });
     } finally {
       container = "";
       previousContainer = null;
@@ -270,18 +271,18 @@ export class AuthBootstrapController {
   async inspectToken(token) {
     try {
       const bot = await this.botIdentityService.inspectToken(token, { timeoutMs: this.botIdentityService.timeoutMs });
-      if (!bot?.id || bot?.is_bot !== true) throw new Error("Telegram getMe не подтвердил бота");
+      if (!bot?.id || bot?.is_bot !== true) throw new Error(t("security.authBootstrapController.telegramGetMeDidNotConfirmTheBot"));
       return scrubBot(bot);
     } catch (error) {
-      if (error instanceof BotIdentityMismatchError) throw new AuthBootstrapError("TOKEN_BOT_MISMATCH", "Этот token принадлежит другому боту", { cause: error });
-      if (error instanceof TelegramApiError && error.isAuthError()) throw new AuthBootstrapError("TOKEN_REVOKED", "Token отозван или недействителен", { cause: error });
+      if (error instanceof BotIdentityMismatchError) throw new AuthBootstrapError("TOKEN_BOT_MISMATCH", t("security.authBootstrapController.thisTokenBelongsToAnotherBot"), { cause: error });
+      if (error instanceof TelegramApiError && error.isAuthError()) throw new AuthBootstrapError("TOKEN_REVOKED", t("security.authBootstrapController.tokenRevokedOrInvalid"), { cause: error });
       if (error instanceof BotIdentityProbeTimeoutError) {
-        throw new AuthBootstrapError("TOKEN_NETWORK_ERROR", "Telegram не ответил при проверке token. Повторите попытку.", { cause: error });
+        throw new AuthBootstrapError("TOKEN_NETWORK_ERROR", t("security.authBootstrapController.telegramDidNotRespondWhenCheckingThe"), { cause: error });
       }
       if (error instanceof TelegramApiError && !error.errorCode) {
-        throw new AuthBootstrapError("TOKEN_NETWORK_ERROR", "Не удалось проверить token: проверьте сеть и повторите попытку", { cause: error });
+        throw new AuthBootstrapError("TOKEN_NETWORK_ERROR", t("security.authBootstrapController.failedToVerifyTokenCheckTheNetwork"), { cause: error });
       }
-      throw new AuthBootstrapError("TOKEN_INVALID", "Telegram не принял этот token", { cause: error });
+      throw new AuthBootstrapError("TOKEN_INVALID", t("security.authBootstrapController.telegramDidNotAcceptThisToken"), { cause: error });
     }
   }
 
@@ -296,7 +297,7 @@ export class AuthBootstrapController {
         cryptoApi: this.cryptoApi
       });
       if (this.profile?.userId && Number(this.profile.userId) !== Number(verified.telegramUserId)) {
-        throw new AuthBootstrapError("BLOCKED_TELEGRAM_USER_MISMATCH", "Эта локальная база привязана к другому аккаунту Telegram");
+        throw new AuthBootstrapError("BLOCKED_TELEGRAM_USER_MISMATCH", t("security.authBootstrapController.thisLocalDatabaseIsLinkedToAnother"));
       }
       this.telegramUserId = validId(verified.telegramUserId);
       this.authDate = Number(verified.authDate) || 0;
@@ -309,11 +310,11 @@ export class AuthBootstrapController {
   }
 
   transition(state, extra = {}) { this.state = state; return Object.freeze({ state, ...extra }); }
-  requireTelegramUser() { if (!this.telegramUserId) throw new AuthBootstrapError("TELEGRAM_USER_INVALID", "Telegram не подтвердил пользователя"); }
-  requirePassword() { if (!this.password) throw new AuthBootstrapError("PASSWORD_REQUIRED", "Сначала введите пароль"); }
-  ensureProfile(kinds) { if (!kinds.includes(this.profile?.kind)) throw new AuthBootstrapError("INVALID_STATE", "Недопустимое состояние авторизации"); }
+  requireTelegramUser() { if (!this.telegramUserId) throw new AuthBootstrapError("TELEGRAM_USER_INVALID", t("security.authBootstrapController.telegramDidNotConfirmTheUser")); }
+  requirePassword() { if (!this.password) throw new AuthBootstrapError("PASSWORD_REQUIRED", t("security.authBootstrapController.enterThePasswordFirst")); }
+  ensureProfile(kinds) { if (!kinds.includes(this.profile?.kind)) throw new AuthBootstrapError("INVALID_STATE", t("security.authBootstrapController.invalidAuthorizationState")); }
   async exclusive(operation) {
-    if (this.busy) throw new AuthBootstrapError("BUSY", "Операция уже выполняется");
+    if (this.busy) throw new AuthBootstrapError("BUSY", t("security.authBootstrapController.operationAlreadyInProgress"));
     this.busy = true;
     try { return await operation(); }
     finally { this.busy = false; }
@@ -328,7 +329,7 @@ function scrubBot(bot) { return Object.freeze({ id: Number(bot.id), username: St
 
 function mapInitDataError(error) {
   if (!(error instanceof InitDataVerificationError)) {
-    return new AuthBootstrapError("BLOCKED_INIT_DATA_INVALID", "Telegram не подтвердил безопасный запуск приложения", { cause: error });
+    return new AuthBootstrapError("BLOCKED_INIT_DATA_INVALID", t("security.authBootstrapController.telegramDidNotConfirmASafeLaunch"), { cause: error });
   }
   const code = {
     INIT_DATA_MISSING: "BLOCKED_INIT_DATA_MISSING",
@@ -338,11 +339,11 @@ function mapInitDataError(error) {
     CRYPTO_UNAVAILABLE: "BLOCKED_CRYPTO_UNSUPPORTED"
   }[error.code] || "BLOCKED_INIT_DATA_INVALID";
   const message = code === "BLOCKED_INIT_DATA_EXPIRED"
-    ? "Срок безопасного запуска истёк. Закройте и заново откройте Mini App."
+    ? t("security.authBootstrapController.theSafeLaunchPeriodHasExpiredClose")
     : code === "BLOCKED_INIT_DATA_TIME_INVALID"
-      ? "Системные часы отстают от времени запуска Telegram."
+      ? t("security.authBootstrapController.theSystemClockIsBehindTheTelegram")
     : code === "BLOCKED_CRYPTO_UNSUPPORTED"
-        ? "Этот Telegram-клиент не поддерживает нужную криптографию"
-        : "Telegram не подтвердил безопасный запуск приложения";
+        ? t("security.authBootstrapController.thisTelegramClientDoesNotSupportThe")
+        : t("security.authBootstrapController.telegramDidNotConfirmASafeLaunch");
   return new AuthBootstrapError(code, message, { cause: error });
 }

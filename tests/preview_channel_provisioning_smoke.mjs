@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js?v=1.5.9";
 import { PreviewChannelBindingService } from "../js/telegram/PreviewChannelBindingService.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const values = new Map([
   ["bindings:previewChannel", { status: "empty" }],
@@ -50,7 +51,7 @@ assert.equal((await service.getSlot()).status, "bound");
 assert.deepEqual(calls.map(call => call[0]), ["delete", "send", "pin"]);
 assert.equal(calls[1][1].chatId, -1001234567890);
 assert.deepEqual(calls[1][1].richMessage, {
-  blocks: [{ type: "paragraph", text: "Предпросмотр текущего сообщения появится здесь после включения синхронизации." }]
+  blocks: [{ type: "paragraph", text: t("telegram.previewChannelBindingService.thePreviewOfTheCurrentMessageWill") }]
 });
 assert.equal(calls[2][2], 55);
 assert.deepEqual(await db.get("preview", "liveMessage"), {

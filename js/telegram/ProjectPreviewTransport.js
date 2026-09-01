@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import { TelegramApiError } from "./TelegramClient.js?v=1.5.9";
 
 /*
@@ -18,19 +19,19 @@ export class ProjectPreviewTransport {
     const slot = await this.previewChannelBinding.getSlot();
     if (slot?.status !== "bound") {
       const reason = slot?.status === "unavailable"
-        ? `Канал предпросмотра недоступен: ${slot.reason || "нет доступа"}`
-        : "Канал предпросмотра проекта не привязан";
+        ? t("telegram.projectPreviewTransport.previewChannelUnavailable", { 0: slot.reason || t("telegram.projectPreviewTransport.noAccess") })
+        : t("telegram.projectPreviewTransport.theProjectPreviewChannelIsNotBound");
       throw new Error(reason);
     }
     return slot;
   }
 
   render(tree) {
-    if (!this.renderer) throw new Error("Rich Message renderer не подключён к Project Preview Transport");
+    if (!this.renderer) throw new Error(t("telegram.projectPreviewTransport.richMessageRendererIsNotConnectedTo"));
     if (this.validator) {
       const errors = this.validator.validate(tree);
       if (errors.length) {
-        const error = new Error(`Rich Message не прошёл валидацию: ${errors.length} ошибок`);
+        const error = new Error(t("telegram.projectPreviewTransport.richMessageDidNotPassValidationErrors", { 0: errors.length }));
         error.validationErrors = errors;
         throw error;
       }

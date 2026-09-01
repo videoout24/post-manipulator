@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 import { BlockRegistry } from "../js/core/BlockRegistry.js?v=1.5.9";
 import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js?v=1.5.9";
 import { createTelegramFormattingRegistry } from "../js/core/FormattingRegistry.js?v=1.5.9";
@@ -19,7 +20,7 @@ assert.equal(blocks[1].type, "expandable_blockquote");
 assert.equal(blocks[1].text, "Скрытая цитата");
 assert.equal("blocks" in blocks[1], false);
 assert.equal(blocks[1].credit, "Автор");
-assert.equal(registry.get("block_quotation").name, "Цитаты");
+assert.equal(registry.get("block_quotation").name, t("blocks.registerCoreBlocks.quotes"));
 assert.equal(registry.get("expandable_block_quotation").paletteHidden, true);
 assert.equal(blocks[2].type, "document");
 assert.equal(blocks[2].document.type, "document");

@@ -3,6 +3,7 @@ import { ProjectStore } from "../js/project/ProjectStore.js?v=1.5.9";
 import { ProjectCompiler } from "../js/project/ProjectCompiler.js?v=1.5.9";
 import { ProjectPublicationService, projectPublicationId } from "../js/project/ProjectPublicationService.js?v=1.5.9";
 import { hasUnappliedProductionChanges } from "../js/project/ProjectPublicationState.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 class MemoryDb {
   constructor() { this.stores = new Map(); }
@@ -107,12 +108,12 @@ assert.equal((await db.get("publications", projectPublicationId(project.id, arti
 
 await assert.rejects(
   service.unpublishPost(project.id, mapPost.id),
-  /Нельзя удалить карту проекта раньше связанных постов/,
+  error => error.message === t("project.projectPublicationService.youCannotDeleteTheProjectMapBefore", { 0: "«Article updated»", 1: "" }),
   "a published Map must remain until its linked posts are unpublished"
 );
 await assert.rejects(
   service.discardPostProjection(project.id, mapPost.id),
-  /Нельзя удалить карту проекта раньше связанных постов/,
+  error => error.message === t("project.projectPublicationService.youCannotDeleteTheProjectMapBefore", { 0: "«Article updated»", 1: "" }),
   "local projection cleanup must not bypass the Map deletion order"
 );
 const mapProjectionId = projectPublicationId(project.id, mapPost.id);
@@ -121,7 +122,7 @@ expiredMapRecord.deleteUntil = Date.now() - 1;
 await db.put("publications", mapProjectionId, expiredMapRecord);
 await assert.rejects(
   service.checkExpiredUnpublish(project.id, mapPost.id),
-  /Нельзя удалить карту проекта раньше связанных постов/,
+  error => error.message === t("project.projectPublicationService.youCannotDeleteTheProjectMapBefore", { 0: "«Article updated»", 1: "" }),
   "expired-publication cleanup must not bypass the Map deletion order"
 );
 expiredMapRecord.deleteUntil = Date.now() + 48 * 60 * 60 * 1000;

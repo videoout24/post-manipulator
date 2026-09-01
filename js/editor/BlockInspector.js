@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js?v=1.8.0";
 import {
   applyRichTextFormat,
   insertRichText,
@@ -123,11 +124,11 @@ export class BlockInspector {
     }
     if (node.type === "preformatted") {
       const binding = this.registry.propertyBindings(def).find(item => item.property === "preformatted.language");
-      this.mountPropertyLabelAccessory(host, "content.text", makeCompactTextControl(node, binding, this.controller, "Язык"));
+      this.mountPropertyLabelAccessory(host, "content.text", makeCompactTextControl(node, binding, this.controller, t("editor.blockInspector.language")));
     }
     if (node.type === "details") {
       const binding = this.registry.propertyBindings(def).find(item => item.property === "details.isOpen");
-      this.mountPropertyLabelAccessory(host, "details.summary", makeCompactCheckbox(node, binding, this.controller, "Открыт"));
+      this.mountPropertyLabelAccessory(host, "details.summary", makeCompactCheckbox(node, binding, this.controller, t("editor.blockInspector.open")));
     }
     if (["text_link", "url_button"].includes(node.type)) {
       const controls = document.createElement("span");
@@ -155,7 +156,7 @@ export class BlockInspector {
     if (!this.root) return;
     this.root.innerHTML = "";
     if (!node) {
-      this.root.innerHTML = '<div class="empty">Выберите блок</div>';
+      this.root.innerHTML = t("editor.blockInspector.selectBlock");
       return;
     }
 
@@ -168,7 +169,7 @@ export class BlockInspector {
     if (!bindings.length) {
       const empty = document.createElement("div");
       empty.className = "empty inspector-empty-properties";
-      empty.textContent = "У блока нет редактируемых свойств";
+      empty.textContent = t("editor.blockInspector.theBlockHasNoEditableProperties");
       this.root.append(empty);
     } else {
       const groups = groupBindings(bindings);
@@ -179,16 +180,16 @@ export class BlockInspector {
 
     const capabilities = document.createElement("div");
     capabilities.className = "inspector-capabilities";
-    capabilities.textContent = `${bindings.length} свойств из общего реестра`;
+    capabilities.textContent = t("editor.blockInspector.propertiesFromTheGeneralRegistry", { 0: bindings.length });
     this.root.append(capabilities);
 
     const actions = document.createElement("div");
     actions.className = "inspector-actions";
     const dup = document.createElement("button");
-    dup.textContent = "Дублировать";
+    dup.textContent = t("editor.blockInspector.duplicate");
     dup.onclick = () => this.controller.duplicateSelected();
     const del = document.createElement("button");
-    del.textContent = "Удалить";
+    del.textContent = t("core.cardDeleteConfirmation.delete");
     del.onclick = () => this.controller.removeSelected();
     actions.append(dup, del);
     this.root.append(actions);
@@ -251,7 +252,7 @@ export class BlockInspector {
     wrap.className = "prop date-time-block-fields";
     const format = document.createElement("select");
     format.className = "date-time-picker-format";
-    format.title = dateTimeFormat.label || "Формат отображения даты и времени";
+    format.title = dateTimeFormat.label || t("editor.blockInspector.dateAndTimeDisplayFormat");
     format.setAttribute("aria-label", format.title);
     for (const option of dateTimeFormat.options || dateTimeFormat.values || []) {
       const value = typeof option === "object" ? option.value : option;
@@ -269,7 +270,7 @@ export class BlockInspector {
 
     wrap.append(createDateTimePicker({
       value: node.props?.[dateTime.key] ?? dateTime.default ?? "",
-      label: dateTime.label || "Дата и время",
+      label: dateTime.label || t("core.propertyRegistry.dateAndTime"),
       disabled: !!dateTime.readOnly,
       accessory: format,
       onChange: value => {
@@ -290,8 +291,8 @@ export class BlockInspector {
       if (typeof value === "string") return value.trim() !== "";
       return value !== undefined && value !== null && value !== false;
     }).length;
-    if (!present) return "не задан";
-    return `${present}/${bindings.length} заполнено`;
+    if (!present) return t("editor.blockInspector.notSet");
+    return t("editor.blockInspector.filled", { 0: present, 1: bindings.length });
   }
 
   renderSharedRichTextProperties(node, bindings) {
@@ -303,15 +304,15 @@ export class BlockInspector {
     const styleHead = document.createElement("div");
     styleHead.className = "shared-rich-style-head";
     const styleTitle = document.createElement("strong");
-    styleTitle.textContent = "Стили";
+    styleTitle.textContent = t("editor.blockInspector.styles");
     const activeLabel = document.createElement("span");
-    activeLabel.textContent = "разверните поле";
+    activeLabel.textContent = t("editor.blockInspector.expandField");
     styleHead.append(styleTitle, activeLabel);
     const toolbar = document.createElement("div");
     toolbar.className = "rich-text-toolbar shared-rich-toolbar";
     const empty = document.createElement("span");
     empty.className = "shared-rich-empty";
-    empty.textContent = "Форматирование применяется к активному полю";
+    empty.textContent = t("editor.blockInspector.formattingAppliesToTheActiveField");
     toolbar.append(empty);
     const configHost = document.createElement("div");
     configHost.className = "format-config-host shared-format-config-host";
@@ -342,7 +343,7 @@ export class BlockInspector {
       label.textContent = binding.label || binding.key;
       const valueHint = document.createElement("span");
       const plain = richTextToPlain(node.props?.[binding.key] ?? binding.default ?? "").trim();
-      valueHint.textContent = plain ? (plain.length > 34 ? `${plain.slice(0, 34)}…` : plain) : "пусто";
+      valueHint.textContent = plain ? (plain.length > 34 ? `${plain.slice(0, 34)}…` : plain) : t("editor.blockInspector.empty");
       summary.append(label, valueHint);
       panel.append(summary);
 
@@ -355,7 +356,7 @@ export class BlockInspector {
         onChange: next => {
           this.controller.updateNodeProperty(node.id, binding.key, next, { inspectorSource: true });
           const nextPlain = richTextToPlain(next ?? "").trim();
-          valueHint.textContent = nextPlain ? (nextPlain.length > 34 ? `${nextPlain.slice(0, 34)}…` : nextPlain) : "пусто";
+          valueHint.textContent = nextPlain ? (nextPlain.length > 34 ? `${nextPlain.slice(0, 34)}…` : nextPlain) : t("editor.blockInspector.empty");
         },
         hideToolbar: true,
         onActivate: state => activate(state, binding, panel),
@@ -392,7 +393,7 @@ export class BlockInspector {
       const id = document.createElement("code");
       id.className = "property-id";
       id.textContent = schema.property;
-      id.title = "ID свойства в общем PropertyRegistry";
+      id.title = t("editor.blockInspector.propertyIDInTheGeneralPropertyRegistry");
       labelRow.append(id);
     }
     wrap.append(labelRow);
@@ -431,7 +432,7 @@ export class BlockInspector {
     fallback.append(this.makeJsonEditor({ ...ctx, editor: "json" }));
     const note = document.createElement("div");
     note.className = "hint";
-    note.textContent = `Неизвестный editor: ${editor}. Использован универсальный JSON fallback.`;
+    note.textContent = t("editor.blockInspector.unknownEditorUniversalJSONFallbackUsed", { 0: editor });
     fallback.append(note);
     return fallback;
   }
@@ -470,12 +471,12 @@ export class BlockInspector {
       fields.className = "project-map-slot-fields";
       const text = document.createElement("input");
       text.type = "text";
-      text.placeholder = "Название пункта";
+      text.placeholder = t("editor.blockInspector.itemName");
       text.value = slot?.text || "";
       text.readOnly = Boolean(slot?.targetPostId);
       text.title = slot?.targetPostId
-        ? "Текст связан с первым Heading целевого поста и обновляется автоматически"
-        : "Для пустого слота можно задать временный текст; после привязки он будет заменён Heading поста";
+        ? t("editor.blockInspector.textIsLinkedToTheFirstHeading")
+        : t("editor.blockInspector.forAnEmptySlotTemporaryTextCan");
       text.addEventListener("input", () => {
         current[index].text = text.value;
         commit(current);
@@ -484,7 +485,7 @@ export class BlockInspector {
       const target = document.createElement("select");
       const empty = document.createElement("option");
       empty.value = "";
-      empty.textContent = "▫️ Не связан";
+      empty.textContent = t("editor.blockInspector.notLinked");
       target.append(empty);
       const state = this.projectContext?.snapshot?.() || {};
       const activePostId = state.activePostId || null;
@@ -524,7 +525,7 @@ export class BlockInspector {
       const remove = document.createElement("button");
       remove.type = "button";
       remove.textContent = "×";
-      remove.title = "Удалить слот";
+      remove.title = t("editor.blockInspector.deleteSlot");
       remove.addEventListener("click", () => {
         current.splice(index, 1);
         commit(current, { structural: true });
@@ -536,7 +537,7 @@ export class BlockInspector {
     const add = document.createElement("button");
     add.type = "button";
     add.className = "project-map-slot-add";
-    add.textContent = "+ Слот";
+    add.textContent = t("editor.blockInspector.slot");
     add.addEventListener("click", () => {
       current.push({ id: `slot_${randomUUID()}`, targetPostId: null, text: "" });
       commit(current, { structural: true });
@@ -545,7 +546,7 @@ export class BlockInspector {
     if (!current.length) {
       const empty = document.createElement("div");
       empty.className = "project-map-slots-empty";
-      empty.textContent = "Map может быть пустой. Добавьте слот, когда понадобится связь с постом.";
+      empty.textContent = t("editor.blockInspector.mapCanBeEmptyAddASlot");
       list.append(empty);
     }
     wrap.append(list, add);
@@ -571,19 +572,19 @@ export class BlockInspector {
       const label = document.createElement("input");
       label.type = "text";
       label.className = "project-map-slot-fixed-title";
-      label.value = post?.title || slot?.text || "Пост";
-      label.title = "Название синхронизировано с обязательным заголовком этого поста";
-      label.setAttribute("aria-label", `Название поста ${index + 1}`);
+      label.value = post?.title || slot?.text || t("editor.blockInspector.post");
+      label.title = t("editor.blockInspector.nameSynchronizedWithTheRequiredHeadingOf");
+      label.setAttribute("aria-label", t("editor.blockInspector.postTitle", { 0: index + 1 }));
       label.addEventListener("change", async () => {
         const title = label.value.trim();
         if (!title || !post?.id) {
-          label.value = post?.title || slot?.text || "Пост";
+          label.value = post?.title || slot?.text || t("editor.blockInspector.post");
           return;
         }
         try {
           await this.projectContext?.renamePost?.(post.id, title);
         } catch (error) {
-          label.value = post?.title || slot?.text || "Пост";
+          label.value = post?.title || slot?.text || t("editor.blockInspector.post");
           this.controller.events?.emit?.("ui:error", { message: error?.message || String(error), error });
         }
       });
@@ -592,12 +593,12 @@ export class BlockInspector {
       const up = document.createElement("button");
       up.type = "button";
       up.textContent = "↑";
-      up.title = "Переместить пост выше";
+      up.title = t("editor.blockInspector.movePostUp");
       up.disabled = index === 0;
       const down = document.createElement("button");
       down.type = "button";
       down.textContent = "↓";
-      down.title = "Переместить пост ниже";
+      down.title = t("editor.blockInspector.movePostDown");
       down.disabled = index === slots.length - 1;
       const move = async direction => {
         up.disabled = down.disabled = true;
@@ -621,17 +622,17 @@ export class BlockInspector {
     if (!slots.length) {
       const empty = document.createElement("div");
       empty.className = "project-map-slots-empty";
-      empty.textContent = "Добавьте первый пост проекта из карты.";
+      empty.textContent = t("editor.blockInspector.addTheFirstProjectPostFromThe");
       list.append(empty);
     }
     const add = document.createElement("button");
     add.type = "button";
     add.className = "project-map-slot-add";
-    add.textContent = "+ Слот";
-    add.title = "Создать следующий пост и слот в карте проекта";
+    add.textContent = t("editor.blockInspector.slot");
+    add.title = t("editor.blockInspector.createTheNextPostAndSlotIn");
     add.onclick = async () => {
       try {
-        await this.projectContext?.createPostFromMapSlot?.(`Пост ${slots.length + 2}`);
+        await this.projectContext?.createPostFromMapSlot?.(t("editor.blockInspector.post2", { 0: slots.length + 2 }));
       } catch (error) {
         this.controller.events?.emit?.("ui:error", { message: error?.message || String(error), error });
       }
@@ -642,12 +643,12 @@ export class BlockInspector {
 
   makeProjectMapSelectEditor({ value, onChange, node }) {
     if (this.projectContext?.isLinearProject?.()) {
-      return this.makeFixedProjectRelationNotice("Карта стартового поста назначается автоматически.");
+      return this.makeFixedProjectRelationNotice(t("editor.blockInspector.theStartPostMapIsAssignedAutomatically"));
     }
     const select = document.createElement("select");
     const empty = document.createElement("option");
     empty.value = "";
-    empty.textContent = "Выберите Map…";
+    empty.textContent = t("editor.blockInspector.selectMap");
     select.append(empty);
     const project = this.projectContext?.currentProjectSnapshot?.() || this.projectContext?.snapshot?.().project;
     const state = this.projectContext?.snapshot?.() || {};
@@ -664,14 +665,14 @@ export class BlockInspector {
     select.addEventListener("change", () => onChange?.(select.value));
     if (!project) {
       select.disabled = true;
-      select.title = "Back to Map требует активный Project";
+      select.title = t("editor.blockInspector.backToMapRequiresAnActiveProject");
     }
     return select;
   }
 
   makeProjectBacklinkRelationEditor({ value, node }) {
     if (this.projectContext?.isLinearProject?.()) {
-      return this.makeFixedProjectRelationNotice("Этот блок всегда ведёт к карте стартового поста проекта.");
+      return this.makeFixedProjectRelationNotice(t("editor.blockInspector.thisBlockAlwaysLeadsToTheProject"));
     }
     const wrap = document.createElement("div");
     wrap.className = "project-backlink-relation-editor";
@@ -680,13 +681,13 @@ export class BlockInspector {
     row.className = "project-backlink-relation-row";
     const mapField = document.createElement("label");
     const mapCaption = document.createElement("span");
-    mapCaption.textContent = "Целевая Map";
+    mapCaption.textContent = t("core.propertyRegistry.targetMap");
     const mapSelect = document.createElement("select");
     mapField.append(mapCaption, mapSelect);
 
     const slotField = document.createElement("label");
     const slotCaption = document.createElement("span");
-    slotCaption.textContent = "Slot";
+    slotCaption.textContent = t("editor.blockInspector.slot");
     const slotSelect = document.createElement("select");
     slotField.append(slotCaption, slotSelect);
     row.append(mapField, slotField);
@@ -699,7 +700,7 @@ export class BlockInspector {
     if (!project || !activePostId || !activePost) {
       mapSelect.disabled = true;
       slotSelect.disabled = true;
-      mapSelect.title = "Back to Map требует активный Project post";
+      mapSelect.title = t("editor.blockInspector.backToMapRequiresAnActiveProject2");
       return wrap;
     }
 
@@ -712,7 +713,7 @@ export class BlockInspector {
 
     const mapEmpty = document.createElement("option");
     mapEmpty.value = "";
-    mapEmpty.textContent = "Выберите Map…";
+    mapEmpty.textContent = t("editor.blockInspector.selectMap");
     mapSelect.append(mapEmpty);
 
     for (const item of maps) {
@@ -729,7 +730,7 @@ export class BlockInspector {
     if (currentMapId && ![...mapSelect.options].some(option => option.value === currentMapId)) {
       const missing = document.createElement("option");
       missing.value = currentMapId;
-      missing.textContent = `⚠ Текущая Map · ${currentMapId}`;
+      missing.textContent = t("editor.blockInspector.currentMap", { 0: currentMapId });
       mapSelect.append(missing);
     }
     mapSelect.value = currentMapId || "";
@@ -738,7 +739,7 @@ export class BlockInspector {
       slotSelect.replaceChildren();
       const empty = document.createElement("option");
       empty.value = "";
-      empty.textContent = selectedMapId ? "Выберите Slot…" : "Сначала выберите Map";
+      empty.textContent = selectedMapId ? t("editor.blockInspector.selectSlot") : t("editor.blockInspector.firstSelectAMap");
       slotSelect.append(empty);
       const map = maps.find(item => item.mapId === selectedMapId);
       if (!map) {
@@ -817,9 +818,9 @@ export class BlockInspector {
       input.type = "checkbox";
       input.checked = !!(value ?? schema.default);
       const state = document.createElement("span");
-      state.textContent = input.checked ? "Да" : "Нет";
+      state.textContent = input.checked ? t("editor.blockInspector.yes") : t("core.propertyRegistry.none");
       input.addEventListener("change", () => {
-        state.textContent = input.checked ? "Да" : "Нет";
+        state.textContent = input.checked ? t("editor.blockInspector.yes") : t("core.propertyRegistry.none");
         onChange?.(input.checked);
       });
       input.disabled = !!schema.readOnly;
@@ -857,7 +858,7 @@ export class BlockInspector {
   makeDateTimeEditor({ schema, value, onChange }) {
     return createDateTimePicker({
       value: value ?? schema.default ?? "",
-      label: schema.label || "Дата и время",
+      label: schema.label || t("core.propertyRegistry.dateAndTime"),
       disabled: !!schema.readOnly,
       onChange
     });
@@ -868,7 +869,7 @@ export class BlockInspector {
     select.className = "anchor-select-editor";
     const top = document.createElement("option");
     top.value = "";
-    top.textContent = "В начало сообщения";
+    top.textContent = t("core.semanticRichText.toTheBeginningOfTheMessage");
     select.append(top);
     const anchors = listAnchors(this.controller.tree);
     for (const anchor of anchors) {
@@ -880,7 +881,7 @@ export class BlockInspector {
     if (value && !anchors.some(anchor => anchor.id === value)) {
       const missing = document.createElement("option");
       missing.value = value;
-      missing.textContent = "⚠ Якорь удалён";
+      missing.textContent = t("editor.blockInspector.anchorRemoved");
       select.append(missing);
     }
     select.value = value ?? schema.default ?? "";
@@ -894,7 +895,7 @@ export class BlockInspector {
     wrap.className = "media-editor";
     const input = document.createElement("input");
     input.type = "text";
-    input.placeholder = "file_id, URL или attach://...";
+    input.placeholder = t("editor.blockInspector.fileIdURLOrAttach");
     input.value = typeof ctx.value === "string" ? ctx.value : stringifyCompact(ctx.value ?? ctx.schema.default ?? "");
     input.addEventListener("input", () => ctx.onChange?.(input.value));
     if (ctx.schema.readOnly) input.disabled = true;
@@ -920,11 +921,11 @@ export class BlockInspector {
       try {
         const parsed = textarea.value.trim() === "" ? null : JSON.parse(textarea.value);
         textarea.classList.remove("invalid");
-        status.textContent = "JSON корректен";
+        status.textContent = t("editor.blockInspector.jsonIsValid");
         onChange?.(parsed);
       } catch (error) {
         textarea.classList.add("invalid");
-        status.textContent = "JSON: " + error.message;
+        status.textContent = t("editor.blockInspector.jsonError", { 0: error.message });
       }
     };
     textarea.addEventListener("change", commit);
@@ -941,7 +942,7 @@ export class BlockInspector {
     const wrap = document.createElement("details");
     wrap.className = "block-array-editor";
     const summary = document.createElement("summary");
-    summary.textContent = `Структурные блоки: ${blocks.length}`;
+    summary.textContent = t("editor.blockInspector.structuralBlocks", { 0: blocks.length });
     wrap.append(summary);
 
     const textarea = document.createElement("textarea");
@@ -953,10 +954,10 @@ export class BlockInspector {
     textarea.addEventListener("change", () => {
       try {
         const parsed = JSON.parse(textarea.value || "[]");
-        if (!Array.isArray(parsed)) throw new Error("ожидается массив блоков");
+        if (!Array.isArray(parsed)) throw new Error(t("editor.blockInspector.expectedAnArrayOfBlocks"));
         textarea.classList.remove("invalid");
-        summary.textContent = `Структурные блоки: ${parsed.length}`;
-        status.textContent = "Структура корректна";
+        summary.textContent = t("editor.blockInspector.structuralBlocks", { 0: parsed.length });
+        status.textContent = t("editor.blockInspector.structureIsValid");
         onChange?.(parsed);
       } catch (error) {
         textarea.classList.add("invalid");
@@ -981,14 +982,14 @@ export class BlockInspector {
     textarea.addEventListener("input", () => onChange?.(textarea.value));
     this.textareaSizing.attach(textarea, { key: `${node?.id || "formula"}:expression`, defaultRows: 3, minRows: 1 });
 
-    const categoryStrip = chipStrip("Категории");
-    const subcategoryStrip = chipStrip("Подкатегории");
-    const templateStrip = chipStrip("Шаблоны");
+    const categoryStrip = chipStrip(t("editor.blockInspector.categories"));
+    const subcategoryStrip = chipStrip(t("editor.blockInspector.subcategories"));
+    const templateStrip = chipStrip(t("editor.blockInspector.templates"));
     const importControl = document.createElement("span");
     importControl.className = "formula-import-control";
     const importButton = document.createElement("button");
-    importButton.type = "button"; importButton.textContent = "Импорт JSON";
-    importButton.title = 'Формат: {"sections":[{"title":"Химия","templates":[{"label":"Количество вещества","latex":"n=\\\\frac{m}{M}"}]}]}';
+    importButton.type = "button"; importButton.textContent = t("editor.blockInspector.importJSON");
+    importButton.title = t("editor.blockInspector.formatSectionsTitleChemistryTemplatesLabelAmount");
     const fileInput = document.createElement("input");
     fileInput.type = "file"; fileInput.accept = ".json,application/json"; fileInput.hidden = true;
     importControl.append(importButton, fileInput);
@@ -1056,9 +1057,9 @@ export class BlockInspector {
     const current = value && typeof value === "object" ? value : schema.default || {};
     const wrap = document.createElement("div");
     wrap.className = "location-editor";
-    const lat = numericField("Широта", current.latitude ?? 0, -90, 90);
-    const lon = numericField("Долгота", current.longitude ?? 0, -180, 180);
-    const accuracy = numericField("Точность, м", current.horizontal_accuracy ?? "", 0, 1500);
+    const lat = numericField(t("editor.blockInspector.latitude"), current.latitude ?? 0, -90, 90);
+    const lon = numericField(t("editor.blockInspector.longitude"), current.longitude ?? 0, -180, 180);
+    const accuracy = numericField(t("editor.blockInspector.accuracyM"), current.horizontal_accuracy ?? "", 0, 1500);
     const commit = () => {
       const next = {
         latitude: Number(lat.input.value || 0),
@@ -1191,7 +1192,7 @@ export class BlockInspector {
     if (!formats.length || !this.registry.properties?.formatting) {
       const empty = document.createElement("span");
       empty.className = "shared-rich-empty";
-      empty.textContent = "Для этого поля форматирование не объявлено";
+      empty.textContent = t("editor.blockInspector.noFormattingIsDefinedForThisField");
       host.append(empty);
       return;
     }
@@ -1217,7 +1218,7 @@ export class BlockInspector {
 
     const inherit = document.createElement("label");
     inherit.className = "rich-style-inherit";
-    inherit.title = "Печатать новый текст с активными стилями";
+    inherit.title = t("editor.blockInspector.printNewTextWithActiveStyles");
     const inheritInput = document.createElement("input");
     inheritInput.type = "checkbox";
     inheritInput.checked = !!state.typingSession?.enabled;
@@ -1231,7 +1232,7 @@ export class BlockInspector {
       currentState.textarea?.focus();
     });
     const inheritText = document.createElement("span");
-    inheritText.textContent = "Наследовать стили";
+    inheritText.textContent = t("editor.blockInspector.inheritStyles");
     inherit.append(inheritInput, inheritText);
     host.append(inherit);
 
@@ -1239,7 +1240,7 @@ export class BlockInspector {
     link.type = "button";
     link.className = "rich-format-button link-relation-button rich-link-relation-button";
     link.textContent = "↗";
-    link.title = "Связать выделенный текст с выбранной целью";
+    link.title = t("editor.blockInspector.linkSelectedTextToChosenTarget");
     link.onmousedown = event => event.preventDefault();
     link.onclick = () => this.requestLinkRelation(stateGetter?.());
     host.append(link);
@@ -1249,8 +1250,8 @@ export class BlockInspector {
     emoji.type = "button";
     emoji.className = "rich-format-button emoji-toggle-button";
     emoji.textContent = "😀";
-    emoji.title = "Emoji";
-    emoji.setAttribute("aria-label", "Открыть emoji");
+    emoji.title = t("editor.blockInspector.emoji");
+    emoji.setAttribute("aria-label", t("editor.blockInspector.openEmoji"));
     emoji.onmousedown = e => e.preventDefault();
     emoji.setAttribute("aria-expanded", "false");
     emoji.onclick = () => this.toggleEmojiPicker(stateGetter?.());
@@ -1263,20 +1264,20 @@ export class BlockInspector {
     const start = Number(state?.textarea?.selectionStart ?? 0);
     const end = Number(state?.textarea?.selectionEnd ?? start);
     if (!state?.node?.id) {
-      state?.setStatusMessage?.("Выделите текст, который нужно связать");
+      state?.setStatusMessage?.(t("editor.blockInspector.selectTheTextToLink"));
       return false;
     }
     const value = state.getCurrent?.() ?? state.textarea.value;
     const existing = findLinkRelationAtRange(value, start, end);
     if (end <= start && !existing) {
-      state?.setStatusMessage?.("Выделите текст, который нужно связать");
+      state?.setStatusMessage?.(t("editor.blockInspector.selectTheTextToLink"));
       return false;
     }
     const text = richTextToPlain(value).slice(start, end);
     this.events?.emit?.("links:select-target-requested", {
       source: { nodeId: state.node.id, property: state.schema.key || "text", start, end, text },
     });
-    state.setStatusMessage?.(existing ? "Связь разрывается…" : "Связь добавляется…");
+    state.setStatusMessage?.(existing ? t("editor.blockInspector.linkIsBreaking") : t("editor.blockInspector.linkIsBeingAdded"));
     return true;
   }
 
@@ -1309,7 +1310,7 @@ export class BlockInspector {
     state.textarea?.focus?.();
     state.textarea?.setSelectionRange?.(marker.start, marker.end);
     this.refreshRichTextToolbarState(state, value);
-    state.setStatusMessage?.("Связь выбрана. Нажмите ↗, чтобы разорвать.");
+    state.setStatusMessage?.(t("editor.blockInspector.linkSelectedPressToBreak"));
     return true;
   }
 
@@ -1433,7 +1434,7 @@ export class BlockInspector {
       const button = document.createElement("button");
       button.type = "button";
       button.textContent = value;
-      button.title = `${value} · Ctrl+клик — переместить в начало`;
+      button.title = t("editor.blockInspector.ctrlClickMoveToStart", { 0: value });
       button.onmousedown = e => e.preventDefault();
       button.onclick = event => {
         if (!event.ctrlKey) {
@@ -1484,7 +1485,7 @@ export class BlockInspector {
     if (format.metadataEditor === "date-time") {
       if (!applyBatch && start === end) {
         if (!state.typingSession?.enabled) {
-          state.setStatusMessage?.("Сначала выделите текст или включите наследование стилей");
+          state.setStatusMessage?.(t("editor.blockInspector.selectTextFirstOrEnableStyleInheritance"));
           textarea.focus();
           return;
         }
@@ -1540,7 +1541,7 @@ export class BlockInspector {
     // the same buttons control the style-state used for subsequent typing.
     if (format.wrapperField && start === end) {
       if (!state.typingSession?.enabled) {
-        state.setStatusMessage?.("Сначала выделите текст");
+        state.setStatusMessage?.(t("editor.blockInspector.selectTextFirst"));
         textarea.focus();
         return;
       }
@@ -1591,14 +1592,14 @@ export class BlockInspector {
     timestampField.className = "format-config-registry-field";
     const timestampLabel = document.createElement("div");
     timestampLabel.className = "nested-field-head";
-    timestampLabel.textContent = "Дата и время";
+    timestampLabel.textContent = t("core.propertyRegistry.dateAndTime");
     const initialDateTime = unixTimeToDateTimeLocal(initialMetadata?.unix_time) || defaultDateTimeLocal();
     let dateTime = initialDateTime;
     const display = document.createElement("select");
     display.className = "date-time-picker-format";
-    display.title = "Формат отображения даты и времени";
+    display.title = t("editor.blockInspector.dateAndTimeDisplayFormat");
     display.setAttribute("aria-label", display.title);
-    for (const option of [{ value: "", label: "Оставить текст" }, ...DATE_TIME_FORMAT_OPTIONS]) {
+    for (const option of [{ value: "", label: t("editor.blockInspector.keepText") }, ...DATE_TIME_FORMAT_OPTIONS]) {
       const item = document.createElement("option");
       item.value = option.value;
       item.textContent = option.label;
@@ -1607,7 +1608,7 @@ export class BlockInspector {
     display.value = String(initialMetadata?.date_time_format || "");
     timestampField.append(timestampLabel, createDateTimePicker({
       value: initialDateTime,
-      label: "Выбрать дату и время timestamp",
+      label: t("editor.blockInspector.chooseDateAndTimeTimestamp"),
       accessory: display,
       onChange: value => {
         dateTime = value;
@@ -1623,17 +1624,17 @@ export class BlockInspector {
     actions.className = "format-config-actions";
     const cancel = document.createElement("button");
     cancel.type = "button";
-    cancel.textContent = "Отмена";
+    cancel.textContent = t("core.cardDeleteConfirmation.cancel");
     cancel.onclick = onCancel;
     const apply = document.createElement("button");
     apply.type = "button";
-    apply.textContent = "Применить";
+    apply.textContent = t("editor.blockInspector.apply");
     apply.onclick = () => {
       const metadata = dateTimeFormatMetadata({ dateTime, date_time_format: display.value });
       const invalid = !Number.isFinite(new Date(String(dateTime || "")).getTime());
       timestampField.classList.toggle("required-missing", invalid);
       if (invalid) {
-        error.textContent = "Выберите дату и время";
+        error.textContent = t("editor.blockInspector.selectDateAndTime");
         return;
       }
       error.textContent = "";
@@ -1686,11 +1687,11 @@ export class BlockInspector {
     actions.className = "format-config-actions";
     const cancel = document.createElement("button");
     cancel.type = "button";
-    cancel.textContent = "Отмена";
+    cancel.textContent = t("core.cardDeleteConfirmation.cancel");
     cancel.onclick = onCancel;
     const apply = document.createElement("button");
     apply.type = "button";
-    apply.textContent = "Применить";
+    apply.textContent = t("editor.blockInspector.apply");
     apply.onclick = () => {
       let invalid = false;
       [...panel.querySelectorAll(".format-config-registry-field")].forEach((fieldWrap, index) => {
@@ -1701,7 +1702,7 @@ export class BlockInspector {
         invalid ||= !!missing;
       });
       if (invalid) {
-        error.textContent = "Заполните обязательные параметры";
+        error.textContent = t("editor.blockInspector.fillInRequiredParameters");
         return;
       }
       error.textContent = "";
@@ -1735,7 +1736,7 @@ export class BlockInspector {
 
     const textarea = document.createElement("textarea");
     textarea.className = "list-lines-input";
-    textarea.placeholder = "Один элемент списка на строку";
+    textarea.placeholder = t("editor.blockInspector.oneListItemPerLine");
     textarea.disabled = !!schema.readOnly;
 
     const mirror = document.createElement("div");
@@ -1750,15 +1751,15 @@ export class BlockInspector {
     const countLabel = document.createElement("span");
     countLabel.className = "list-item-count";
 
-    const removeButton = miniButton("−", "Удалить последний элемент");
+    const removeButton = miniButton("−", t("editor.blockInspector.removeLastItem"));
     removeButton.classList.add("list-count-button");
     const countInput = document.createElement("input");
     countInput.type = "number";
     countInput.min = "0";
     countInput.step = "1";
     countInput.className = "compact-number list-count-input";
-    countInput.title = "Количество элементов списка";
-    const addButton = miniButton("+", "Добавить элемент");
+    countInput.title = t("editor.blockInspector.numberOfListItems");
+    const addButton = miniButton("+", t("editor.blockInspector.addItem"));
     addButton.classList.add("list-count-button");
 
     const hasCheckbox = compactCheckbox("Checkbox", checkboxMode);
@@ -1766,11 +1767,11 @@ export class BlockInspector {
     startValue.type = "number";
     startValue.className = "compact-number";
     startValue.value = String(start);
-    startValue.title = "Начальное числовое значение";
+    startValue.title = t("editor.blockInspector.initialNumericValue");
 
     const marker = document.createElement("select");
     marker.className = "compact-select";
-    for (const [markerValue, label] of [["", "Маркер: нет"], ["1", "1, 2, 3"], ["a", "a, b, c"], ["A", "A, B, C"], ["i", "i, ii, iii"], ["I", "I, II, III"]]) {
+    for (const [markerValue, label] of [["", t("editor.blockInspector.bulletNone")], ["1", "1, 2, 3"], ["a", "a, b, c"], ["A", "A, B, C"], ["i", "i, ii, iii"], ["I", "I, II, III"]]) {
       const option = document.createElement("option");
       option.value = markerValue;
       option.textContent = label;
@@ -1792,7 +1793,7 @@ export class BlockInspector {
 
     const updateControls = () => {
       countInput.value = String(items.length);
-      countLabel.textContent = `Элементов: ${items.length}`;
+      countLabel.textContent = t("editor.blockInspector.items", { 0: items.length });
       removeButton.disabled = !!schema.readOnly || items.length === 0;
       startValue.disabled = !!schema.readOnly || !markerType;
       marker.disabled = !!schema.readOnly || checkboxMode;
@@ -1842,7 +1843,7 @@ export class BlockInspector {
           checked.type = "checkbox";
           checked.className = "list-item-checked";
           checked.checked = !!item?.is_checked;
-          checked.title = `Элемент ${index + 1}: отмечен`;
+          checked.title = t("editor.blockInspector.itemChecked", { 0: index + 1 });
           checked.disabled = !!schema.readOnly;
           checked.addEventListener("change", () => {
             const current = items[index] && typeof items[index] === "object" ? structuredClone(items[index]) : {};
@@ -2003,14 +2004,14 @@ export class BlockInspector {
     toolbar.className = "table-inline-toolbar";
     const dimensions = document.createElement("span");
     dimensions.className = "table-dimensions";
-    const addRow = miniButton("+ строка", "Добавить строку");
-    const removeRow = miniButton("− строка", "Удалить последнюю строку");
-    const addCol = miniButton("+ колонка", "Добавить колонку");
-    const removeCol = miniButton("− колонка", "Удалить последнюю колонку");
-    const bordered = compactCheckbox("Границы", !!node?.props?.isBordered);
-    const striped = compactCheckbox("Чередование", !!node?.props?.isStriped);
-    const compact = compactCheckbox("Компактная", !!node?.props?.isCompact);
-    const importButton = miniButton("Импорт CSV / MD", "Импортировать локальный CSV или Markdown-файл");
+    const addRow = miniButton(t("editor.blockInspector.line"), t("editor.blockInspector.addLine"));
+    const removeRow = miniButton(t("editor.blockInspector.line2"), t("editor.blockInspector.deleteTheLastRow"));
+    const addCol = miniButton(t("editor.blockInspector.column"), t("editor.blockInspector.addColumn"));
+    const removeCol = miniButton(t("editor.blockInspector.column2"), t("editor.blockInspector.deleteTheLastColumn"));
+    const bordered = compactCheckbox(t("core.propertyRegistry.borders"), !!node?.props?.isBordered);
+    const striped = compactCheckbox(t("editor.blockInspector.alternating"), !!node?.props?.isStriped);
+    const compact = compactCheckbox(t("editor.blockInspector.compact"), !!node?.props?.isCompact);
+    const importButton = miniButton(t("editor.blockInspector.importCSVMD"), t("editor.blockInspector.importALocalCSVOrMarkdownFile"));
     importButton.className = "table-import-button";
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -2021,31 +2022,31 @@ export class BlockInspector {
     const cellControls = document.createElement("div");
     cellControls.className = "table-cell-controls";
     const cellLabel = document.createElement("strong");
-    cellLabel.title = "Левый или правый Ctrl + стрелки — перейти в соседнюю ячейку";
+    cellLabel.title = t("editor.blockInspector.leftOrRightCtrlArrowsGoTo");
     const navHint = document.createElement("span");
     navHint.className = "table-nav-hint";
     navHint.textContent = "L/R Ctrl + ← ↑ → ↓";
-    navHint.title = "Перемещение по ячейкам таблицы";
-    const mergeRow = miniButton("Объединить в строке", "Объединить выделенные соседние ячейки одной строки");
+    navHint.title = t("editor.blockInspector.navigateTableCells");
+    const mergeRow = miniButton(t("editor.blockInspector.mergeInRow"), t("editor.blockInspector.mergeSelectedAdjacentCellsInOneRow"));
     mergeRow.className = "table-merge-row";
-    const mergeColumn = miniButton("Объединить в колонке", "Объединить выделенные соседние ячейки одной колонки");
+    const mergeColumn = miniButton(t("editor.blockInspector.mergeInColumn"), t("editor.blockInspector.mergeSelectedAdjacentCellsInOneColumn"));
     mergeColumn.className = "table-merge-column";
-    const unmerge = miniButton("Разъединить", "Разделить объединённую ячейку");
+    const unmerge = miniButton(t("editor.blockInspector.split"), t("editor.blockInspector.splitAMergedCell"));
     unmerge.className = "table-unmerge";
     const applyAlignmentToAll = miniButton(
-      "Ко всем ячейкам",
-      "Применить выбранное горизонтальное и вертикальное выравнивание ко всем ячейкам"
+      t("editor.blockInspector.toAllCells"),
+      t("editor.blockInspector.applyTheSelectedHorizontalAndVerticalAlignment")
     );
     applyAlignmentToAll.className = "table-apply-alignment-all";
-    const align = compactSelect("align", [["left","Слева"],["center","Центр"],["right","Справа"]]);
-    const valign = compactSelect("valign", [["top","Сверху"],["middle","По центру"],["bottom","Снизу"]]);
+    const align = compactSelect("align", [["left",t("editor.blockInspector.left")],["center",t("editor.blockInspector.center")],["right",t("editor.blockInspector.right")]]);
+    const valign = compactSelect("valign", [["top",t("editor.blockInspector.top")],["middle",t("editor.blockInspector.middle")],["bottom",t("editor.blockInspector.bottom")]]);
     cellControls.append(cellLabel, navHint, mergeRow, mergeColumn, unmerge, applyAlignmentToAll, align.wrap, valign.wrap);
 
     const formatRow = document.createElement("div");
     formatRow.className = "table-format-row";
     const formatToolbar = document.createElement("div");
     formatToolbar.className = "rich-text-toolbar table-rich-toolbar";
-    const headerCell = compactCheckbox("Заголовочная", false);
+    const headerCell = compactCheckbox(t("editor.blockInspector.header"), false);
     formatRow.append(formatToolbar, headerCell.wrap);
     const configHost = document.createElement("div");
     configHost.className = "format-config-host table-format-config";
@@ -2176,8 +2177,8 @@ export class BlockInspector {
       if (!cell) { cells[selectedRow][selectedCol] = defaultObjectFromFields(fields); cell = cells[selectedRow][selectedCol]; }
       const selection = selectedCoordinates();
       cellLabel.textContent = selection.length > 1
-        ? `Выбрано ячеек: ${selection.length}`
-        : `Ячейка ${selectedRow + 1}:${selectedCol + 1}`;
+        ? t("editor.blockInspector.cellsSelected", { 0: selection.length })
+        : t("editor.blockInspector.cell", { 0: selectedRow + 1, 1: selectedCol + 1 });
       align.input.value = cell.align || "center";
       valign.input.value = cell.valign || "middle";
       headerCell.input.checked = !!cell.is_header;
@@ -2348,11 +2349,11 @@ export class BlockInspector {
       try {
         const text = await file.text();
         const matrix = /\.md$/i.test(file.name) ? parseMarkdownTable(text) : parseCsv(text);
-        if (!matrix.length) throw new Error("Таблица не найдена");
+        if (!matrix.length) throw new Error(t("editor.blockInspector.tableNotFound"));
         cells = matrix.map(row => row.map(value => ({ text: value })));
         selectedRow = selectedCol = 0; commit(); renderGrid();
       } catch (error) {
-        this.controller.reportError(`Импорт таблицы: ${error.message}`);
+        this.controller.reportError(t("editor.blockInspector.importTable", { 0: error.message }));
       }
     };
     importButton.onclick = () => fileInput.click();
@@ -2434,7 +2435,7 @@ function compactSelect(label, options = []) {
 function makeHeadingSizeControl(node, binding, controller) {
   if (!binding) return null;
   const wrap = document.createElement("label"); wrap.className = "rich-footer-control";
-  const span = document.createElement("span"); span.textContent = "Размер";
+  const span = document.createElement("span"); span.textContent = t("editor.blockInspector.size");
   const select = document.createElement("select");
   for (let i = 1; i <= 6; i += 1) { const o = document.createElement("option"); o.value = i; o.textContent = `H${i}`; select.append(o); }
   select.value = String(node.props?.[binding.key] ?? binding.default ?? 2);
@@ -2455,31 +2456,31 @@ const URL_PREFIXES = Object.freeze(["https://", "tg://"]);
 
 function decorateBlockRelationButton(button, node) {
   const relationId = String(node?.props?.relationId || "");
-  const title = String(node?.props?.relationTargetTitle || "сообщением");
+  const title = String(node?.props?.relationTargetTitle || t("editor.blockInspector.withMessage"));
   const linked = Boolean(relationId);
   button.classList.toggle("is-linked", linked);
   button.dataset.relationId = relationId;
   button.setAttribute("aria-pressed", String(linked));
   button.title = linked
     ? linkedRelationTooltip(title, node?.props?.text)
-    : "Связать с целью, выбранной кнопкой ↙";
+    : t("editor.blockInspector.linkWithTheTargetSelectedByThe");
 }
 
 function decorateRichRelationButton(button, marker) {
   const linked = Boolean(marker?.relationId);
-  const title = String(marker?.value?.target_title || "сообщением");
+  const title = String(marker?.value?.target_title || t("editor.blockInspector.withMessage"));
   button.classList.toggle("is-linked", linked);
   button.dataset.relationId = marker?.relationId || "";
   button.setAttribute("aria-pressed", String(linked));
   button.title = linked
     ? linkedRelationTooltip(title, marker?.value?.text)
-    : "Связать выделенный текст с целью, выбранной кнопкой ↙";
+    : t("editor.blockInspector.linkTheSelectedTextToTheGoal");
 }
 
 function linkedRelationTooltip(title, sourceText) {
-  const status = `Связано с: ${title}. Нажмите, чтобы разорвать связь.`;
+  const status = t("editor.blockInspector.linkedToClickToUnlink", { 0: title });
   const fragment = compactRelationFragment(sourceText);
-  return fragment ? `${status}\nФрагмент ссылки: «${fragment}»` : status;
+  return fragment ? t("editor.blockInspector.linkFragment", { 0: status, 1: fragment }) : status;
 }
 
 function compactRelationFragment(value) {
@@ -2496,7 +2497,7 @@ function makeUrlPrefixControl() {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = prefix;
-    button.title = `Подставить ${prefix}`;
+    button.title = t("editor.blockInspector.insert", { 0: prefix });
     button.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
@@ -2657,7 +2658,7 @@ function renderChipButtons(host, labels, activeIndex, onSelect) {
 
 function attachLocalFileDrop(host, accepts, onFile) {
   host.classList.add("local-file-drop");
-  host.title = [host.title, "Можно перетащить локальный файл сюда"].filter(Boolean).join(" · ");
+  host.title = [host.title, t("editor.blockInspector.youCanDragALocalFileHere")].filter(Boolean).join(" · ");
   host.addEventListener("dragover", event => {
     const file = [...(event.dataTransfer?.files || [])][0];
     if (!file || !accepts(file)) return;
@@ -2722,7 +2723,7 @@ function cssEscape(value) { return globalThis.CSS?.escape ? CSS.escape(value) : 
 function groupBindings(bindings) {
   const groups = new Map();
   for (const binding of bindings) {
-    const group = binding.group || "Общее";
+    const group = binding.group || t("core.propertyRegistry.general");
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(binding);
   }
@@ -2804,7 +2805,7 @@ function listItemSummary(item) {
   if (item?.has_checkbox) parts.push(item.is_checked ? " ✓" : " ☐");
   if (item?.value != null && item.value !== "") parts.push(` #${item.value}`);
   if (item?.type) parts.push(` ${item.type}`);
-  if (Array.isArray(item?.blocks)) parts.push(` · ${item.blocks.length} блок.`);
+  if (Array.isArray(item?.blocks)) parts.push(t("editor.blockInspector.block", { 0: item.blocks.length }));
   return parts.join("");
 }
 

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js?v=1.5.9";
 import { BlockInspector } from "../js/editor/BlockInspector.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 const events = new EventBus();
 const inspector = new BlockInspector({ events, registry: {}, controller: {} });
@@ -27,6 +28,6 @@ assert.equal(inspector.focusLinkedRelation({
   source: { kind: "draft", id: "draft_1", nodeId: "source_node", property: "text", mode: "inline" }
 }), true);
 assert.deepEqual(calls, ["focus", ["range", 3, 18]]);
-assert.deepEqual(messages, ["Связь выбрана. Нажмите ↗, чтобы разорвать."]);
+assert.deepEqual(messages, [t("editor.blockInspector.linkSelectedPressToBreak")]);
 
 console.log("link_relation_source_focus_smoke: OK");

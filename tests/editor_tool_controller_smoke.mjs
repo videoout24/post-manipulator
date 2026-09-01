@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { EditorToolController } from "../js/editor/EditorToolController.js?v=1.5.9";
+import { t } from "../js/i18n/index.js?v=1.8.0";
 
 class FakeTarget {
   constructor() { this.listeners = new Map(); }
@@ -55,7 +56,7 @@ assert.equal(tools.handleKeydown({
 }), true);
 assert(prevented);
 assert(calls.includes("selection:remove"));
-assert.equal(notices.at(-1).message, "Удалено блоков: 2");
+assert.equal(notices.at(-1).message, t("editor.editorToolController.blocksRemoved", { 0: 2 }));
 
 assert.equal(tools.handleKeydown({
   key: "Delete",
@@ -68,7 +69,7 @@ assert.equal(palette.search, "photo");
 assert(calls.includes("palette:render"));
 
 tools.exportJson();
-assert.equal(dialogTitle.textContent, "Internal AST");
+assert.equal(dialogTitle.textContent, t("editor.editorToolController.internalAst"));
 assert.equal(JSON.parse(jsonOutput.textContent).type, "document");
 
 tools.previewTelegram();

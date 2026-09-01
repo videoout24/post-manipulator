@@ -8,6 +8,7 @@ import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.7.12";
 import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.5.9";
 import { EditorToolController } from "../editor/EditorToolController.js?v=1.6.5";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.6.5";
+import { t } from "../i18n/index.js?v=1.8.0";
 
 export function createEditorShell({
   documentRoot = document,
@@ -154,7 +155,7 @@ export function createEditorShell({
     onPublishPost: onPublishProjectPost,
     onSchedulePost: onScheduleProjectPost,
     onCancelPostSchedule: onCancelProjectPostSchedule,
-    onError: error => showToast({ message: `Project: ${error?.message || error}`, type: "error" })
+    onError: error => showToast({ message: t("publications.publicationView.projectError", { 0: error?.message || error }), type: "error" })
   }) : null;
 
   rightPanel.start();

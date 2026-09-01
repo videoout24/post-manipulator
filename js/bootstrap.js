@@ -1,3 +1,4 @@
+import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.0";
 import { AppDatabase } from "./storage/AppDatabase.js?v=1.7.1";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
 import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.5.9";
@@ -11,6 +12,7 @@ import { TelegramEnvironmentGate, TelegramEnvironmentError } from "./security/Te
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
 
 const documentRoot = globalThis.document;
+applyDocumentTranslations(documentRoot);
 const appShell = documentRoot?.querySelector?.("#appShell");
 const gateView = new SecurityGateView({ root: documentRoot?.querySelector?.("#securityGate") });
 const manualBackupRecovery = backupRecoveryRequested();
@@ -68,7 +70,7 @@ async function bootstrapSecurityGate() {
     gateView.show("STARTING_APPLICATION");
     try {
       if (!appDb?.info || appDb.info.engine !== "indexeddb") {
-        throw new AuthBootstrapError("DATABASE_ERROR", "IndexedDB выбранного бота не была открыта");
+        throw new AuthBootstrapError("DATABASE_ERROR", t("bootstrap.indexeddbOfTheSelectedBotWasNot"));
       }
       console.info("[Post Manipulator] Bot database ready", {
         engine: appDb.info.engine,
@@ -98,7 +100,7 @@ async function bootstrapSecurityGate() {
       controller.clearSensitiveState();
     } catch (error) {
       application?.stop?.();
-      gateView.show("DATABASE_ERROR", { message: "Основное приложение не было запущено. Данные не изменены." });
+      gateView.show("DATABASE_ERROR", { message: t("bootstrap.theMainApplicationWasNotLaunchedData") });
       controller.clearSensitiveState();
       await appDb?.close?.().catch(() => {});
       // Keep the detailed error off screen: it can include third-party payloads.
@@ -115,7 +117,7 @@ async function recoverBackupBeforeApplication({ appDb, token, verifiedBot, teleg
   let inspection = null;
   let inspectionError = null;
   const state = documentRoot?.querySelector?.("#telegramBackupState");
-  if (state) state.textContent = "Проверяем самую новую закреплённую копию…";
+  if (state) state.textContent = t("app.checkingTheLatestPinnedCopy");
 
   try {
     const controller = new AbortController();
@@ -125,7 +127,7 @@ async function recoverBackupBeforeApplication({ appDb, token, verifiedBot, teleg
     renderBackupInspection(state, inspection);
   } catch (error) {
     inspectionError = error;
-    if (state) state.textContent = "Закреплённую копию проверить не удалось; ручное восстановление доступно.";
+    if (state) state.textContent = t("bootstrap.failedToCheckThePinnedCopyManual");
     console.warn("Pinned backup discovery before application startup failed", error);
   }
 
@@ -149,7 +151,7 @@ async function recoverBackupBeforeApplication({ appDb, token, verifiedBot, teleg
       // A backup replaces every record, including bindings. Re-assert the
       // verified Mini App owner before any application service is constructed.
       await ownerBinding.bindVerifiedMiniAppUser(telegramContext?.telegramUserId);
-      if (state) state.textContent = "Резервная копия восстановлена в текущем защищённом запуске.";
+      if (state) state.textContent = t("bootstrap.backupRestoredInTheCurrentProtectedRun");
     }
     return Object.freeze({ restored, inspection, inspectionError });
   } finally {
@@ -169,14 +171,14 @@ function showBackupRecoveryDialog({ backups, inspection, inspectionError, verifi
 
   const backup = inspection?.backup || null;
   const username = String(verifiedBot?.username || "").replace(/^@/, "");
-  if (title) title.textContent = inspection?.shouldOfferRestore ? "Найдена более свежая копия" : "Ручное восстановление";
+  if (title) title.textContent = inspection?.shouldOfferRestore ? t("bootstrap.aNewerCopyWasFound") : t("bootstrap.manualRecovery");
   hint.textContent = backup
-    ? `Самая новая закреплённая копия: ${backup.document?.file_name || "backup.json"}; дата отправки — ${formatBackupDate(backup.createdAt)}.`
+    ? t("bootstrap.theNewestPinnedCopySubmissionDate", { 0: backup.document?.file_name || "backup.json", 1: formatBackupDate(backup.createdAt) })
     : inspectionError
-      ? "Закреп не удалось проверить. Вы всё равно можете выбрать ранее скачанную резервную копию."
+      ? t("bootstrap.failedToVerifyThePinYouCan")
       : manual
-        ? "Выберите ранее скачанную резервную копию Post Manipulator."
-        : "Выберите резервную копию Post Manipulator.";
+        ? t("bootstrap.selectAPreviouslyDownloadedPostManipulatorBackup")
+        : t("bootstrap.selectAPostManipulatorBackup");
   fileInput.value = "";
   if (openButton) openButton.disabled = !username;
 
@@ -201,13 +203,13 @@ function showBackupRecoveryDialog({ backups, inspection, inspectionError, verifi
     const onApply = async () => {
       const file = fileInput.files?.[0];
       if (!file) {
-        hint.textContent = "Сначала выберите скачанный JSON-файл резервной копии.";
+        hint.textContent = t("bootstrap.firstSelectADownloadedJSONBackupFile");
         return;
       }
       if (!await confirmDarkDialog({
-        title: "Заменить локальную базу?",
-        message: "Все текущие проекты, черновики, настройки и локальные привязки будут заменены данными из выбранной резервной копии.",
-        confirmLabel: "Восстановить",
+        title: t("bootstrap.replaceTheLocalDatabase"),
+        message: t("bootstrap.allCurrentProjectsDraftsSettingsAndLocal"),
+        confirmLabel: t("bootstrap.restore"),
         danger: true
       })) return;
       applyButton.disabled = true;
@@ -215,7 +217,7 @@ function showBackupRecoveryDialog({ backups, inspection, inspectionError, verifi
         await backups.restoreDownloadedFile(file, { sourceBackup: backup });
         finish(true);
       } catch (error) {
-        hint.textContent = `Восстановление не выполнено: ${error?.message || error}`;
+        hint.textContent = t("bootstrap.recoveryNotCompleted", { 0: error?.message || error });
       } finally {
         applyButton.disabled = false;
       }
@@ -236,15 +238,15 @@ function showBackupRecoveryDialog({ backups, inspection, inspectionError, verifi
 
 function renderBackupInspection(state, inspection) {
   if (!state || !inspection) return;
-  const date = inspection.backup?.createdAt ? formatBackupDate(inspection.backup.createdAt) : "с неизвестной датой";
+  const date = inspection.backup?.createdAt ? formatBackupDate(inspection.backup.createdAt) : t("app.withAnUnknownDate");
   const messages = {
-    missing: "Самая новая закреплённая запись не является резервной копией Post Manipulator.",
-    current: `Закреплённая копия от ${date} уже соответствует этой локальной базе.`,
-    newer: `Закреплённая копия от ${date} новее локальной базы.`,
-    "not-newer": `Локальная база не старее закреплённой копии от ${date}.`,
-    "unknown-date": "Дата закреплённой копии недоступна; её можно восстановить вручную."
+    missing: t("app.theNewestPinnedEntryIsNotA"),
+    current: t("app.thePinnedCopyFromAlreadyMatchesThis", { 0: date }),
+    newer: t("app.thePinnedCopyFromIsNewerThan", { 0: date }),
+    "not-newer": t("app.theLocalDatabaseIsNotOlderThan", { 0: date }),
+    "unknown-date": t("app.theDateOfThePinnedCopyIs")
   };
-  state.textContent = messages[inspection.status] || "Состояние резервной копии неизвестно.";
+  state.textContent = messages[inspection.status] || t("app.backupStatusUnknown");
 }
 
 function backupRecoveryRequested() {
@@ -263,7 +265,7 @@ function clearBackupRecoveryRequest() {
 
 function formatBackupDate(value) {
   const date = new Date(Number(value || 0));
-  return Number.isNaN(date.getTime()) ? "неизвестно" : date.toLocaleString("ru-RU");
+  return Number.isNaN(date.getTime()) ? t("app.unknown") : date.toLocaleString(getLocale());
 }
 
 function bindController(controller, continueFromResult) {
@@ -304,7 +306,7 @@ function stateForError(error) {
 function safeMessage(error) {
   // Only controller/environment messages are intentionally generic and never
   // include passwords, initData, storage keys, ciphertext or Bot API URLs.
-  return error instanceof TelegramEnvironmentError || error instanceof AuthBootstrapError ? error.message : "Операцию не удалось завершить. Повторите попытку.";
+  return error instanceof TelegramEnvironmentError || error instanceof AuthBootstrapError ? error.message : t("bootstrap.theOperationCouldNotBeCompletedPlease");
 }
 
 function logBootstrapFailure(stage, error) {
