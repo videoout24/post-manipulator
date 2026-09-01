@@ -1,6 +1,6 @@
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
-import { getProjectRootMap, getProjectRootPost, isLinearProject } from "./ProjectStore.js?v=1.5.9";
+import { getProjectRootMap, getProjectRootPost, isLinearProject } from "./ProjectStore.js?v=1.7.6";
 
 export class ProjectValidator {
   constructor({ richMessageValidator = null } = {}) { this.richMessageValidator = richMessageValidator; }

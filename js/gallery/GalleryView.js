@@ -9,11 +9,12 @@ const TYPE_META = Object.freeze({
 });
 
 export class GalleryView {
-  constructor({ root, gallery, thumbnails, events, layoutPreferences = null }) {
+  constructor({ root, gallery, thumbnails, events, navigation = null, layoutPreferences = null }) {
     this.root = root;
     this.gallery = gallery;
     this.thumbnails = thumbnails;
     this.events = events;
+    this.navigation = navigation;
     this.layoutPreferences = layoutPreferences;
     this.filterType = "all";
     this.filterThread = "all";
@@ -95,6 +96,7 @@ export class GalleryView {
 
       <div class="gallery-toolbar">
         <input id="gallerySearch" class="gallery-search" placeholder="Поиск по подписи, имени, topic…" value="${escapeAttr(this.search)}">
+        <button id="galleryOpenBot">Открыть бота</button>
         <button class="primary" id="galleryUploadFiles">＋ Загрузить файлы</button>
         <button id="galleryNewTopic">＋ Topic</button>
         <label class="gallery-toggle"><input id="galleryDeleteSource" type="checkbox" ${settings.deleteSourceAfterIndexing ? "checked" : ""}> Удалять сообщение после индексирования</label>
@@ -190,6 +192,9 @@ export class GalleryView {
         this.filterThread = String(topic.threadId);
         this.#notice(`Topic «${topic.name}» создан`);
       });
+    });
+    this.root.querySelector("#galleryOpenBot")?.addEventListener("click", () => {
+      if (!this.navigation?.openBot?.()) this.#notice("Не удалось открыть бота: username недоступен", true);
     });
     this.root.querySelector("#galleryUploadFiles")?.addEventListener("click", () => this.#openUploadDialog(topics));
 

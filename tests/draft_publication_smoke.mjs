@@ -25,10 +25,13 @@ const drafts = {
 };
 const sent = [];
 const deleted = [];
+const pinned = [];
 const cleared = [];
 const client = {
   async sendRichMessage(payload) { sent.push(payload); return { message_id: 42, date: 1000 }; },
-  async deleteMessage(chatId, messageId) { deleted.push([chatId, messageId]); return true; }
+  async deleteMessage(chatId, messageId) { deleted.push([chatId, messageId]); return true; },
+  async pinChatMessage(chatId, messageId, options) { pinned.push(["pin", chatId, messageId, options]); return true; },
+  async unpinChatMessage(chatId, messageId) { pinned.push(["unpin", chatId, messageId]); return true; }
 };
 const target = { chatId: -1001, type: "channel", title: "News", status: "ready", commentsEnabled: true, linkedDiscussionChatId: -2001 };
 const service = new PublicationService({
@@ -47,10 +50,21 @@ assert.equal(sent.length, 1);
 assert.equal(drafts.deleted, "d1");
 assert.deepEqual(cleared, ["d1"]);
 assert.equal(record.messageId, 42);
+assert.equal(record.pinned, false);
 assert.equal(publicationDeleteHoursLeft(record, record.publishedAt), 48);
 assert.equal(publicationDeleteHoursLeft({ publishedAt: record.publishedAt }, record.publishedAt), 48, "legacy Project projections use their publication time as the deletion deadline");
 assert.equal(isPublicationDeleteAvailable(record, record.deleteUntil - 1), true);
 assert.equal(isPublicationDeleteAvailable(record, record.deleteUntil), false);
+
+const pinnedRecord = await service.setPinned(record.id, true);
+assert.equal(pinnedRecord.pinned, true);
+assert.ok(pinnedRecord.pinnedAt);
+assert.deepEqual(pinned[0], ["pin", -1001, 42, { disableNotification: true }]);
+assert.equal((await db.get("publications", record.id)).pinned, true);
+const unpinnedRecord = await service.setPinned(record.id, false);
+assert.equal(unpinnedRecord.pinned, false);
+assert.equal(unpinnedRecord.pinnedAt, null);
+assert.deepEqual(pinned[1], ["unpin", -1001, 42]);
 
 const expired = { ...record, id: "expired", deleteUntil: record.publishedAt + 1 };
 await db.put("publications", expired.id, expired);

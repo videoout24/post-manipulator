@@ -4,7 +4,7 @@ const LIVE_PREVIEW_KEY = "livePreviewEnabled";
 const LIVE_MESSAGE_KEY = "liveMessage";
 
 export class PreviewController {
-  constructor({ db, events, client, previewChannelBinding, renderer, validator, tree, treeProvider = null, debounceMs = 850 }) {
+  constructor({ db, events, client, previewChannelBinding, renderer, validator, tree, treeProvider = null, syncGuard = null, debounceMs = 850 }) {
     this.db = db;
     this.events = events;
     this.client = client;
@@ -13,6 +13,7 @@ export class PreviewController {
     this.validator = validator;
     this.tree = tree;
     this.treeProvider = treeProvider;
+    this.syncGuard = syncGuard;
     this.debounceMs = debounceMs;
     this.timer = null;
     this.syncPromise = null;
@@ -43,11 +44,14 @@ export class PreviewController {
 
   schedule({ immediate = false } = {}) {
     clearTimeout(this.timer);
+    this.timer = null;
+    if (!this.#isSyncAllowed()) return false;
     if (immediate) {
       this.timer = setTimeout(() => this.sync().catch(error => this.#emitError(error)), 0);
-      return;
+      return true;
     }
     this.timer = setTimeout(() => this.sync().catch(error => this.#emitError(error)), this.debounceMs);
+    return true;
   }
 
   async sync({ force = false } = {}) {
@@ -75,15 +79,21 @@ export class PreviewController {
   }
 
   async #sync({ force }) {
+    if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     if (!force && !(await this.isEnabled())) return { skipped: "disabled" };
+    if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     if (!this.client.hasToken()) return { skipped: "no_token" };
     const channel = await this.previewChannelBinding.getSlot();
+    if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     if (channel?.status !== "bound") {
       const status = { state: "unavailable", message: "Приватный канал предпросмотра не привязан или недоступен" };
       this.events?.emit("telegram:preview-status", status);
       return { skipped: "channel_not_bound" };
     }
 
+    // The shared Editor tree may switch to a Project while an older standalone
+    // preview timer is awaiting IndexedDB or Telegram. Check the context directly
+    // before reading the tree so Project-only blocks can never reach this message.
     const renderTree = this.treeProvider?.() || this.tree;
     const errors = this.validator.validate(renderTree);
     if (errors.length) {
@@ -101,10 +111,12 @@ export class PreviewController {
     const { richMessage, replyMarkup } = envelope;
     const hash = stableHash(envelope);
     const previous = await this.db.get("preview", LIVE_MESSAGE_KEY, null);
+    if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     if (!force && previous?.hash === hash && Number(previous.chatId) === Number(channel.chatId)) return { skipped: "unchanged", previous };
 
     this.events?.emit("telegram:preview-status", { state: "syncing", message: "Обновление предпросмотра…" });
     if (previous?.messageId && Number(previous.chatId) === Number(channel.chatId)) {
+      if (!this.#isSyncAllowed()) return { skipped: "guarded" };
       try {
         const edited = await this.client.editRichMessage({
           chatId: channel.chatId,
@@ -130,6 +142,7 @@ export class PreviewController {
       }
     }
 
+    if (!this.#isSyncAllowed()) return { skipped: "guarded" };
     const sent = await this.#sendAndPin({ channel, richMessage, replyMarkup });
     const state = await this.#saveMessage({
       message: sent,
@@ -187,6 +200,12 @@ export class PreviewController {
     if (error.errorCode === 403 || /not enough rights|chat not found|bot was kicked|bot is not a member/i.test(error.description || "")) {
       await this.previewChannelBinding.markUnavailable(`telegram_${error.errorCode || "error"}`, error).catch(() => {});
     }
+  }
+
+  #isSyncAllowed() {
+    if (typeof this.syncGuard !== "function") return true;
+    try { return this.syncGuard() !== false; }
+    catch { return false; }
   }
 
   #emitError(error) {

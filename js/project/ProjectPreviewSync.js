@@ -1,7 +1,10 @@
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
 
-const AUTO_SYNC_REASONS = new Set(["post-saved", "post-created", "post-renamed", "backlink-rebound", "saved", "graph-reconciled"]);
+const AUTO_SYNC_REASONS = new Set([
+  "post-saved", "post-created", "post-renamed", "post-reordered", "post-deleted",
+  "backlink-rebound", "saved", "graph-reconciled"
+]);
 
 export class ProjectPreviewSync {
   constructor({ store, compiler, validator, transport, events = null, editorSession = null, autoSyncDelay = 900 } = {}) {

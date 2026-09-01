@@ -1,7 +1,7 @@
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.5.9";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.7.6";
 
 export class PublicationView {
   constructor({
@@ -185,6 +185,12 @@ export class PublicationView {
       onSelect: target => this.events?.emit?.("links:target-selected", target),
       onOpenLinkedSource: target => this.#openLinkedSource(target)
     });
+    const pin = button("📌", () => this.#togglePinned(record, pin), "publication-record-pin");
+    pin.classList.toggle("active", Boolean(record.pinned));
+    pin.title = scheduled ? "Пост ещё не опубликован" : record.pinned ? "Распинить пост" : "Запинить пост";
+    pin.setAttribute("aria-label", pin.title);
+    pin.setAttribute("aria-pressed", String(Boolean(record.pinned)));
+    pin.disabled = scheduled;
     const open = button("👁", () => this.#openMessage(record), "publication-record-open");
     open.title = scheduled ? "Пост ещё не опубликован" : "Открыть сообщение в Telegram";
     open.disabled = scheduled;
@@ -194,7 +200,7 @@ export class PublicationView {
       : isPublicationDeleteAvailable(record)
       ? (projectPost ? "Удалить Project post из Telegram и вернуть его в черновик" : "Удалить сообщение из Telegram")
       : "Проверить публикацию и при необходимости убрать локальную проекцию";
-    tools.append(edit, link, open, remove);
+    tools.append(edit, link, pin, open, remove);
     head.append(identity, tools);
     const reactionRow = el("div", "publication-reaction-row");
     const stats = el("div", "publication-record-stats");
@@ -310,6 +316,24 @@ export class PublicationView {
 
   #openLinkedSource(target) {
     this.events?.emit?.("links:open-linked-source-requested", target);
+  }
+
+  async #togglePinned(record, pinButton) {
+    if (record?.scheduledAt || !record?.messageId || !this.telegramCore?.publications?.setPinned) return false;
+    pinButton.disabled = true;
+    try {
+      const updated = await this.telegramCore.publications.setPinned(record.id, !record.pinned);
+      this.notifications?.show?.({
+        message: updated.pinned ? "Пост закреплён" : "Пост откреплён",
+        type: "success"
+      });
+      return true;
+    } catch (error) {
+      this.notifications?.show?.({ message: `Закрепление: ${error?.message || error}`, type: "error" });
+      return false;
+    } finally {
+      if (pinButton.isConnected) pinButton.disabled = false;
+    }
   }
 
   async #editPublication(record) {

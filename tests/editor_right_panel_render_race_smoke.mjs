@@ -15,7 +15,10 @@ class FakeElement {
   append(...nodes) {
     for (const node of nodes) {
       if (node?.isFragment) this.children.push(...node.children);
-      else this.children.push(node);
+      else {
+        this.children.push(node);
+        if (node) node.parentElement = this;
+      }
     }
     this.lastElementChild = this.children.at(-1) || null;
   }
@@ -28,6 +31,13 @@ class FakeElement {
   setAttribute() {}
   querySelector() { return null; }
   closest() { return null; }
+  focus() {}
+  select() {}
+  remove() {
+    if (!this.parentElement) return;
+    this.parentElement.children = this.parentElement.children.filter(child => child !== this);
+    this.parentElement = null;
+  }
   set innerHTML(value) { if (value === "") this.children = []; }
 }
 
@@ -37,8 +47,10 @@ globalThis.document = {
 };
 
 const pending = [];
+const renamed = [];
 const drafts = {
-  list: () => new Promise(resolve => pending.push(resolve))
+  list: () => new Promise(resolve => pending.push(resolve)),
+  async rename(id, title) { renamed.push([id, title]); return { id, title }; }
 };
 const root = new FakeElement("aside");
 const layout = new FakeElement("main");
@@ -65,6 +77,17 @@ await olderRender;
 assert.equal(root.children.length, 2, "only one header and one Draft list may be committed");
 assert.equal(root.children[1].children.length, 1, "one stored Draft must produce one card");
 assert.equal(root.children[1].children[0].dataset.draftId, row.id);
+
+const draftCard = root.children[1].children[0];
+const renameButton = draftCard.children[0].children[1].children[1];
+renameButton.onclick({ stopPropagation() {} });
+const renameOverlay = draftCard.children.at(-1);
+const renameInput = renameOverlay.children[0];
+const renameSave = renameOverlay.children[1].children[1];
+renameInput.value = "Renamed Draft";
+renameSave.onclick({ stopPropagation() {} });
+await new Promise(resolve => queueMicrotask(resolve));
+assert.deepEqual(renamed, [[row.id, "Renamed Draft"]], "the inline editor must pass the new title to DraftStore");
 
 const projectEvents = new EventBus();
 const projectRoot = new FakeElement("aside");

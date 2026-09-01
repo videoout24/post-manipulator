@@ -168,6 +168,12 @@ export class TelegramClient {
       disable_notification: disableNotification
     }, options);
   }
+  unpinChatMessage(chatId, messageId, options) {
+    return this.call("unpinChatMessage", {
+      chat_id: chatId,
+      message_id: messageId
+    }, options);
+  }
   sendRichMessage({ chatId, messageThreadId, richMessage, replyMarkup, disableNotification = true } = {}, options) {
     return this.call("sendRichMessage", {
       chat_id: chatId,
@@ -238,6 +244,7 @@ function isScheduledMutation(method) {
     "editMessageText",
     "deleteMessage",
     "pinChatMessage",
+    "unpinChatMessage",
     "createForumTopic",
     "deleteForumTopic",
     "editForumTopic"

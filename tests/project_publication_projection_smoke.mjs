@@ -72,6 +72,7 @@ for (const post of project.posts) {
   assert.equal(record.source.kind, "project");
   assert.equal(record.source.projectId, project.id);
   assert.equal(record.source.postId, post.id);
+  assert.equal(record.pinned, false);
   assert.equal(record.commentsEnabled, false, "Project publishing can disable comments in a channel with a discussion group");
   assert.equal(hasUnappliedProductionChanges(project, post), false, "a freshly published post has no unapplied changes");
 }
@@ -92,11 +93,17 @@ project = await store.getProject(project.id);
 assert.equal(hasUnappliedProductionChanges(project, project.posts.find(post => post.id === article.id)), true, "a changed source post requires an Apply action");
 assert.equal(hasUnappliedProductionChanges(project, project.posts.find(post => post.id === mapPost.id)), false, "a dependent Post Map does not show Apply for another post's edit");
 
+const pinnedArticleRecord = await db.get("publications", projectPublicationId(project.id, article.id));
+pinnedArticleRecord.pinned = true;
+pinnedArticleRecord.pinnedAt = Date.now();
+await db.put("publications", pinnedArticleRecord.id, pinnedArticleRecord);
+
 edited.length = 0;
 await service.applyChanges(project.id, article.id);
 assert.equal(edited.length, 2, "editing a target post also refreshes dependent Project Maps");
 project = await store.getProject(project.id);
 assert.equal(hasUnappliedProductionChanges(project, project.posts.find(post => post.id === article.id)), false, "applying refreshes the production baseline");
+assert.equal((await db.get("publications", projectPublicationId(project.id, article.id))).pinned, true, "editing a pinned Project post must preserve its pin state");
 
 const articleProjectionId = projectPublicationId(project.id, article.id);
 const expiredArticleRecord = await db.get("publications", articleProjectionId);

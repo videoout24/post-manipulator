@@ -7,7 +7,7 @@ import { Validator } from '../js/core/Validator.js?v=1.5.9';
 import { registerTelegramCore } from '../js/blocks/registerCoreBlocks.js?v=1.5.9';
 import { registerProjectBlocks } from '../js/blocks/registerProjectBlocks.js?v=1.5.9';
 import { TelegramRenderer } from '../js/telegram/TelegramRenderer.js?v=1.5.9';
-import { ProjectStore } from '../js/project/ProjectStore.js?v=1.5.9';
+import { ProjectStore, getProjectRootMap } from '../js/project/ProjectStore.js?v=1.7.6';
 import { ProjectCompiler } from '../js/project/ProjectCompiler.js?v=1.5.9';
 import { ProjectValidator } from '../js/project/ProjectValidator.js?v=1.5.9';
 import { ProjectGraphReconciler } from '../js/project/ProjectGraphReconciler.js?v=1.5.9';
@@ -33,12 +33,12 @@ const validator=new ProjectValidator({richMessageValidator:new Validator(registr
 const compiler=new ProjectCompiler();
 const renderer=new TelegramRenderer(registry);
 class Transport {
-  constructor(){ this.next=100; this.channel={chatId:-100500}; this.syncCalls=[]; }
+  constructor(){ this.next=100; this.channel={chatId:-100500}; this.syncCalls=[]; this.deleteCalls=[]; }
   async getChannel(){ return this.channel; }
   render(tree){ return renderer.renderEnvelope(tree); }
   async sendEnvelope(){ return {message_id:++this.next}; }
   async syncEnvelope(id){ this.syncCalls.push(Number(id)); return {action:'edited',message:{message_id:Number(id)}}; }
-  async deleteDeployment(){ return true; }
+  async deleteDeployment(deployment){ this.deleteCalls.push(Number(deployment?.messageId)); return true; }
 }
 const transport=new Transport();
 const sync=new ProjectPreviewSync({store,compiler,validator,transport,events,autoSyncDelay:120});
@@ -61,5 +61,19 @@ await sleep(450);
 assert(transport.syncCalls.includes(idOf(target)),'edited post must autosync');
 assert(transport.syncCalls.includes(idOf(mapHost)),'dependent Map host must autosync');
 assert(!transport.syncCalls.includes(idOf(unrelated)),'unrelated post must not autosync');
+
+transport.syncCalls=[];
+await store.movePost(project.id,unrelated,'up');
+await sleep(450);
+project=await store.getProject(project.id);
+assert.deepEqual(getProjectRootMap(project).props.slots.map(slot=>slot.targetPostId),[unrelated,target],'slot order must persist');
+assert(transport.syncCalls.includes(idOf(mapHost)),'reordering must autosync the preview Map host');
+assert(!transport.syncCalls.includes(idOf(target)) && !transport.syncCalls.includes(idOf(unrelated)),'reordering must not rewrite unchanged child previews');
+
+transport.syncCalls=[];
+await store.deletePost(project.id,unrelated);
+await sleep(450);
+assert(transport.syncCalls.includes(idOf(mapHost)),'deleting a post must autosync the preview Map host');
+assert(transport.deleteCalls.includes(idOf(unrelated)),'deleting a post must remove its preview deployment');
 sync.stop(); reconciler.stop();
 console.log('Project autosync v1.4.2 smoke: OK');

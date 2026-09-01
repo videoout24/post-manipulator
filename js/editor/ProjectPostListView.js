@@ -2,6 +2,7 @@ import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.5.9";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "../project/ProjectPublicationEligibility.js?v=1.5.9";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
+import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
 export function createProjectPostListView({
   project,
@@ -16,7 +17,8 @@ export function createProjectPostListView({
   onPublish = null,
   onSchedule = null,
   onCancelSchedule = null,
-  onApplyChanges = null
+  onApplyChanges = null,
+  onDelete = null
 } = {}) {
   const fragment = document.createDocumentFragment();
   const head = el("div", "project-panel-head");
@@ -37,6 +39,20 @@ export function createProjectPostListView({
       createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }),
       button("✎", "Переименовать", () => showRenameEditor(card, post, onRename))
     ];
+    const remove = button("🗑", "Удалить пост", () => showCardDeleteConfirmation(card, {
+      message: `Удалить «${post.title || "Пост"}» из проекта?`,
+      onConfirm: () => onDelete?.(post)
+    }));
+    remove.classList.add("danger-soft");
+    const isRoot = String(post.id) === String(project?.structure?.rootPostId || "");
+    const isPublished = post?.publication?.state === "published" || Boolean(post?.deployments?.production?.messageId);
+    remove.disabled = isRoot || isPublished || !onDelete;
+    remove.title = isRoot
+      ? "Стартовый пост содержит карту и удаляется только вместе с проектом"
+      : isPublished
+        ? "Сначала удалите публикацию поста"
+        : "Удалить пост из проекта";
+    cardActions.push(remove);
     card = createProjectPostCard({
       post,
       variant: "compact",

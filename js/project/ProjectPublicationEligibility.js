@@ -1,5 +1,5 @@
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
-import { isLinearProject } from "./ProjectStore.js?v=1.5.9";
+import { isLinearProject } from "./ProjectStore.js?v=1.7.6";
 
 export function getProjectPostPublicationEligibility(project, postId, index = null) {
   const post = project?.posts?.find?.(item => String(item.id) === String(postId)) || null;

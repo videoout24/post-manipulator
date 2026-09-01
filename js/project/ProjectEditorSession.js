@@ -4,7 +4,7 @@ import {
   isLinearProject,
   isProjectRootMapNode,
   protectedProjectNodeError
-} from "./ProjectStore.js?v=1.5.9";
+} from "./ProjectStore.js?v=1.7.6";
 
 const SESSION_KEY = "project.editor.session";
 
@@ -253,6 +253,10 @@ export class ProjectEditorSession {
     if (!this.activeProjectId || !isLinearProject(this.project)) throw new Error("Карта проекта недоступна");
     await this.flush();
     this.project = await this.store.movePost(this.activeProjectId, postId, direction);
+    const active = this.project.posts?.find(post => String(post.id) === String(this.activePostId));
+    if (active && stableAst(this.tree.toJSON()) !== stableAst(active.messageAst)) {
+      this.#replaceTree(active.messageAst);
+    }
     this.#emit("post-reordered");
     return this.snapshot();
   }
@@ -288,6 +292,11 @@ export class ProjectEditorSession {
       this.activePostId = next?.id || null;
       this.#replaceTree(next?.messageAst || createEmptyDocumentAst());
       await this.#persistSession();
+    } else {
+      const active = this.project.posts.find(post => String(post.id) === String(this.activePostId));
+      if (active && stableAst(this.tree.toJSON()) !== stableAst(active.messageAst)) {
+        this.#replaceTree(active.messageAst);
+      }
     }
     this.#emit("post-deleted");
     return this.snapshot();

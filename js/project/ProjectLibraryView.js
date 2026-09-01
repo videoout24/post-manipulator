@@ -191,7 +191,12 @@ export class ProjectLibraryView {
     }
     for (const post of project.posts) {
       const eligibility = getProjectPostPublicationEligibility(project, post.id, projectIndex);
-      cards.append(createProjectPostCard({
+      let card = null;
+      const deleteButton = this.#postDeleteButton(project, post, () => showCardDeleteConfirmation(card, {
+        message: `Удалить «${post.title || "Пост"}» из проекта?`,
+        onConfirm: () => this.#deletePost(project, post)
+      }));
+      card = createProjectPostCard({
         post,
         variant: "overview",
         selected: post.id === selectedPostId,
@@ -211,7 +216,8 @@ export class ProjectLibraryView {
             linkedTargets: this.linkedTargets,
             onSelect: target => this.#selectLinkTarget(target),
             onOpenLinkedSource: target => this.#openLinkedSource(target)
-          })
+          }),
+          deleteButton
         ],
         onNavigatePost: targetPostId => this.#navigateToProjectPost(project, activeId, targetPostId),
         onNavigateMap: targetMapId => {
@@ -223,7 +229,8 @@ export class ProjectLibraryView {
           this.#renderDetail(project, activeId, selectedPost.id);
           this.#renderPostPanel(project, activeId, selectedPost.id);
         }
-      }));
+      });
+      cards.append(card);
     }
 
     root.append(head, meta, cards);
@@ -265,6 +272,11 @@ export class ProjectLibraryView {
     const open = button("Открыть в Editor", () => this.#openProject(project, post), "primary");
     open.title = "Открыть выбранный пост в Editor";
     actions.append(open);
+    const remove = this.#postDeleteButton(project, post, () => showCardDeleteConfirmation(root, {
+      message: `Удалить «${post.title || "Пост"}» из проекта?`,
+      onConfirm: () => this.#deletePost(project, post)
+    }), { label: "Удалить пост" });
+    actions.append(remove);
 
     const data = el("dl", "post-detail-panel-data");
     appendPostData(data, "Проект", project.title);
@@ -408,6 +420,34 @@ export class ProjectLibraryView {
       if (this.selectedProjectId === project.id) this.selectedProjectId = null;
       return true;
     });
+  }
+
+  #postDeleteButton(project, post, handler, { label = "🗑" } = {}) {
+    const remove = button(label, handler, "danger-soft");
+    const isRoot = String(post?.id || "") === String(project?.structure?.rootPostId || "");
+    const isPublished = post?.publication?.state === "published" || Boolean(post?.deployments?.production?.messageId);
+    remove.disabled = isRoot || isPublished;
+    remove.title = isRoot
+      ? "Стартовый пост содержит карту и удаляется только вместе с проектом"
+      : isPublished
+        ? "Сначала удалите публикацию поста"
+        : "Удалить пост из проекта";
+    remove.setAttribute("aria-label", remove.title);
+    return remove;
+  }
+
+  async #deletePost(project, post) {
+    const result = await this.#run(async () => {
+      const index = project.posts.findIndex(item => String(item.id) === String(post.id));
+      const fallback = project.posts[index + 1] || project.posts[index - 1] || null;
+      if (this.session.activeProjectId === project.id) await this.session.deletePost(post.id);
+      else await this.store.deletePost(project.id, post.id);
+      if (this.selectedPosts.get(project.id) === post.id) {
+        this.selectedPosts.set(project.id, fallback?.id || null);
+      }
+      return true;
+    });
+    return result === true;
   }
 
   async #run(action) {

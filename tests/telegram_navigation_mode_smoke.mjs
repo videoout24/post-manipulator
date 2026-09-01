@@ -29,6 +29,8 @@ nav.openBotStart({ token: 'owner-token' });
 assert.equal(telegramLinks.at(-1), 'https://t.me/publisher_bot?start=owner-token');
 nav.openPrivateMessage({ chatId: -1001234567890, messageId: 10 });
 assert.equal(telegramLinks.at(-1), 'https://t.me/c/1234567890/10');
+nav.openBot('BotFather');
+assert.equal(telegramLinks.at(-1), 'https://t.me/BotFather');
 assert.equal(clicks.length, 0, 'Mini App navigation must use Telegram.WebApp instead of synthetic links');
 await nav.setNativeIntegration(false);
 nav.openBotStart({ token: 'owner-token' });

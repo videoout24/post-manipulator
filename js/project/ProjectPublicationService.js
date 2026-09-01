@@ -2,7 +2,7 @@ import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";
 import { productionContentSnapshot } from "./ProjectPublicationState.js?v=1.5.9";
-import { isLinearProject } from "./ProjectStore.js?v=1.5.9";
+import { isLinearProject } from "./ProjectStore.js?v=1.7.6";
 import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.5.9";
 
 const MAX_TIMER_DELAY = 2_147_000_000;
@@ -19,8 +19,12 @@ export class ProjectPublicationService {
   constructor({ db, store, compiler, validator, client, renderer, targets, events = null, editorSession = null } = {}) {
     Object.assign(this, { db, store, compiler, validator, client, renderer, targets, events, editorSession });
     this.scheduleTimers = new Map();
+    this.structureSyncs = new Map();
     this.unsubscribers = [
-      this.events?.on?.("project:changed", event => this.#syncProjectSchedules(event?.project)),
+      this.events?.on?.("project:changed", event => {
+        this.#syncProjectSchedules(event?.project);
+        if (["post-reordered", "post-deleted"].includes(event?.reason)) this.#queueStructureSync(event);
+      }),
       this.events?.on?.("project:post-removed", event => this.#cleanupRemovedScheduledPost(event).catch(() => {})),
       this.events?.on?.("project:removed", event => this.#cleanupRemovedProjectSchedules(event).catch(() => {}))
     ].filter(Boolean);
@@ -33,6 +37,7 @@ export class ProjectPublicationService {
   stop() {
     for (const entry of this.scheduleTimers.values()) clearTimeout(entry.timer);
     this.scheduleTimers.clear();
+    this.structureSyncs.clear();
     for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe?.();
   }
 
@@ -99,6 +104,26 @@ export class ProjectPublicationService {
     project = await this.#syncPosts(project, affected, target, { allowCreate: false, phase: "updating" });
     this.#emit("updated", project, { target, total: affected.length, current: affected.length, postIds: affected });
     return { project, target, postIds: affected };
+  }
+
+  async syncPublishedStructure(projectId, affectedPostIds = []) {
+    if (!projectId) throw new Error("Project id is required");
+    let project = await this.store.getProject(projectId);
+    if (!project) return { project: null, postIds: [], skipped: "project-missing" };
+    const requested = new Set((affectedPostIds || []).filter(Boolean).map(String));
+    const postIds = project.posts
+      .filter(post => requested.has(String(post.id)) && post.deployments?.production?.messageId)
+      .map(post => String(post.id));
+    if (!postIds.length) return { project, postIds, skipped: "no-published-structure" };
+
+    this.#validate(project);
+    const chatIds = new Set(postIds.map(id => Number(project.posts.find(post => String(post.id) === id)?.deployments?.production?.chatId || 0)).filter(Boolean));
+    if (chatIds.size !== 1) throw new Error("Структурные посты Project опубликованы в разных каналах");
+    const target = await this.#requireTarget([...chatIds][0]);
+    this.#emit("updating", project, { target, total: postIds.length, current: 0, postIds, structural: true });
+    project = await this.#syncPosts(project, postIds, target, { allowCreate: false, phase: "updating" });
+    this.#emit("updated", project, { target, total: postIds.length, current: postIds.length, postIds, structural: true });
+    return { project, target, postIds };
   }
 
   async publishPost(projectId, postId, targetChatId, { commentsEnabled = true } = {}) {
@@ -406,6 +431,8 @@ export class ProjectPublicationService {
       discussionUsername: target.linkedDiscussionUsername || "",
       discussionMessageId: existing?.discussionMessageId || null,
       commentsDisabled: Boolean(existing?.commentsDisabled),
+      pinned: Boolean(existing?.pinned),
+      pinnedAt: existing?.pinned ? (existing.pinnedAt || null) : null,
       commentMessageIds: existing?.commentMessageIds || [],
       commentCount: Number(existing?.commentCount || 0),
       reactionCount: Number(existing?.reactionCount || 0),
@@ -443,6 +470,8 @@ export class ProjectPublicationService {
       discussionUsername: target.linkedDiscussionUsername || "",
       discussionMessageId: null,
       commentsDisabled: false,
+      pinned: false,
+      pinnedAt: null,
       commentMessageIds: [],
       commentCount: 0,
       reactionCount: 0,
@@ -509,6 +538,25 @@ export class ProjectPublicationService {
     for (const key of this.scheduleTimers.keys()) {
       if (key.startsWith(`${projectId}:`)) this.#clearScheduleByKey(key);
     }
+  }
+
+  #queueStructureSync({ projectId, affectedPostIds = [] } = {}) {
+    if (!projectId) return;
+    const previous = this.structureSyncs.get(projectId) || Promise.resolve();
+    const current = previous.catch(() => {}).then(() => this.syncPublishedStructure(projectId, affectedPostIds));
+    this.structureSyncs.set(projectId, current);
+    current.catch(error => {
+      this.store.getProject(projectId).then(project => {
+        this.#emit("partial", project, {
+          postIds: (affectedPostIds || []).map(String),
+          structural: true,
+          error,
+          message: error?.message || String(error)
+        });
+      }).catch(() => {});
+    }).finally(() => {
+      if (this.structureSyncs.get(projectId) === current) this.structureSyncs.delete(projectId);
+    });
   }
 
   async #cleanupRemovedScheduledPost({ projectId, post } = {}) {

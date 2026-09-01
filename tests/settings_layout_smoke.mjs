@@ -5,6 +5,7 @@ const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const css = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
 const app = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8');
 const navigation = fs.readFileSync(new URL('../js/app/AppNavigation.js', import.meta.url), 'utf8');
+const telegramSettings = fs.readFileSync(new URL('../js/telegram/TelegramSettingsView.js', import.meta.url), 'utf8');
 
 assert(!/data-tab=["']settings["']/.test(html), 'Settings must not appear as a top tab');
 assert(/id=["']openSettingsFromBrand["']/.test(html), 'Brand must be the Settings entry point');
@@ -16,6 +17,10 @@ assert(/class=["'][^"']*settings-cards/.test(html), 'Right settings card stack m
 assert.equal((html.match(/id=["']tgRuntimeStatus["']/g) || []).length, 1, 'Runtime status ID must remain unique');
 assert(/grid-template-columns:\s*220px\s+minmax\(0,\s*1fr\)/.test(css), 'Settings layout must be two-column');
 assert(/\.settings-cards\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/.test(css), 'Settings cards must be vertical');
+assert(/class="settings-actions settings-runtime-actions"[\s\S]*?id="tgStart"[\s\S]*?id="tgStop"[\s\S]*?id="tgClearWebhook"[\s\S]*?id="tgOpenBotFather"[\s\S]*?<\/div>/.test(html), 'Runtime controls and BotFather must share one ordered row');
+assert(/\.settings-runtime-actions\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), 'Runtime controls must stay on one line');
+assert(/\.settings-runtime-actions \.settings-action-end\s*\{[^}]*margin-left:\s*auto/.test(css), 'BotFather must align to the right');
+assert(/#tgOpenBotFather[\s\S]*?openBot\?\.\("BotFather"\)/.test(telegramSettings), 'BotFather must open through Telegram navigation');
 assert(/this\.#listen\(this\.settingsBrandButton,\s*["']click["'],\s*\(\)\s*=>\s*this\.activateTab\(["']settings["']\)\)/.test(navigation), 'Brand click must activate Settings');
 
 console.log('settings layout smoke: OK');

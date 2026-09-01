@@ -7,6 +7,7 @@ const runtime = fs.readFileSync(new URL("../js/telegram/TelegramRuntime.js", imp
 const service = fs.readFileSync(new URL("../js/telegram/PublicationTargetService.js", import.meta.url), "utf8");
 const panel = fs.readFileSync(new URL("../js/editor/EditorRightPanel.js", import.meta.url), "utf8");
 const publicationService = fs.readFileSync(new URL("../js/telegram/PublicationService.js", import.meta.url), "utf8");
+const client = fs.readFileSync(new URL("../js/telegram/TelegramClient.js", import.meta.url), "utf8");
 
 assert.match(html, /id="publicationsApp"/);
 assert.match(view, /\+ Добавить канал \/ группу/);
@@ -42,6 +43,10 @@ assert.match(view, /requestProjectPostSchedule/);
 assert.doesNotMatch(view, /comments\.disabled = commentsField\.hidden \|\| target\?\.discussionRights/);
 assert.match(view, /await this\.telegramCore\.publications\.refreshTarget\(targetChatId\)/);
 assert.match(view, /publication-record-open/);
+assert.match(view, /publication-record-pin/);
+assert.match(view, /tools\.append\(edit, link, pin, open, remove\)/);
+assert.match(view, /record\.pinned \? "Распинить пост" : "Запинить пост"/);
+assert.match(view, /pin\.setAttribute\("aria-pressed"/);
 assert.match(view, /publication-record-edit/);
 assert.match(view, /publication-record-delete/);
 assert.match(view, /await this\.telegramCore\.publications\.delete\(record\.id\)[\s\S]*?this\.publications = await this\.telegramCore\.publications\.list\(\)/);
@@ -66,5 +71,7 @@ assert.match(view, /target\.linkedDiscussionTitle \|\| "Группа обсуж�
 assert.match(view, /incompleteChannels[\s\S]*?refreshTarget/);
 assert.match(view, /visibility === "public" \? "Публичный" : "Приватный"/);
 assert.match(publicationService, /this\.#reconcilePendingForward\(record\)\.catch/);
+assert.match(publicationService, /async setPinned\(recordId, pinned\)/);
+assert.match(client, /unpinChatMessage\(chatId, messageId, options\)/);
 
 console.log("publications UI contract smoke: OK");

@@ -1,5 +1,5 @@
 import { createDraftListView } from "./DraftListView.js?v=1.5.9";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.5.9";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.7.6";
 
 export class EditorRightPanel {
   constructor({
@@ -127,7 +127,8 @@ export class EditorRightPanel {
       onPublish: post => this.#publishProjectPost(post),
       onSchedule: post => this.#scheduleProjectPost(post),
       onCancelSchedule: post => this.#cancelProjectPostSchedule(post),
-      onApplyChanges: post => this.#applyProjectChanges(post)
+      onApplyChanges: post => this.#applyProjectChanges(post),
+      onDelete: post => this.#deleteProjectPost(post)
     }));
   }
 
@@ -145,7 +146,7 @@ export class EditorRightPanel {
       activeDraftId: this.draftSession?.activeDraftId,
       onClose: () => this.showProject(),
       onOpen: draft => this.#run(() => this.#loadDraft(draft)),
-      onRename: draft => this.#renameDraft(draft),
+      onRename: (draft, title) => this.#renameDraft(draft, title),
       onDelete: draft => this.#deleteDraft(draft),
       onMoveToProject: draft => this.#moveDraftToProject(draft),
       onPublish: draft => this.#requestDraftPublication(draft),
@@ -291,6 +292,11 @@ export class EditorRightPanel {
 
   async #renamePost(post, title) {
     return this.#run(() => this.session.renamePost(post.id, title));
+  }
+
+  async #deleteProjectPost(post) {
+    const result = await this.#run(() => this.session.deletePost(post.id));
+    return Boolean(result);
   }
 
   async #run(action) {

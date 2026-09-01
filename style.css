@@ -577,6 +577,8 @@ body.drag-delete-active::before {
 .publication-record-tools button { width: 27px; height: 25px; padding: 0; font-size: 10px; }
 .publication-record-delete { color: #d88b95; border-color: #55353a; background: #26191c; }
 .publication-record-edit { color: #a9cfff; border-color: #3f6fae; background: #17355a; }
+.publication-record-pin { color: #8294a8; }
+.publication-record-pin.active { border-color: #78632d; background: #302713; color: #f1ca68; }
 .publication-record-link-target { color: #91a3b7; }
 .publication-reaction-row { display: flex; align-items: center; gap: 5px; overflow-x: auto; padding: 2px 0; scrollbar-width: thin; }
 .publication-record-stats { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
@@ -712,6 +714,9 @@ body.drag-delete-active::before {
 .settings-state { padding: 9px 10px; border: 1px solid #2c394a; border-radius: 7px; background: #0c121a; color: #b5c0ce; font-size: 11px; }
 .settings-actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
 .settings-actions.secondary { margin-top: 6px; }
+.settings-runtime-actions { flex-wrap: nowrap; overflow-x: auto; }
+.settings-runtime-actions button { flex: 0 0 auto; white-space: nowrap; }
+.settings-runtime-actions .settings-action-end { margin-left: auto; }
 .settings-actions button, .button-link { padding: 7px 10px; border: 1px solid #3a4658; border-radius: 6px; background: #18202c; color: #c5d0dc; font: inherit; font-size: 10px; text-decoration: none; cursor: pointer; }
 .settings-actions button:hover, .button-link:hover { background: #202b39; }
 .settings-actions .primary, .button-link { border-color: #3b67a7; background: #16335c; color: #cde2ff; }
@@ -1274,8 +1279,11 @@ body.resizing-layout * { cursor: col-resize !important; }
 /* v1.2.1 — semantic palette elements + compact Unicode emoji picker */
 .basic-emoji-picker {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); gap: 4px;
-  padding: 7px; border-top: 1px solid #2a3747; background: #0c131c; max-height: 176px; overflow-y: auto;
+  height: 147px; max-height: 147px; align-content: start;
+  padding: 7px; border-top: 1px solid #2a3747; background: #0c131c; overflow-y: auto;
+  scrollbar-width: none; -ms-overflow-style: none;
 }
+.basic-emoji-picker::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .basic-emoji-picker button {
   min-width: 30px; height: 30px; padding: 2px; display: grid; place-items: center;
   font-size: 17px; border-radius: 6px; background: #151f2c;
@@ -1331,6 +1339,8 @@ body.resizing-layout * { cursor: col-resize !important; }
 .project-post-card-actions { display: flex; gap: 3px; opacity: .55; }
 .project-post-card:hover .project-post-card-actions, .project-post-card.active .project-post-card-actions { opacity: 1; }
 .project-post-card-actions button { width: 24px; height: 24px; padding: 0; border-radius: 5px; font-size: 10px; color: #91a3b7; }
+.project-post-card-actions button.danger-soft { color: #d8a4aa; border-color: #55353a; background: #26191c; }
+.project-post-card-actions button.danger-soft:hover:not(:disabled) { background: #321e22; }
 .project-post-card-overlay {
   position: absolute; inset: 0; z-index: 3; display: grid; align-content: center; gap: 7px;
   padding: 8px; border-radius: inherit; background: #1d1418f5; cursor: default;

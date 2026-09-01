@@ -74,6 +74,9 @@ export class TelegramSettingsView {
       await this.runtime.clearWebhook();
       this.#notice("Webhook отключён. Long polling можно запускать.");
     }));
+    this.root.querySelector("#tgOpenBotFather")?.addEventListener("click", () => {
+      if (!this.navigation?.openBot?.("BotFather")) this.#notice("Не удалось открыть BotFather", true);
+    });
 
     this.root.querySelector("#tgUnbindOwner")?.addEventListener("click", () => this.#unbindOwner());
 

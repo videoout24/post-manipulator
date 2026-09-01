@@ -70,6 +70,8 @@ export class PublicationService {
       discussionUsername: target.linkedDiscussionUsername || "",
       discussionMessageId: null,
       commentsDisabled: false,
+      pinned: false,
+      pinnedAt: null,
       commentMessageIds: [],
       commentCount: 0,
       reactionCount: 0,
@@ -103,6 +105,28 @@ export class PublicationService {
     await this.#handleAutomaticForward(pendingForward);
     await this.db.delete("runtime", pendingKey);
     return true;
+  }
+
+  async setPinned(recordId, pinned) {
+    const record = await this.db.get("publications", recordId, null);
+    if (!record) throw new Error("Публикация не найдена");
+    if (record.scheduledAt || !record.chatId || !record.messageId) {
+      throw new Error("Можно закрепить только опубликованный пост");
+    }
+    const nextPinned = Boolean(pinned);
+    if (nextPinned === Boolean(record.pinned)) return structuredClone(record);
+
+    if (nextPinned) {
+      await this.client.pinChatMessage(record.chatId, record.messageId, { disableNotification: true });
+    } else {
+      await this.client.unpinChatMessage(record.chatId, record.messageId);
+    }
+    record.pinned = nextPinned;
+    record.pinnedAt = nextPinned ? Date.now() : null;
+    await this.db.put("publications", record.id, record);
+    this.events?.emit("telegram:publication-updated", structuredClone(record));
+    this.events?.emit("telegram:publications-changed", await this.list());
+    return structuredClone(record);
   }
 
   async delete(recordId) {

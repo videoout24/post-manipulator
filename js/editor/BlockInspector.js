@@ -24,6 +24,7 @@ import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
 import { findLinkRelationAtRange, findLinkRelationById } from "../links/LinkRelationAst.js?v=1.5.9";
+import { AVAILABLE_EMOJIS } from "./EmojiCatalog.js?v=1.7.6";
 
 export class BlockInspector {
   constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, events = null }) {
@@ -591,13 +592,25 @@ export class BlockInspector {
       up.textContent = "↑";
       up.title = "Переместить пост выше";
       up.disabled = index === 0;
-      up.onclick = () => this.projectContext?.movePostInMap?.(slot?.targetPostId, "up");
       const down = document.createElement("button");
       down.type = "button";
       down.textContent = "↓";
       down.title = "Переместить пост ниже";
       down.disabled = index === slots.length - 1;
-      down.onclick = () => this.projectContext?.movePostInMap?.(slot?.targetPostId, "down");
+      const move = async direction => {
+        up.disabled = down.disabled = true;
+        try {
+          await this.projectContext?.movePostInMap?.(slot?.targetPostId, direction);
+        } catch (error) {
+          this.controller.events?.emit?.("ui:error", { message: error?.message || String(error), error });
+          if (row.isConnected) {
+            up.disabled = index === 0;
+            down.disabled = index === slots.length - 1;
+          }
+        }
+      };
+      up.onclick = () => move("up");
+      down.onclick = () => move("down");
       controls.append(up, down);
       row.append(label, controls);
       list.append(row);
@@ -1182,9 +1195,9 @@ export class BlockInspector {
     }
 
     state.toolbarHost = host;
-    for (const formatId of formats) {
+    const appendFormatButton = formatId => {
       const format = this.registry.properties.formatting.get(formatId);
-      if (!format) continue;
+      if (!format) return;
       const button = document.createElement("button");
       button.type = "button";
       button.className = "rich-format-button";
@@ -1194,18 +1207,26 @@ export class BlockInspector {
       button.onmousedown = e => e.preventDefault();
       button.onclick = () => this.applyRichTextFormatToState(stateGetter?.(), format);
       host.append(button);
-    }
+    };
+    if (formats.includes("date_time")) appendFormatButton("date_time");
 
     const emoji = document.createElement("button");
     emoji.type = "button";
     emoji.className = "rich-format-button emoji-toggle-button";
     emoji.textContent = "😀";
-    emoji.title = "Базовые emoji";
+    emoji.title = "Emoji";
+    emoji.setAttribute("aria-label", "Открыть emoji");
     emoji.onmousedown = e => e.preventDefault();
     emoji.setAttribute("aria-expanded", "false");
     emoji.onclick = () => this.toggleEmojiPicker(stateGetter?.());
     if (state) state.emojiToggleButton = emoji;
     host.append(emoji);
+
+    if (formats.includes("custom_emoji")) appendFormatButton("custom_emoji");
+    for (const formatId of formats) {
+      if (formatId === "date_time" || formatId === "custom_emoji") continue;
+      appendFormatButton(formatId);
+    }
 
     const inherit = document.createElement("label");
     inherit.className = "rich-style-inherit";
@@ -1407,7 +1428,7 @@ export class BlockInspector {
     host.innerHTML = "";
     const picker = document.createElement("div");
     picker.className = "basic-emoji-picker";
-    for (const value of BASIC_EMOJIS) {
+    for (const value of AVAILABLE_EMOJIS) {
       const button = document.createElement("button");
       button.type = "button";
       button.textContent = value;
@@ -2705,12 +2726,6 @@ function textDelta(previous, next) {
   while (aEnd > start && bEnd > start && a[aEnd - 1] === b[bEnd - 1]) { aEnd -= 1; bEnd -= 1; }
   return { start, oldEnd: aEnd, inserted: b.slice(start, bEnd) };
 }
-
-const BASIC_EMOJIS = Object.freeze([
-  "😀","😃","😄","😁","😂","😊","😍","😘","😎","🤔","😮","😢","😭","😡","👍","👎",
-  "👏","🙏","💪","🤝","👌","✌️","❤️","💔","🔥","✨","⭐","🎉","🎯","✅","❌","⚠️","ℹ️","💡",
-  "📌","📎","🔗","📞","✉️","📅","⏰","🚀","💰","🎁","📦","🛒","🏆","🥇","🔔","👀","👉","⬆️","⬇️"
-]);
 
 function parseInputValue(schema, input) {
   if (schema.type === "boolean") return input.checked;

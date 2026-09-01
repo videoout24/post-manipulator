@@ -250,13 +250,25 @@ export class ProjectStore {
       }
     }
     let deletedPost = null;
+    const affectedPostIds = new Set([String(postId)]);
     const project = await this.updateProject(projectId, draft => {
       const index = draft.posts.findIndex(item => item.id === postId);
       if (index < 0) throw new Error(`Project post not found: ${postId}`);
       if (draft.posts.length <= 1) throw new Error("В проекте должен остаться хотя бы один пост");
       deletedPost = structuredClone(draft.posts[index]);
+      for (const hostPost of draft.posts) {
+        let containsTarget = false;
+        walkAst(hostPost.messageAst, node => {
+          if (node?.type !== "project_post_map") return;
+          if ((node.props?.slots || []).some(slot => String(slot?.targetPostId) === String(postId))) containsTarget = true;
+        });
+        if (!containsTarget) continue;
+        affectedPostIds.add(String(hostPost.id));
+        markPostProductionChanges(hostPost);
+        hostPost.updatedAt = Date.now();
+      }
       draft.posts.splice(index, 1);
-    }, "post-deleted", { postId, affectedPostIds: [postId] });
+    }, "post-deleted", () => ({ postId, affectedPostIds: [...affectedPostIds] }));
     this.events?.emit("project:post-removed", {
       projectId,
       project: structuredClone(project),
@@ -266,6 +278,8 @@ export class ProjectStore {
   }
 
   async movePost(projectId, postId, direction) {
+    if (!["up", "down"].includes(direction)) throw new Error(`Unknown post move direction: ${direction}`);
+    let affectedPostIds = [];
     return this.updateProject(projectId, draft => {
       if (!isLinearProject(draft)) throw new Error("Порядок можно менять только в структурированном проекте");
       const root = getProjectRootPost(draft);
@@ -277,8 +291,10 @@ export class ProjectStore {
       if (index < 0 || nextIndex < 0 || nextIndex >= slots.length) return false;
       [slots[index], slots[nextIndex]] = [slots[nextIndex], slots[index]];
       markPostProductionChanges(root);
+      root.updatedAt = Date.now();
+      affectedPostIds = [String(root.id)];
       return true;
-    }, "post-reordered", { postId, affectedPostIds: [postId] });
+    }, "post-reordered", () => ({ postId, affectedPostIds }));
   }
 
   async updateProject(projectId, mutate, reason = "saved", details = null) {
@@ -553,6 +569,12 @@ function findNode(node, nodeId) {
     if (found) return found;
   }
   return null;
+}
+
+function walkAst(node, visit) {
+  if (!node || typeof node !== "object") return;
+  visit(node);
+  for (const child of node.children || []) walkAst(child, visit);
 }
 
 function findFirstNode(node, predicate) {
