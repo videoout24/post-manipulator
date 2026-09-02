@@ -4,7 +4,7 @@ import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
-import { MAX_PROJECT_IMPORT_FILE_BYTES, parseProjectImportText } from "./ProjectImport.js?v=1.7.14";
+import { MAX_PROJECT_IMPORT_FILE_BYTES, parseProjectImportText } from "./ProjectImport.js?v=1.7.15";
 
 export class ProjectLibraryView {
   constructor({

@@ -28,6 +28,10 @@ export class Validator {
       }
     }
 
+    if (node.type === "list") {
+      errors.push(...validateListMode(node.props?.items));
+    }
+
     if (parent && parent.id !== "root" && def.constraints?.allowedParents &&
         !def.constraints.allowedParents.includes(parent.type)) {
       errors.push(`${node.type} cannot be child of ${parent.type}`);
@@ -154,4 +158,13 @@ function isMissingValue(value) {
   if (typeof value === "string") return value.trim() === "";
   if (Array.isArray(value)) return value.length === 0;
   return false;
+}
+
+function validateListMode(items) {
+  if (!Array.isArray(items) || items.length < 2) return [];
+  const ordered = items.map(item => String(item?.type ?? "").trim().length > 0);
+  if (ordered.some(Boolean) && ordered.some(value => !value)) {
+    return ["list items must be either all ordered or all unordered"];
+  }
+  return [];
 }

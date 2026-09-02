@@ -225,8 +225,8 @@
                         "text": "Проверить карточку 2"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": false
+                    "type": "1",
+                    "value": 1
                   },
                   {
                     "blocks": [
@@ -235,8 +235,8 @@
                         "text": "Изменить порядок блоков"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": true
+                    "type": "1",
+                    "value": 2
                   },
                   {
                     "blocks": [
@@ -468,8 +468,8 @@
                         "text": "Выгрузить в тестовый чат"
                       }
                     ],
-                    "type": "1",
-                    "value": 3
+                    "has_checkbox": true,
+                    "is_checked": false
                   }
                 ]
               },
@@ -505,8 +505,8 @@
                         "text": "Проверить карточку 4"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": false
+                    "type": "1",
+                    "value": 1
                   },
                   {
                     "blocks": [
@@ -515,8 +515,8 @@
                         "text": "Изменить порядок блоков"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": true
+                    "type": "1",
+                    "value": 2
                   },
                   {
                     "blocks": [
@@ -966,8 +966,8 @@
                         "text": "Проверить карточку 7"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": false
+                    "type": "1",
+                    "value": 1
                   },
                   {
                     "blocks": [
@@ -976,8 +976,8 @@
                         "text": "Изменить порядок блоков"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": true
+                    "type": "1",
+                    "value": 2
                   },
                   {
                     "blocks": [
@@ -1231,8 +1231,8 @@
                         "text": "Проверить карточку 8"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": false
+                    "type": "1",
+                    "value": 1
                   },
                   {
                     "blocks": [
@@ -1241,8 +1241,8 @@
                         "text": "Изменить порядок блоков"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": true
+                    "type": "1",
+                    "value": 2
                   },
                   {
                     "blocks": [
@@ -1332,8 +1332,8 @@
                         "text": "Проверить карточку 9"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": false
+                    "type": "1",
+                    "value": 1
                   },
                   {
                     "blocks": [
@@ -1342,8 +1342,8 @@
                         "text": "Изменить порядок блоков"
                       }
                     ],
-                    "has_checkbox": true,
-                    "is_checked": true
+                    "type": "1",
+                    "value": 2
                   },
                   {
                     "blocks": [

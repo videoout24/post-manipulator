@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { ProjectStore, getProjectRootMap } from "../js/project/ProjectStore.js?v=1.7.14";
-import { parseProjectImportText } from "../js/project/ProjectImport.js?v=1.7.14";
+import { ProjectStore, getProjectRootMap } from "../js/project/ProjectStore.js?v=1.7.15";
+import { parseProjectImportText } from "../js/project/ProjectImport.js?v=1.7.15";
 
 class MemoryDb {
   constructor() { this.stores = new Map(); }

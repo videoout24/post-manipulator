@@ -11,7 +11,7 @@ import { ProjectCompiler } from "../js/project/ProjectCompiler.js?v=1.5.9";
 import { ProjectIndex } from "../js/project/ProjectIndex.js?v=1.5.9";
 import { ProjectValidator } from "../js/project/ProjectValidator.js?v=1.5.9";
 import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js?v=1.5.9";
-import { parseProjectImportText } from "../js/project/ProjectImport.js?v=1.7.14";
+import { parseProjectImportText } from "../js/project/ProjectImport.js?v=1.7.15";
 
 const formatting = createTelegramFormattingRegistry();
 const properties = createDefaultPropertyRegistry(formatting);
@@ -45,6 +45,10 @@ for (let projectNumber = 1; projectNumber <= 20; projectNumber += 1) {
     assert.equal(nodes.filter(node => node.type === "project_post_map").length, postIndex === 0 ? 1 : 0);
     assert.equal(nodes.filter(node => node.type === "project_map_backlink").length, postIndex === 0 ? 0 : 1);
     for (const node of nodes.filter(node => node.type === "photo")) mediaPaths.add(node.props.fileId);
+    for (const node of nodes.filter(node => node.type === "list")) {
+      const modes = new Set((node.props?.items || []).map(item => String(item?.type || "").trim() ? "ordered" : "unordered"));
+      assert.equal(modes.size, 1, `${filename} post ${postIndex + 1} list mode`);
+    }
 
     const compiled = compiler.compilePost(project, post.id, { index });
     assert.deepEqual(richValidator.validate(compiled), [], `${filename} post ${postIndex + 1} compiled validation`);

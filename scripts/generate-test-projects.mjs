@@ -149,12 +149,16 @@ function formulaBlock(projectKey, postNumber, _projectNumber, context = {}) {
 }
 
 function listBlock(projectKey, postNumber, _projectNumber, context = {}) {
+  const labels = [
+    `Проверить карточку ${postNumber}`,
+    "Изменить порядок блоков",
+    "Выгрузить в тестовый чат"
+  ];
+  const isOrdered = (Number(projectKey) + postNumber + Number(context.index || 0)) % 2 === 0;
   return node(id("list", projectKey, postNumber, context.index), "list", {
-    items: [
-      { blocks: [{ type: "paragraph", text: `Проверить карточку ${postNumber}` }], has_checkbox: true, is_checked: false },
-      { blocks: [{ type: "paragraph", text: "Изменить порядок блоков" }], has_checkbox: true, is_checked: true },
-      { blocks: [{ type: "paragraph", text: "Выгрузить в тестовый чат" }], type: "1", value: 3 }
-    ]
+    items: labels.map((text, index) => isOrdered
+      ? { blocks: [{ type: "paragraph", text }], type: "1", value: index + 1 }
+      : { blocks: [{ type: "paragraph", text }], has_checkbox: true, is_checked: index === 1 })
   });
 }
 
