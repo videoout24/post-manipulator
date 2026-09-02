@@ -38,9 +38,19 @@ for (let projectNumber = 1; projectNumber <= 20; projectNumber += 1) {
   const index = new ProjectIndex(project);
   assert.deepEqual(projectValidator.validate(project, index), [], `${filename} source validation`);
   for (const [postIndex, post] of project.posts.entries()) {
+    const topLevel = post.messageAst.children || [];
     const nodes = collectNodes(post.messageAst);
     const content = nodes.filter(node => !["document", "heading", "project_post_map", "project_map_backlink"].includes(node.type));
     assert.ok(content.length >= 5, `${filename} post ${postIndex + 1} has at least five content blocks`);
+    assert.equal(topLevel[0]?.type, "heading", `${filename} post ${postIndex + 1} heading position`);
+    assert.equal(
+      topLevel[1]?.type,
+      postIndex === 0 ? "project_post_map" : "project_map_backlink",
+      `${filename} post ${postIndex + 1} project navigation position`
+    );
+    if (topLevel.some(node => node.type === "footer")) {
+      assert.equal(topLevel.at(-1)?.type, "footer", `${filename} post ${postIndex + 1} footer position`);
+    }
     assert.equal(nodes.filter(node => node.type === "heading").length, 1);
     assert.equal(nodes.filter(node => node.type === "project_post_map").length, postIndex === 0 ? 1 : 0);
     assert.equal(nodes.filter(node => node.type === "project_map_backlink").length, postIndex === 0 ? 0 : 1);

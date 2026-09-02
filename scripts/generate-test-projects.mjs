@@ -53,7 +53,9 @@ function createProject(projectNumber) {
       : projectBacklink(projectKey, postNumber, mapId, slotIds[postIndex - 1]);
     const content = createRandomContent({ rng, projectNumber, postNumber, theme: themes[projectNumber - 1] });
     if (postIndex === 0) content[0] = photoBlock(projectKey, postNumber, projectNumber);
-    const children = shuffle(rng, [heading(projectKey, postNumber, title), required, ...content]);
+    const body = content.filter(block => block.type !== "footer");
+    const footers = content.filter(block => block.type === "footer");
+    const children = [heading(projectKey, postNumber, title), required, ...body, ...footers];
     const timestamp = projectCreatedAt + postNumber * 1000;
     return {
       id: postId,

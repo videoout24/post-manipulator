@@ -21,77 +21,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_photo_09_01_01",
-              "type": "photo",
+              "id": "heading_09_01",
+              "type": "heading",
               "props": {
-                "fileId": "./assets/test-projects/test-09.png",
-                "caption": "Тестовое изображение 09 · 09.01",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_09_01_08",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5654,
-                  "longitude": 104.92920000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 09.01"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_09_01_02",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Недельный дайджест. "
-                  },
-                  "наблюдение 1.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_09_01_04",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 09.01",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_09_01_04_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_footer_09_01_03",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 09 · пост 01"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_09_01_06",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 09.01».",
-                "credit": "Набор автотестов"
+                "text": "01. Старт и карта · Недельный дайджест",
+                "level": 2
               },
               "children": []
             },
@@ -162,12 +96,64 @@
               "children": []
             },
             {
+              "id": "test_photo_09_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 09.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_09_01_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Недельный дайджест. "
+                  },
+                  "наблюдение 1.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_09_01_04",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 09.01",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_09_01_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
               "id": "test_button_09_01_05",
               "type": "url_button",
               "props": {
                 "text": "Открыть тест 09.01",
                 "url": "https://example.com/post-manipulator/09/01",
                 "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_09_01_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 09.01».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
@@ -211,11 +197,25 @@
               "children": []
             },
             {
-              "id": "heading_09_01",
-              "type": "heading",
+              "id": "test_map_09_01_08",
+              "type": "map",
               "props": {
-                "text": "01. Старт и карта · Недельный дайджест",
-                "level": 2
+                "location": {
+                  "latitude": 11.5654,
+                  "longitude": 104.92920000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 09.01"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_09_01_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 09 · пост 01"
               },
               "children": []
             }
@@ -238,44 +238,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_button_09_02_03",
-              "type": "url_button",
+              "id": "heading_09_02",
+              "type": "heading",
               "props": {
-                "text": "Открыть тест 09.02",
-                "url": "https://example.com/post-manipulator/09/02",
-                "buttonStyle": "danger"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_09_02_04",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_9 + y_2 = 11"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_09_02_01",
-              "type": "preformatted",
-              "props": {
-                "text": "project=09\npost=02\nvariant=1",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_09_02_02",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5654,
-                  "longitude": 104.9302
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 09.02"
+                "text": "02. Контекст · Недельный дайджест",
+                "level": 2
               },
               "children": []
             },
@@ -291,22 +258,117 @@
               "children": []
             },
             {
-              "id": "test_photo_09_02_05",
-              "type": "photo",
+              "id": "test_formula_09_02_01",
+              "type": "mathematical_expression",
               "props": {
-                "fileId": "./assets/test-projects/test-04.png",
-                "caption": "Тестовое изображение 04 · 09.02",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "expression": "x_9 + y_2 = 11"
               },
               "children": []
             },
             {
-              "id": "heading_09_02",
-              "type": "heading",
+              "id": "test_list_09_02_02",
+              "type": "list",
               "props": {
-                "text": "02. Контекст · Недельный дайджест",
-                "level": 2
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 2"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 1
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 2
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_09_02_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5654,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 09.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_09_02_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Недельный дайджест. "
+                  },
+                  "наблюдение 2.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_09_02_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "09"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
               },
               "children": []
             }
@@ -329,6 +391,15 @@
           "props": {},
           "children": [
             {
+              "id": "heading_09_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Недельный дайджест",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_backlink_09_03",
               "type": "project_map_backlink",
               "props": {
@@ -340,7 +411,40 @@
               "children": []
             },
             {
-              "id": "test_table_09_03_03",
+              "id": "test_map_09_03_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5654,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 09.03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_09_03_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 09.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_09_03_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_table_09_03_04",
               "type": "table",
               "props": {
                 "cells": [
@@ -372,14 +476,38 @@
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
+                "isStriped": false,
+                "isCompact": true,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_list_09_03_02",
+              "id": "test_paragraph_09_03_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Недельный дайджест. "
+                  },
+                  "наблюдение 3.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_09_03_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 09.03",
+                "url": "https://example.com/post-manipulator/09/03",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_09_03_07",
               "type": "list",
               "props": {
                 "items": [
@@ -388,6 +516,170 @@
                       {
                         "type": "paragraph",
                         "text": "Проверить карточку 3"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 1
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 2
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_09_03_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 09 · пост 03"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336543000,
+        "updatedAt": 1788336543000
+      },
+      {
+        "id": "test_post_09_04",
+        "title": "04. Материалы · Недельный дайджест",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_09_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Недельный дайджест",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_09_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_09",
+                "targetSlotId": "test_slot_09_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_09_04_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Недельный дайджест. "
+                  },
+                  "наблюдение 4.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_09_04_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_9 + y_4 = 13"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_09_04_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "09"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_09_04_04",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 09.04",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_09_04_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_list_09_04_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
                       }
                     ],
                     "has_checkbox": true,
@@ -418,132 +710,16 @@
               "children": []
             },
             {
-              "id": "test_divider_09_03_05",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "heading_09_03",
-              "type": "heading",
-              "props": {
-                "text": "03. Наблюдения · Недельный дайджест",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_09_03_06",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 09.03",
-                "url": "https://example.com/post-manipulator/09/03",
-                "buttonStyle": "danger"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_09_03_04",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Недельный дайджест. "
-                  },
-                  "наблюдение 3.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_09_03_01",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 09.03",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_09_03_01_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336543000,
-        "updatedAt": 1788336543000
-      },
-      {
-        "id": "test_post_09_04",
-        "title": "04. Материалы · Недельный дайджест",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_formula_09_04_02",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_9 + y_4 = 13"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_09_04_05",
+              "id": "test_pre_09_04_06",
               "type": "preformatted",
               "props": {
-                "text": "project=09\npost=04\nvariant=5",
+                "text": "project=09\npost=04\nvariant=6",
                 "language": "text"
               },
               "children": []
             },
             {
-              "id": "test_footer_09_04_03",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 09 · пост 04"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_09_04_01",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Недельный дайджест. "
-                  },
-                  "наблюдение 4.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_09_04_08",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-09.png",
-                "caption": "Тестовое изображение 09 · 09.04",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_09_04_04",
+              "id": "test_quote_09_04_07",
               "type": "block_quotation",
               "props": {
                 "text": "«Тестовый контент должен быть разнообразным — вариант 09.04».",
@@ -552,47 +728,12 @@
               "children": []
             },
             {
-              "id": "test_button_09_04_07",
+              "id": "test_button_09_04_08",
               "type": "url_button",
               "props": {
                 "text": "Открыть тест 09.04",
                 "url": "https://example.com/post-manipulator/09/04",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_09_04",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_09",
-                "targetSlotId": "test_slot_09_04",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "heading_09_04",
-              "type": "heading",
-              "props": {
-                "text": "04. Материалы · Недельный дайджест",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_09_04_06",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5654,
-                  "longitude": 104.93220000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 09.04"
+                "buttonStyle": "success"
               },
               "children": []
             }
@@ -615,27 +756,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_photo_09_05_04",
-              "type": "photo",
+              "id": "heading_09_05",
+              "type": "heading",
               "props": {
-                "fileId": "./assets/test-projects/test-06.png",
-                "caption": "Тестовое изображение 06 · 09.05",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_09_05_05",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Недельный дайджест. "
-                  },
-                  "наблюдение 5.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
+                "text": "05. Сравнение · Недельный дайджест",
+                "level": 2
               },
               "children": []
             },
@@ -651,24 +776,41 @@
               "children": []
             },
             {
-              "id": "heading_09_05",
-              "type": "heading",
+              "id": "test_quote_09_05_01",
+              "type": "block_quotation",
               "props": {
-                "text": "05. Сравнение · Недельный дайджест",
-                "level": 2
+                "text": "«Тестовый контент должен быть разнообразным — вариант 09.05».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_formula_09_05_03",
-              "type": "mathematical_expression",
+              "id": "test_divider_09_05_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_button_09_05_03",
+              "type": "url_button",
               "props": {
-                "expression": "x_9 + y_5 = 14"
+                "text": "Открыть тест 09.05",
+                "url": "https://example.com/post-manipulator/09/05",
+                "buttonStyle": "danger"
               },
               "children": []
             },
             {
-              "id": "test_list_09_05_01",
+              "id": "test_pre_09_05_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=09\npost=05\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_09_05_05",
               "type": "list",
               "props": {
                 "items": [
@@ -705,33 +847,6 @@
                 ]
               },
               "children": []
-            },
-            {
-              "id": "test_pre_09_05_06",
-              "type": "preformatted",
-              "props": {
-                "text": "project=09\npost=05\nvariant=6",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_09_05_02",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 09.05",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_09_05_02_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
             }
           ]
         },
@@ -752,6 +867,15 @@
           "props": {},
           "children": [
             {
+              "id": "heading_09_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Недельный дайджест",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_backlink_09_06",
               "type": "project_map_backlink",
               "props": {
@@ -763,7 +887,16 @@
               "children": []
             },
             {
-              "id": "test_paragraph_09_06_01",
+              "id": "test_pre_09_06_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=09\npost=06\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_09_06_02",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -771,13 +904,141 @@
                     "type": "bold",
                     "text": "Недельный дайджест. "
                   },
-                  "наблюдение 6.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 6.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
             },
             {
-              "id": "test_table_09_06_03",
+              "id": "test_button_09_06_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 09.06",
+                "url": "https://example.com/post-manipulator/09/06",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_09_06_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_details_09_06_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 09.06",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_09_06_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_list_09_06_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 1
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 2
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_09_06_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 09 · пост 06"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336546000,
+        "updatedAt": 1788336546000
+      },
+      {
+        "id": "test_post_09_07",
+        "title": "07. Проверка · Недельный дайджест",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_09_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Недельный дайджест",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_09_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_09",
+                "targetSlotId": "test_slot_09_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_09_07_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 09.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_09_07_02",
               "type": "table",
               "props": {
                 "cells": [
@@ -804,90 +1065,27 @@
                       "text": "Пост"
                     },
                     {
-                      "text": "6"
+                      "text": "7"
                     }
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
+                "isStriped": false,
                 "isCompact": false,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_pre_09_06_04",
-              "type": "preformatted",
-              "props": {
-                "text": "project=09\npost=06\nvariant=4",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_09_06_02",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_9 + y_6 = 15"
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_09_06_05",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 09.06",
-                "url": "https://example.com/post-manipulator/09/06",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_09_06",
-              "type": "heading",
-              "props": {
-                "text": "06. Практика · Недельный дайджест",
-                "level": 2
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336546000,
-        "updatedAt": 1788336546000
-      },
-      {
-        "id": "test_post_09_07",
-        "title": "07. Проверка · Недельный дайджест",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_pre_09_07_02",
-              "type": "preformatted",
-              "props": {
-                "text": "project=09\npost=07\nvariant=2",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_09_07_04",
+              "id": "test_details_09_07_03",
               "type": "details",
               "props": {
                 "summary": "Дополнительные данные 09.07",
-                "open": false
+                "open": true
               },
               "children": [
                 {
-                  "id": "test_details_09_07_04_child",
+                  "id": "test_details_09_07_03_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -897,68 +1095,20 @@
               ]
             },
             {
-              "id": "test_formula_09_07_03",
+              "id": "test_button_09_07_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 09.07",
+                "url": "https://example.com/post-manipulator/09/07",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_09_07_05",
               "type": "mathematical_expression",
               "props": {
                 "expression": "x_9 + y_7 = 16"
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_09_07_01",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 09 · пост 07"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_09_07_07",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "project_backlink_09_07",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_09",
-                "targetSlotId": "test_slot_09_07",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_09_07_06",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 09.07».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_09_07_05",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5654,
-                  "longitude": 104.93520000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 09.07"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_09_07",
-              "type": "heading",
-              "props": {
-                "text": "07. Проверка · Недельный дайджест",
-                "level": 2
               },
               "children": []
             }
@@ -990,12 +1140,6 @@
               "children": []
             },
             {
-              "id": "test_divider_09_08_01",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
               "id": "project_backlink_09_08",
               "type": "project_map_backlink",
               "props": {
@@ -1007,15 +1151,34 @@
               "children": []
             },
             {
-              "id": "test_footer_09_08_02",
-              "type": "footer",
+              "id": "test_button_09_08_01",
+              "type": "url_button",
               "props": {
-                "text": "Тестовый подвал · проект 09 · пост 08"
+                "text": "Открыть тест 09.08",
+                "url": "https://example.com/post-manipulator/09/08",
+                "buttonStyle": "primary"
               },
               "children": []
             },
             {
-              "id": "test_map_09_08_06",
+              "id": "test_quote_09_08_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 09.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_09_08_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_9 + y_8 = 17"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_09_08_04",
               "type": "map",
               "props": {
                 "location": {
@@ -1030,24 +1193,54 @@
               "children": []
             },
             {
-              "id": "test_quote_09_08_05",
-              "type": "block_quotation",
+              "id": "test_list_09_08_05",
+              "type": "list",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 09.08».",
-                "credit": "Набор автотестов"
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
               },
               "children": []
             },
             {
-              "id": "test_details_09_08_04",
+              "id": "test_details_09_08_07",
               "type": "details",
               "props": {
                 "summary": "Дополнительные данные 09.08",
-                "open": false
+                "open": true
               },
               "children": [
                 {
-                  "id": "test_details_09_08_04_child",
+                  "id": "test_details_09_08_07_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -1057,12 +1250,24 @@
               ]
             },
             {
-              "id": "test_button_09_08_03",
-              "type": "url_button",
+              "id": "test_paragraph_09_08_08",
+              "type": "paragraph",
               "props": {
-                "text": "Открыть тест 09.08",
-                "url": "https://example.com/post-manipulator/09/08",
-                "buttonStyle": "danger"
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Недельный дайджест. "
+                  },
+                  "наблюдение 8.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_09_08_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 09 · пост 08"
               },
               "children": []
             }
@@ -1085,32 +1290,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_photo_09_09_01",
-              "type": "photo",
+              "id": "heading_09_09",
+              "type": "heading",
               "props": {
-                "fileId": "./assets/test-projects/test-07.png",
-                "caption": "Тестовое изображение 07 · 09.09",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_09_09_07",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 09.09",
-                "url": "https://example.com/post-manipulator/09/09",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_09_09_04",
-              "type": "preformatted",
-              "props": {
-                "text": "project=09\npost=09\nvariant=4",
-                "language": "text"
+                "text": "09. Итоги · Недельный дайджест",
+                "level": 2
               },
               "children": []
             },
@@ -1126,42 +1310,214 @@
               "children": []
             },
             {
-              "id": "heading_09_09",
-              "type": "heading",
+              "id": "test_map_09_09_01",
+              "type": "map",
               "props": {
-                "text": "09. Итоги · Недельный дайджест",
-                "level": 2
+                "location": {
+                  "latitude": 11.5654,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 09.09"
               },
               "children": []
             },
             {
-              "id": "test_details_09_09_02",
-              "type": "details",
+              "id": "test_paragraph_09_09_02",
+              "type": "paragraph",
               "props": {
-                "summary": "Дополнительные данные 09.09",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_09_09_02_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Недельный дайджест. "
                   },
-                  "children": []
-                }
-              ]
+                  "наблюдение 9.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
             },
             {
-              "id": "test_footer_09_09_08",
+              "id": "test_list_09_09_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 1
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 2
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_09_09_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_09_09_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 09.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_09_09_05",
               "type": "footer",
               "props": {
                 "text": "Тестовый подвал · проект 09 · пост 09"
               },
               "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336549000,
+        "updatedAt": 1788336549000
+      },
+      {
+        "id": "test_post_09_10",
+        "title": "10. Следующий шаг · Недельный дайджест",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_09_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Недельный дайджест",
+                "level": 2
+              },
+              "children": []
             },
             {
-              "id": "test_table_09_09_06",
+              "id": "project_backlink_09_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_09",
+                "targetSlotId": "test_slot_09_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_09_10_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 09.10",
+                "url": "https://example.com/post-manipulator/09/10",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_09_10_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 1
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 2
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_09_10_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_09_10_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_9 + y_10 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_09_10_06",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5654,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 09.10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_09_10_07",
               "type": "table",
               "props": {
                 "cells": [
@@ -1188,136 +1544,22 @@
                       "text": "Пост"
                     },
                     {
-                      "text": "9"
+                      "text": "10"
                     }
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": false,
-                "isCompact": false,
+                "isStriped": true,
+                "isCompact": true,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_divider_09_09_03",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_map_09_09_05",
-              "type": "map",
+              "id": "test_footer_09_10_05",
+              "type": "footer",
               "props": {
-                "location": {
-                  "latitude": 11.5654,
-                  "longitude": 104.9372
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 09.09"
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336549000,
-        "updatedAt": 1788336549000
-      },
-      {
-        "id": "test_post_09_10",
-        "title": "10. Следующий шаг · Недельный дайджест",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_paragraph_09_10_06",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Недельный дайджест. "
-                  },
-                  "наблюдение 10.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_09_10_03",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_pre_09_10_05",
-              "type": "preformatted",
-              "props": {
-                "text": "project=09\npost=10\nvariant=5",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_09_10",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_09",
-                "targetSlotId": "test_slot_09_10",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_09_10_02",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 09.10",
-                "url": "https://example.com/post-manipulator/09/10",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_09_10_01",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5654,
-                  "longitude": 104.93820000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 09.10"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_09_10",
-              "type": "heading",
-              "props": {
-                "text": "10. Следующий шаг · Недельный дайджест",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_09_10_04",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 09.10».",
-                "credit": "Набор автотестов"
+                "text": "Тестовый подвал · проект 09 · пост 10"
               },
               "children": []
             }

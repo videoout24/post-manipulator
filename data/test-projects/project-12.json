@@ -21,31 +21,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_button_12_01_05",
-              "type": "url_button",
+              "id": "heading_12_01",
+              "type": "heading",
               "props": {
-                "text": "Открыть тест 12.01",
-                "url": "https://example.com/post-manipulator/12/01",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_12_01_04",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-05.png",
-                "caption": "Тестовое изображение 05 · 12.01",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_12_01_02",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_12 + y_1 = 13"
+                "text": "01. Старт и карта · Путевой журнал",
+                "level": 2
               },
               "children": []
             },
@@ -127,17 +107,37 @@
               "children": []
             },
             {
+              "id": "test_formula_12_01_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_12 + y_1 = 13"
+              },
+              "children": []
+            },
+            {
               "id": "test_divider_12_01_03",
               "type": "divider",
               "props": {},
               "children": []
             },
             {
-              "id": "heading_12_01",
-              "type": "heading",
+              "id": "test_photo_12_01_04",
+              "type": "photo",
               "props": {
-                "text": "01. Старт и карта · Путевой журнал",
-                "level": 2
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 12.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_12_01_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 12.01",
+                "url": "https://example.com/post-manipulator/12/01",
+                "buttonStyle": "success"
               },
               "children": []
             }
@@ -169,26 +169,52 @@
               "children": []
             },
             {
-              "id": "test_quote_12_02_01",
-              "type": "block_quotation",
+              "id": "project_backlink_12_02",
+              "type": "project_map_backlink",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 12.02».",
-                "credit": "Набор автотестов"
+                "targetMapId": "test_map_12",
+                "targetSlotId": "test_slot_12_02",
+                "text": "Назад к карте",
+                "managedByMap": true
               },
               "children": []
             },
             {
-              "id": "test_button_12_02_03",
-              "type": "url_button",
+              "id": "test_photo_12_02_01",
+              "type": "photo",
               "props": {
-                "text": "Открыть тест 12.02",
-                "url": "https://example.com/post-manipulator/12/02",
-                "buttonStyle": "danger"
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 12.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
               },
               "children": []
             },
             {
-              "id": "test_table_12_02_02",
+              "id": "test_map_12_02_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5684,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 12.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_12_02_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_12 + y_2 = 14"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_12_02_04",
               "type": "table",
               "props": {
                 "cells": [
@@ -221,43 +247,18 @@
                 ],
                 "isBordered": true,
                 "isStriped": false,
-                "isCompact": false,
+                "isCompact": true,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_pre_12_02_05",
-              "type": "preformatted",
+              "id": "test_button_12_02_05",
+              "type": "url_button",
               "props": {
-                "text": "project=12\npost=02\nvariant=5",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_12_02_04",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5684,
-                  "longitude": 104.9302
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 12.02"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_12_02",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_12",
-                "targetSlotId": "test_slot_12_02",
-                "text": "Назад к карте",
-                "managedByMap": true
+                "text": "Открыть тест 12.02",
+                "url": "https://example.com/post-manipulator/12/02",
+                "buttonStyle": "success"
               },
               "children": []
             }
@@ -280,6 +281,15 @@
           "props": {},
           "children": [
             {
+              "id": "heading_12_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Путевой журнал",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_backlink_12_03",
               "type": "project_map_backlink",
               "props": {
@@ -291,7 +301,7 @@
               "children": []
             },
             {
-              "id": "test_paragraph_12_03_02",
+              "id": "test_paragraph_12_03_01",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -299,26 +309,35 @@
                     "type": "bold",
                     "text": "Путевой журнал. "
                   },
-                  "наблюдение 3.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 3.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
             },
             {
-              "id": "test_quote_12_03_04",
-              "type": "block_quotation",
+              "id": "test_formula_12_03_03",
+              "type": "mathematical_expression",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 12.03».",
-                "credit": "Набор автотестов"
+                "expression": "x_12 + y_3 = 15"
               },
               "children": []
             },
             {
-              "id": "heading_12_03",
-              "type": "heading",
+              "id": "test_button_12_03_04",
+              "type": "url_button",
               "props": {
-                "text": "03. Наблюдения · Путевой журнал",
-                "level": 2
+                "text": "Открыть тест 12.03",
+                "url": "https://example.com/post-manipulator/12/03",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_12_03_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 12.03».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
@@ -362,42 +381,10 @@
               "children": []
             },
             {
-              "id": "test_footer_12_03_01",
+              "id": "test_footer_12_03_02",
               "type": "footer",
               "props": {
                 "text": "Тестовый подвал · проект 12 · пост 03"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_12_03_03",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_12 + y_3 = 15"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_12_03_05",
-              "type": "preformatted",
-              "props": {
-                "text": "project=12\npost=03\nvariant=5",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_12_03_07",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5684,
-                  "longitude": 104.9312
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 12.03"
               },
               "children": []
             }
@@ -420,102 +407,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_divider_12_04_07",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_formula_12_04_06",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_12 + y_4 = 16"
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_12_04_05",
-              "type": "list",
-              "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 4"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 1
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 2
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 3
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
               "id": "heading_12_04",
               "type": "heading",
               "props": {
                 "text": "04. Материалы · Путевой журнал",
                 "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_12_04_01",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-05.png",
-                "caption": "Тестовое изображение 05 · 12.04",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_12_04_08",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 12.04",
-                "url": "https://example.com/post-manipulator/12/04",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_12_04_03",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 12.04».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_12_04_04",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 12 · пост 04"
               },
               "children": []
             },
@@ -531,41 +427,104 @@
               "children": []
             },
             {
-              "id": "test_table_12_04_02",
-              "type": "table",
+              "id": "test_paragraph_12_04_02",
+              "type": "paragraph",
               "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "12"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "4"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": false,
-                "caption": "Контрольные значения"
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Путевой журнал. "
+                  },
+                  "наблюдение 4.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_12_04_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_12 + y_4 = 16"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_12_04_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 12.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_12_04_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=12\npost=04\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_12_04_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_12_04_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5684,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 12.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_12_04_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 12 · пост 04"
               },
               "children": []
             }
@@ -588,81 +547,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_table_12_05_04",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "12"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "5"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": true,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
               "id": "heading_12_05",
               "type": "heading",
               "props": {
                 "text": "05. Сравнение · Путевой журнал",
                 "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_12_05_06",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 12 · пост 05"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_12_05_07",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Путевой журнал. "
-                  },
-                  "наблюдение 5.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_12_05_01",
-              "type": "preformatted",
-              "props": {
-                "text": "project=12\npost=05\nvariant=1",
-                "language": "text"
               },
               "children": []
             },
@@ -678,79 +567,26 @@
               "children": []
             },
             {
-              "id": "test_button_12_05_03",
+              "id": "test_pre_12_05_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=12\npost=05\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_12_05_02",
               "type": "url_button",
               "props": {
                 "text": "Открыть тест 12.05",
                 "url": "https://example.com/post-manipulator/12/05",
-                "buttonStyle": "danger"
+                "buttonStyle": "success"
               },
               "children": []
             },
             {
-              "id": "test_map_12_05_05",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5684,
-                  "longitude": 104.9332
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 12.05"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_12_05_02",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 12.05",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_12_05_02_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336725000,
-        "updatedAt": 1788336725000
-      },
-      {
-        "id": "test_post_12_06",
-        "title": "06. Практика · Путевой журнал",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_photo_12_06_06",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-02.png",
-                "caption": "Тестовое изображение 02 · 12.06",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_12_06_04",
+              "id": "test_list_12_05_03",
               "type": "list",
               "props": {
                 "items": [
@@ -758,7 +594,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 6"
+                        "text": "Проверить карточку 5"
                       }
                     ],
                     "has_checkbox": true,
@@ -789,41 +625,79 @@
               "children": []
             },
             {
-              "id": "test_table_12_06_03",
-              "type": "table",
+              "id": "test_quote_12_05_05",
+              "type": "block_quotation",
               "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "12"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "6"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
-                "caption": "Контрольные значения"
+                "text": "«Тестовый контент должен быть разнообразным — вариант 12.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_12_05_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 12.05",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_12_05_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_12 + y_5 = 17"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_12_05_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Путевой журнал. "
+                  },
+                  "наблюдение 5.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_12_05_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 12 · пост 05"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336725000,
+        "updatedAt": 1788336725000
+      },
+      {
+        "id": "test_post_12_06",
+        "title": "06. Практика · Путевой журнал",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_12_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Путевой журнал",
+                "level": 2
               },
               "children": []
             },
@@ -839,7 +713,38 @@
               "children": []
             },
             {
-              "id": "test_quote_12_06_01",
+              "id": "test_divider_12_06_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_12_06_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 12.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_12_06_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Путевой журнал. "
+                  },
+                  "наблюдение 6.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_12_06_05",
               "type": "block_quotation",
               "props": {
                 "text": "«Тестовый контент должен быть разнообразным — вариант 12.06».",
@@ -848,44 +753,10 @@
               "children": []
             },
             {
-              "id": "test_footer_12_06_05",
+              "id": "test_footer_12_06_02",
               "type": "footer",
               "props": {
                 "text": "Тестовый подвал · проект 12 · пост 06"
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_12_06_02",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 12.06",
-                "url": "https://example.com/post-manipulator/12/06",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_12_06",
-              "type": "heading",
-              "props": {
-                "text": "06. Практика · Путевой журнал",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_12_06_07",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5684,
-                  "longitude": 104.9342
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 12.06"
               },
               "children": []
             }
@@ -908,55 +779,59 @@
           "props": {},
           "children": [
             {
-              "id": "test_list_12_07_07",
-              "type": "list",
+              "id": "heading_12_07",
+              "type": "heading",
               "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 7"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": true
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  }
-                ]
+                "text": "07. Проверка · Путевой журнал",
+                "level": 2
               },
               "children": []
             },
             {
-              "id": "test_pre_12_07_01",
-              "type": "preformatted",
+              "id": "project_backlink_12_07",
+              "type": "project_map_backlink",
               "props": {
-                "text": "project=12\npost=07\nvariant=1",
-                "language": "text"
+                "targetMapId": "test_map_12",
+                "targetSlotId": "test_slot_12_07",
+                "text": "Назад к карте",
+                "managedByMap": true
               },
               "children": []
             },
             {
-              "id": "test_table_12_07_03",
+              "id": "test_quote_12_07_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 12.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_12_07_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5684,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 12.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_12_07_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_12 + y_7 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_12_07_04",
               "type": "table",
               "props": {
                 "cells": [
@@ -988,66 +863,35 @@
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
+                "isStriped": false,
+                "isCompact": true,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "heading_12_07",
-              "type": "heading",
-              "props": {
-                "text": "07. Проверка · Путевой журнал",
-                "level": 2
-              },
+              "id": "test_divider_12_07_05",
+              "type": "divider",
+              "props": {},
               "children": []
             },
             {
-              "id": "test_quote_12_07_04",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 12.07».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_12_07",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_12",
-                "targetSlotId": "test_slot_12_07",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_12_07_05",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 12.07",
-                "url": "https://example.com/post-manipulator/12/07",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_12_07_02",
+              "id": "test_photo_12_07_06",
               "type": "photo",
               "props": {
-                "fileId": "./assets/test-projects/test-09.png",
-                "caption": "Тестовое изображение 09 · 12.07",
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 12.07",
                 "captionCredit": "Post Manipulator fixture",
                 "hasSpoiler": false
               },
               "children": []
             },
             {
-              "id": "test_divider_12_07_06",
-              "type": "divider",
-              "props": {},
+              "id": "test_footer_12_07_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 12 · пост 07"
+              },
               "children": []
             }
           ]
@@ -1069,15 +913,138 @@
           "props": {},
           "children": [
             {
-              "id": "test_footer_12_08_02",
-              "type": "footer",
+              "id": "heading_12_08",
+              "type": "heading",
               "props": {
-                "text": "Тестовый подвал · проект 12 · пост 08"
+                "text": "08. Варианты · Путевой журнал",
+                "level": 2
               },
               "children": []
             },
             {
-              "id": "test_list_12_08_06",
+              "id": "project_backlink_12_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_12",
+                "targetSlotId": "test_slot_12_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_12_08_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 12.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_12_08_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=12\npost=08\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_12_08_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 12.08",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_12_08_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_map_12_08_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5684,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 12.08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_12_08_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Путевой журнал. "
+                  },
+                  "наблюдение 8.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_12_08_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_12 + y_8 = 20"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336728000,
+        "updatedAt": 1788336728000
+      },
+      {
+        "id": "test_post_12_09",
+        "title": "09. Итоги · Путевой журнал",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_12_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Путевой журнал",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_12_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_12",
+                "targetSlotId": "test_slot_12_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_12_09_01",
               "type": "list",
               "props": {
                 "items": [
@@ -1085,7 +1052,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 8"
+                        "text": "Проверить карточку 9"
                       }
                     ],
                     "has_checkbox": true,
@@ -1116,148 +1083,17 @@
               "children": []
             },
             {
-              "id": "test_quote_12_08_05",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 12.08».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_12_08_03",
-              "type": "preformatted",
-              "props": {
-                "text": "project=12\npost=08\nvariant=3",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_12_08",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_12",
-                "targetSlotId": "test_slot_12_08",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_12_08_04",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-02.png",
-                "caption": "Тестовое изображение 02 · 12.08",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_12_08_01",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 12.08",
-                "url": "https://example.com/post-manipulator/12/08",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_12_08_07",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5684,
-                  "longitude": 104.9362
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 12.08"
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_12_08_08",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "12"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "8"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_12_08",
-              "type": "heading",
-              "props": {
-                "text": "08. Варианты · Путевой журнал",
-                "level": 2
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336728000,
-        "updatedAt": 1788336728000
-      },
-      {
-        "id": "test_post_12_09",
-        "title": "09. Итоги · Путевой журнал",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_button_12_09_07",
+              "id": "test_button_12_09_02",
               "type": "url_button",
               "props": {
                 "text": "Открыть тест 12.09",
                 "url": "https://example.com/post-manipulator/12/09",
-                "buttonStyle": "primary"
+                "buttonStyle": "success"
               },
               "children": []
             },
             {
-              "id": "test_formula_12_09_01",
+              "id": "test_formula_12_09_03",
               "type": "mathematical_expression",
               "props": {
                 "expression": "x_12 + y_9 = 21"
@@ -1265,111 +1101,41 @@
               "children": []
             },
             {
-              "id": "test_table_12_09_04",
-              "type": "table",
+              "id": "test_photo_12_09_04",
+              "type": "photo",
               "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "12"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "9"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": true,
-                "caption": "Контрольные значения"
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 12.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
               },
               "children": []
             },
             {
-              "id": "test_pre_12_09_08",
-              "type": "preformatted",
+              "id": "test_map_12_09_05",
+              "type": "map",
               "props": {
-                "text": "project=12\npost=09\nvariant=8",
-                "language": "text"
+                "location": {
+                  "latitude": 11.5684,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 12.09"
               },
               "children": []
             },
             {
-              "id": "test_divider_12_09_06",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_paragraph_12_09_03",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Путевой журнал. "
-                  },
-                  "наблюдение 9.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_12_09",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_12",
-                "targetSlotId": "test_slot_12_09",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_12_09_02",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 12 · пост 09"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_12_09",
-              "type": "heading",
-              "props": {
-                "text": "09. Итоги · Путевой журнал",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_12_09_05",
+              "id": "test_details_12_09_06",
               "type": "details",
               "props": {
                 "summary": "Дополнительные данные 12.09",
-                "open": true
+                "open": false
               },
               "children": [
                 {
-                  "id": "test_details_12_09_05_child",
+                  "id": "test_details_12_09_06_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -1406,21 +1172,24 @@
               "children": []
             },
             {
-              "id": "test_paragraph_12_10_04",
-              "type": "paragraph",
+              "id": "project_backlink_12_10",
+              "type": "project_map_backlink",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Путевой журнал. "
-                  },
-                  "наблюдение 10.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
+                "targetMapId": "test_map_12",
+                "targetSlotId": "test_slot_12_10",
+                "text": "Назад к карте",
+                "managedByMap": true
               },
               "children": []
             },
             {
-              "id": "test_quote_12_10_01",
+              "id": "test_divider_12_10_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_12_10_02",
               "type": "block_quotation",
               "props": {
                 "text": "«Тестовый контент должен быть разнообразным — вариант 12.10».",
@@ -1429,15 +1198,56 @@
               "children": []
             },
             {
-              "id": "test_formula_12_10_03",
-              "type": "mathematical_expression",
+              "id": "test_button_12_10_03",
+              "type": "url_button",
               "props": {
-                "expression": "x_12 + y_10 = 22"
+                "text": "Открыть тест 12.10",
+                "url": "https://example.com/post-manipulator/12/10",
+                "buttonStyle": "danger"
               },
               "children": []
             },
             {
-              "id": "test_list_12_10_02",
+              "id": "test_table_12_10_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "12"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_12_10_06",
               "type": "list",
               "props": {
                 "items": [
@@ -1476,7 +1286,16 @@
               "children": []
             },
             {
-              "id": "test_details_12_10_06",
+              "id": "test_pre_12_10_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=12\npost=10\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_12_10_08",
               "type": "details",
               "props": {
                 "summary": "Дополнительные данные 12.10",
@@ -1484,7 +1303,7 @@
               },
               "children": [
                 {
-                  "id": "test_details_12_10_06_child",
+                  "id": "test_details_12_10_08_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -1494,66 +1313,10 @@
               ]
             },
             {
-              "id": "test_table_12_10_07",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "12"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "10"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": true,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
               "id": "test_footer_12_10_05",
               "type": "footer",
               "props": {
                 "text": "Тестовый подвал · проект 12 · пост 10"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_12_10_08",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "project_backlink_12_10",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_12",
-                "targetSlotId": "test_slot_12_10",
-                "text": "Назад к карте",
-                "managedByMap": true
               },
               "children": []
             }

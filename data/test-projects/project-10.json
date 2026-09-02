@@ -30,71 +30,6 @@
               "children": []
             },
             {
-              "id": "test_table_10_01_03",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "10"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "1"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_10_01_06",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 10.01",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_10_01_06_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_footer_10_01_05",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 10 · пост 01"
-              },
-              "children": []
-            },
-            {
               "id": "project_map_10",
               "type": "project_post_map",
               "props": {
@@ -161,16 +96,6 @@
               "children": []
             },
             {
-              "id": "test_button_10_01_02",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 10.01",
-                "url": "https://example.com/post-manipulator/10/01",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
               "id": "test_photo_10_01_01",
               "type": "photo",
               "props": {
@@ -182,78 +107,17 @@
               "children": []
             },
             {
-              "id": "test_photo_10_01_04",
-              "type": "photo",
+              "id": "test_button_10_01_02",
+              "type": "url_button",
               "props": {
-                "fileId": "./assets/test-projects/test-03.png",
-                "caption": "Тестовое изображение 03 · 10.01",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336601000,
-        "updatedAt": 1788336601000
-      },
-      {
-        "id": "test_post_10_02",
-        "title": "02. Контекст · Образовательный спринт",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_photo_10_02_04",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-04.png",
-                "caption": "Тестовое изображение 04 · 10.02",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "text": "Открыть тест 10.01",
+                "url": "https://example.com/post-manipulator/10/01",
+                "buttonStyle": "success"
               },
               "children": []
             },
             {
-              "id": "test_pre_10_02_05",
-              "type": "preformatted",
-              "props": {
-                "text": "project=10\npost=02\nvariant=5",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_10_02_01",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Образовательный спринт. "
-                  },
-                  "наблюдение 2.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_10_02_06",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_10 + y_2 = 12"
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_10_02_02",
+              "id": "test_table_10_01_03",
               "type": "table",
               "props": {
                 "cells": [
@@ -280,27 +144,38 @@
                       "text": "Пост"
                     },
                     {
-                      "text": "2"
+                      "text": "1"
                     }
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": false,
+                "isStriped": true,
                 "isCompact": false,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_details_10_02_07",
+              "id": "test_photo_10_01_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 10.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_10_01_06",
               "type": "details",
               "props": {
-                "summary": "Дополнительные данные 10.02",
-                "open": true
+                "summary": "Дополнительные данные 10.01",
+                "open": false
               },
               "children": [
                 {
-                  "id": "test_details_10_02_07_child",
+                  "id": "test_details_10_01_06_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -309,6 +184,32 @@
                 }
               ]
             },
+            {
+              "id": "test_footer_10_01_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 10 · пост 01"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336601000,
+        "updatedAt": 1788336601000
+      },
+      {
+        "id": "test_post_10_02",
+        "title": "02. Контекст · Образовательный спринт",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
             {
               "id": "heading_10_02",
               "type": "heading",
@@ -330,7 +231,45 @@
               "children": []
             },
             {
-              "id": "test_list_10_02_03",
+              "id": "test_map_10_02_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5664,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 10.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_10_02_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=10\npost=02\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_10_02_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Образовательный спринт. "
+                  },
+                  "наблюдение 2.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_10_02_05",
               "type": "list",
               "props": {
                 "items": [
@@ -367,6 +306,40 @@
                 ]
               },
               "children": []
+            },
+            {
+              "id": "test_formula_10_02_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_10 + y_2 = 12"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_10_02_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 10.02",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_10_02_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_footer_10_02_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 10 · пост 02"
+              },
+              "children": []
             }
           ]
         },
@@ -387,61 +360,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_paragraph_10_03_03",
-              "type": "paragraph",
+              "id": "heading_10_03",
+              "type": "heading",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Образовательный спринт. "
-                  },
-                  "наблюдение 3.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_10_03_02",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 10.03».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_10_03_06",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_10 + y_3 = 13"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_10_03_01",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 10.03",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_10_03_01_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_button_10_03_04",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 10.03",
-                "url": "https://example.com/post-manipulator/10/03",
-                "buttonStyle": "primary"
+                "text": "03. Наблюдения · Образовательный спринт",
+                "level": 2
               },
               "children": []
             },
@@ -457,7 +380,89 @@
               "children": []
             },
             {
-              "id": "test_map_10_03_05",
+              "id": "test_table_10_03_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_10_03_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=10\npost=03\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_10_03_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 10.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_10_03_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 10.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_10_03_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Образовательный спринт. "
+                  },
+                  "наблюдение 3.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_10_03_06",
               "type": "map",
               "props": {
                 "location": {
@@ -468,15 +473,6 @@
                 "width": 640,
                 "height": 360,
                 "caption": "Тестовая точка 10.03"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_10_03",
-              "type": "heading",
-              "props": {
-                "text": "03. Наблюдения · Образовательный спринт",
-                "level": 2
               },
               "children": []
             }
@@ -499,7 +495,172 @@
           "props": {},
           "children": [
             {
-              "id": "test_list_10_04_05",
+              "id": "heading_10_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Образовательный спринт",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_10_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_10",
+                "targetSlotId": "test_slot_10_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_10_04_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_10_04_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 10.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_10_04_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 10.04",
+                "url": "https://example.com/post-manipulator/10/04",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_10_04_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_10 + y_4 = 14"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_10_04_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5664,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 10.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_10_04_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 10.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336604000,
+        "updatedAt": 1788336604000
+      },
+      {
+        "id": "test_post_10_05",
+        "title": "05. Сравнение · Образовательный спринт",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_10_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Образовательный спринт",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_10_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_10",
+                "targetSlotId": "test_slot_10_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_10_05_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5664,
+                  "longitude": 104.9332
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 10.05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_10_05_02",
               "type": "list",
               "props": {
                 "items": [
@@ -507,7 +668,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 4"
+                        "text": "Проверить карточку 5"
                       }
                     ],
                     "type": "1",
@@ -538,235 +699,85 @@
               "children": []
             },
             {
-              "id": "test_photo_10_04_03",
+              "id": "test_photo_10_05_03",
               "type": "photo",
               "props": {
-                "fileId": "./assets/test-projects/test-05.png",
-                "caption": "Тестовое изображение 05 · 10.04",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_10_04_06",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_10 + y_4 = 14"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_10_04_08",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Образовательный спринт. "
-                  },
-                  "наблюдение 4.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "heading_10_04",
-              "type": "heading",
-              "props": {
-                "text": "04. Материалы · Образовательный спринт",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_10_04_07",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 10.04».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_10_04_02",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 10 · пост 04"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_10_04_04",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5664,
-                  "longitude": 104.93220000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 10.04"
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_10_04_01",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 10.04",
-                "url": "https://example.com/post-manipulator/10/04",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_10_04",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_10",
-                "targetSlotId": "test_slot_10_04",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336604000,
-        "updatedAt": 1788336604000
-      },
-      {
-        "id": "test_post_10_05",
-        "title": "05. Сравнение · Образовательный спринт",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_button_10_05_02",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 10.05",
-                "url": "https://example.com/post-manipulator/10/05",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_10_05_01",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 10.05",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_10_05_01_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_footer_10_05_04",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 10 · пост 05"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_10_05",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_10",
-                "targetSlotId": "test_slot_10_05",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_10_05_06",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Образовательный спринт. "
-                  },
-                  "наблюдение 5.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_10_05_03",
-              "type": "list",
-              "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 5"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": true
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_10_05_05",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-08.png",
-                "caption": "Тестовое изображение 08 · 10.05",
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 10.05",
                 "captionCredit": "Post Manipulator fixture",
                 "hasSpoiler": false
               },
               "children": []
             },
             {
-              "id": "heading_10_05",
-              "type": "heading",
+              "id": "test_formula_10_05_04",
+              "type": "mathematical_expression",
               "props": {
-                "text": "05. Сравнение · Образовательный спринт",
-                "level": 2
+                "expression": "x_10 + y_5 = 15"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_10_05_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_10_05_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_button_10_05_07",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 10.05",
+                "url": "https://example.com/post-manipulator/10/05",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_10_05_08",
+              "type": "preformatted",
+              "props": {
+                "text": "project=10\npost=05\nvariant=8",
+                "language": "text"
               },
               "children": []
             }
@@ -789,7 +800,46 @@
           "props": {},
           "children": [
             {
-              "id": "test_paragraph_10_06_04",
+              "id": "heading_10_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Образовательный спринт",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_10_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_10",
+                "targetSlotId": "test_slot_10_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_10_06_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_10 + y_6 = 16"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_10_06_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 10.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_10_06_03",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -797,36 +847,50 @@
                     "type": "bold",
                     "text": "Образовательный спринт. "
                   },
-                  "наблюдение 6.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 6.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
             },
             {
-              "id": "test_pre_10_06_03",
-              "type": "preformatted",
+              "id": "test_details_10_06_04",
+              "type": "details",
               "props": {
-                "text": "project=10\npost=06\nvariant=3",
-                "language": "text"
+                "summary": "Дополнительные данные 10.06",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_10_06_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_map_10_06_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5664,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 10.06"
               },
               "children": []
             },
             {
-              "id": "test_button_10_06_02",
-              "type": "url_button",
+              "id": "test_quote_10_06_07",
+              "type": "block_quotation",
               "props": {
-                "text": "Открыть тест 10.06",
-                "url": "https://example.com/post-manipulator/10/06",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_10_06",
-              "type": "heading",
-              "props": {
-                "text": "06. Практика · Образовательный спринт",
-                "level": 2
+                "text": "«Тестовый контент должен быть разнообразным — вариант 10.06».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
@@ -870,96 +934,10 @@
               "children": []
             },
             {
-              "id": "project_backlink_10_06",
-              "type": "project_map_backlink",
+              "id": "test_footer_10_06_06",
+              "type": "footer",
               "props": {
-                "targetMapId": "test_map_10",
-                "targetSlotId": "test_slot_10_06",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_10_06_05",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 10.06",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_10_06_05_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_table_10_06_01",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "10"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "6"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": true,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_10_06_06",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5664,
-                  "longitude": 104.9342
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 10.06"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_10_06_07",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-01.png",
-                "caption": "Тестовое изображение 01 · 10.06",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "text": "Тестовый подвал · проект 10 · пост 06"
               },
               "children": []
             }
@@ -991,30 +969,6 @@
               "children": []
             },
             {
-              "id": "test_pre_10_07_02",
-              "type": "preformatted",
-              "props": {
-                "text": "project=10\npost=07\nvariant=2",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_10_07_04",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 10.07».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_10_07_03",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
               "id": "project_backlink_10_07",
               "type": "project_map_backlink",
               "props": {
@@ -1037,15 +991,7 @@
               "children": []
             },
             {
-              "id": "test_footer_10_07_07",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 10 · пост 07"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_10_07_05",
+              "id": "test_paragraph_10_07_02",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -1053,21 +999,61 @@
                     "type": "bold",
                     "text": "Образовательный спринт. "
                   },
-                  "наблюдение 7.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 7.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
             },
             {
-              "id": "test_details_10_07_06",
+              "id": "test_button_10_07_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 10.07",
+                "url": "https://example.com/post-manipulator/10/07",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_10_07_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_map_10_07_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5664,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 10.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_10_07_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 10.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_10_07_07",
               "type": "details",
               "props": {
                 "summary": "Дополнительные данные 10.07",
-                "open": false
+                "open": true
               },
               "children": [
                 {
-                  "id": "test_details_10_07_06_child",
+                  "id": "test_details_10_07_07_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -1095,40 +1081,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_quote_10_08_01",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 10.08».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
               "id": "heading_10_08",
               "type": "heading",
               "props": {
                 "text": "08. Варианты · Образовательный спринт",
                 "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_10_08_04",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_paragraph_10_08_02",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Образовательный спринт. "
-                  },
-                  "наблюдение 8.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
               },
               "children": []
             },
@@ -1144,144 +1101,48 @@
               "children": []
             },
             {
-              "id": "test_photo_10_08_05",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-01.png",
-                "caption": "Тестовое изображение 01 · 10.08",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_10_08_03",
-              "type": "preformatted",
-              "props": {
-                "text": "project=10\npost=08\nvariant=3",
-                "language": "text"
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336608000,
-        "updatedAt": 1788336608000
-      },
-      {
-        "id": "test_post_10_09",
-        "title": "09. Итоги · Образовательный спринт",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "project_backlink_10_09",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_10",
-                "targetSlotId": "test_slot_10_09",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_10_09_07",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 10 · пост 09"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_10_09_02",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_button_10_09_05",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 10.09",
-                "url": "https://example.com/post-manipulator/10/09",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_10_09",
-              "type": "heading",
-              "props": {
-                "text": "09. Итоги · Образовательный спринт",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_10_09_03",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-10.png",
-                "caption": "Тестовое изображение 10 · 10.09",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_10_09_06",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_10 + y_9 = 19"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_10_09_04",
+              "id": "test_quote_10_08_01",
               "type": "block_quotation",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 10.09».",
+                "text": "«Тестовый контент должен быть разнообразным — вариант 10.08».",
                 "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_pre_10_09_01",
-              "type": "preformatted",
+              "id": "test_divider_10_08_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_details_10_08_03",
+              "type": "details",
               "props": {
-                "text": "project=10\npost=09\nvariant=1",
-                "language": "text"
+                "summary": "Дополнительные данные 10.08",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_10_08_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_10_08_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_10 + y_8 = 18"
               },
               "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336609000,
-        "updatedAt": 1788336609000
-      },
-      {
-        "id": "test_post_10_10",
-        "title": "10. Следующий шаг · Образовательный спринт",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
+            },
             {
-              "id": "test_table_10_10_03",
+              "id": "test_table_10_08_06",
               "type": "table",
               "props": {
                 "cells": [
@@ -1308,19 +1169,115 @@
                       "text": "Пост"
                     },
                     {
-                      "text": "10"
+                      "text": "8"
                     }
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
+                "isStriped": false,
                 "isCompact": false,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_paragraph_10_10_01",
+              "id": "test_photo_10_08_07",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 10.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_10_08_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 10 · пост 08"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336608000,
+        "updatedAt": 1788336608000
+      },
+      {
+        "id": "test_post_10_09",
+        "title": "09. Итоги · Образовательный спринт",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_10_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Образовательный спринт",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_10_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_10",
+                "targetSlotId": "test_slot_10_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_10_09_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_10_09_02",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -1328,15 +1285,71 @@
                     "type": "bold",
                     "text": "Образовательный спринт. "
                   },
-                  "наблюдение 10.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 9.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
             },
             {
-              "id": "test_divider_10_10_02",
-              "type": "divider",
-              "props": {},
+              "id": "test_details_10_09_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 10.09",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_10_09_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_10_09_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_10 + y_9 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_10_09_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=10\npost=09\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336609000,
+        "updatedAt": 1788336609000
+      },
+      {
+        "id": "test_post_10_10",
+        "title": "10. Следующий шаг · Образовательный спринт",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_10_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Образовательный спринт",
+                "level": 2
+              },
               "children": []
             },
             {
@@ -1351,7 +1364,17 @@
               "children": []
             },
             {
-              "id": "test_quote_10_10_05",
+              "id": "test_button_10_10_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 10.10",
+                "url": "https://example.com/post-manipulator/10/10",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_10_10_02",
               "type": "block_quotation",
               "props": {
                 "text": "«Тестовый контент должен быть разнообразным — вариант 10.10».",
@@ -1360,50 +1383,43 @@
               "children": []
             },
             {
-              "id": "heading_10_10",
-              "type": "heading",
+              "id": "test_photo_10_10_03",
+              "type": "photo",
               "props": {
-                "text": "10. Следующий шаг · Образовательный спринт",
-                "level": 2
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 10.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
               },
               "children": []
             },
             {
-              "id": "test_list_10_10_04",
-              "type": "list",
+              "id": "test_formula_10_10_04",
+              "type": "mathematical_expression",
               "props": {
-                "items": [
+                "expression": "x_10 + y_10 = 20"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_10_10_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
                   {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 10"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
+                    "type": "bold",
+                    "text": "Образовательный спринт. "
                   },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": true
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  }
+                  "наблюдение 10.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_10_10_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 10 · пост 10"
               },
               "children": []
             }

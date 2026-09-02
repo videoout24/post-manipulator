@@ -21,85 +21,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_details_08_01_05",
-              "type": "details",
+              "id": "heading_08_01",
+              "type": "heading",
               "props": {
-                "summary": "Дополнительные данные 08.01",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_08_01_05_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_map_08_01_02",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5644,
-                  "longitude": 104.92920000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 08.01"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_08_01_01",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-08.png",
-                "caption": "Тестовое изображение 08 · 08.01",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_08_01_04",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "08"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "1"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": true,
-                "caption": "Контрольные значения"
+                "text": "01. Старт и карта · Истории района",
+                "level": 2
               },
               "children": []
             },
@@ -170,11 +96,28 @@
               "children": []
             },
             {
-              "id": "heading_08_01",
-              "type": "heading",
+              "id": "test_photo_08_01_01",
+              "type": "photo",
               "props": {
-                "text": "01. Старт и карта · Истории района",
-                "level": 2
+                "fileId": "./assets/test-projects/test-08.png",
+                "caption": "Тестовое изображение 08 · 08.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_08_01_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5644,
+                  "longitude": 104.92920000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 08.01"
               },
               "children": []
             },
@@ -188,6 +131,63 @@
                 "hasSpoiler": false
               },
               "children": []
+            },
+            {
+              "id": "test_table_08_01_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "08"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_08_01_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 08.01",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_08_01_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
             }
           ]
         },
@@ -208,64 +208,13 @@
           "props": {},
           "children": [
             {
-              "id": "test_divider_08_02_02",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_photo_08_02_05",
-              "type": "photo",
+              "id": "heading_08_02",
+              "type": "heading",
               "props": {
-                "fileId": "./assets/test-projects/test-03.png",
-                "caption": "Тестовое изображение 03 · 08.02",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "text": "02. Контекст · Истории района",
+                "level": 2
               },
               "children": []
-            },
-            {
-              "id": "test_button_08_02_03",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 08.02",
-                "url": "https://example.com/post-manipulator/08/02",
-                "buttonStyle": "danger"
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_08_02_01",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5644,
-                  "longitude": 104.9302
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 08.02"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_08_02_04",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 08.02",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_08_02_04_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
             },
             {
               "id": "project_backlink_08_02",
@@ -279,78 +228,25 @@
               "children": []
             },
             {
-              "id": "heading_08_02",
-              "type": "heading",
+              "id": "test_formula_08_02_01",
+              "type": "mathematical_expression",
               "props": {
-                "text": "02. Контекст · Истории района",
-                "level": 2
+                "expression": "x_8 + y_2 = 10"
               },
               "children": []
             },
             {
-              "id": "test_footer_08_02_06",
-              "type": "footer",
+              "id": "test_button_08_02_02",
+              "type": "url_button",
               "props": {
-                "text": "Тестовый подвал · проект 08 · пост 02"
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336482000,
-        "updatedAt": 1788336482000
-      },
-      {
-        "id": "test_post_08_03",
-        "title": "03. Наблюдения · Истории района",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_details_08_03_05",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 08.03",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_08_03_05_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_pre_08_03_02",
-              "type": "preformatted",
-              "props": {
-                "text": "project=08\npost=03\nvariant=2",
-                "language": "text"
+                "text": "Открыть тест 08.02",
+                "url": "https://example.com/post-manipulator/08/02",
+                "buttonStyle": "success"
               },
               "children": []
             },
             {
-              "id": "heading_08_03",
-              "type": "heading",
-              "props": {
-                "text": "03. Наблюдения · Истории района",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_08_03_04",
+              "id": "test_list_08_02_03",
               "type": "list",
               "props": {
                 "items": [
@@ -358,7 +254,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 3"
+                        "text": "Проверить карточку 2"
                       }
                     ],
                     "type": "1",
@@ -389,31 +285,114 @@
               "children": []
             },
             {
-              "id": "test_quote_08_03_06",
+              "id": "test_quote_08_02_04",
               "type": "block_quotation",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 08.03».",
+                "text": "«Тестовый контент должен быть разнообразным — вариант 08.02».",
                 "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_map_08_03_01",
+              "id": "test_divider_08_02_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_map_08_02_06",
               "type": "map",
               "props": {
                 "location": {
                   "latitude": 11.5644,
-                  "longitude": 104.9312
+                  "longitude": 104.9302
                 },
-                "zoom": 12,
+                "zoom": 14,
                 "width": 640,
                 "height": 360,
-                "caption": "Тестовая точка 08.03"
+                "caption": "Тестовая точка 08.02"
               },
               "children": []
             },
             {
-              "id": "test_table_08_03_08",
+              "id": "test_details_08_02_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 08.02",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_08_02_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336482000,
+        "updatedAt": 1788336482000
+      },
+      {
+        "id": "test_post_08_03",
+        "title": "03. Наблюдения · Истории района",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_08_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Истории района",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_08_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_08",
+                "targetSlotId": "test_slot_08_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_08_03_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 08.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_08_03_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 08.03",
+                "url": "https://example.com/post-manipulator/08/03",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_08_03_03",
               "type": "table",
               "props": {
                 "cells": [
@@ -445,38 +424,49 @@
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": false,
+                "isStriped": true,
                 "isCompact": false,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "project_backlink_08_03",
-              "type": "project_map_backlink",
+              "id": "test_formula_08_03_04",
+              "type": "mathematical_expression",
               "props": {
-                "targetMapId": "test_map_08",
-                "targetSlotId": "test_slot_08_03",
-                "text": "Назад к карте",
-                "managedByMap": true
+                "expression": "x_8 + y_3 = 11"
               },
               "children": []
             },
             {
-              "id": "test_footer_08_03_03",
-              "type": "footer",
+              "id": "test_pre_08_03_05",
+              "type": "preformatted",
               "props": {
-                "text": "Тестовый подвал · проект 08 · пост 03"
+                "text": "project=08\npost=03\nvariant=5",
+                "language": "text"
               },
               "children": []
             },
             {
-              "id": "test_button_08_03_07",
-              "type": "url_button",
+              "id": "test_paragraph_08_03_06",
+              "type": "paragraph",
               "props": {
-                "text": "Открыть тест 08.03",
-                "url": "https://example.com/post-manipulator/08/03",
-                "buttonStyle": "primary"
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Истории района. "
+                  },
+                  "наблюдение 3.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_08_03_07",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 08.03».",
+                "credit": "Набор автотестов"
               },
               "children": []
             }
@@ -499,12 +489,51 @@
           "props": {},
           "children": [
             {
-              "id": "test_footer_08_04_07",
-              "type": "footer",
+              "id": "heading_08_04",
+              "type": "heading",
               "props": {
-                "text": "Тестовый подвал · проект 08 · пост 04"
+                "text": "04. Материалы · Истории района",
+                "level": 2
               },
               "children": []
+            },
+            {
+              "id": "project_backlink_08_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_08",
+                "targetSlotId": "test_slot_08_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_08_04_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=08\npost=04\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_08_04_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 08.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_08_04_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
             },
             {
               "id": "test_table_08_04_04",
@@ -546,138 +575,7 @@
               "children": []
             },
             {
-              "id": "test_paragraph_08_04_06",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Истории района. "
-                  },
-                  "наблюдение 4.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_08_04_02",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 08.04",
-                "url": "https://example.com/post-manipulator/08/04",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_08_04_01",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 08.04",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_08_04_01_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_map_08_04_03",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5644,
-                  "longitude": 104.93220000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 08.04"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_08_04_05",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_8 + y_4 = 12"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_08_04",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_08",
-                "targetSlotId": "test_slot_08_04",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "heading_08_04",
-              "type": "heading",
-              "props": {
-                "text": "04. Материалы · Истории района",
-                "level": 2
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336484000,
-        "updatedAt": 1788336484000
-      },
-      {
-        "id": "test_post_08_05",
-        "title": "05. Сравнение · Истории района",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_pre_08_05_01",
-              "type": "preformatted",
-              "props": {
-                "text": "project=08\npost=05\nvariant=1",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_08_05_06",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_8 + y_5 = 13"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_08_05_03",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-04.png",
-                "caption": "Тестовое изображение 04 · 08.05",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_08_05_04",
+              "id": "test_list_08_04_05",
               "type": "list",
               "props": {
                 "items": [
@@ -685,7 +583,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 5"
+                        "text": "Проверить карточку 4"
                       }
                     ],
                     "type": "1",
@@ -716,11 +614,37 @@
               "children": []
             },
             {
-              "id": "test_quote_08_05_05",
-              "type": "block_quotation",
+              "id": "test_footer_08_04_01",
+              "type": "footer",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 08.05».",
-                "credit": "Набор автотестов"
+                "text": "Тестовый подвал · проект 08 · пост 04"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336484000,
+        "updatedAt": 1788336484000
+      },
+      {
+        "id": "test_post_08_05",
+        "title": "05. Сравнение · Истории района",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_08_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Истории района",
+                "level": 2
               },
               "children": []
             },
@@ -736,16 +660,56 @@
               "children": []
             },
             {
-              "id": "heading_08_05",
-              "type": "heading",
+              "id": "test_details_08_05_01",
+              "type": "details",
               "props": {
-                "text": "05. Сравнение · Истории района",
-                "level": 2
+                "summary": "Дополнительные данные 08.05",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_08_05_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_quote_08_05_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 08.05».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_table_08_05_02",
+              "id": "test_formula_08_05_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_8 + y_5 = 13"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_08_05_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Истории района. "
+                  },
+                  "наблюдение 5.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_08_05_06",
               "type": "table",
               "props": {
                 "cells": [
@@ -782,6 +746,30 @@
                 "caption": "Контрольные значения"
               },
               "children": []
+            },
+            {
+              "id": "test_button_08_05_07",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 08.05",
+                "url": "https://example.com/post-manipulator/08/05",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_08_05_08",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_footer_08_05_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 08 · пост 05"
+              },
+              "children": []
             }
           ]
         },
@@ -802,12 +790,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_button_08_06_03",
-              "type": "url_button",
+              "id": "heading_08_06",
+              "type": "heading",
               "props": {
-                "text": "Открыть тест 08.06",
-                "url": "https://example.com/post-manipulator/08/06",
-                "buttonStyle": "danger"
+                "text": "06. Практика · Истории района",
+                "level": 2
               },
               "children": []
             },
@@ -823,79 +810,61 @@
               "children": []
             },
             {
-              "id": "test_paragraph_08_06_04",
-              "type": "paragraph",
+              "id": "test_details_08_06_01",
+              "type": "details",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Истории района. "
+                "summary": "Дополнительные данные 08.06",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_08_06_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
                   },
-                  "наблюдение 6.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
+                  "children": []
+                }
+              ]
             },
             {
-              "id": "test_divider_08_06_05",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_footer_08_06_02",
-              "type": "footer",
+              "id": "test_map_08_06_03",
+              "type": "map",
               "props": {
-                "text": "Тестовый подвал · проект 08 · пост 06"
+                "location": {
+                  "latitude": 11.5644,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 08.06"
               },
               "children": []
             },
             {
-              "id": "test_formula_08_06_01",
-              "type": "mathematical_expression",
+              "id": "test_photo_08_06_04",
+              "type": "photo",
               "props": {
-                "expression": "x_8 + y_6 = 14"
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 08.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
               },
               "children": []
             },
             {
-              "id": "heading_08_06",
-              "type": "heading",
+              "id": "test_button_08_06_05",
+              "type": "url_button",
               "props": {
-                "text": "06. Практика · Истории района",
-                "level": 2
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336486000,
-        "updatedAt": 1788336486000
-      },
-      {
-        "id": "test_post_08_07",
-        "title": "07. Проверка · Истории района",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "test_quote_08_07_04",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 08.07».",
-                "credit": "Набор автотестов"
+                "text": "Открыть тест 08.06",
+                "url": "https://example.com/post-manipulator/08/06",
+                "buttonStyle": "success"
               },
               "children": []
             },
             {
-              "id": "test_list_08_07_03",
+              "id": "test_list_08_06_06",
               "type": "list",
               "props": {
                 "items": [
@@ -903,7 +872,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 7"
+                        "text": "Проверить карточку 6"
                       }
                     ],
                     "has_checkbox": true,
@@ -934,6 +903,41 @@
               "children": []
             },
             {
+              "id": "test_footer_08_06_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 08 · пост 06"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336486000,
+        "updatedAt": 1788336486000
+      },
+      {
+        "id": "test_post_08_07",
+        "title": "07. Проверка · Истории района",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_08_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Истории района",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_backlink_08_07",
               "type": "project_map_backlink",
               "props": {
@@ -945,11 +949,40 @@
               "children": []
             },
             {
-              "id": "heading_08_07",
-              "type": "heading",
+              "id": "test_quote_08_07_01",
+              "type": "block_quotation",
               "props": {
-                "text": "07. Проверка · Истории района",
-                "level": 2
+                "text": "«Тестовый контент должен быть разнообразным — вариант 08.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_08_07_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Истории района. "
+                  },
+                  "наблюдение 7.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_08_07_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5644,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 08.07"
               },
               "children": []
             },
@@ -993,21 +1026,36 @@
               "children": []
             },
             {
-              "id": "test_button_08_07_02",
-              "type": "url_button",
+              "id": "test_pre_08_07_06",
+              "type": "preformatted",
               "props": {
-                "text": "Открыть тест 08.07",
-                "url": "https://example.com/post-manipulator/08/07",
-                "buttonStyle": "success"
+                "text": "project=08\npost=07\nvariant=6",
+                "language": "text"
               },
               "children": []
             },
             {
-              "id": "test_pre_08_07_01",
-              "type": "preformatted",
+              "id": "test_divider_08_07_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_08_07_08",
+              "type": "photo",
               "props": {
-                "text": "project=08\npost=07\nvariant=1",
-                "language": "text"
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 08.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_08_07_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 08 · пост 07"
               },
               "children": []
             }
@@ -1030,6 +1078,15 @@
           "props": {},
           "children": [
             {
+              "id": "heading_08_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Истории района",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_backlink_08_08",
               "type": "project_map_backlink",
               "props": {
@@ -1037,6 +1094,16 @@
                 "targetSlotId": "test_slot_08_08",
                 "text": "Назад к карте",
                 "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_08_08_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 08.08",
+                "url": "https://example.com/post-manipulator/08/08",
+                "buttonStyle": "primary"
               },
               "children": []
             },
@@ -1061,7 +1128,211 @@
               "children": []
             },
             {
-              "id": "test_table_08_08_05",
+              "id": "test_formula_08_08_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_8 + y_8 = 16"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_08_08_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5644,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 08.08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_08_08_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Истории района. "
+                  },
+                  "наблюдение 8.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336488000,
+        "updatedAt": 1788336488000
+      },
+      {
+        "id": "test_post_08_09",
+        "title": "09. Итоги · Истории района",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_08_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Истории района",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_08_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_08",
+                "targetSlotId": "test_slot_08_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_08_09_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 08.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_08_09_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 08.09",
+                "url": "https://example.com/post-manipulator/08/09",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_08_09_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_8 + y_9 = 17"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_08_09_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_paragraph_08_09_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Истории района. "
+                  },
+                  "наблюдение 9.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_08_09_06",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5644,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 08.09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_08_09_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=08\npost=09\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_08_09_08",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 08.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336489000,
+        "updatedAt": 1788336489000
+      },
+      {
+        "id": "test_post_08_10",
+        "title": "10. Следующий шаг · Истории района",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_08_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Истории района",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_08_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_08",
+                "targetSlotId": "test_slot_08_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_08_10_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=08\npost=10\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_08_10_02",
               "type": "table",
               "props": {
                 "cells": [
@@ -1088,236 +1359,35 @@
                       "text": "Пост"
                     },
                     {
-                      "text": "8"
+                      "text": "10"
                     }
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
+                "isStriped": false,
                 "isCompact": false,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_paragraph_08_08_06",
-              "type": "paragraph",
+              "id": "test_details_08_10_03",
+              "type": "details",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Истории района. "
+                "summary": "Дополнительные данные 08.10",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_08_10_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
                   },
-                  "наблюдение 8.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
+                  "children": []
+                }
+              ]
             },
-            {
-              "id": "heading_08_08",
-              "type": "heading",
-              "props": {
-                "text": "08. Варианты · Истории района",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_08_08_07",
-              "type": "list",
-              "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 8"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 1
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 2
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 3
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_08_08_04",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 08.08",
-                "url": "https://example.com/post-manipulator/08/08",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_08_08_01",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 08 · пост 08"
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336488000,
-        "updatedAt": 1788336488000
-      },
-      {
-        "id": "test_post_08_09",
-        "title": "09. Итоги · Истории района",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
-            {
-              "id": "project_backlink_08_09",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_08",
-                "targetSlotId": "test_slot_08_09",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "heading_08_09",
-              "type": "heading",
-              "props": {
-                "text": "09. Итоги · Истории района",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_08_09_03",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5644,
-                  "longitude": 104.9372
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 08.09"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_08_09_04",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-09.png",
-                "caption": "Тестовое изображение 09 · 08.09",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_08_09_01",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 08 · пост 09"
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_08_09_05",
-              "type": "list",
-              "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 9"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": true
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_08_09_02",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 08.09",
-                "url": "https://example.com/post-manipulator/08/09",
-                "buttonStyle": "success"
-              },
-              "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336489000,
-        "updatedAt": 1788336489000
-      },
-      {
-        "id": "test_post_08_10",
-        "title": "10. Следующий шаг · Истории района",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
             {
               "id": "test_list_08_10_04",
               "type": "list",
@@ -1358,108 +1428,31 @@
               "children": []
             },
             {
-              "id": "project_backlink_08_10",
-              "type": "project_map_backlink",
+              "id": "test_photo_08_10_05",
+              "type": "photo",
               "props": {
-                "targetMapId": "test_map_08",
-                "targetSlotId": "test_slot_08_10",
-                "text": "Назад к карте",
-                "managedByMap": true
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 08.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
               },
               "children": []
             },
             {
-              "id": "test_quote_08_10_05",
-              "type": "block_quotation",
+              "id": "test_button_08_10_06",
+              "type": "url_button",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 08.10».",
-                "credit": "Набор автотестов"
+                "text": "Открыть тест 08.10",
+                "url": "https://example.com/post-manipulator/08/10",
+                "buttonStyle": "danger"
               },
               "children": []
             },
             {
-              "id": "test_table_08_10_03",
-              "type": "table",
+              "id": "test_formula_08_10_07",
+              "type": "mathematical_expression",
               "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "08"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "10"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_08_10_01",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Истории района. "
-                  },
-                  "наблюдение 10.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "heading_08_10",
-              "type": "heading",
-              "props": {
-                "text": "10. Следующий шаг · Истории района",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_08_10_06",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5644,
-                  "longitude": 104.93820000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 08.10"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_08_10_02",
-              "type": "preformatted",
-              "props": {
-                "text": "project=08\npost=10\nvariant=2",
-                "language": "text"
+                "expression": "x_8 + y_10 = 18"
               },
               "children": []
             }

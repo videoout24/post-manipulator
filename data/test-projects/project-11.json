@@ -30,76 +30,6 @@
               "children": []
             },
             {
-              "id": "test_footer_11_01_03",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 11 · пост 01"
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_11_01_02",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "11"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "1"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_01_04",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=01\nvariant=4",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_11_01_05",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
-                  },
-                  "наблюдение 1.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
               "id": "project_map_11",
               "type": "project_post_map",
               "props": {
@@ -175,6 +105,76 @@
                 "hasSpoiler": false
               },
               "children": []
+            },
+            {
+              "id": "test_table_11_01_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "11"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_11_01_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=11\npost=01\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_11_01_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фестиваль идей. "
+                  },
+                  "наблюдение 1.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_11_01_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 11 · пост 01"
+              },
+              "children": []
             }
           ]
         },
@@ -195,23 +195,119 @@
           "props": {},
           "children": [
             {
-              "id": "test_footer_11_02_01",
-              "type": "footer",
+              "id": "heading_11_02",
+              "type": "heading",
               "props": {
-                "text": "Тестовый подвал · проект 11 · пост 02"
+                "text": "02. Контекст · Фестиваль идей",
+                "level": 2
               },
               "children": []
             },
             {
-              "id": "test_photo_11_02_05",
-              "type": "photo",
+              "id": "project_backlink_11_02",
+              "type": "project_map_backlink",
               "props": {
-                "fileId": "./assets/test-projects/test-06.png",
-                "caption": "Тестовое изображение 06 · 11.02",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "targetMapId": "test_map_11",
+                "targetSlotId": "test_slot_11_02",
+                "text": "Назад к карте",
+                "managedByMap": true
               },
               "children": []
+            },
+            {
+              "id": "test_table_11_02_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "11"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_11_02_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фестиваль идей. "
+                  },
+                  "наблюдение 2.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_11_02_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5674,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 11.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_11_02_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=11\npost=02\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_11_02_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 11.02",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_11_02_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
             },
             {
               "id": "test_list_11_02_06",
@@ -251,90 +347,6 @@
                 ]
               },
               "children": []
-            },
-            {
-              "id": "test_pre_11_02_04",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=02\nvariant=4",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_11_02_07",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_11 + y_2 = 13"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_11_02",
-              "type": "heading",
-              "props": {
-                "text": "02. Контекст · Фестиваль идей",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_11_02_08",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
-                  },
-                  "наблюдение 2.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_11_02_02",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 11.02",
-                "open": false
-              },
-              "children": [
-                {
-                  "id": "test_details_11_02_02_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "project_backlink_11_02",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_11",
-                "targetSlotId": "test_slot_11_02",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_11_02_03",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5674,
-                  "longitude": 104.9302
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 11.02"
-              },
-              "children": []
             }
           ]
         },
@@ -364,68 +376,6 @@
               "children": []
             },
             {
-              "id": "test_photo_11_03_03",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-05.png",
-                "caption": "Тестовое изображение 05 · 11.03",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_11_03_04",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
-                  },
-                  "наблюдение 3.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_11_03_01",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 11.03",
-                "url": "https://example.com/post-manipulator/11/03",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_11_03_05",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 11.03",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_11_03_05_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_pre_11_03_02",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=03\nvariant=2",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
               "id": "project_backlink_11_03",
               "type": "project_map_backlink",
               "props": {
@@ -437,7 +387,176 @@
               "children": []
             },
             {
-              "id": "test_list_11_03_06",
+              "id": "test_formula_11_03_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_11 + y_3 = 14"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_11_03_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_11_03_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 11.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_11_03_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_button_11_03_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 11.03",
+                "url": "https://example.com/post-manipulator/11/03",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_11_03_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=11\npost=03\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_11_03_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "11"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_11_03_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5674,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 11.03"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336663000,
+        "updatedAt": 1788336663000
+      },
+      {
+        "id": "test_post_11_04",
+        "title": "04. Материалы · Фестиваль идей",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_11_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Фестиваль идей",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_11_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_11",
+                "targetSlotId": "test_slot_11_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_11_04_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фестиваль идей. "
+                  },
+                  "наблюдение 4.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_11_04_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=11\npost=04\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_11_04_03",
               "type": "list",
               "props": {
                 "items": [
@@ -445,7 +564,7 @@
                     "blocks": [
                       {
                         "type": "paragraph",
-                        "text": "Проверить карточку 3"
+                        "text": "Проверить карточку 4"
                       }
                     ],
                     "has_checkbox": true,
@@ -474,137 +593,24 @@
                 ]
               },
               "children": []
-            }
-          ]
-        },
-        "schedule": null,
-        "publication": {
-          "state": "draft"
-        },
-        "deployments": {},
-        "createdAt": 1788336663000,
-        "updatedAt": 1788336663000
-      },
-      {
-        "id": "test_post_11_04",
-        "title": "04. Материалы · Фестиваль идей",
-        "messageAst": {
-          "id": "root",
-          "type": "document",
-          "props": {},
-          "children": [
+            },
             {
-              "id": "test_list_11_04_04",
-              "type": "list",
+              "id": "test_photo_11_04_04",
+              "type": "photo",
               "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 4"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 1
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 2
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 3
-                  }
-                ]
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 11.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
               },
               "children": []
             },
             {
-              "id": "test_details_11_04_05",
-              "type": "details",
+              "id": "test_quote_11_04_05",
+              "type": "block_quotation",
               "props": {
-                "summary": "Дополнительные данные 11.04",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_11_04_05_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "test_paragraph_11_04_02",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
-                  },
-                  "наблюдение 4.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_11_04",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_11",
-                "targetSlotId": "test_slot_11_04",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_11_04_03",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5674,
-                  "longitude": 104.93220000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 11.04"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_11_04",
-              "type": "heading",
-              "props": {
-                "text": "04. Материалы · Фестиваль идей",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_04_01",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=04\nvariant=1",
-                "language": "text"
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.04».",
+                "credit": "Набор автотестов"
               },
               "children": []
             }
@@ -627,7 +633,68 @@
           "props": {},
           "children": [
             {
-              "id": "test_table_11_05_02",
+              "id": "heading_11_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Фестиваль идей",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_11_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_11",
+                "targetSlotId": "test_slot_11_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_11_05_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_11_05_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 11.05",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_11_05_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_paragraph_11_05_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фестиваль идей. "
+                  },
+                  "наблюдение 5.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_11_05_04",
               "type": "table",
               "props": {
                 "cells": [
@@ -660,101 +727,16 @@
                 ],
                 "isBordered": true,
                 "isStriped": false,
-                "isCompact": false,
+                "isCompact": true,
                 "caption": "Контрольные значения"
               },
               "children": []
             },
             {
-              "id": "test_button_11_05_08",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 11.05",
-                "url": "https://example.com/post-manipulator/11/05",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_05_03",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=05\nvariant=3",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_11_05",
-              "type": "heading",
-              "props": {
-                "text": "05. Сравнение · Фестиваль идей",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_11_05_04",
+              "id": "test_formula_11_05_05",
               "type": "mathematical_expression",
               "props": {
                 "expression": "x_11 + y_5 = 16"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_11_05_05",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
-                  },
-                  "наблюдение 5.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_11_05_06",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_photo_11_05_07",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-01.png",
-                "caption": "Тестовое изображение 01 · 11.05",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_11_05_01",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5674,
-                  "longitude": 104.9332
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 11.05"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_11_05",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_11",
-                "targetSlotId": "test_slot_11_05",
-                "text": "Назад к карте",
-                "managedByMap": true
               },
               "children": []
             }
@@ -777,7 +759,27 @@
           "props": {},
           "children": [
             {
-              "id": "test_table_11_06_05",
+              "id": "heading_11_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Фестиваль идей",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_11_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_11",
+                "targetSlotId": "test_slot_11_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_11_06_01",
               "type": "table",
               "props": {
                 "cells": [
@@ -810,7 +812,7 @@
                 ],
                 "isBordered": true,
                 "isStriped": true,
-                "isCompact": false,
+                "isCompact": true,
                 "caption": "Контрольные значения"
               },
               "children": []
@@ -830,65 +832,28 @@
               "children": []
             },
             {
-              "id": "heading_11_06",
-              "type": "heading",
+              "id": "test_pre_11_06_04",
+              "type": "preformatted",
               "props": {
-                "text": "06. Практика · Фестиваль идей",
-                "level": 2
+                "text": "project=11\npost=06\nvariant=4",
+                "language": "text"
               },
               "children": []
             },
             {
-              "id": "test_map_11_06_02",
-              "type": "map",
+              "id": "test_quote_11_06_05",
+              "type": "block_quotation",
               "props": {
-                "location": {
-                  "latitude": 11.5674,
-                  "longitude": 104.9342
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 11.06"
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.06».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_details_11_06_01",
-              "type": "details",
+              "id": "test_footer_11_06_02",
+              "type": "footer",
               "props": {
-                "summary": "Дополнительные данные 11.06",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_11_06_01_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "project_backlink_11_06",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_11",
-                "targetSlotId": "test_slot_11_06",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_11_06_04",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 11.06",
-                "url": "https://example.com/post-manipulator/11/06",
-                "buttonStyle": "primary"
+                "text": "Тестовый подвал · проект 11 · пост 06"
               },
               "children": []
             }
@@ -911,35 +876,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_quote_11_07_01",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 11.07».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
               "id": "heading_11_07",
               "type": "heading",
               "props": {
                 "text": "07. Проверка · Фестиваль идей",
                 "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_11_07_04",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5674,
-                  "longitude": 104.93520000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 11.07"
               },
               "children": []
             },
@@ -955,46 +896,34 @@
               "children": []
             },
             {
-              "id": "test_list_11_07_03",
-              "type": "list",
+              "id": "test_details_11_07_01",
+              "type": "details",
               "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 7"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 1
+                "summary": "Дополнительные данные 11.07",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_11_07_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
                   },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 2
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 3
-                  }
-                ]
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_quote_11_07_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.07».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_paragraph_11_07_08",
+              "id": "test_paragraph_11_07_03",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -1002,8 +931,17 @@
                     "type": "bold",
                     "text": "Фестиваль идей. "
                   },
-                  "наблюдение 7.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 7.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_11_07_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=11\npost=07\nvariant=5",
+                "language": "text"
               },
               "children": []
             },
@@ -1018,61 +956,27 @@
               "children": []
             },
             {
-              "id": "test_table_11_07_05",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "11"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "7"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_07_07",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=07\nvariant=7",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_11_07_02",
+              "id": "test_photo_11_07_07",
               "type": "photo",
               "props": {
-                "fileId": "./assets/test-projects/test-08.png",
-                "caption": "Тестовое изображение 08 · 11.07",
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 11.07",
                 "captionCredit": "Post Manipulator fixture",
                 "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_11_07_08",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_footer_11_07_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 11 · пост 07"
               },
               "children": []
             }
@@ -1095,109 +999,13 @@
           "props": {},
           "children": [
             {
-              "id": "test_table_11_08_01",
-              "type": "table",
+              "id": "heading_11_08",
+              "type": "heading",
               "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "11"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "8"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": true,
-                "caption": "Контрольные значения"
+                "text": "08. Варианты · Фестиваль идей",
+                "level": 2
               },
               "children": []
-            },
-            {
-              "id": "test_map_11_08_07",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5674,
-                  "longitude": 104.9362
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 11.08"
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_11_08_04",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 11.08",
-                "url": "https://example.com/post-manipulator/11/08",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_08_05",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=08\nvariant=5",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_11_08_02",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
-                  },
-                  "наблюдение 8.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_11_08_03",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 11.08",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_11_08_03_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
             },
             {
               "id": "project_backlink_11_08",
@@ -1211,16 +1019,38 @@
               "children": []
             },
             {
-              "id": "test_quote_11_08_08",
-              "type": "block_quotation",
+              "id": "test_divider_11_08_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_11_08_02",
+              "type": "photo",
               "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 11.08».",
-                "credit": "Набор автотестов"
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 11.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
               },
               "children": []
             },
             {
-              "id": "test_list_11_08_06",
+              "id": "test_paragraph_11_08_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фестиваль идей. "
+                  },
+                  "наблюдение 8.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_11_08_04",
               "type": "list",
               "props": {
                 "items": [
@@ -1259,13 +1089,22 @@
               "children": []
             },
             {
-              "id": "heading_11_08",
-              "type": "heading",
+              "id": "test_details_11_08_05",
+              "type": "details",
               "props": {
-                "text": "08. Варианты · Фестиваль идей",
-                "level": 2
+                "summary": "Дополнительные данные 11.08",
+                "open": true
               },
-              "children": []
+              "children": [
+                {
+                  "id": "test_details_11_08_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
             }
           ]
         },
@@ -1286,85 +1125,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_footer_11_09_02",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 11 · пост 09"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_11_09_01",
-              "type": "details",
-              "props": {
-                "summary": "Дополнительные данные 11.09",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_11_09_01_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
-                  },
-                  "children": []
-                }
-              ]
-            },
-            {
               "id": "heading_11_09",
               "type": "heading",
               "props": {
                 "text": "09. Итоги · Фестиваль идей",
                 "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_11_09_05",
-              "type": "list",
-              "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 9"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 1
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 2
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 3
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_09_04",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=09\nvariant=4",
-                "language": "text"
               },
               "children": []
             },
@@ -1380,22 +1145,118 @@
               "children": []
             },
             {
-              "id": "test_divider_11_09_06",
+              "id": "test_quote_11_09_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_11_09_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5674,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 11.09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_11_09_03",
               "type": "divider",
               "props": {},
               "children": []
             },
             {
-              "id": "test_paragraph_11_09_03",
-              "type": "paragraph",
+              "id": "test_table_11_09_04",
+              "type": "table",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Фестиваль идей. "
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "11"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_11_09_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 11.09",
+                "url": "https://example.com/post-manipulator/11/09",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_11_09_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 11.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_11_09_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 11.09",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_11_09_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
                   },
-                  "наблюдение 9.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_11_09_08",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_11 + y_9 = 20"
               },
               "children": []
             }
@@ -1418,6 +1279,53 @@
           "props": {},
           "children": [
             {
+              "id": "heading_11_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Фестиваль идей",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_11_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_11",
+                "targetSlotId": "test_slot_11_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_11_10_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 11.10».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_11_10_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 11.10",
+                "url": "https://example.com/post-manipulator/11/10",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_11_10_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_11 + y_10 = 21"
+              },
+              "children": []
+            },
+            {
               "id": "test_details_11_10_05",
               "type": "details",
               "props": {
@@ -1436,56 +1344,7 @@
               ]
             },
             {
-              "id": "test_photo_11_10_01",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-10.png",
-                "caption": "Тестовое изображение 10 · 11.10",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": true
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_11_10",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_11",
-                "targetSlotId": "test_slot_11_10",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_11_10_02",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 11.10».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_11_10_06",
-              "type": "preformatted",
-              "props": {
-                "text": "project=11\npost=10\nvariant=6",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_11_10",
-              "type": "heading",
-              "props": {
-                "text": "10. Следующий шаг · Фестиваль идей",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_11_10_03",
+              "id": "test_map_11_10_06",
               "type": "map",
               "props": {
                 "location": {
@@ -1500,7 +1359,21 @@
               "children": []
             },
             {
-              "id": "test_footer_11_10_04",
+              "id": "test_paragraph_11_10_07",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фестиваль идей. "
+                  },
+                  "наблюдение 10.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_11_10_02",
               "type": "footer",
               "props": {
                 "text": "Тестовый подвал · проект 11 · пост 10"

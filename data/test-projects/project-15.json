@@ -21,6 +21,15 @@
           "props": {},
           "children": [
             {
+              "id": "heading_15_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_map_15",
               "type": "project_post_map",
               "props": {
@@ -98,18 +107,23 @@
               "children": []
             },
             {
-              "id": "heading_15_01",
-              "type": "heading",
-              "props": {
-                "text": "01. Старт и карта · Архив наблюдений",
-                "level": 2
-              },
-              "children": []
-            },
-            {
               "id": "test_divider_15_01_02",
               "type": "divider",
               "props": {},
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_01_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 1.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
               "children": []
             },
             {
@@ -166,20 +180,6 @@
                 "text": "Тестовый подвал · проект 15 · пост 01"
               },
               "children": []
-            },
-            {
-              "id": "test_paragraph_15_01_03",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Архив наблюдений. "
-                  },
-                  "наблюдение 1.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
             }
           ]
         },
@@ -200,26 +200,12 @@
           "props": {},
           "children": [
             {
-              "id": "test_formula_15_02_04",
-              "type": "mathematical_expression",
+              "id": "heading_15_02",
+              "type": "heading",
               "props": {
-                "expression": "x_15 + y_2 = 17"
+                "text": "02. Контекст · Архив наблюдений",
+                "level": 2
               },
-              "children": []
-            },
-            {
-              "id": "test_quote_15_02_01",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 15.02».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_15_02_06",
-              "type": "divider",
-              "props": {},
               "children": []
             },
             {
@@ -234,16 +220,79 @@
               "children": []
             },
             {
-              "id": "heading_15_02",
-              "type": "heading",
+              "id": "test_list_15_02_01",
+              "type": "list",
               "props": {
-                "text": "02. Контекст · Архив наблюдений",
-                "level": 2
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 2"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
               },
               "children": []
             },
             {
-              "id": "test_paragraph_15_02_02",
+              "id": "test_formula_15_02_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_2 = 17"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_02_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_02_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_button_15_02_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.02",
+                "url": "https://example.com/post-manipulator/15/02",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_02_07",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -251,27 +300,16 @@
                     "type": "bold",
                     "text": "Архив наблюдений. "
                   },
-                  "наблюдение 2.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 2.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
             },
             {
-              "id": "test_footer_15_02_03",
+              "id": "test_footer_15_02_04",
               "type": "footer",
               "props": {
                 "text": "Тестовый подвал · проект 15 · пост 02"
-              },
-              "children": []
-            },
-            {
-              "id": "test_photo_15_02_05",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-10.png",
-                "caption": "Тестовое изображение 10 · 15.02",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
               },
               "children": []
             }
@@ -293,6 +331,56 @@
           "type": "document",
           "props": {},
           "children": [
+            {
+              "id": "heading_15_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_15_03_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=03\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_03_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_map_15_03_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.03"
+              },
+              "children": []
+            },
             {
               "id": "test_list_15_03_04",
               "type": "list",
@@ -333,108 +421,17 @@
               "children": []
             },
             {
-              "id": "test_photo_15_03_02",
-              "type": "photo",
-              "props": {
-                "fileId": "./assets/test-projects/test-08.png",
-                "caption": "Тестовое изображение 08 · 15.03",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
-              },
-              "children": []
-            },
-            {
-              "id": "test_map_15_03_01",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5714,
-                  "longitude": 104.9312
-                },
-                "zoom": 12,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 15.03"
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_15_03_03",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "15"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "3"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_15_03",
-              "type": "heading",
-              "props": {
-                "text": "03. Наблюдения · Архив наблюдений",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_15_03_06",
+              "id": "test_button_15_03_05",
               "type": "url_button",
               "props": {
                 "text": "Открыть тест 15.03",
                 "url": "https://example.com/post-manipulator/15/03",
-                "buttonStyle": "danger"
+                "buttonStyle": "success"
               },
               "children": []
             },
             {
-              "id": "project_backlink_15_03",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_15",
-                "targetSlotId": "test_slot_15_03",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_15_03_07",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_formula_15_03_05",
+              "id": "test_formula_15_03_06",
               "type": "mathematical_expression",
               "props": {
                 "expression": "x_15 + y_3 = 18"
@@ -442,7 +439,7 @@
               "children": []
             },
             {
-              "id": "test_paragraph_15_03_08",
+              "id": "test_paragraph_15_03_07",
               "type": "paragraph",
               "props": {
                 "text": [
@@ -450,7 +447,7 @@
                     "type": "bold",
                     "text": "Архив наблюдений. "
                   },
-                  "наблюдение 3.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                  "наблюдение 3.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
                 ]
               },
               "children": []
@@ -474,18 +471,68 @@
           "props": {},
           "children": [
             {
-              "id": "test_map_15_04_04",
-              "type": "map",
+              "id": "heading_15_04",
+              "type": "heading",
               "props": {
-                "location": {
-                  "latitude": 11.5714,
-                  "longitude": 104.93220000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 15.04"
+                "text": "04. Материалы · Архив наблюдений",
+                "level": 2
               },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_04_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_04_02",
+              "type": "divider",
+              "props": {},
               "children": []
             },
             {
@@ -507,42 +554,7 @@
               ]
             },
             {
-              "id": "heading_15_04",
-              "type": "heading",
-              "props": {
-                "text": "04. Материалы · Архив наблюдений",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_15_04_02",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_pre_15_04_01",
-              "type": "preformatted",
-              "props": {
-                "text": "project=15\npost=04\nvariant=1",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_15_04",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_15",
-                "targetSlotId": "test_slot_15_04",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_15_04_05",
+              "id": "test_table_15_04_04",
               "type": "table",
               "props": {
                 "cells": [
@@ -574,9 +586,31 @@
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
+                "isStriped": false,
+                "isCompact": true,
                 "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_04_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 4.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_04_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 04"
               },
               "children": []
             }
@@ -604,6 +638,26 @@
               "props": {
                 "text": "05. Сравнение · Архив наблюдений",
                 "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_05_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.05».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
@@ -647,7 +701,7 @@
               "children": []
             },
             {
-              "id": "test_formula_15_05_01",
+              "id": "test_formula_15_05_03",
               "type": "mathematical_expression",
               "props": {
                 "expression": "x_15 + y_5 = 20"
@@ -655,105 +709,13 @@
               "children": []
             },
             {
-              "id": "test_map_15_05_06",
-              "type": "map",
-              "props": {
-                "location": {
-                  "latitude": 11.5714,
-                  "longitude": 104.9332
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 15.05"
-              },
+              "id": "test_divider_15_05_04",
+              "type": "divider",
+              "props": {},
               "children": []
             },
             {
-              "id": "test_paragraph_15_05_05",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Архив наблюдений. "
-                  },
-                  "наблюдение 5.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_15_05",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_15",
-                "targetSlotId": "test_slot_15_05",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
-            },
-            {
-              "id": "test_button_15_05_08",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 15.05",
-                "url": "https://example.com/post-manipulator/15/05",
-                "buttonStyle": "success"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_15_05_07",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 15.05».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_15_05_04",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "15"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "5"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": false,
-                "isCompact": true,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_details_15_05_03",
+              "id": "test_details_15_05_05",
               "type": "details",
               "props": {
                 "summary": "Дополнительные данные 15.05",
@@ -761,7 +723,7 @@
               },
               "children": [
                 {
-                  "id": "test_details_15_05_03_child",
+                  "id": "test_details_15_05_05_child",
                   "type": "paragraph",
                   "props": {
                     "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
@@ -789,7 +751,80 @@
           "props": {},
           "children": [
             {
-              "id": "test_list_15_06_07",
+              "id": "heading_15_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_15_06_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 15.06",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_15_06_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_pre_15_06_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=06\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_06_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 15.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_15_06_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_06_05",
               "type": "list",
               "props": {
                 "items": [
@@ -826,76 +861,6 @@
                 ]
               },
               "children": []
-            },
-            {
-              "id": "test_button_15_06_06",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 15.06",
-                "url": "https://example.com/post-manipulator/15/06",
-                "buttonStyle": "danger"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_15_06_02",
-              "type": "preformatted",
-              "props": {
-                "text": "project=15\npost=06\nvariant=2",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_15_06_03",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 15 · пост 06"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_15_06_01",
-              "type": "divider",
-              "props": {},
-              "children": []
-            },
-            {
-              "id": "test_formula_15_06_05",
-              "type": "mathematical_expression",
-              "props": {
-                "expression": "x_15 + y_6 = 21"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_15_06_04",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 15.06».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_15_06",
-              "type": "heading",
-              "props": {
-                "text": "06. Практика · Архив наблюдений",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "project_backlink_15_06",
-              "type": "project_map_backlink",
-              "props": {
-                "targetMapId": "test_map_15",
-                "targetSlotId": "test_slot_15_06",
-                "text": "Назад к карте",
-                "managedByMap": true
-              },
-              "children": []
             }
           ]
         },
@@ -925,60 +890,36 @@
               "children": []
             },
             {
-              "id": "test_paragraph_15_07_04",
-              "type": "paragraph",
+              "id": "project_backlink_15_07",
+              "type": "project_map_backlink",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Архив наблюдений. "
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_15_07_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 15.07",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_15_07_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
                   },
-                  "наблюдение 7.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
+                  "children": []
+                }
+              ]
             },
             {
-              "id": "test_table_15_07_03",
-              "type": "table",
-              "props": {
-                "cells": [
-                  [
-                    {
-                      "text": "Параметр",
-                      "is_header": true
-                    },
-                    {
-                      "text": "Значение",
-                      "is_header": true
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Проект"
-                    },
-                    {
-                      "text": "15"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Пост"
-                    },
-                    {
-                      "text": "7"
-                    }
-                  ]
-                ],
-                "isBordered": true,
-                "isStriped": true,
-                "isCompact": false,
-                "caption": "Контрольные значения"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_15_07_01",
+              "id": "test_quote_15_07_02",
               "type": "block_quotation",
               "props": {
                 "text": "«Тестовый контент должен быть разнообразным — вариант 15.07».",
@@ -987,54 +928,7 @@
               "children": []
             },
             {
-              "id": "test_footer_15_07_06",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 15 · пост 07"
-              },
-              "children": []
-            },
-            {
-              "id": "test_list_15_07_02",
-              "type": "list",
-              "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 7"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": true
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "has_checkbox": true,
-                    "is_checked": false
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_formula_15_07_05",
+              "id": "test_formula_15_07_03",
               "type": "mathematical_expression",
               "props": {
                 "expression": "x_15 + y_7 = 22"
@@ -1042,22 +936,36 @@
               "children": []
             },
             {
-              "id": "test_pre_15_07_07",
+              "id": "test_map_15_07_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_15_07_05",
               "type": "preformatted",
               "props": {
-                "text": "project=15\npost=07\nvariant=7",
+                "text": "project=15\npost=07\nvariant=5",
                 "language": "text"
               },
               "children": []
             },
             {
-              "id": "project_backlink_15_07",
-              "type": "project_map_backlink",
+              "id": "test_button_15_07_06",
+              "type": "url_button",
               "props": {
-                "targetMapId": "test_map_15",
-                "targetSlotId": "test_slot_15_07",
-                "text": "Назад к карте",
-                "managedByMap": true
+                "text": "Открыть тест 15.07",
+                "url": "https://example.com/post-manipulator/15/07",
+                "buttonStyle": "danger"
               },
               "children": []
             }
@@ -1080,6 +988,15 @@
           "props": {},
           "children": [
             {
+              "id": "heading_15_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
               "id": "project_backlink_15_08",
               "type": "project_map_backlink",
               "props": {
@@ -1091,63 +1008,11 @@
               "children": []
             },
             {
-              "id": "test_list_15_08_06",
-              "type": "list",
+              "id": "test_pre_15_08_01",
+              "type": "preformatted",
               "props": {
-                "items": [
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Проверить карточку 8"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 1
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Изменить порядок блоков"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 2
-                  },
-                  {
-                    "blocks": [
-                      {
-                        "type": "paragraph",
-                        "text": "Выгрузить в тестовый чат"
-                      }
-                    ],
-                    "type": "1",
-                    "value": 3
-                  }
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_paragraph_15_08_07",
-              "type": "paragraph",
-              "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Архив наблюдений. "
-                  },
-                  "наблюдение 8.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
-              },
-              "children": []
-            },
-            {
-              "id": "test_footer_15_08_04",
-              "type": "footer",
-              "props": {
-                "text": "Тестовый подвал · проект 15 · пост 08"
+                "text": "project=15\npost=08\nvariant=1",
+                "language": "text"
               },
               "children": []
             },
@@ -1191,62 +1056,68 @@
               "children": []
             },
             {
-              "id": "test_details_15_08_05",
-              "type": "details",
+              "id": "test_list_15_08_03",
+              "type": "list",
               "props": {
-                "summary": "Дополнительные данные 15.08",
-                "open": true
-              },
-              "children": [
-                {
-                  "id": "test_details_15_08_05_child",
-                  "type": "paragraph",
-                  "props": {
-                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
                   },
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "heading_15_08",
-              "type": "heading",
-              "props": {
-                "text": "08. Варианты · Архив наблюдений",
-                "level": 2
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
               },
               "children": []
             },
             {
-              "id": "test_button_15_08_03",
+              "id": "test_button_15_08_04",
               "type": "url_button",
               "props": {
                 "text": "Открыть тест 15.08",
                 "url": "https://example.com/post-manipulator/15/08",
-                "buttonStyle": "danger"
+                "buttonStyle": "primary"
               },
               "children": []
             },
             {
-              "id": "test_formula_15_08_08",
-              "type": "mathematical_expression",
+              "id": "test_quote_15_08_06",
+              "type": "block_quotation",
               "props": {
-                "expression": "x_15 + y_8 = 23"
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.08».",
+                "credit": "Набор автотестов"
               },
               "children": []
             },
             {
-              "id": "test_map_15_08_01",
-              "type": "map",
+              "id": "test_footer_15_08_05",
+              "type": "footer",
               "props": {
-                "location": {
-                  "latitude": 11.5714,
-                  "longitude": 104.9362
-                },
-                "zoom": 14,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 15.08"
+                "text": "Тестовый подвал · проект 15 · пост 08"
               },
               "children": []
             }
@@ -1269,51 +1140,12 @@
           "props": {},
           "children": [
             {
-              "id": "test_paragraph_15_09_05",
-              "type": "paragraph",
+              "id": "heading_15_09",
+              "type": "heading",
               "props": {
-                "text": [
-                  {
-                    "type": "bold",
-                    "text": "Архив наблюдений. "
-                  },
-                  "наблюдение 9.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
-                ]
+                "text": "09. Итоги · Архив наблюдений",
+                "level": 2
               },
-              "children": []
-            },
-            {
-              "id": "test_button_15_09_03",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 15.09",
-                "url": "https://example.com/post-manipulator/15/09",
-                "buttonStyle": "danger"
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_15_09_04",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 15.09».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_15_09_01",
-              "type": "preformatted",
-              "props": {
-                "text": "project=15\npost=09\nvariant=1",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_divider_15_09_06",
-              "type": "divider",
-              "props": {},
               "children": []
             },
             {
@@ -1328,13 +1160,48 @@
               "children": []
             },
             {
-              "id": "test_photo_15_09_02",
-              "type": "photo",
+              "id": "test_pre_15_09_01",
+              "type": "preformatted",
               "props": {
-                "fileId": "./assets/test-projects/test-04.png",
-                "caption": "Тестовое изображение 04 · 15.09",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "text": "project=15\npost=09\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_15_09_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_9 = 24"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_09_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_09_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_09_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 9.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
               },
               "children": []
             },
@@ -1354,11 +1221,49 @@
               "children": []
             },
             {
-              "id": "heading_15_09",
-              "type": "heading",
+              "id": "test_list_15_09_08",
+              "type": "list",
               "props": {
-                "text": "09. Итоги · Архив наблюдений",
-                "level": 2
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_09_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 09"
               },
               "children": []
             }
@@ -1381,17 +1286,11 @@
           "props": {},
           "children": [
             {
-              "id": "test_map_15_10_01",
-              "type": "map",
+              "id": "heading_15_10",
+              "type": "heading",
               "props": {
-                "location": {
-                  "latitude": 11.5714,
-                  "longitude": 104.93820000000001
-                },
-                "zoom": 13,
-                "width": 640,
-                "height": 360,
-                "caption": "Тестовая точка 15.10"
+                "text": "10. Следующий шаг · Архив наблюдений",
+                "level": 2
               },
               "children": []
             },
@@ -1407,55 +1306,21 @@
               "children": []
             },
             {
-              "id": "test_photo_15_10_02",
-              "type": "photo",
+              "id": "test_paragraph_15_10_01",
+              "type": "paragraph",
               "props": {
-                "fileId": "./assets/test-projects/test-05.png",
-                "caption": "Тестовое изображение 05 · 15.10",
-                "captionCredit": "Post Manipulator fixture",
-                "hasSpoiler": false
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 10.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
               },
               "children": []
             },
             {
-              "id": "test_button_15_10_04",
-              "type": "url_button",
-              "props": {
-                "text": "Открыть тест 15.10",
-                "url": "https://example.com/post-manipulator/15/10",
-                "buttonStyle": "primary"
-              },
-              "children": []
-            },
-            {
-              "id": "heading_15_10",
-              "type": "heading",
-              "props": {
-                "text": "10. Следующий шаг · Архив наблюдений",
-                "level": 2
-              },
-              "children": []
-            },
-            {
-              "id": "test_quote_15_10_03",
-              "type": "block_quotation",
-              "props": {
-                "text": "«Тестовый контент должен быть разнообразным — вариант 15.10».",
-                "credit": "Набор автотестов"
-              },
-              "children": []
-            },
-            {
-              "id": "test_pre_15_10_06",
-              "type": "preformatted",
-              "props": {
-                "text": "project=15\npost=10\nvariant=6",
-                "language": "text"
-              },
-              "children": []
-            },
-            {
-              "id": "test_table_15_10_05",
+              "id": "test_table_15_10_02",
               "type": "table",
               "props": {
                 "cells": [
@@ -1487,10 +1352,89 @@
                   ]
                 ],
                 "isBordered": true,
-                "isStriped": true,
+                "isStriped": false,
                 "isCompact": false,
                 "caption": "Контрольные значения"
               },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_10_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 15.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_15_10_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_10_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_15_10_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_10 = 25"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_10_07",
+              "type": "divider",
+              "props": {},
               "children": []
             }
           ]
