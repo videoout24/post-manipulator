@@ -1,0 +1,1522 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000001,
+  "project": {
+    "id": "test_project_02",
+    "schemaVersion": 2,
+    "title": "Тест 02 · Продуктовые эксперименты",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_02_01",
+      "rootMapId": "test_map_02"
+    },
+    "posts": [
+      {
+        "id": "test_post_02_01",
+        "title": "01. Старт и карта · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_02_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_02_01_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "02"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_02_01_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.92920000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.01"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_02_01_04",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_02_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 02.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_map_02",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_02",
+                "slots": [
+                  {
+                    "id": "test_slot_02_02",
+                    "targetPostId": "test_post_02_02",
+                    "text": "02. Контекст · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_02"
+                  },
+                  {
+                    "id": "test_slot_02_03",
+                    "targetPostId": "test_post_02_03",
+                    "text": "03. Наблюдения · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_03"
+                  },
+                  {
+                    "id": "test_slot_02_04",
+                    "targetPostId": "test_post_02_04",
+                    "text": "04. Материалы · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_04"
+                  },
+                  {
+                    "id": "test_slot_02_05",
+                    "targetPostId": "test_post_02_05",
+                    "text": "05. Сравнение · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_05"
+                  },
+                  {
+                    "id": "test_slot_02_06",
+                    "targetPostId": "test_post_02_06",
+                    "text": "06. Практика · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_06"
+                  },
+                  {
+                    "id": "test_slot_02_07",
+                    "targetPostId": "test_post_02_07",
+                    "text": "07. Проверка · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_07"
+                  },
+                  {
+                    "id": "test_slot_02_08",
+                    "targetPostId": "test_post_02_08",
+                    "text": "08. Варианты · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_08"
+                  },
+                  {
+                    "id": "test_slot_02_09",
+                    "targetPostId": "test_post_02_09",
+                    "text": "09. Итоги · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_09"
+                  },
+                  {
+                    "id": "test_slot_02_10",
+                    "targetPostId": "test_post_02_10",
+                    "text": "10. Следующий шаг · Продуктовые эксперименты",
+                    "derivedFromPostId": "test_post_02_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_02_01_07",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-08.png",
+                "caption": "Тестовое изображение 08 · 02.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_02_01_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 02.01",
+                "url": "https://example.com/post-manipulator/02/01",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_02_01_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=02\npost=01\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_02_01_08",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336121000,
+        "updatedAt": 1788336121000
+      },
+      {
+        "id": "test_post_02_02",
+        "title": "02. Контекст · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_02_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_02_02_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 2"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_02_02_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "02"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_02_02_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_02_02_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_2 + y_2 = 4"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_02_02_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 02"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336122000,
+        "updatedAt": 1788336122000
+      },
+      {
+        "id": "test_post_02_03",
+        "title": "03. Наблюдения · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_02_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_02_03_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 02.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_02_03_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_2 + y_3 = 5"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_02_03_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 3"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_02_03_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 02.03",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_02_03_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_02_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_02_03_07",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 02.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_02_03_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Продуктовые эксперименты. "
+                  },
+                  "наблюдение 3.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_02_03_08",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_02_03_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 03"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336123000,
+        "updatedAt": 1788336123000
+      },
+      {
+        "id": "test_post_02_04",
+        "title": "04. Материалы · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_02_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_02_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_02_04_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_02_04_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 02.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_02_04_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_2 + y_4 = 6"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_02_04_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_02_04_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 02.04",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_02_04_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336124000,
+        "updatedAt": 1788336124000
+      },
+      {
+        "id": "test_post_02_05",
+        "title": "05. Сравнение · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_02_05_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 5"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_02_05_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 02.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_02_05_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_02_05_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=02\npost=05\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_02_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_02_05_06",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.9332
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_02_05_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_2 + y_5 = 7"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336125000,
+        "updatedAt": 1788336125000
+      },
+      {
+        "id": "test_post_02_06",
+        "title": "06. Практика · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_formula_02_06_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_2 + y_6 = 8"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_02_06_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 02.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_02_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_02_06_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Продуктовые эксперименты. "
+                  },
+                  "наблюдение 6.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_02_06_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 02.06",
+                "url": "https://example.com/post-manipulator/02/06",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_02_06_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_02_06_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_02_06_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "02"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336126000,
+        "updatedAt": 1788336126000
+      },
+      {
+        "id": "test_post_02_07",
+        "title": "07. Проверка · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_02_07_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_02_07_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_02_07_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 02.07",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_02_07_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_pre_02_07_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=02\npost=07\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_02_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_02_07_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.07"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336127000,
+        "updatedAt": 1788336127000
+      },
+      {
+        "id": "test_post_02_08",
+        "title": "08. Варианты · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_formula_02_08_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_2 + y_8 = 10"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_02_08_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 02.08",
+                "url": "https://example.com/post-manipulator/02/08",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_02_08_04",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 02.08",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_02_08_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_paragraph_02_08_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Продуктовые эксперименты. "
+                  },
+                  "наблюдение 8.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_02_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_02_08_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336128000,
+        "updatedAt": 1788336128000
+      },
+      {
+        "id": "test_post_02_09",
+        "title": "09. Итоги · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_02_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_02_09_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_02_09_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_map_02_09_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_02_09_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "02"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_02_09_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 02.09",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_02_09_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_footer_02_09_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336129000,
+        "updatedAt": 1788336129000
+      },
+      {
+        "id": "test_post_02_10",
+        "title": "10. Следующий шаг · Продуктовые эксперименты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_02_10_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=02\npost=10\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_02_10_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Продуктовые эксперименты. "
+                  },
+                  "наблюдение 10.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_02_10_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 02.10",
+                "url": "https://example.com/post-manipulator/02/10",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_02_10_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 02 · пост 10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_02_10_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_map_02_10_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5584,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 02.10"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_02_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Продуктовые эксперименты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_02_10_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "02"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_02_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_02",
+                "targetSlotId": "test_slot_02_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_02_10_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 02.10",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_02_10_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336130000,
+        "updatedAt": 1788336130000
+      }
+    ],
+    "createdAt": 1788336120000,
+    "updatedAt": 1788336130000
+  }
+}

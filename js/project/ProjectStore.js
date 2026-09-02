@@ -5,6 +5,8 @@ import { projectGraphInputFingerprint } from "./ProjectGraphInputs.js?v=1.5.9";
 
 const PROJECT_SCHEMA_VERSION = 2;
 export const PROJECT_STRUCTURE_MODE = "linear";
+const MAX_PROJECTS_PER_IMPORT = 500;
+const MAX_POSTS_PER_IMPORTED_PROJECT = 500;
 
 export class ProjectStore {
   constructor({ db, events = null } = {}) {
@@ -48,6 +50,55 @@ export class ProjectStore {
     await this.db.put("projects", project.id, project);
     this.#emit("created", project);
     return structuredClone(project);
+  }
+
+  async importProjects(sources = []) {
+    if (!Array.isArray(sources) || !sources.length) throw new Error(t("project.projectImport.noProjects"));
+    if (sources.length > MAX_PROJECTS_PER_IMPORT) {
+      throw new Error(t("project.projectImport.tooManyProjects", { 0: MAX_PROJECTS_PER_IMPORT }));
+    }
+
+    // Prepare every source before the first write. One malformed file therefore
+    // cannot leave half of a selected multi-file import in the library.
+    const existing = await this.listProjects();
+    const reservedIds = new Set(existing.map(project => String(project.id)));
+    const titleCounts = countTitles(existing);
+    const now = Date.now();
+    const prepared = sources.map((source, index) => {
+      validateImportedProject(source);
+      const originalId = String(source.id || "").trim();
+      const collides = originalId && reservedIds.has(originalId);
+      const id = originalId && !collides ? originalId : uniqueProjectId(reservedIds);
+      reservedIds.add(id);
+
+      const draft = structuredClone(source);
+      draft.id = id;
+      draft.title = uniqueImportedTitle(cleanTitle(draft.title, t("project.projectLibraryView.project")), titleCounts, collides);
+      draft.createdAt = now + index;
+      draft.updatedAt = now + index;
+      for (const post of draft.posts) resetImportedPostRuntime(post, now + index);
+      return normalizeProject(draft, id);
+    });
+
+    const written = [];
+    try {
+      for (const project of prepared) {
+        await this.db.put("projects", project.id, project, project.updatedAt);
+        written.push(project.id);
+      }
+    } catch (error) {
+      await Promise.allSettled(written.map(projectId => this.db.delete("projects", projectId)));
+      throw error;
+    }
+
+    const projects = prepared.map(project => structuredClone(project));
+    this.events?.emit("project:changed", {
+      reason: "imported",
+      projectId: projects[0]?.id || null,
+      project: projects[0] || null,
+      importedProjectIds: projects.map(project => project.id)
+    });
+    return Object.freeze({ count: projects.length, projects });
   }
 
   async saveProject(project) {
@@ -684,4 +735,62 @@ function astSignature(ast) {
 
 function makeId(prefix) {
   return `${prefix}_${randomUUID()}`;
+}
+
+function validateImportedProject(source) {
+  if (!source || typeof source !== "object" || !Array.isArray(source.posts) || !source.posts.length) {
+    throw new Error(t("project.projectImport.invalidProject"));
+  }
+  if (source.posts.length > MAX_POSTS_PER_IMPORTED_PROJECT) {
+    throw new Error(t("project.projectImport.tooManyPosts", { 0: MAX_POSTS_PER_IMPORTED_PROJECT }));
+  }
+  const postIds = new Set();
+  for (const post of source.posts) {
+    const id = String(post?.id || "").trim();
+    if (!id || !post?.messageAst || typeof post.messageAst !== "object") {
+      throw new Error(t("project.projectImport.invalidPost"));
+    }
+    if (postIds.has(id)) throw new Error(t("project.projectImport.duplicatePostId", { 0: id }));
+    postIds.add(id);
+  }
+}
+
+function resetImportedPostRuntime(post, timestamp) {
+  post.schedule = null;
+  post.publication = { state: "draft" };
+  post.deployments = {};
+  post.createdAt = timestamp;
+  post.updatedAt = timestamp;
+}
+
+function uniqueProjectId(reservedIds) {
+  let id = makeId("project");
+  while (reservedIds.has(id)) id = makeId("project");
+  return id;
+}
+
+function countTitles(projects) {
+  const counts = new Map();
+  for (const project of projects) {
+    const title = cleanTitle(project?.title, t("project.projectLibraryView.project"));
+    counts.set(title, (counts.get(title) || 0) + 1);
+  }
+  return counts;
+}
+
+function uniqueImportedTitle(title, counts, forceSuffix) {
+  const seen = counts.get(title) || 0;
+  if (!seen && !forceSuffix) {
+    counts.set(title, 1);
+    return title;
+  }
+  let number = Math.max(2, seen + 1);
+  let candidate = t("project.projectImport.copyTitle", { 0: title, 1: number });
+  while (counts.has(candidate)) {
+    number += 1;
+    candidate = t("project.projectImport.copyTitle", { 0: title, 1: number });
+  }
+  counts.set(title, seen + 1);
+  counts.set(candidate, 1);
+  return candidate;
 }

@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.0";
-import { createDraftListView } from "./DraftListView.js?v=1.7.13";
+import { createDraftListView } from "./DraftListView.js?v=1.7.14";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.7.12";
 
 export class EditorRightPanel {

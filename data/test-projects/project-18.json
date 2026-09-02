@@ -1,0 +1,1415 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000017,
+  "project": {
+    "id": "test_project_18",
+    "schemaVersion": 2,
+    "title": "Тест 18 · Экологический проект",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_18_01",
+      "rootMapId": "test_map_18"
+    },
+    "posts": [
+      {
+        "id": "test_post_18_01",
+        "title": "01. Старт и карта · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_map_18",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_18",
+                "slots": [
+                  {
+                    "id": "test_slot_18_02",
+                    "targetPostId": "test_post_18_02",
+                    "text": "02. Контекст · Экологический проект",
+                    "derivedFromPostId": "test_post_18_02"
+                  },
+                  {
+                    "id": "test_slot_18_03",
+                    "targetPostId": "test_post_18_03",
+                    "text": "03. Наблюдения · Экологический проект",
+                    "derivedFromPostId": "test_post_18_03"
+                  },
+                  {
+                    "id": "test_slot_18_04",
+                    "targetPostId": "test_post_18_04",
+                    "text": "04. Материалы · Экологический проект",
+                    "derivedFromPostId": "test_post_18_04"
+                  },
+                  {
+                    "id": "test_slot_18_05",
+                    "targetPostId": "test_post_18_05",
+                    "text": "05. Сравнение · Экологический проект",
+                    "derivedFromPostId": "test_post_18_05"
+                  },
+                  {
+                    "id": "test_slot_18_06",
+                    "targetPostId": "test_post_18_06",
+                    "text": "06. Практика · Экологический проект",
+                    "derivedFromPostId": "test_post_18_06"
+                  },
+                  {
+                    "id": "test_slot_18_07",
+                    "targetPostId": "test_post_18_07",
+                    "text": "07. Проверка · Экологический проект",
+                    "derivedFromPostId": "test_post_18_07"
+                  },
+                  {
+                    "id": "test_slot_18_08",
+                    "targetPostId": "test_post_18_08",
+                    "text": "08. Варианты · Экологический проект",
+                    "derivedFromPostId": "test_post_18_08"
+                  },
+                  {
+                    "id": "test_slot_18_09",
+                    "targetPostId": "test_post_18_09",
+                    "text": "09. Итоги · Экологический проект",
+                    "derivedFromPostId": "test_post_18_09"
+                  },
+                  {
+                    "id": "test_slot_18_10",
+                    "targetPostId": "test_post_18_10",
+                    "text": "10. Следующий шаг · Экологический проект",
+                    "derivedFromPostId": "test_post_18_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_18_01_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "18"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_18_01_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 18.01",
+                "url": "https://example.com/post-manipulator/18/01",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_18_01_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 18.01",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_18_01_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_18_01_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_1 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_18_01_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.01».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_18_01_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 18 · пост 01"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_18_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-08.png",
+                "caption": "Тестовое изображение 08 · 18.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337081000,
+        "updatedAt": 1788337081000
+      },
+      {
+        "id": "test_post_18_02",
+        "title": "02. Контекст · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_18_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_18_02_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 18 · пост 02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_18_02_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 18.02",
+                "url": "https://example.com/post-manipulator/18/02",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_18_02_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "18"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_18_02_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_18_02_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_2 = 20"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_02_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=02\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_18_02_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5744,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 18.02"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337082000,
+        "updatedAt": 1788337082000
+      },
+      {
+        "id": "test_post_18_03",
+        "title": "03. Наблюдения · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_18_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_18_03_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_18_03_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_18_03_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 18.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_18_03_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_footer_18_03_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 18 · пост 03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_03_06",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=03\nvariant=6",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_18_03_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Экологический проект. "
+                  },
+                  "наблюдение 3.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_18_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337083000,
+        "updatedAt": 1788337083000
+      },
+      {
+        "id": "test_post_18_04",
+        "title": "04. Материалы · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_18_04_08",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5744,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 18.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_18_04_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "18"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_18_04_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_4 = 22"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_18_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_18_04_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 18.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_04_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=04\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_18_04_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_18_04_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "heading_18_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_18_04_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Экологический проект. "
+                  },
+                  "наблюдение 4.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337084000,
+        "updatedAt": 1788337084000
+      },
+      {
+        "id": "test_post_18_05",
+        "title": "05. Сравнение · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_18_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_18_05_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_18_05_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "18"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_18_05_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 18 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_18_05_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_18_05_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 18.05",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_05_06",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=05\nvariant=6",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_18_05_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 18.05",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_18_05_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_18_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337085000,
+        "updatedAt": 1788337085000
+      },
+      {
+        "id": "test_post_18_06",
+        "title": "06. Практика · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_18_06_04",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_18_06_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_6 = 24"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_18_06_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 18.06",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_18_06_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_divider_18_06_08",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_map_18_06_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5744,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 18.06"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_18_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_18_06_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.06».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_18_06_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 18 · пост 06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_18_06_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 18.06",
+                "url": "https://example.com/post-manipulator/18/06",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337086000,
+        "updatedAt": 1788337086000
+      },
+      {
+        "id": "test_post_18_07",
+        "title": "07. Проверка · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_details_18_07_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 18.07",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_18_07_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_footer_18_07_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 18 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_18_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_18_07_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_18_07_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "18"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_07_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=07\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337087000,
+        "updatedAt": 1788337087000
+      },
+      {
+        "id": "test_post_18_08",
+        "title": "08. Варианты · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_photo_18_08_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 18.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_18_08_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 18.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_18_08_07",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_18_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_18_08_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_8 = 26"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_18_08_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5744,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 18.08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_18_08_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 18.08",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_18_08_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_paragraph_18_08_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Экологический проект. "
+                  },
+                  "наблюдение 8.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337088000,
+        "updatedAt": 1788337088000
+      },
+      {
+        "id": "test_post_18_09",
+        "title": "09. Итоги · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_18_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_18_09_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 18.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_09_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=09\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_18_09_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5744,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 18.09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_18_09_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_9 = 27"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_18_09_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337089000,
+        "updatedAt": 1788337089000
+      },
+      {
+        "id": "test_post_18_10",
+        "title": "10. Следующий шаг · Экологический проект",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_18_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_18",
+                "targetSlotId": "test_slot_18_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_18_10_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_18_10_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 18.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_18_10_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_18 + y_10 = 28"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_18_10_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=18\npost=10\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_18_10_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5744,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 18.10"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_18_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Экологический проект",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_18_10_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Экологический проект. "
+                  },
+                  "наблюдение 10.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337090000,
+        "updatedAt": 1788337090000
+      }
+    ],
+    "createdAt": 1788337080000,
+    "updatedAt": 1788337090000
+  }
+}

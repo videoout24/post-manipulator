@@ -1,0 +1,1340 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000015,
+  "project": {
+    "id": "test_project_16",
+    "schemaVersion": 2,
+    "title": "Тест 16 · Спортивный дневник",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_16_01",
+      "rootMapId": "test_map_16"
+    },
+    "posts": [
+      {
+        "id": "test_post_16_01",
+        "title": "01. Старт и карта · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_paragraph_16_01_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Спортивный дневник. "
+                  },
+                  "наблюдение 1.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_map_16",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_16",
+                "slots": [
+                  {
+                    "id": "test_slot_16_02",
+                    "targetPostId": "test_post_16_02",
+                    "text": "02. Контекст · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_02"
+                  },
+                  {
+                    "id": "test_slot_16_03",
+                    "targetPostId": "test_post_16_03",
+                    "text": "03. Наблюдения · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_03"
+                  },
+                  {
+                    "id": "test_slot_16_04",
+                    "targetPostId": "test_post_16_04",
+                    "text": "04. Материалы · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_04"
+                  },
+                  {
+                    "id": "test_slot_16_05",
+                    "targetPostId": "test_post_16_05",
+                    "text": "05. Сравнение · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_05"
+                  },
+                  {
+                    "id": "test_slot_16_06",
+                    "targetPostId": "test_post_16_06",
+                    "text": "06. Практика · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_06"
+                  },
+                  {
+                    "id": "test_slot_16_07",
+                    "targetPostId": "test_post_16_07",
+                    "text": "07. Проверка · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_07"
+                  },
+                  {
+                    "id": "test_slot_16_08",
+                    "targetPostId": "test_post_16_08",
+                    "text": "08. Варианты · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_08"
+                  },
+                  {
+                    "id": "test_slot_16_09",
+                    "targetPostId": "test_post_16_09",
+                    "text": "09. Итоги · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_09"
+                  },
+                  {
+                    "id": "test_slot_16_10",
+                    "targetPostId": "test_post_16_10",
+                    "text": "10. Следующий шаг · Спортивный дневник",
+                    "derivedFromPostId": "test_post_16_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_16_01_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 16.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_16_01_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=01\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_16_01_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 16.01",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_16_01_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_photo_16_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 16.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_16_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_16_01_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 16.01",
+                "url": "https://example.com/post-manipulator/16/01",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336961000,
+        "updatedAt": 1788336961000
+      },
+      {
+        "id": "test_post_16_02",
+        "title": "02. Контекст · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_16_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_16_02_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 16.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_16_02_07",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "16"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_16_02_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 16.02",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_16_02_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_16_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_16_02_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_16_02_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 16.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_16_02_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5724,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 16.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_16_02_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 16 · пост 02"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336962000,
+        "updatedAt": 1788336962000
+      },
+      {
+        "id": "test_post_16_03",
+        "title": "03. Наблюдения · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_16_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_16_03_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 16.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_16_03_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_photo_16_03_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 16.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_16_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_16_03_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_16 + y_3 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_16_03_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5724,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 16.03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_16_03_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=03\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336963000,
+        "updatedAt": 1788336963000
+      },
+      {
+        "id": "test_post_16_04",
+        "title": "04. Материалы · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_details_16_04_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 16.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_16_04_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_map_16_04_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5724,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 16.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_16_04_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=04\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_16_04_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "16"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_16_04_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 16 · пост 04"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_16_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_16_04_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 16.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_16_04_07",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 16.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336964000,
+        "updatedAt": 1788336964000
+      },
+      {
+        "id": "test_post_16_05",
+        "title": "05. Сравнение · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_16_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_16_05_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 16 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_16_05_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_pre_16_05_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=05\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_16_05_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "16"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_16_05_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Спортивный дневник. "
+                  },
+                  "наблюдение 5.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336965000,
+        "updatedAt": 1788336965000
+      },
+      {
+        "id": "test_post_16_06",
+        "title": "06. Практика · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_16_06_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=06\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_16_06_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 16.06",
+                "url": "https://example.com/post-manipulator/16/06",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_16_06_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 16.06».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_16_06_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "16"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_16_06_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 16 · пост 06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_16_06_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Спортивный дневник. "
+                  },
+                  "наблюдение 6.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_16_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336966000,
+        "updatedAt": 1788336966000
+      },
+      {
+        "id": "test_post_16_07",
+        "title": "07. Проверка · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_formula_16_07_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_16 + y_7 = 23"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_16_07_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 16 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_16_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_16_07_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_16_07_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Спортивный дневник. "
+                  },
+                  "наблюдение 7.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_16_07_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_pre_16_07_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=07\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_16_07_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 16.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336967000,
+        "updatedAt": 1788336967000
+      },
+      {
+        "id": "test_post_16_08",
+        "title": "08. Варианты · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_16_08_08",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=08\nvariant=8",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_16_08_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 16.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_16_08_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_footer_16_08_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 16 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_16_08_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 16.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_16_08_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "16"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "8"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_16_08_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5724,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 16.08"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_16_08_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 16.08",
+                "url": "https://example.com/post-manipulator/16/08",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_16_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336968000,
+        "updatedAt": 1788336968000
+      },
+      {
+        "id": "test_post_16_09",
+        "title": "09. Итоги · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_16_09_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=09\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_16_09_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_16_09_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "16"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_16_09_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 16.09",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_16_09_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_16_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_16_09_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_16 + y_9 = 25"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_16_09_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 16.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336969000,
+        "updatedAt": 1788336969000
+      },
+      {
+        "id": "test_post_16_10",
+        "title": "10. Следующий шаг · Спортивный дневник",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_16_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Спортивный дневник",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_16_10_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_16_10_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Спортивный дневник. "
+                  },
+                  "наблюдение 10.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_16_10_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=16\npost=10\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_16_10_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 16.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_16_10_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_16 + y_10 = 26"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_16_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_16",
+                "targetSlotId": "test_slot_16_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336970000,
+        "updatedAt": 1788336970000
+      }
+    ],
+    "createdAt": 1788336960000,
+    "updatedAt": 1788336970000
+  }
+}

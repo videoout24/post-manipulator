@@ -1,0 +1,1510 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000014,
+  "project": {
+    "id": "test_project_15",
+    "schemaVersion": 2,
+    "title": "Тест 15 · Архив наблюдений",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_15_01",
+      "rootMapId": "test_map_15"
+    },
+    "posts": [
+      {
+        "id": "test_post_15_01",
+        "title": "01. Старт и карта · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_map_15",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_15",
+                "slots": [
+                  {
+                    "id": "test_slot_15_02",
+                    "targetPostId": "test_post_15_02",
+                    "text": "02. Контекст · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_02"
+                  },
+                  {
+                    "id": "test_slot_15_03",
+                    "targetPostId": "test_post_15_03",
+                    "text": "03. Наблюдения · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_03"
+                  },
+                  {
+                    "id": "test_slot_15_04",
+                    "targetPostId": "test_post_15_04",
+                    "text": "04. Материалы · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_04"
+                  },
+                  {
+                    "id": "test_slot_15_05",
+                    "targetPostId": "test_post_15_05",
+                    "text": "05. Сравнение · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_05"
+                  },
+                  {
+                    "id": "test_slot_15_06",
+                    "targetPostId": "test_post_15_06",
+                    "text": "06. Практика · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_06"
+                  },
+                  {
+                    "id": "test_slot_15_07",
+                    "targetPostId": "test_post_15_07",
+                    "text": "07. Проверка · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_07"
+                  },
+                  {
+                    "id": "test_slot_15_08",
+                    "targetPostId": "test_post_15_08",
+                    "text": "08. Варианты · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_08"
+                  },
+                  {
+                    "id": "test_slot_15_09",
+                    "targetPostId": "test_post_15_09",
+                    "text": "09. Итоги · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_09"
+                  },
+                  {
+                    "id": "test_slot_15_10",
+                    "targetPostId": "test_post_15_10",
+                    "text": "10. Следующий шаг · Архив наблюдений",
+                    "derivedFromPostId": "test_post_15_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 15.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_15_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_01_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_15_01_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_1 = 16"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_01_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_01_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 01"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_01_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 1.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336901000,
+        "updatedAt": 1788336901000
+      },
+      {
+        "id": "test_post_15_02",
+        "title": "02. Контекст · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_formula_15_02_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_2 = 17"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_02_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_02_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_15_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_02_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 2.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_02_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_02_05",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 15.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336902000,
+        "updatedAt": 1788336902000
+      },
+      {
+        "id": "test_post_15_03",
+        "title": "03. Наблюдения · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_15_03_04",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 3"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_03_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-08.png",
+                "caption": "Тестовое изображение 08 · 15.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_15_03_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_15_03_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "15"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_15_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_15_03_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.03",
+                "url": "https://example.com/post-manipulator/15/03",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_03_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_15_03_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_3 = 18"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_03_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 3.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336903000,
+        "updatedAt": 1788336903000
+      },
+      {
+        "id": "test_post_15_04",
+        "title": "04. Материалы · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_15_04_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_15_04_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 15.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_15_04_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_15_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_04_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_pre_15_04_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=04\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_15_04_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "15"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336904000,
+        "updatedAt": 1788336904000
+      },
+      {
+        "id": "test_post_15_05",
+        "title": "05. Сравнение · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_15_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_05_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 5"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_15_05_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_5 = 20"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_15_05_06",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.9332
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_05_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 5.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_15_05_08",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.05",
+                "url": "https://example.com/post-manipulator/15/05",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_05_07",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_15_05_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "15"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_15_05_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 15.05",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_15_05_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336905000,
+        "updatedAt": 1788336905000
+      },
+      {
+        "id": "test_post_15_06",
+        "title": "06. Практика · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_15_06_07",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_15_06_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.06",
+                "url": "https://example.com/post-manipulator/15/06",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_15_06_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=06\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_06_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_06_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_15_06_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_6 = 21"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_06_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.06».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_15_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336906000,
+        "updatedAt": 1788336906000
+      },
+      {
+        "id": "test_post_15_07",
+        "title": "07. Проверка · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_15_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_07_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 7.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_15_07_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "15"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_07_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_07_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_07_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_15_07_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_7 = 22"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_15_07_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=07\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336907000,
+        "updatedAt": 1788336907000
+      },
+      {
+        "id": "test_post_15_08",
+        "title": "08. Варианты · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_15_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_15_08_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_15_08_07",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 8.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_15_08_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 15 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_15_08_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "15"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "8"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_15_08_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 15.08",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_15_08_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_15_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_15_08_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.08",
+                "url": "https://example.com/post-manipulator/15/08",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_15_08_08",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_15 + y_8 = 23"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_15_08_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.08"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336908000,
+        "updatedAt": 1788336908000
+      },
+      {
+        "id": "test_post_15_09",
+        "title": "09. Итоги · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_paragraph_15_09_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Архив наблюдений. "
+                  },
+                  "наблюдение 9.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_15_09_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.09",
+                "url": "https://example.com/post-manipulator/15/09",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_09_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_15_09_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=09\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_15_09_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_09_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 15.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_15_09_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.09"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_15_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336909000,
+        "updatedAt": 1788336909000
+      },
+      {
+        "id": "test_post_15_10",
+        "title": "10. Следующий шаг · Архив наблюдений",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_15_10_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5714,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 15.10"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_15_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_15",
+                "targetSlotId": "test_slot_15_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_15_10_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 15.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_15_10_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 15.10",
+                "url": "https://example.com/post-manipulator/15/10",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_15_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Архив наблюдений",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_15_10_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 15.10».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_15_10_06",
+              "type": "preformatted",
+              "props": {
+                "text": "project=15\npost=10\nvariant=6",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_15_10_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "15"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336910000,
+        "updatedAt": 1788336910000
+      }
+    ],
+    "createdAt": 1788336900000,
+    "updatedAt": 1788336910000
+  }
+}

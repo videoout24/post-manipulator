@@ -1,0 +1,1525 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000000,
+  "project": {
+    "id": "test_project_01",
+    "schemaVersion": 2,
+    "title": "Тест 01 · Городские маршруты",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_01_01",
+      "rootMapId": "test_map_01"
+    },
+    "posts": [
+      {
+        "id": "test_post_01_01",
+        "title": "01. Старт и карта · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_map_01",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_01",
+                "slots": [
+                  {
+                    "id": "test_slot_01_02",
+                    "targetPostId": "test_post_01_02",
+                    "text": "02. Контекст · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_02"
+                  },
+                  {
+                    "id": "test_slot_01_03",
+                    "targetPostId": "test_post_01_03",
+                    "text": "03. Наблюдения · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_03"
+                  },
+                  {
+                    "id": "test_slot_01_04",
+                    "targetPostId": "test_post_01_04",
+                    "text": "04. Материалы · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_04"
+                  },
+                  {
+                    "id": "test_slot_01_05",
+                    "targetPostId": "test_post_01_05",
+                    "text": "05. Сравнение · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_05"
+                  },
+                  {
+                    "id": "test_slot_01_06",
+                    "targetPostId": "test_post_01_06",
+                    "text": "06. Практика · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_06"
+                  },
+                  {
+                    "id": "test_slot_01_07",
+                    "targetPostId": "test_post_01_07",
+                    "text": "07. Проверка · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_07"
+                  },
+                  {
+                    "id": "test_slot_01_08",
+                    "targetPostId": "test_post_01_08",
+                    "text": "08. Варианты · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_08"
+                  },
+                  {
+                    "id": "test_slot_01_09",
+                    "targetPostId": "test_post_01_09",
+                    "text": "09. Итоги · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_09"
+                  },
+                  {
+                    "id": "test_slot_01_10",
+                    "targetPostId": "test_post_01_10",
+                    "text": "10. Следующий шаг · Городские маршруты",
+                    "derivedFromPostId": "test_post_01_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_01_01_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_01_01_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 01.01",
+                "url": "https://example.com/post-manipulator/01/01",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_01_01_07",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 01.01».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_01_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 01.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_01_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=01\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_01_01_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 01.01",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_01_01_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_paragraph_01_01_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Городские маршруты. "
+                  },
+                  "наблюдение 1.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_01_08",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_1 = 2"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336061000,
+        "updatedAt": 1788336061000
+      },
+      {
+        "id": "test_post_01_02",
+        "title": "02. Контекст · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_01_02_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_01_02_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 01.02",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_01_02_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_01_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_01_02_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "01"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_01_02_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 01.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_02_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_2 = 3"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336062000,
+        "updatedAt": 1788336062000
+      },
+      {
+        "id": "test_post_01_03",
+        "title": "03. Наблюдения · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_quote_01_03_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 01.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_03_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=03\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_01_03_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-08.png",
+                "caption": "Тестовое изображение 08 · 01.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_01_03_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.03"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_01_03_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 3"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_03_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_3 = 4"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336063000,
+        "updatedAt": 1788336063000
+      },
+      {
+        "id": "test_post_01_04",
+        "title": "04. Материалы · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_01_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_01_04_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_01_04_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_paragraph_01_04_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Городские маршруты. "
+                  },
+                  "наблюдение 4.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_04_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_4 = 5"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_01_04_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "01"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336064000,
+        "updatedAt": 1788336064000
+      },
+      {
+        "id": "test_post_01_05",
+        "title": "05. Сравнение · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_footer_01_05_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 01 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_01_05_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 01.05",
+                "url": "https://example.com/post-manipulator/01/05",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_01_05_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.9332
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_05_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=05\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_01_05_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Городские маршруты. "
+                  },
+                  "наблюдение 5.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_01_05_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "01"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_05_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_5 = 6"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336065000,
+        "updatedAt": 1788336065000
+      },
+      {
+        "id": "test_post_01_06",
+        "title": "06. Практика · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_paragraph_01_06_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Городские маршруты. "
+                  },
+                  "наблюдение 6.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_01_06_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "01"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_01_06_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_06_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_6 = 7"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_06_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=06\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_01_06_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_01_06_08",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 01.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_01_06_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.06"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336066000,
+        "updatedAt": 1788336066000
+      },
+      {
+        "id": "test_post_01_07",
+        "title": "07. Проверка · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_quote_01_07_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 01.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_01_07_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 01.07",
+                "url": "https://example.com/post-manipulator/01/07",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_07_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_7 = 8"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_01_07_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "01"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_01_07_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 01 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_01_07_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_07_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=07\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336067000,
+        "updatedAt": 1788336067000
+      },
+      {
+        "id": "test_post_01_08",
+        "title": "08. Варианты · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_01_08_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_01_08_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 01.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_08_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_8 = 9"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_01_08_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Городские маршруты. "
+                  },
+                  "наблюдение 8.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_08_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=08\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_01_08_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_01_08_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 01.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336068000,
+        "updatedAt": 1788336068000
+      },
+      {
+        "id": "test_post_01_09",
+        "title": "09. Итоги · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_01_09_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5574,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 01.09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_01_09_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_list_01_09_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_01_09_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 01.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_09_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_9 = 10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_01_09_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 01 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_01_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_01_09_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 01.09",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_01_09_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336069000,
+        "updatedAt": 1788336069000
+      },
+      {
+        "id": "test_post_01_10",
+        "title": "10. Следующий шаг · Городские маршруты",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_01_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_01",
+                "targetSlotId": "test_slot_01_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_01_10_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 01 · пост 10"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_01_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Городские маршруты",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_01_10_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=01\npost=10\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_01_10_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 01.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_01_10_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_1 + y_10 = 11"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_01_10_08",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "01"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_01_10_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_01_10_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Городские маршруты. "
+                  },
+                  "наблюдение 10.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_01_10_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 01.10",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_01_10_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336070000,
+        "updatedAt": 1788336070000
+      }
+    ],
+    "createdAt": 1788336060000,
+    "updatedAt": 1788336070000
+  }
+}

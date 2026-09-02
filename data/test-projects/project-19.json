@@ -1,0 +1,1577 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000018,
+  "project": {
+    "id": "test_project_19",
+    "schemaVersion": 2,
+    "title": "Тест 19 · Фотоисследование",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_19_01",
+      "rootMapId": "test_map_19"
+    },
+    "posts": [
+      {
+        "id": "test_post_19_01",
+        "title": "01. Старт и карта · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_map_19",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_19",
+                "slots": [
+                  {
+                    "id": "test_slot_19_02",
+                    "targetPostId": "test_post_19_02",
+                    "text": "02. Контекст · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_02"
+                  },
+                  {
+                    "id": "test_slot_19_03",
+                    "targetPostId": "test_post_19_03",
+                    "text": "03. Наблюдения · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_03"
+                  },
+                  {
+                    "id": "test_slot_19_04",
+                    "targetPostId": "test_post_19_04",
+                    "text": "04. Материалы · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_04"
+                  },
+                  {
+                    "id": "test_slot_19_05",
+                    "targetPostId": "test_post_19_05",
+                    "text": "05. Сравнение · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_05"
+                  },
+                  {
+                    "id": "test_slot_19_06",
+                    "targetPostId": "test_post_19_06",
+                    "text": "06. Практика · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_06"
+                  },
+                  {
+                    "id": "test_slot_19_07",
+                    "targetPostId": "test_post_19_07",
+                    "text": "07. Проверка · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_07"
+                  },
+                  {
+                    "id": "test_slot_19_08",
+                    "targetPostId": "test_post_19_08",
+                    "text": "08. Варианты · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_08"
+                  },
+                  {
+                    "id": "test_slot_19_09",
+                    "targetPostId": "test_post_19_09",
+                    "text": "09. Итоги · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_09"
+                  },
+                  {
+                    "id": "test_slot_19_10",
+                    "targetPostId": "test_post_19_10",
+                    "text": "10. Следующий шаг · Фотоисследование",
+                    "derivedFromPostId": "test_post_19_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_19_01_05",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 19.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_19_01_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 19.01",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_19_01_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_photo_19_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 19.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_19_01_04",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_19_01_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 19 · пост 01"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337141000,
+        "updatedAt": 1788337141000
+      },
+      {
+        "id": "test_post_19_02",
+        "title": "02. Контекст · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_paragraph_19_02_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фотоисследование. "
+                  },
+                  "наблюдение 2.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_19_02_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5754,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 19.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_19_02_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_19 + y_2 = 21"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_19_02_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_19_02_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_19_02_08",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 19.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_19_02_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 2"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_19_02_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 19.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337142000,
+        "updatedAt": 1788337142000
+      },
+      {
+        "id": "test_post_19_03",
+        "title": "03. Наблюдения · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_photo_19_03_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 19.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_03_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.03",
+                "url": "https://example.com/post-manipulator/19/03",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_19_03_04",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 19.03",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_19_03_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_19_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_19_03_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_19_03_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_19 + y_3 = 22"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_19_03_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=19\npost=03\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337143000,
+        "updatedAt": 1788337143000
+      },
+      {
+        "id": "test_post_19_04",
+        "title": "04. Материалы · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_photo_19_04_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 19.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_19_04_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=19\npost=04\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_19_04_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 19.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_19_04_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_divider_19_04_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_list_19_04_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_19_04_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_19_04_08",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5754,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 19.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_04_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.04",
+                "url": "https://example.com/post-manipulator/19/04",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337144000,
+        "updatedAt": 1788337144000
+      },
+      {
+        "id": "test_post_19_05",
+        "title": "05. Сравнение · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_formula_19_05_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_19 + y_5 = 24"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_05_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.05",
+                "url": "https://example.com/post-manipulator/19/05",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_19_05_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5754,
+                  "longitude": 104.9332
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 19.05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_19_05_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 19 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_19_05_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 19.05",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337145000,
+        "updatedAt": 1788337145000
+      },
+      {
+        "id": "test_post_19_06",
+        "title": "06. Практика · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_19_06_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=19\npost=06\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_19_06_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5754,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 19.06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_19_06_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_19_06_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 19.06».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_06_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.06",
+                "url": "https://example.com/post-manipulator/19/06",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_19_06_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_19_06_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 19.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337146000,
+        "updatedAt": 1788337146000
+      },
+      {
+        "id": "test_post_19_07",
+        "title": "07. Проверка · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_photo_19_07_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 19.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_19_07_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фотоисследование. "
+                  },
+                  "наблюдение 7.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_19_07_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5754,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 19.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_19_07_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 19 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_19_07_07",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_19_07_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_19_07_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_07_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.07",
+                "url": "https://example.com/post-manipulator/19/07",
+                "buttonStyle": "success"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337147000,
+        "updatedAt": 1788337147000
+      },
+      {
+        "id": "test_post_19_08",
+        "title": "08. Варианты · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_19_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_08_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.08",
+                "url": "https://example.com/post-manipulator/19/08",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_19_08_08",
+              "type": "preformatted",
+              "props": {
+                "text": "project=19\npost=08\nvariant=8",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_19_08_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_19 + y_8 = 27"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_19_08_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "8"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_19_08_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 19.08",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_19_08_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_photo_19_08_07",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 19.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_19_08_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 19 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_19_08_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фотоисследование. "
+                  },
+                  "наблюдение 8.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337148000,
+        "updatedAt": 1788337148000
+      },
+      {
+        "id": "test_post_19_09",
+        "title": "09. Итоги · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_button_19_09_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.09",
+                "url": "https://example.com/post-manipulator/19/09",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_19_09_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 19.09",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_19_09_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_table_19_09_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_19_09_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_19 + y_9 = 28"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_19_09_08",
+              "type": "preformatted",
+              "props": {
+                "text": "project=19\npost=09\nvariant=8",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_19_09_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 19.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_19_09_07",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Фотоисследование. "
+                  },
+                  "наблюдение 9.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_19_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_19_09_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337149000,
+        "updatedAt": 1788337149000
+      },
+      {
+        "id": "test_post_19_10",
+        "title": "10. Следующий шаг · Фотоисследование",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_quote_19_10_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 19.10».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_19_10_08",
+              "type": "preformatted",
+              "props": {
+                "text": "project=19\npost=10\nvariant=8",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_19_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_19",
+                "targetSlotId": "test_slot_19_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_19_10_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "heading_19_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Фотоисследование",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_19_10_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_19 + y_10 = 29"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_19_10_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 19 · пост 10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_19_10_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "19"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_19_10_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 19.10",
+                "url": "https://example.com/post-manipulator/19/10",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_19_10_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337150000,
+        "updatedAt": 1788337150000
+      }
+    ],
+    "createdAt": 1788337140000,
+    "updatedAt": 1788337150000
+  }
+}

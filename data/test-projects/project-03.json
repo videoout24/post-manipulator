@@ -1,0 +1,1532 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000002,
+  "project": {
+    "id": "test_project_03",
+    "schemaVersion": 2,
+    "title": "Тест 03 · Полевая экспедиция",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_03_01",
+      "rootMapId": "test_map_03"
+    },
+    "posts": [
+      {
+        "id": "test_post_03_01",
+        "title": "01. Старт и карта · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_03_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_03_01_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_button_03_01_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 03.01",
+                "url": "https://example.com/post-manipulator/03/01",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_03_01_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_03_01_08",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_3 + y_1 = 4"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_01_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 03.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_map_03",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_03",
+                "slots": [
+                  {
+                    "id": "test_slot_03_02",
+                    "targetPostId": "test_post_03_02",
+                    "text": "02. Контекст · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_02"
+                  },
+                  {
+                    "id": "test_slot_03_03",
+                    "targetPostId": "test_post_03_03",
+                    "text": "03. Наблюдения · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_03"
+                  },
+                  {
+                    "id": "test_slot_03_04",
+                    "targetPostId": "test_post_03_04",
+                    "text": "04. Материалы · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_04"
+                  },
+                  {
+                    "id": "test_slot_03_05",
+                    "targetPostId": "test_post_03_05",
+                    "text": "05. Сравнение · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_05"
+                  },
+                  {
+                    "id": "test_slot_03_06",
+                    "targetPostId": "test_post_03_06",
+                    "text": "06. Практика · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_06"
+                  },
+                  {
+                    "id": "test_slot_03_07",
+                    "targetPostId": "test_post_03_07",
+                    "text": "07. Проверка · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_07"
+                  },
+                  {
+                    "id": "test_slot_03_08",
+                    "targetPostId": "test_post_03_08",
+                    "text": "08. Варианты · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_08"
+                  },
+                  {
+                    "id": "test_slot_03_09",
+                    "targetPostId": "test_post_03_09",
+                    "text": "09. Итоги · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_09"
+                  },
+                  {
+                    "id": "test_slot_03_10",
+                    "targetPostId": "test_post_03_10",
+                    "text": "10. Следующий шаг · Полевая экспедиция",
+                    "derivedFromPostId": "test_post_03_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 03.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_03_01_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=03\npost=01\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_03_01_07",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 03.01».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336181000,
+        "updatedAt": 1788336181000
+      },
+      {
+        "id": "test_post_03_02",
+        "title": "02. Контекст · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_photo_03_02_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 03.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_03_02_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "03"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_03_02_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_pre_03_02_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=03\npost=02\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_03_02_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 03.02",
+                "url": "https://example.com/post-manipulator/03/02",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_03_02_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 03.02",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_03_02_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_footer_03_02_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 03 · пост 02"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336182000,
+        "updatedAt": 1788336182000
+      },
+      {
+        "id": "test_post_03_03",
+        "title": "03. Наблюдения · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_03_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_03_03_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 3"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_03_03_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=03\npost=03\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_03_03_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 03 · пост 03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_03_03_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_3 + y_3 = 6"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_03_03_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Полевая экспедиция. "
+                  },
+                  "наблюдение 3.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336183000,
+        "updatedAt": 1788336183000
+      },
+      {
+        "id": "test_post_03_04",
+        "title": "04. Материалы · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_03_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_03_04_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_03_04_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "03"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_03_04_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 03.04",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_03_04_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_paragraph_03_04_07",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Полевая экспедиция. "
+                  },
+                  "наблюдение 4.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_03_04_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5594,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 03.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_04_08",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 03.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_03_04_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 03.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_03_04_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336184000,
+        "updatedAt": 1788336184000
+      },
+      {
+        "id": "test_post_03_05",
+        "title": "05. Сравнение · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_03_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_03_05_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "03"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_03_05_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_3 + y_5 = 8"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_03_05_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 03.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_03_05_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Полевая экспедиция. "
+                  },
+                  "наблюдение 5.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_03_05_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=03\npost=05\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336185000,
+        "updatedAt": 1788336185000
+      },
+      {
+        "id": "test_post_03_06",
+        "title": "06. Практика · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_03_06_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_03_06_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_3 + y_6 = 9"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_03_06_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 03.06",
+                "url": "https://example.com/post-manipulator/03/06",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_03_06_07",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "03"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_03_06_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_03_06_03",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Полевая экспедиция. "
+                  },
+                  "наблюдение 6.3. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_06_08",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 03.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_03_06_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 03 · пост 06"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336186000,
+        "updatedAt": 1788336186000
+      },
+      {
+        "id": "test_post_03_07",
+        "title": "07. Проверка · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_footer_03_07_08",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 03 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_03_07_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 03.07",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_03_07_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_list_03_07_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_03_07_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5594,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 03.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_07_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 03.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_03_07_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_3 + y_7 = 10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_03_07_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_03_07_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 03.07",
+                "url": "https://example.com/post-manipulator/03/07",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336187000,
+        "updatedAt": 1788336187000
+      },
+      {
+        "id": "test_post_03_08",
+        "title": "08. Варианты · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_button_03_08_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 03.08",
+                "url": "https://example.com/post-manipulator/03/08",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_03_08_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 03.08",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_03_08_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_divider_03_08_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_03_08_07",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 03.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_03_08_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=03\npost=08\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_03_08_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Полевая экспедиция. "
+                  },
+                  "наблюдение 8.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_03_08_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 03 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336188000,
+        "updatedAt": 1788336188000
+      },
+      {
+        "id": "test_post_03_09",
+        "title": "09. Итоги · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_03_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_03_09_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 03.09",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_03_09_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_pre_03_09_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=03\npost=09\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_09_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 03.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_03_09_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_03_09_08",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_03_09_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "03"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_03_09_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 03.09",
+                "url": "https://example.com/post-manipulator/03/09",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_03_09_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5594,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 03.09"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336189000,
+        "updatedAt": 1788336189000
+      },
+      {
+        "id": "test_post_03_10",
+        "title": "10. Следующий шаг · Полевая экспедиция",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_table_03_10_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "03"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_03_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Полевая экспедиция",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_03_10_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5594,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 03.10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_03_10_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_3 + y_10 = 13"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_03_10_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_03_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_03",
+                "targetSlotId": "test_slot_03_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_03_10_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Полевая экспедиция. "
+                  },
+                  "наблюдение 10.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_03_10_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 03.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336190000,
+        "updatedAt": 1788336190000
+      }
+    ],
+    "createdAt": 1788336180000,
+    "updatedAt": 1788336190000
+  }
+}

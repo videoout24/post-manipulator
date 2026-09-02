@@ -1,0 +1,1401 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000016,
+  "project": {
+    "id": "test_project_17",
+    "schemaVersion": 2,
+    "title": "Тест 17 · Музыкальная подборка",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_17_01",
+      "rootMapId": "test_map_17"
+    },
+    "posts": [
+      {
+        "id": "test_post_17_01",
+        "title": "01. Старт и карта · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_table_17_01_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "17"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_17_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 17.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_17_01_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 17 · пост 01"
+              },
+              "children": []
+            },
+            {
+              "id": "project_map_17",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_17",
+                "slots": [
+                  {
+                    "id": "test_slot_17_02",
+                    "targetPostId": "test_post_17_02",
+                    "text": "02. Контекст · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_02"
+                  },
+                  {
+                    "id": "test_slot_17_03",
+                    "targetPostId": "test_post_17_03",
+                    "text": "03. Наблюдения · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_03"
+                  },
+                  {
+                    "id": "test_slot_17_04",
+                    "targetPostId": "test_post_17_04",
+                    "text": "04. Материалы · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_04"
+                  },
+                  {
+                    "id": "test_slot_17_05",
+                    "targetPostId": "test_post_17_05",
+                    "text": "05. Сравнение · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_05"
+                  },
+                  {
+                    "id": "test_slot_17_06",
+                    "targetPostId": "test_post_17_06",
+                    "text": "06. Практика · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_06"
+                  },
+                  {
+                    "id": "test_slot_17_07",
+                    "targetPostId": "test_post_17_07",
+                    "text": "07. Проверка · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_07"
+                  },
+                  {
+                    "id": "test_slot_17_08",
+                    "targetPostId": "test_post_17_08",
+                    "text": "08. Варианты · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_08"
+                  },
+                  {
+                    "id": "test_slot_17_09",
+                    "targetPostId": "test_post_17_09",
+                    "text": "09. Итоги · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_09"
+                  },
+                  {
+                    "id": "test_slot_17_10",
+                    "targetPostId": "test_post_17_10",
+                    "text": "10. Следующий шаг · Музыкальная подборка",
+                    "derivedFromPostId": "test_post_17_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_17_01_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5734,
+                  "longitude": 104.92920000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 17.01"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_17_01_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 17.01».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337021000,
+        "updatedAt": 1788337021000
+      },
+      {
+        "id": "test_post_17_02",
+        "title": "02. Контекст · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_button_17_02_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 17.02",
+                "url": "https://example.com/post-manipulator/17/02",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_17_02_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Музыкальная подборка. "
+                  },
+                  "наблюдение 2.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_17_02_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 17.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_17_02_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5734,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 17.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_17_02_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=17\npost=02\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337022000,
+        "updatedAt": 1788337022000
+      },
+      {
+        "id": "test_post_17_03",
+        "title": "03. Наблюдения · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_17_03_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_paragraph_17_03_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Музыкальная подборка. "
+                  },
+                  "наблюдение 3.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_17_03_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 17.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_17_03_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 17.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_17_03_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "17"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_17_03_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 17.03",
+                "url": "https://example.com/post-manipulator/17/03",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_17_03_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 17 · пост 03"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337023000,
+        "updatedAt": 1788337023000
+      },
+      {
+        "id": "test_post_17_04",
+        "title": "04. Материалы · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_17_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_17_04_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_17_04_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_17_04_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_17 + y_4 = 21"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_17_04_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_pre_17_04_06",
+              "type": "preformatted",
+              "props": {
+                "text": "project=17\npost=04\nvariant=6",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_17_04_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 17.04",
+                "url": "https://example.com/post-manipulator/17/04",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_17_04_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Музыкальная подборка. "
+                  },
+                  "наблюдение 4.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337024000,
+        "updatedAt": 1788337024000
+      },
+      {
+        "id": "test_post_17_05",
+        "title": "05. Сравнение · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_17_05_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5734,
+                  "longitude": 104.9332
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 17.05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_17_05_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=17\npost=05\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_17_05_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 17.05",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_17_05_08",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_17 + y_5 = 22"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_17_05_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 17.05",
+                "url": "https://example.com/post-manipulator/17/05",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_17_05_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.05",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_17_05_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_quote_17_05_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 17.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_17_05_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337025000,
+        "updatedAt": 1788337025000
+      },
+      {
+        "id": "test_post_17_06",
+        "title": "06. Практика · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_table_17_06_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "17"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_17_06_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 17 · пост 06"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_17_06_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Музыкальная подборка. "
+                  },
+                  "наблюдение 6.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_17_06_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5734,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 17.06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_17_06_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.06",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_17_06_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_list_17_06_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337026000,
+        "updatedAt": 1788337026000
+      },
+      {
+        "id": "test_post_17_07",
+        "title": "07. Проверка · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_details_17_07_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.07",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_17_07_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_pre_17_07_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=17\npost=07\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_17_07_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 17.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_17_07_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_17 + y_7 = 24"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_17_07_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "17"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_17_07_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5734,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 17.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_17_07_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Музыкальная подборка. "
+                  },
+                  "наблюдение 7.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337027000,
+        "updatedAt": 1788337027000
+      },
+      {
+        "id": "test_post_17_08",
+        "title": "08. Варианты · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_17_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_17_08_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_details_17_08_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.08",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_17_08_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_17_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_17_08_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 17 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_17_08_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "17"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "8"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_17_08_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=17\npost=08\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_17_08_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 17.08",
+                "url": "https://example.com/post-manipulator/17/08",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337028000,
+        "updatedAt": 1788337028000
+      },
+      {
+        "id": "test_post_17_09",
+        "title": "09. Итоги · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_17_09_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_17_09_04",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.09",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_17_09_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_17_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_17_09_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 17 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_17_09_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_17 + y_9 = 26"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_17_09_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5734,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 17.09"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337029000,
+        "updatedAt": 1788337029000
+      },
+      {
+        "id": "test_post_17_10",
+        "title": "10. Следующий шаг · Музыкальная подборка",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_formula_17_10_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_17 + y_10 = 27"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_17_10_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "17"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_17_10_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_details_17_10_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 17.10",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_17_10_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_list_17_10_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_17_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_17",
+                "targetSlotId": "test_slot_17_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_17_10_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Музыкальная подборка. "
+                  },
+                  "наблюдение 10.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_17_10_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 17.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_17_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Музыкальная подборка",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337030000,
+        "updatedAt": 1788337030000
+      }
+    ],
+    "createdAt": 1788337020000,
+    "updatedAt": 1788337030000
+  }
+}

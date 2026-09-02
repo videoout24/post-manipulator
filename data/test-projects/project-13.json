@@ -1,0 +1,1486 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000012,
+  "project": {
+    "id": "test_project_13",
+    "schemaVersion": 2,
+    "title": "Тест 13 · Технологический обзор",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_13_01",
+      "rootMapId": "test_map_13"
+    },
+    "posts": [
+      {
+        "id": "test_post_13_01",
+        "title": "01. Старт и карта · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_13_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "project_map_13",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_13",
+                "slots": [
+                  {
+                    "id": "test_slot_13_02",
+                    "targetPostId": "test_post_13_02",
+                    "text": "02. Контекст · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_02"
+                  },
+                  {
+                    "id": "test_slot_13_03",
+                    "targetPostId": "test_post_13_03",
+                    "text": "03. Наблюдения · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_03"
+                  },
+                  {
+                    "id": "test_slot_13_04",
+                    "targetPostId": "test_post_13_04",
+                    "text": "04. Материалы · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_04"
+                  },
+                  {
+                    "id": "test_slot_13_05",
+                    "targetPostId": "test_post_13_05",
+                    "text": "05. Сравнение · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_05"
+                  },
+                  {
+                    "id": "test_slot_13_06",
+                    "targetPostId": "test_post_13_06",
+                    "text": "06. Практика · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_06"
+                  },
+                  {
+                    "id": "test_slot_13_07",
+                    "targetPostId": "test_post_13_07",
+                    "text": "07. Проверка · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_07"
+                  },
+                  {
+                    "id": "test_slot_13_08",
+                    "targetPostId": "test_post_13_08",
+                    "text": "08. Варианты · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_08"
+                  },
+                  {
+                    "id": "test_slot_13_09",
+                    "targetPostId": "test_post_13_09",
+                    "text": "09. Итоги · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_09"
+                  },
+                  {
+                    "id": "test_slot_13_10",
+                    "targetPostId": "test_post_13_10",
+                    "text": "10. Следующий шаг · Технологический обзор",
+                    "derivedFromPostId": "test_post_13_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_13_01_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 13.01",
+                "url": "https://example.com/post-manipulator/13/01",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_13_01_05",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-07.png",
+                "caption": "Тестовое изображение 07 · 13.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_13_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 13.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_13_01_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_13_01_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.01».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336781000,
+        "updatedAt": 1788336781000
+      },
+      {
+        "id": "test_post_13_02",
+        "title": "02. Контекст · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_button_13_02_07",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 13.02",
+                "url": "https://example.com/post-manipulator/13/02",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_13_02_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-09.png",
+                "caption": "Тестовое изображение 09 · 13.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_13_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_13_02_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 13.02",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_13_02_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_quote_13_02_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_13_02_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 2"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_13_02_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Технологический обзор. "
+                  },
+                  "наблюдение 2.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_13_02_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 13 · пост 02"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336782000,
+        "updatedAt": 1788336782000
+      },
+      {
+        "id": "test_post_13_03",
+        "title": "03. Наблюдения · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_13_03_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5694,
+                  "longitude": 104.9312
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 13.03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_13_03_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 13 · пост 03"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_13_03_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_13_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_13_03_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "13"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_13_03_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 13.03",
+                "url": "https://example.com/post-manipulator/13/03",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336783000,
+        "updatedAt": 1788336783000
+      },
+      {
+        "id": "test_post_13_04",
+        "title": "04. Материалы · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_13_04_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=04\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_13_04_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_13_04_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "13"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_13_04_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_13_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_13_04_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 13.04",
+                "url": "https://example.com/post-manipulator/13/04",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336784000,
+        "updatedAt": 1788336784000
+      },
+      {
+        "id": "test_post_13_05",
+        "title": "05. Сравнение · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_13_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_13_05_02",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 5"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_13_05_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_13_05_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 13.05",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_13_05_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=05\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_13_05_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336785000,
+        "updatedAt": 1788336785000
+      },
+      {
+        "id": "test_post_13_06",
+        "title": "06. Практика · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_13_06_07",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_13_06_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 13.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_13_06_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5694,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 13.06"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_13_06_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 13 · пост 06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_13_06_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_13 + y_6 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_13_06_08",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 13.06",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_13_06_08_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_13_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_13_06_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=06\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_13_06_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Технологический обзор. "
+                  },
+                  "наблюдение 6.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336786000,
+        "updatedAt": 1788336786000
+      },
+      {
+        "id": "test_post_13_07",
+        "title": "07. Проверка · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_13_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_13_07_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5694,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 13.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_13_07_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "13"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_13_07_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 13.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_13_07_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 13.07",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_13_07_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_13_07_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_13 + y_7 = 20"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_13_07_02",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_13_07_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=07\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_13_07_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Технологический обзор. "
+                  },
+                  "наблюдение 7.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336787000,
+        "updatedAt": 1788336787000
+      },
+      {
+        "id": "test_post_13_08",
+        "title": "08. Варианты · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_13_08_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_13_08_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 13.08",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_13_08_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_button_13_08_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 13.08",
+                "url": "https://example.com/post-manipulator/13/08",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_13_08_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_13 + y_8 = 21"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_13_08_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 13 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_13_08_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=08\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_13_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_13_08_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336788000,
+        "updatedAt": 1788336788000
+      },
+      {
+        "id": "test_post_13_09",
+        "title": "09. Итоги · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_13_09_06",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_13_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_13_09_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 9"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_13_09_03",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "13"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_13_09_05",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=09\nvariant=5",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_13_09_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 13 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_13_09_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 13.09",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_13_09_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_13_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336789000,
+        "updatedAt": 1788336789000
+      },
+      {
+        "id": "test_post_13_10",
+        "title": "10. Следующий шаг · Технологический обзор",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_button_13_10_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 13.10",
+                "url": "https://example.com/post-manipulator/13/10",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_13_10_03",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5694,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 13.10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_13_10_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 13.10",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_13_10_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_list_13_10_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_13_10_08",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "13"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "10"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_13_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_13",
+                "targetSlotId": "test_slot_13_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_13_10_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=13\npost=10\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_13_10_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Технологический обзор. "
+                  },
+                  "наблюдение 10.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_13_10_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 13.10».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_13_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Технологический обзор",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336790000,
+        "updatedAt": 1788336790000
+      }
+    ],
+    "createdAt": 1788336780000,
+    "updatedAt": 1788336790000
+  }
+}

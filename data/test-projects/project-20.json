@@ -1,0 +1,1416 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000019,
+  "project": {
+    "id": "test_project_20",
+    "schemaVersion": 2,
+    "title": "Тест 20 · Календарь событий",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_20_01",
+      "rootMapId": "test_map_20"
+    },
+    "posts": [
+      {
+        "id": "test_post_20_01",
+        "title": "01. Старт и карта · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_map_20",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_20",
+                "slots": [
+                  {
+                    "id": "test_slot_20_02",
+                    "targetPostId": "test_post_20_02",
+                    "text": "02. Контекст · Календарь событий",
+                    "derivedFromPostId": "test_post_20_02"
+                  },
+                  {
+                    "id": "test_slot_20_03",
+                    "targetPostId": "test_post_20_03",
+                    "text": "03. Наблюдения · Календарь событий",
+                    "derivedFromPostId": "test_post_20_03"
+                  },
+                  {
+                    "id": "test_slot_20_04",
+                    "targetPostId": "test_post_20_04",
+                    "text": "04. Материалы · Календарь событий",
+                    "derivedFromPostId": "test_post_20_04"
+                  },
+                  {
+                    "id": "test_slot_20_05",
+                    "targetPostId": "test_post_20_05",
+                    "text": "05. Сравнение · Календарь событий",
+                    "derivedFromPostId": "test_post_20_05"
+                  },
+                  {
+                    "id": "test_slot_20_06",
+                    "targetPostId": "test_post_20_06",
+                    "text": "06. Практика · Календарь событий",
+                    "derivedFromPostId": "test_post_20_06"
+                  },
+                  {
+                    "id": "test_slot_20_07",
+                    "targetPostId": "test_post_20_07",
+                    "text": "07. Проверка · Календарь событий",
+                    "derivedFromPostId": "test_post_20_07"
+                  },
+                  {
+                    "id": "test_slot_20_08",
+                    "targetPostId": "test_post_20_08",
+                    "text": "08. Варианты · Календарь событий",
+                    "derivedFromPostId": "test_post_20_08"
+                  },
+                  {
+                    "id": "test_slot_20_09",
+                    "targetPostId": "test_post_20_09",
+                    "text": "09. Итоги · Календарь событий",
+                    "derivedFromPostId": "test_post_20_09"
+                  },
+                  {
+                    "id": "test_slot_20_10",
+                    "targetPostId": "test_post_20_10",
+                    "text": "10. Следующий шаг · Календарь событий",
+                    "derivedFromPostId": "test_post_20_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_20_01_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "20"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_20_01_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 20.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_20_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 20.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_20_01_05",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 20.01",
+                "url": "https://example.com/post-manipulator/20/01",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_20_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_20_01_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 01"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337201000,
+        "updatedAt": 1788337201000
+      },
+      {
+        "id": "test_post_20_02",
+        "title": "02. Контекст · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_20_02_07",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5764,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 20.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_20_02_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.02",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_20_02_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_divider_20_02_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_paragraph_20_02_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Календарь событий. "
+                  },
+                  "наблюдение 2.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_20_02_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 20.02",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_02_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_2 = 22"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_20_02_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 20.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_20_02_01",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 2"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_20_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_20_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337202000,
+        "updatedAt": 1788337202000
+      },
+      {
+        "id": "test_post_20_03",
+        "title": "03. Наблюдения · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_pre_20_03_06",
+              "type": "preformatted",
+              "props": {
+                "text": "project=20\npost=03\nvariant=6",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_03_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_3 = 23"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_20_03_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "20"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_20_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_20_03_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_20_03_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 20.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_20_03_05",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_20_03_05_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_20_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337203000,
+        "updatedAt": 1788337203000
+      },
+      {
+        "id": "test_post_20_04",
+        "title": "04. Материалы · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_20_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_20_04_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5764,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 20.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_20_04_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 20.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_20_04_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Календарь событий. "
+                  },
+                  "наблюдение 4.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_20_04_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_20_04_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_20_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_20_04_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 04"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337204000,
+        "updatedAt": 1788337204000
+      },
+      {
+        "id": "test_post_20_05",
+        "title": "05. Сравнение · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_20_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_20_05_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.05",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_20_05_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_photo_20_05_02",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 20.05",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_20_05_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_20_05_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 20.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_05_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_5 = 25"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_20_05_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=20\npost=05\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_20_05_07",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Календарь событий. "
+                  },
+                  "наблюдение 5.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "heading_20_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337205000,
+        "updatedAt": 1788337205000
+      },
+      {
+        "id": "test_post_20_06",
+        "title": "06. Практика · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_20_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_20_06_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Календарь событий. "
+                  },
+                  "наблюдение 6.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_20_06_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5764,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 20.06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_20_06_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 20.06",
+                "url": "https://example.com/post-manipulator/20/06",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_20_06_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_table_20_06_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "20"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_20_06_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_20_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_06_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_6 = 26"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337206000,
+        "updatedAt": 1788337206000
+      },
+      {
+        "id": "test_post_20_07",
+        "title": "07. Проверка · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_table_20_07_08",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "20"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_20_07_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_20_07_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5764,
+                  "longitude": 104.93520000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 20.07"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_20_07_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 20.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_20_07_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_20_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_07_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_7 = 27"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_20_07_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 20.07",
+                "url": "https://example.com/post-manipulator/20/07",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_20_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_20_07_07",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337207000,
+        "updatedAt": 1788337207000
+      },
+      {
+        "id": "test_post_20_08",
+        "title": "08. Варианты · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_20_08_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_details_20_08_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.08",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_20_08_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_20_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_20_08_07",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 20.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_08_06",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_8 = 28"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_20_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_20_08_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_20_08_08",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 20.08",
+                "url": "https://example.com/post-manipulator/20/08",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_20_08_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=20\npost=08\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_20_08_04",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337208000,
+        "updatedAt": 1788337208000
+      },
+      {
+        "id": "test_post_20_09",
+        "title": "09. Итоги · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_footer_20_09_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_20_09_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 20.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_20_09_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 20.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_20_09_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "heading_20_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_20_09_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_9 = 29"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_20_09_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.09",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_20_09_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_20_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337209000,
+        "updatedAt": 1788337209000
+      },
+      {
+        "id": "test_post_20_10",
+        "title": "10. Следующий шаг · Календарь событий",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_20_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Календарь событий",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_20_10_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 20.10",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_20_10_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_photo_20_10_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 20.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_20_10_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_20_10_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=20\npost=10\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_20_10_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 20 · пост 10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_20_10_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_20_10_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_20 + y_10 = 30"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_20_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_20",
+                "targetSlotId": "test_slot_20_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788337210000,
+        "updatedAt": 1788337210000
+      }
+    ],
+    "createdAt": 1788337200000,
+    "updatedAt": 1788337210000
+  }
+}

@@ -5,9 +5,9 @@ import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.5.9";
 import { OwnerBindingService } from "./telegram/OwnerBindingService.js?v=1.5.9";
 import { TelegramClient } from "./telegram/TelegramClient.js?v=1.5.9";
 import { TelegramViewportController } from "./telegram/TelegramViewportController.js?v=1.7.5";
-import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.7.13";
+import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.7.14";
 import { SECURITY_GATE_CONFIG } from "./security/SecurityGateConfig.js?v=1.7.5";
-import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.13";
+import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.14";
 import { TelegramEnvironmentGate, TelegramEnvironmentError } from "./security/TelegramEnvironmentGate.js?v=1.7.0";
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
 
@@ -88,7 +88,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.7.13");
+      const { startApplication } = await import("./app.js?v=1.7.14");
       application = await startApplication({
         appDb,
         token: result.token,

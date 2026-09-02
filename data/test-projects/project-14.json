@@ -1,0 +1,1478 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000013,
+  "project": {
+    "id": "test_project_14",
+    "schemaVersion": 2,
+    "title": "Тест 14 · Кулинарная серия",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_14_01",
+      "rootMapId": "test_map_14"
+    },
+    "posts": [
+      {
+        "id": "test_post_14_01",
+        "title": "01. Старт и карта · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_quote_14_01_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 14.01».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_14_01_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=14\npost=01\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_01_05",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-08.png",
+                "caption": "Тестовое изображение 08 · 14.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 14.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_14_01_04",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5704,
+                  "longitude": 104.92920000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 14.01"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_14_01_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 01"
+              },
+              "children": []
+            },
+            {
+              "id": "project_map_14",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_14",
+                "slots": [
+                  {
+                    "id": "test_slot_14_02",
+                    "targetPostId": "test_post_14_02",
+                    "text": "02. Контекст · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_02"
+                  },
+                  {
+                    "id": "test_slot_14_03",
+                    "targetPostId": "test_post_14_03",
+                    "text": "03. Наблюдения · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_03"
+                  },
+                  {
+                    "id": "test_slot_14_04",
+                    "targetPostId": "test_post_14_04",
+                    "text": "04. Материалы · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_04"
+                  },
+                  {
+                    "id": "test_slot_14_05",
+                    "targetPostId": "test_post_14_05",
+                    "text": "05. Сравнение · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_05"
+                  },
+                  {
+                    "id": "test_slot_14_06",
+                    "targetPostId": "test_post_14_06",
+                    "text": "06. Практика · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_06"
+                  },
+                  {
+                    "id": "test_slot_14_07",
+                    "targetPostId": "test_post_14_07",
+                    "text": "07. Проверка · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_07"
+                  },
+                  {
+                    "id": "test_slot_14_08",
+                    "targetPostId": "test_post_14_08",
+                    "text": "08. Варианты · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_08"
+                  },
+                  {
+                    "id": "test_slot_14_09",
+                    "targetPostId": "test_post_14_09",
+                    "text": "09. Итоги · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_09"
+                  },
+                  {
+                    "id": "test_slot_14_10",
+                    "targetPostId": "test_post_14_10",
+                    "text": "10. Следующий шаг · Кулинарная серия",
+                    "derivedFromPostId": "test_post_14_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336841000,
+        "updatedAt": 1788336841000
+      },
+      {
+        "id": "test_post_14_02",
+        "title": "02. Контекст · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_14_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_14_02_02",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5704,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 14.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_14_02_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=14\npost=02\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_14_02_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_14_02_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_14 + y_2 = 16"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_14_02_08",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Кулинарная серия. "
+                  },
+                  "наблюдение 2.8. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_14_02_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_14_02_05",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_14_02_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 14.02",
+                "url": "https://example.com/post-manipulator/14/02",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336842000,
+        "updatedAt": 1788336842000
+      },
+      {
+        "id": "test_post_14_03",
+        "title": "03. Наблюдения · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_backlink_14_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_14_03_03",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 14.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_14_03_03_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_quote_14_03_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 14.03».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_03_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 14.03",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_14_03_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_14_03_01",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 14.03",
+                "url": "https://example.com/post-manipulator/14/03",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_14_03_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 3"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336843000,
+        "updatedAt": 1788336843000
+      },
+      {
+        "id": "test_post_14_04",
+        "title": "04. Материалы · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_paragraph_14_04_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Кулинарная серия. "
+                  },
+                  "наблюдение 4.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_14_04_01",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_14_04_07",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 14.04",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_14_04_07_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_14_04_03",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_14 + y_4 = 18"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_14_04_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "4"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_14_04_08",
+              "type": "preformatted",
+              "props": {
+                "text": "project=14\npost=04\nvariant=8",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_14_04_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_04_04",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-10.png",
+                "caption": "Тестовое изображение 10 · 14.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_14_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336844000,
+        "updatedAt": 1788336844000
+      },
+      {
+        "id": "test_post_14_05",
+        "title": "05. Сравнение · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_14_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_14_05_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_14_05_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 14.05».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_14_05_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_14 + y_5 = 19"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_14_05_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "5"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_14_05_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Кулинарная серия. "
+                  },
+                  "наблюдение 5.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_14_05_03",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 14.05",
+                "url": "https://example.com/post-manipulator/14/05",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_14_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336845000,
+        "updatedAt": 1788336845000
+      },
+      {
+        "id": "test_post_14_06",
+        "title": "06. Практика · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_table_14_06_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "6"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_14_06_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 14.06».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_06_06",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 14.06",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_14_06_01",
+              "type": "preformatted",
+              "props": {
+                "text": "project=14\npost=06\nvariant=1",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_14_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_14_06_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 14.06",
+                "url": "https://example.com/post-manipulator/14/06",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_14_06_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_14_06_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 06"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336846000,
+        "updatedAt": 1788336846000
+      },
+      {
+        "id": "test_post_14_07",
+        "title": "07. Проверка · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_footer_14_07_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 07"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_14_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_07_07",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-06.png",
+                "caption": "Тестовое изображение 06 · 14.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_14_07_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=14\npost=07\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_14_07_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_14_07_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 14.07",
+                "url": "https://example.com/post-manipulator/14/07",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_14_07_04",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 7"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_14_07_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_14 + y_7 = 21"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336847000,
+        "updatedAt": 1788336847000
+      },
+      {
+        "id": "test_post_14_08",
+        "title": "08. Варианты · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_details_14_08_06",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 14.08",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_14_08_06_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_divider_14_08_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_formula_14_08_07",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_14 + y_8 = 22"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_14_08_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5704,
+                  "longitude": 104.9362
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 14.08"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_14_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_08_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 14.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_14_08_01",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "14"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "8"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_14_08_04",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 08"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336848000,
+        "updatedAt": 1788336848000
+      },
+      {
+        "id": "test_post_14_09",
+        "title": "09. Итоги · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_footer_14_09_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_14_09_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=14\npost=09\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_14_09_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 14.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_14_09_08",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 14.09",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_14_09_08_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "project_backlink_14_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_14_09_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_14 + y_9 = 23"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_14_09_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5704,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 14.09"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_14_09_01",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Кулинарная серия. "
+                  },
+                  "наблюдение 9.1. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_09_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 14.09",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336849000,
+        "updatedAt": 1788336849000
+      },
+      {
+        "id": "test_post_14_10",
+        "title": "10. Следующий шаг · Кулинарная серия",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_14_10_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_footer_14_10_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 14 · пост 10"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_14_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Кулинарная серия",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_14_10_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Кулинарная серия. "
+                  },
+                  "наблюдение 10.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_14_10_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-03.png",
+                "caption": "Тестовое изображение 03 · 14.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_14_10_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 14.10».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_14_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_14",
+                "targetSlotId": "test_slot_14_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336850000,
+        "updatedAt": 1788336850000
+      }
+    ],
+    "createdAt": 1788336840000,
+    "updatedAt": 1788336850000
+  }
+}

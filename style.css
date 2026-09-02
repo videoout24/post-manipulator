@@ -1666,6 +1666,7 @@ body.resizing-layout * { cursor: col-resize !important; }
 .project-library-sidebar-title { min-width: 0; display: grid; gap: 3px; }
 .project-library-sidebar-title strong { color: #e7edf4; font-size: 13px; }
 .project-library-sidebar-title span { color: #718399; font-size: 8px; }
+.project-library-sidebar-actions { display: flex; flex: 0 0 auto; gap: 5px; }
 .project-library-sidebar-head button { flex: 0 0 auto; padding: 6px 8px; font-size: 9px; }
 .project-library-sidebar-head button.primary { border-color: #3f6fae; background: #214a79; }
 .project-library-list {

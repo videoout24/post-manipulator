@@ -4,6 +4,7 @@ import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
+import { MAX_PROJECT_IMPORT_FILE_BYTES, parseProjectImportText } from "./ProjectImport.js?v=1.7.14";
 
 export class ProjectLibraryView {
   constructor({
@@ -93,7 +94,21 @@ export class ProjectLibraryView {
     const head = el("div", "project-library-sidebar-head");
     const title = el("div", "project-library-sidebar-title");
     title.append(el("strong", "", t("project.projectLibraryView.projects")), el("span", "", t("project.projectLibraryView.inLibrary", { 0: projects.length })));
-    head.append(title, button(t("project.projectLibraryView.create"), () => this.#createProject(), "primary"));
+    const actions = el("div", "project-library-sidebar-actions");
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".json,application/json";
+    fileInput.multiple = true;
+    fileInput.hidden = true;
+    fileInput.setAttribute("aria-label", t("project.projectImport.selectFiles"));
+    fileInput.onchange = () => this.#importProjectFiles(fileInput.files);
+    const importButton = button(t("project.projectImport.import"), () => {
+      fileInput.value = "";
+      fileInput.click();
+    });
+    importButton.title = t("project.projectImport.importHint");
+    actions.append(importButton, button(t("project.projectLibraryView.create"), () => this.#createProject(), "primary"), fileInput);
+    head.append(title, actions);
 
     const list = el("div", "project-library-list");
     if (!projects.length) {
@@ -363,6 +378,39 @@ export class ProjectLibraryView {
       this.selectedProjectId = project.id;
       this.#ensureSelectedPost(project);
       await this.render();
+    });
+  }
+
+  async #importProjectFiles(fileList) {
+    const files = [...(fileList || [])];
+    if (!files.length) return;
+    await this.#run(async () => {
+      const projects = [];
+      for (const file of files) {
+        if (Number(file.size || 0) > MAX_PROJECT_IMPORT_FILE_BYTES) {
+          throw new Error(t("project.projectImport.fileTooLarge", { 0: file.name, 1: Math.round(MAX_PROJECT_IMPORT_FILE_BYTES / (1024 * 1024)) }));
+        }
+        let imported;
+        try {
+          imported = parseProjectImportText(await file.text(), { baseUrl: document.baseURI });
+        } catch (error) {
+          throw new Error(t("project.projectImport.fileError", { 0: file.name, 1: error?.message || error }));
+        }
+        projects.push(...imported);
+      }
+      const result = await this.store.importProjects(projects);
+      const selected = result.projects[0] || null;
+      if (selected) {
+        this.selectedProjectId = selected.id;
+        this.#ensureSelectedPost(selected);
+      }
+      this.events?.emit?.("ui:toast", {
+        message: t("project.projectImport.imported", { 0: result.count }),
+        type: "success",
+        duration: 4200
+      });
+      await this.render();
+      return result;
     });
   }
 

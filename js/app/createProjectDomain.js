@@ -1,4 +1,4 @@
-import { ProjectStore } from "../project/ProjectStore.js?v=1.7.11";
+import { ProjectStore } from "../project/ProjectStore.js?v=1.7.14";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { ProjectGraphReconciler } from "../project/ProjectGraphReconciler.js?v=1.5.9";
 import { ProjectEditorSession } from "../project/ProjectEditorSession.js?v=1.7.6";

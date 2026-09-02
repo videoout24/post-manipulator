@@ -1,0 +1,1481 @@
+{
+  "format": "rich-current-project",
+  "version": 1,
+  "createdAt": 1788336000003,
+  "project": {
+    "id": "test_project_04",
+    "schemaVersion": 2,
+    "title": "Тест 04 · Книжный клуб",
+    "structure": {
+      "mode": "linear",
+      "rootPostId": "test_post_04_01",
+      "rootMapId": "test_map_04"
+    },
+    "posts": [
+      {
+        "id": "test_post_04_01",
+        "title": "01. Старт и карта · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "project_map_04",
+              "type": "project_post_map",
+              "props": {
+                "mapId": "test_map_04",
+                "slots": [
+                  {
+                    "id": "test_slot_04_02",
+                    "targetPostId": "test_post_04_02",
+                    "text": "02. Контекст · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_02"
+                  },
+                  {
+                    "id": "test_slot_04_03",
+                    "targetPostId": "test_post_04_03",
+                    "text": "03. Наблюдения · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_03"
+                  },
+                  {
+                    "id": "test_slot_04_04",
+                    "targetPostId": "test_post_04_04",
+                    "text": "04. Материалы · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_04"
+                  },
+                  {
+                    "id": "test_slot_04_05",
+                    "targetPostId": "test_post_04_05",
+                    "text": "05. Сравнение · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_05"
+                  },
+                  {
+                    "id": "test_slot_04_06",
+                    "targetPostId": "test_post_04_06",
+                    "text": "06. Практика · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_06"
+                  },
+                  {
+                    "id": "test_slot_04_07",
+                    "targetPostId": "test_post_04_07",
+                    "text": "07. Проверка · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_07"
+                  },
+                  {
+                    "id": "test_slot_04_08",
+                    "targetPostId": "test_post_04_08",
+                    "text": "08. Варианты · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_08"
+                  },
+                  {
+                    "id": "test_slot_04_09",
+                    "targetPostId": "test_post_04_09",
+                    "text": "09. Итоги · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_09"
+                  },
+                  {
+                    "id": "test_slot_04_10",
+                    "targetPostId": "test_post_04_10",
+                    "text": "10. Следующий шаг · Книжный клуб",
+                    "derivedFromPostId": "test_post_04_10"
+                  }
+                ],
+                "numbering": "numeric",
+                "emptyText": "Карта пока пуста"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_04_01_08",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 04.01",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_04_01_08_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_formula_04_01_02",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_4 + y_1 = 5"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_04_01_05",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_photo_04_01_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-04.png",
+                "caption": "Тестовое изображение 04 · 04.01",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_04_01_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 1"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_04_01_07",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "04"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "1"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_04_01_04",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 04.01",
+                "url": "https://example.com/post-manipulator/04/01",
+                "buttonStyle": "primary"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_04_01_06",
+              "type": "preformatted",
+              "props": {
+                "text": "project=04\npost=01\nvariant=6",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_04_01",
+              "type": "heading",
+              "props": {
+                "text": "01. Старт и карта · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336241000,
+        "updatedAt": 1788336241000
+      },
+      {
+        "id": "test_post_04_02",
+        "title": "02. Контекст · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_quote_04_02_06",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 04.02».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_04_02_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5604,
+                  "longitude": 104.9302
+                },
+                "zoom": 14,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 04.02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_04_02_03",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 02"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_04_02_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_4 + y_2 = 6"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_04_02_04",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_02",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_02",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_04_02",
+              "type": "heading",
+              "props": {
+                "text": "02. Контекст · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_04_02_02",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "04"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "2"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336242000,
+        "updatedAt": 1788336242000
+      },
+      {
+        "id": "test_post_04_03",
+        "title": "03. Наблюдения · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_divider_04_03_02",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_03",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_03",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_04_03_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Книжный клуб. "
+                  },
+                  "наблюдение 3.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_04_03_05",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_4 + y_3 = 7"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_04_03_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 04.03",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_04_03_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_table_04_03_06",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "04"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "3"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_04_03_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=04\npost=03\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_04_03",
+              "type": "heading",
+              "props": {
+                "text": "03. Наблюдения · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_04_03_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 03"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336243000,
+        "updatedAt": 1788336243000
+      },
+      {
+        "id": "test_post_04_04",
+        "title": "04. Материалы · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_04_04",
+              "type": "heading",
+              "props": {
+                "text": "04. Материалы · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_04_04_03",
+              "type": "preformatted",
+              "props": {
+                "text": "project=04\npost=04\nvariant=3",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_04_04_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 04"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_04",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_04",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_04_04_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 04.04».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_04_04_02",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Книжный клуб. "
+                  },
+                  "наблюдение 4.2. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_04_04_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5604,
+                  "longitude": 104.93220000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 04.04"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_04_04_05",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 04.04",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_04_04_07",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 4"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_04_04_08",
+              "type": "divider",
+              "props": {},
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336244000,
+        "updatedAt": 1788336244000
+      },
+      {
+        "id": "test_post_04_05",
+        "title": "05. Сравнение · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_04_05",
+              "type": "heading",
+              "props": {
+                "text": "05. Сравнение · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_04_05_04",
+              "type": "preformatted",
+              "props": {
+                "text": "project=04\npost=05\nvariant=4",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_04_05_05",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Книжный клуб. "
+                  },
+                  "наблюдение 5.5. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_04_05_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_details_04_05_01",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 04.05",
+                "open": true
+              },
+              "children": [
+                {
+                  "id": "test_details_04_05_01_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_footer_04_05_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 05"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_05",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_05",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336245000,
+        "updatedAt": 1788336245000
+      },
+      {
+        "id": "test_post_04_06",
+        "title": "06. Практика · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_map_04_06_06",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5604,
+                  "longitude": 104.9342
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 04.06"
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_04_06_03",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_quote_04_06_04",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 04.06».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "heading_04_06",
+              "type": "heading",
+              "props": {
+                "text": "06. Практика · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_04_06_01",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_4 + y_6 = 10"
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_04_06_05",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 6"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_06",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_06",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_04_06_02",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 06"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336246000,
+        "updatedAt": 1788336246000
+      },
+      {
+        "id": "test_post_04_07",
+        "title": "07. Проверка · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_04_07",
+              "type": "heading",
+              "props": {
+                "text": "07. Проверка · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_04_07_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "04"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "7"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_formula_04_07_04",
+              "type": "mathematical_expression",
+              "props": {
+                "expression": "x_4 + y_7 = 11"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_07",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_07",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_04_07_06",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Книжный клуб. "
+                  },
+                  "наблюдение 7.6. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_04_07_01",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 04.07».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_04_07_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-02.png",
+                "caption": "Тестовое изображение 02 · 04.07",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_04_07_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 04.07",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_04_07_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336247000,
+        "updatedAt": 1788336247000
+      },
+      {
+        "id": "test_post_04_08",
+        "title": "08. Варианты · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "heading_04_08",
+              "type": "heading",
+              "props": {
+                "text": "08. Варианты · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_list_04_08_03",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 8"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_button_04_08_06",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 04.08",
+                "url": "https://example.com/post-manipulator/04/08",
+                "buttonStyle": "danger"
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_04_08_01",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-01.png",
+                "caption": "Тестовое изображение 01 · 04.08",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": false
+              },
+              "children": []
+            },
+            {
+              "id": "test_pre_04_08_02",
+              "type": "preformatted",
+              "props": {
+                "text": "project=04\npost=08\nvariant=2",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_08",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_08",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_04_08_04",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "04"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "8"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": false,
+                "isCompact": true,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_04_08_07",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 08"
+              },
+              "children": []
+            },
+            {
+              "id": "test_quote_04_08_05",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 04.08».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336248000,
+        "updatedAt": 1788336248000
+      },
+      {
+        "id": "test_post_04_09",
+        "title": "09. Итоги · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_quote_04_09_03",
+              "type": "block_quotation",
+              "props": {
+                "text": "«Тестовый контент должен быть разнообразным — вариант 04.09».",
+                "credit": "Набор автотестов"
+              },
+              "children": []
+            },
+            {
+              "id": "test_table_04_09_05",
+              "type": "table",
+              "props": {
+                "cells": [
+                  [
+                    {
+                      "text": "Параметр",
+                      "is_header": true
+                    },
+                    {
+                      "text": "Значение",
+                      "is_header": true
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Проект"
+                    },
+                    {
+                      "text": "04"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Пост"
+                    },
+                    {
+                      "text": "9"
+                    }
+                  ]
+                ],
+                "isBordered": true,
+                "isStriped": true,
+                "isCompact": false,
+                "caption": "Контрольные значения"
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_04_09_02",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 04.09",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_04_09_02_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "test_pre_04_09_07",
+              "type": "preformatted",
+              "props": {
+                "text": "project=04\npost=09\nvariant=7",
+                "language": "text"
+              },
+              "children": []
+            },
+            {
+              "id": "test_footer_04_09_06",
+              "type": "footer",
+              "props": {
+                "text": "Тестовый подвал · проект 04 · пост 09"
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_09",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_09",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "heading_04_09",
+              "type": "heading",
+              "props": {
+                "text": "09. Итоги · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_04_09_04",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Книжный клуб. "
+                  },
+                  "наблюдение 9.4. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_04_09_01",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5604,
+                  "longitude": 104.9372
+                },
+                "zoom": 12,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 04.09"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336249000,
+        "updatedAt": 1788336249000
+      },
+      {
+        "id": "test_post_04_10",
+        "title": "10. Следующий шаг · Книжный клуб",
+        "messageAst": {
+          "id": "root",
+          "type": "document",
+          "props": {},
+          "children": [
+            {
+              "id": "test_list_04_10_06",
+              "type": "list",
+              "props": {
+                "items": [
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Проверить карточку 10"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": false
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Изменить порядок блоков"
+                      }
+                    ],
+                    "has_checkbox": true,
+                    "is_checked": true
+                  },
+                  {
+                    "blocks": [
+                      {
+                        "type": "paragraph",
+                        "text": "Выгрузить в тестовый чат"
+                      }
+                    ],
+                    "type": "1",
+                    "value": 3
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "project_backlink_04_10",
+              "type": "project_map_backlink",
+              "props": {
+                "targetMapId": "test_map_04",
+                "targetSlotId": "test_slot_04_10",
+                "text": "Назад к карте",
+                "managedByMap": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_paragraph_04_10_07",
+              "type": "paragraph",
+              "props": {
+                "text": [
+                  {
+                    "type": "bold",
+                    "text": "Книжный клуб. "
+                  },
+                  "наблюдение 10.7. Этот абзац нужен для проверки редактирования, переноса и форматирования."
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "test_details_04_10_04",
+              "type": "details",
+              "props": {
+                "summary": "Дополнительные данные 04.10",
+                "open": false
+              },
+              "children": [
+                {
+                  "id": "test_details_04_10_04_child",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Этот вложенный абзац проверяет раскрывающиеся блоки и глубину AST."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "heading_04_10",
+              "type": "heading",
+              "props": {
+                "text": "10. Следующий шаг · Книжный клуб",
+                "level": 2
+              },
+              "children": []
+            },
+            {
+              "id": "test_photo_04_10_03",
+              "type": "photo",
+              "props": {
+                "fileId": "./assets/test-projects/test-05.png",
+                "caption": "Тестовое изображение 05 · 04.10",
+                "captionCredit": "Post Manipulator fixture",
+                "hasSpoiler": true
+              },
+              "children": []
+            },
+            {
+              "id": "test_divider_04_10_01",
+              "type": "divider",
+              "props": {},
+              "children": []
+            },
+            {
+              "id": "test_button_04_10_02",
+              "type": "url_button",
+              "props": {
+                "text": "Открыть тест 04.10",
+                "url": "https://example.com/post-manipulator/04/10",
+                "buttonStyle": "success"
+              },
+              "children": []
+            },
+            {
+              "id": "test_map_04_10_05",
+              "type": "map",
+              "props": {
+                "location": {
+                  "latitude": 11.5604,
+                  "longitude": 104.93820000000001
+                },
+                "zoom": 13,
+                "width": 640,
+                "height": 360,
+                "caption": "Тестовая точка 04.10"
+              },
+              "children": []
+            }
+          ]
+        },
+        "schedule": null,
+        "publication": {
+          "state": "draft"
+        },
+        "deployments": {},
+        "createdAt": 1788336250000,
+        "updatedAt": 1788336250000
+      }
+    ],
+    "createdAt": 1788336240000,
+    "updatedAt": 1788336250000
+  }
+}
