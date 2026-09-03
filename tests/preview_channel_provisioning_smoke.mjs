@@ -31,6 +31,8 @@ const client = {
   async pinChatMessage(chatId, messageId, options) { calls.push(["pin", chatId, messageId, options]); }
 };
 const events = new EventBus();
+const livePreviewSettings = [];
+events.on("telegram:live-preview-setting", setting => livePreviewSettings.push(setting));
 const service = new PreviewChannelBindingService({
   db,
   events,
@@ -62,5 +64,7 @@ assert.deepEqual(await db.get("preview", "liveMessage"), {
   pinned: true,
   syncedAt: (await db.get("preview", "liveMessage")).syncedAt
 });
+assert.equal(await db.get("settings", "livePreviewEnabled"), true);
+assert.deepEqual(livePreviewSettings, [{ enabled: true }]);
 
 console.log("preview_channel_provisioning_smoke: OK");

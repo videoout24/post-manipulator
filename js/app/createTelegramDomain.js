@@ -1,7 +1,7 @@
-import { TelegramClient } from "../telegram/TelegramClient.js?v=1.7.6";
+import { TelegramClient } from "../telegram/TelegramClient.js?v=1.7.16";
 import { BotIdentityService } from "../telegram/BotIdentityService.js?v=1.5.9";
 import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5";
-import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.5.9";
+import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.7.16";
 import { TopicTransport } from "../telegram/TopicTransport.js?v=1.5.9";
 import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.5.9";
 import { TelegramCore } from "../telegram/TelegramCore.js?v=1.7.15";

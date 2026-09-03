@@ -1092,6 +1092,7 @@ export const en = Object.freeze({
   "telegram.telegramClient.directFetchOfTelegramFileEndpointIs": "Direct fetch of Telegram file endpoint is blocked by CORS in the browser. Use buildFileUrl() to display the file.",
   "telegram.telegramClient.noFileSelectedForUpload": "No file selected for upload",
   "telegram.telegramClient.failedToUploadFileToTelegramBot": "Failed to upload file to Telegram Bot API",
+  "telegram.telegramClient.requestTimedOut": "Telegram request {0} did not complete within {1} seconds. The sending queue has been released; try again.",
   "telegram.telegramRenderer.thinkingBlockCanOnlyBeSentVia": "Thinking block can only be sent via sendRichMessageDraft, not in permanent preview",
   "telegram.telegramRenderer.telegramRendererUnknownBlockType": "Telegram renderer: unknown block type {0}",
   "telegram.telegramRuntime.stopped": "Stopped",

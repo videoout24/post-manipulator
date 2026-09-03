@@ -4,6 +4,7 @@ import { randomBytes } from "../core/Random.js?v=1.5.9";
 const SLOT_KEY = "previewChannel";
 const SESSION_KEY = "previewChannelBinding";
 const LIVE_MESSAGE_KEY = "liveMessage";
+const AUTOMATIC_BINDING_RETRY_DELAYS_MS = Object.freeze([300, 900, 1800, 3000]);
 const LIVE_PLACEHOLDER = Object.freeze({
   blocks: Object.freeze([
     Object.freeze({
@@ -14,11 +15,14 @@ const LIVE_PLACEHOLDER = Object.freeze({
 });
 
 export class PreviewChannelBindingService {
-  constructor({ db, events, client, ownerBinding }) {
+  constructor({ db, events, client, ownerBinding, automaticRetryDelays = AUTOMATIC_BINDING_RETRY_DELAYS_MS, delay = wait }) {
     this.db = db;
     this.events = events;
     this.client = client;
     this.ownerBinding = ownerBinding;
+    this.automaticRetryDelays = [...(automaticRetryDelays || [])]
+      .map(value => Math.max(0, Number(value) || 0));
+    this.delay = delay;
   }
 
   getSlot() { return this.db.get("bindings", SLOT_KEY, { status: "empty" }); }
@@ -101,7 +105,7 @@ export class PreviewChannelBindingService {
     // member, the bot has all preview rights, and they are its only members.
     const owner = await this.ownerBinding.getOwner();
     if (owner && channelMemberAvailability(change.new_chat_member).ok) {
-      const automatic = await this.#verifyAutomaticCandidate(change.chat, owner);
+      const automatic = await this.#verifyAutomaticCandidateWithRetry(change.chat, owner, change.new_chat_member);
       if (automatic.ok) {
         await this.#bindChannel(automatic.chat, automatic.rights, {
           source: "private_owner_pair",
@@ -180,6 +184,7 @@ export class PreviewChannelBindingService {
     };
     await Promise.all([
       this.db.put("bindings", SLOT_KEY, bound),
+      this.db.put("settings", "livePreviewEnabled", true),
       this.db.put("preview", LIVE_MESSAGE_KEY, {
         chatId: bound.chatId,
         messageId: Number(previewMessage.message_id),
@@ -190,6 +195,7 @@ export class PreviewChannelBindingService {
       }),
       this.db.delete("runtime", SESSION_KEY)
     ]);
+    this.events?.emit("telegram:live-preview-setting", { enabled: true });
     this.events?.emit("telegram:preview-channel", bound);
     this.events?.emit("telegram:preview-status", {
       state: "ready",
@@ -221,26 +227,49 @@ export class PreviewChannelBindingService {
     return channelMemberAvailability(member);
   }
 
-  async #verifyAutomaticCandidate(updateChat, owner) {
+  async #verifyAutomaticCandidateWithRetry(updateChat, owner, observedBotMember) {
+    let result = null;
+    for (let attempt = 0; attempt <= this.automaticRetryDelays.length; attempt += 1) {
+      if (attempt > 0) await this.delay(this.automaticRetryDelays[attempt - 1]);
+      const slot = await this.getSlot();
+      if (slot?.status === "bound" || slot?.status === "unavailable") {
+        return { ok: false, reason: "slot_filled" };
+      }
+      try {
+        result = await this.#verifyAutomaticCandidate(updateChat, owner, observedBotMember);
+      } catch (error) {
+        result = { ok: false, reason: "verification_error", error };
+      }
+      if (result.ok || !isRetryableAutomaticCandidate(result)) return result;
+    }
+    return result || { ok: false, reason: "verification_failed" };
+  }
+
+  async #verifyAutomaticCandidate(updateChat, owner, observedBotMember = null) {
     const chatId = Number(updateChat?.id || 0);
     if (!chatId || !owner?.userId) return { ok: false, reason: "invalid_candidate" };
 
-    const [bot, chat] = await Promise.all([
-      this.client.getMe(),
-      this.client.getChat(chatId)
+    const botMemberPromise = observedBotMember
+      ? Promise.resolve(observedBotMember)
+      : this.client.getMe().then(bot => this.client.getChatMember(chatId, bot.id));
+    const [chat, botMember, ownerMember, memberCount] = await Promise.all([
+      this.client.getChat(chatId),
+      botMemberPromise,
+      this.client.getChatMember(chatId, Number(owner.userId)),
+      this.client.getChatMemberCount(chatId)
     ]);
     if (chat?.type !== "channel") return { ok: false, reason: "not_channel" };
     if (chat.username) return { ok: false, reason: "public_channel" };
 
-    const [botMember, ownerMember, memberCount] = await Promise.all([
-      this.client.getChatMember(chatId, bot.id),
-      this.client.getChatMember(chatId, Number(owner.userId)),
-      this.client.getChatMemberCount(chatId)
-    ]);
     const availability = channelMemberAvailability(botMember);
     if (!availability.ok) return { ok: false, reason: availability.reason };
     if (!isPresentMember(ownerMember)) return { ok: false, reason: "owner_not_member" };
-    if (Number(memberCount) !== 2) return { ok: false, reason: "member_count_not_two" };
+    const numericMemberCount = Number(memberCount);
+    if (numericMemberCount !== 2) {
+      return { ok: false, reason: numericMemberCount < 2 || !Number.isFinite(numericMemberCount)
+        ? "member_count_pending"
+        : "member_count_not_two" };
+    }
 
     return {
       ok: true,
@@ -279,6 +308,16 @@ function channelMemberAvailability(member = {}) {
 
 function isPresentMember(member = {}) {
   return ["creator", "administrator", "member", "restricted"].includes(member?.status);
+}
+
+function isRetryableAutomaticCandidate(result) {
+  return result?.reason === "member_count_pending"
+    || result?.reason === "owner_not_member"
+    || result?.reason === "verification_error";
+}
+
+function wait(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, Math.max(0, Number(milliseconds) || 0)));
 }
 
 function randomCode(length) {

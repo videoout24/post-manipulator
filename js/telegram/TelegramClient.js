@@ -1,17 +1,23 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.1";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
+const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
+const DEFAULT_UPLOAD_TIMEOUT_MS = 120_000;
+const LONG_POLLING_GRACE_MS = 10_000;
+
 export class TelegramApiError extends Error {
-  constructor(message, { method = "", errorCode = 0, description = "", parameters = null, cause = null } = {}) {
+  constructor(message, { method = "", errorCode = 0, description = "", parameters = null, cause = null, timedOut = false } = {}) {
     super(message || description || "Telegram API error", cause ? { cause } : undefined);
     this.name = "TelegramApiError";
     this.method = method;
     this.errorCode = errorCode;
     this.description = description || message || "";
     this.parameters = parameters || null;
+    this.timedOut = Boolean(timedOut);
   }
 
   isAuthError() { return this.errorCode === 401; }
+  isTimeout() { return this.timedOut; }
   isConflict() { return this.errorCode === 409; }
   isNotModified() { return /message is not modified/i.test(this.description); }
   isMessageMissing() {
@@ -28,11 +34,20 @@ export class TelegramApiError extends Error {
 export class TelegramClient {
   #token = "";
 
-  constructor({ token = "", apiBase = "https://api.telegram.org", scheduler = null, events = null } = {}) {
+  constructor({
+    token = "",
+    apiBase = "https://api.telegram.org",
+    scheduler = null,
+    events = null,
+    requestTimeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
+    uploadTimeoutMs = DEFAULT_UPLOAD_TIMEOUT_MS
+  } = {}) {
     this.setToken(token);
     this.apiBase = apiBase.replace(/\/$/, "");
     this.scheduler = scheduler || new TelegramRequestScheduler();
     this.events = events;
+    this.requestTimeoutMs = positiveTimeout(requestTimeoutMs, DEFAULT_REQUEST_TIMEOUT_MS);
+    this.uploadTimeoutMs = positiveTimeout(uploadTimeoutMs, DEFAULT_UPLOAD_TIMEOUT_MS);
   }
 
   setToken(token) { this.#token = String(token || "").trim(); }
@@ -55,45 +70,61 @@ export class TelegramClient {
   async #callNow(method, params = {}, { signal } = {}) {
     if (!this.#token) throw new TelegramApiError(t("telegram.botIdentityService.telegramTokenNotSet"), { method, errorCode: 401 });
     const url = `${this.apiBase}/bot${this.#token}/${method}`;
-    let response;
     const trackActivity = method !== "getUpdates";
+    const timeoutMs = method === "getUpdates"
+      ? Math.max(this.requestTimeoutMs, Number(params?.timeout || 0) * 1000 + LONG_POLLING_GRACE_MS)
+      : this.requestTimeoutMs;
+    const requestAbort = createRequestAbort(signal, timeoutMs);
     if (trackActivity) this.events?.emit?.("telegram:request-start", { method });
     try {
-      response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(stripUndefined(params)),
-        signal
-      });
-    } catch (cause) {
-      if (cause?.name === "AbortError") throw cause;
-      if (trackActivity) this.events?.emit?.("telegram:request-network-error", { method, error: cause });
-      throw new TelegramApiError(
-        t("telegram.telegramClient.failedToContactTelegramBotAPIFor"),
-        { method, cause }
-      );
+      let response;
+      try {
+        response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(stripUndefined(params)),
+          signal: requestAbort.signal
+        });
+      } catch (cause) {
+        if (cause?.name === "AbortError" && requestAbort.timedOut()) {
+          if (trackActivity) this.events?.emit?.("telegram:request-network-error", { method, error: cause, timedOut: true });
+          throw telegramTimeoutError(method, timeoutMs, cause);
+        }
+        if (cause?.name === "AbortError") throw cause;
+        if (trackActivity) this.events?.emit?.("telegram:request-network-error", { method, error: cause });
+        throw new TelegramApiError(
+          t("telegram.telegramClient.failedToContactTelegramBotAPIFor"),
+          { method, cause }
+        );
+      }
+
+      let payload = null;
+      try { payload = await response.json(); }
+      catch (cause) {
+        if (cause?.name === "AbortError" && requestAbort.timedOut()) {
+          if (trackActivity) this.events?.emit?.("telegram:request-network-error", { method, error: cause, timedOut: true });
+          throw telegramTimeoutError(method, timeoutMs, cause);
+        }
+        if (cause?.name === "AbortError") throw cause;
+        throw new TelegramApiError(t("telegram.telegramClient.telegramReturnedANonJSONResponse", { 0: response.status }), { method, errorCode: response.status, cause });
+      }
+      // A complete HTTP response proves that the connection is back, even when
+      // Telegram subsequently answers with an API error such as 429.
+      if (trackActivity) this.events?.emit?.("telegram:request-success", { method });
+
+      if (!response.ok || !payload?.ok) {
+        throw new TelegramApiError(payload?.description || `Telegram API ${response.status}`, {
+          method,
+          errorCode: Number(payload?.error_code || response.status || 0),
+          description: payload?.description || "",
+          parameters: payload?.parameters || null
+        });
+      }
+      return payload.result;
     } finally {
+      requestAbort.cleanup();
       if (trackActivity) this.events?.emit?.("telegram:request-end", { method });
     }
-    // Receiving any HTTP response proves that the transport connection is back,
-    // even when Telegram subsequently answers with an API error such as 429.
-    if (trackActivity) this.events?.emit?.("telegram:request-success", { method });
-
-    let payload = null;
-    try { payload = await response.json(); }
-    catch (cause) {
-      throw new TelegramApiError(t("telegram.telegramClient.telegramReturnedANonJSONResponse", { 0: response.status }), { method, errorCode: response.status, cause });
-    }
-
-    if (!response.ok || !payload?.ok) {
-      throw new TelegramApiError(payload?.description || `Telegram API ${response.status}`, {
-        method,
-        errorCode: Number(payload?.error_code || response.status || 0),
-        description: payload?.description || "",
-        parameters: payload?.parameters || null
-      });
-    }
-    return payload.result;
   }
 
   getMe(options) { return this.call("getMe", {}, options); }
@@ -201,32 +232,46 @@ export class TelegramClient {
       body.append(key, value instanceof Blob ? value : String(value));
     }
     const url = `${this.apiBase}/bot${this.#token}/${method}`;
+    const requestAbort = createRequestAbort(signal, this.uploadTimeoutMs);
     this.events?.emit?.("telegram:request-start", { method });
-    let response;
     try {
-      response = await fetch(url, { method: "POST", body, signal });
-    } catch (cause) {
-      if (cause?.name === "AbortError") throw cause;
-      this.events?.emit?.("telegram:request-network-error", { method, error: cause });
-      throw new TelegramApiError(t("telegram.telegramClient.failedToUploadFileToTelegramBot"), { method, cause });
+      let response;
+      try {
+        response = await fetch(url, { method: "POST", body, signal: requestAbort.signal });
+      } catch (cause) {
+        if (cause?.name === "AbortError" && requestAbort.timedOut()) {
+          this.events?.emit?.("telegram:request-network-error", { method, error: cause, timedOut: true });
+          throw telegramTimeoutError(method, this.uploadTimeoutMs, cause);
+        }
+        if (cause?.name === "AbortError") throw cause;
+        this.events?.emit?.("telegram:request-network-error", { method, error: cause });
+        throw new TelegramApiError(t("telegram.telegramClient.failedToUploadFileToTelegramBot"), { method, cause });
+      }
+
+      let payload;
+      try { payload = await response.json(); }
+      catch (cause) {
+        if (cause?.name === "AbortError" && requestAbort.timedOut()) {
+          this.events?.emit?.("telegram:request-network-error", { method, error: cause, timedOut: true });
+          throw telegramTimeoutError(method, this.uploadTimeoutMs, cause);
+        }
+        if (cause?.name === "AbortError") throw cause;
+        throw new TelegramApiError(t("telegram.telegramClient.telegramReturnedANonJSONResponse", { 0: response.status }), { method, errorCode: response.status, cause });
+      }
+      this.events?.emit?.("telegram:request-success", { method });
+      if (!response.ok || !payload?.ok) {
+        throw new TelegramApiError(payload?.description || `Telegram API ${response.status}`, {
+          method,
+          errorCode: Number(payload?.error_code || response.status || 0),
+          description: payload?.description || "",
+          parameters: payload?.parameters || null
+        });
+      }
+      return payload.result;
     } finally {
+      requestAbort.cleanup();
       this.events?.emit?.("telegram:request-end", { method });
     }
-    this.events?.emit?.("telegram:request-success", { method });
-    let payload;
-    try { payload = await response.json(); }
-    catch (cause) {
-      throw new TelegramApiError(t("telegram.telegramClient.telegramReturnedANonJSONResponse", { 0: response.status }), { method, errorCode: response.status, cause });
-    }
-    if (!response.ok || !payload?.ok) {
-      throw new TelegramApiError(payload?.description || `Telegram API ${response.status}`, {
-        method,
-        errorCode: Number(payload?.error_code || response.status || 0),
-        description: payload?.description || "",
-        parameters: payload?.parameters || null
-      });
-    }
-    return payload.result;
   }
 }
 
@@ -263,4 +308,35 @@ function stripUndefined(value) {
   return Object.fromEntries(Object.entries(value)
     .filter(([, item]) => item !== undefined)
     .map(([key, item]) => [key, stripUndefined(item)]));
+}
+
+function positiveTimeout(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : fallback;
+}
+
+function createRequestAbort(signal, timeoutMs) {
+  const controller = new AbortController();
+  let timeoutTriggered = false;
+  const forwardAbort = () => controller.abort(signal?.reason);
+  if (signal?.aborted) forwardAbort();
+  else signal?.addEventListener?.("abort", forwardAbort, { once: true });
+  const timeout = globalThis.setTimeout(() => {
+    timeoutTriggered = true;
+    controller.abort();
+  }, timeoutMs);
+  return {
+    signal: controller.signal,
+    timedOut: () => timeoutTriggered,
+    cleanup() {
+      globalThis.clearTimeout(timeout);
+      signal?.removeEventListener?.("abort", forwardAbort);
+    }
+  };
+}
+
+function telegramTimeoutError(method, timeoutMs, cause) {
+  const seconds = Math.max(1, Math.ceil(timeoutMs / 1000));
+  const message = t("telegram.telegramClient.requestTimedOut", { 0: method, 1: seconds });
+  return new TelegramApiError(message, { method, description: message, cause, timedOut: true });
 }

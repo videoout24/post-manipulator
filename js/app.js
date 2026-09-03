@@ -11,7 +11,7 @@ import { EditorCanvasPreferences } from "./editor/EditorCanvasPreferences.js?v=1
 import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.7.15";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.7.15";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.7.16";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.7.15";
 import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.5.9";
 import { createEditorDomain } from "./app/createEditorDomain.js?v=1.7.15";
@@ -376,7 +376,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.7.15",
+  build: "1.7.16",
   notifications,
   layoutPreferences,
   telegramNavigation,
