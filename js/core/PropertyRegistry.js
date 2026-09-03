@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.2";
 export class PropertyRegistry {
   constructor(formattingRegistry = null) {
     this.properties = new Map();
@@ -153,6 +153,15 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
       { value: "primary", label: t("core.propertyRegistry.primary") },
       { value: "success", label: t("core.propertyRegistry.success") },
       { value: "danger", label: t("core.propertyRegistry.danger") }
+    ]
+  });
+  add("button.align", {
+    label: t("core.propertyRegistry.horizontalAlignment"), group: t("core.propertyRegistry.button"), type: "enum", editor: "select", default: "",
+    options: [
+      { value: "", label: t("core.propertyRegistry.normal") },
+      { value: "left", label: t("editor.blockInspector.left") },
+      { value: "center", label: t("editor.blockInspector.center") },
+      { value: "right", label: t("editor.blockInspector.right") }
     ]
   });
 

@@ -75,6 +75,13 @@ export class TelegramNavigation {
     return this.#open(buildPrivateMessageLinks(chatId, messageId));
   }
 
+  openMessageComments({ username = "", chatId, messageId, commentId } = {}) {
+    const links = username
+      ? buildPublicMessageCommentsLinks(username, messageId, commentId)
+      : buildPrivateMessageCommentsLinks(chatId, messageId, commentId);
+    return this.#open(links);
+  }
+
   openProjectPost(project, postId, deployment = "preview") {
     const post = project?.posts?.find(item => String(item.id) === String(postId));
     const record = post?.deployments?.[deployment];
@@ -166,6 +173,16 @@ export function buildPrivateMessageLinks(chatId, messageId) {
   };
 }
 
+export function buildPublicMessageCommentsLinks(username, messageId, commentId) {
+  const links = buildPublicMessageLinks(username, messageId);
+  return appendComment(links, commentId);
+}
+
+export function buildPrivateMessageCommentsLinks(chatId, messageId, commentId) {
+  const links = buildPrivateMessageLinks(chatId, messageId);
+  return appendComment(links, commentId);
+}
+
 export function privateChannelInternalId(chatId) {
   const raw = String(chatId ?? "").trim();
   if (!/^-100\d+$/.test(raw)) return "";
@@ -179,6 +196,15 @@ function normalizeUsername(value) {
 function normalizeMessageId(value) {
   const id = Number(value);
   return Number.isFinite(id) && id > 0 ? Math.trunc(id) : 0;
+}
+
+function appendComment(links, commentId) {
+  const comment = normalizeMessageId(commentId);
+  if (!links?.nativeUrl || !links?.webUrl || !comment) return { nativeUrl: "", webUrl: "" };
+  return {
+    nativeUrl: `${links.nativeUrl}&comment=${comment}`,
+    webUrl: `${links.webUrl}?comment=${comment}`
+  };
 }
 
 export const TELEGRAM_NATIVE_SETTING_KEY = NATIVE_SETTING_KEY;

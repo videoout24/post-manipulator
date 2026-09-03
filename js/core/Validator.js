@@ -1,4 +1,4 @@
-import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.5.9";
+import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.7.17";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
 
 export class Validator {
@@ -99,8 +99,6 @@ export class Validator {
     const errors = [];
     if (!(tree.root.children || []).length) {
       errors.push("Rich Message requires at least 1 block");
-    } else if (!(tree.root.children || []).some(node => node.type !== "url_button")) {
-      errors.push("Rich Message requires at least 1 content block; URL Button is reply markup, not RichBlock content");
     }
     for (const child of tree.root.children || []) {
       tree.walk((node, parent) => errors.push(...this.validateNode(node, parent)), child, tree.root);

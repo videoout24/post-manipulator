@@ -23,6 +23,8 @@ for (const type of ["divider", "table", "details"]) {
   assert.match(blocks, new RegExp(`type:\\s*"${type}"[\\s\\S]{0,140}category:\\s*t\\("blocks\\.category\\.content"\\)`));
 }
 assert.match(blocks, /semantic\("anchor_link", t\("blocks\.registerCoreBlocks\.anchorLink"\),[\s\S]*?\{ category: t\("blocks\.registerCoreBlocks\.navigation"\) \}\)/);
+assert.match(blocks, /type:\s*"button_row", name:\s*t\("blocks\.registerCoreBlocks\.buttonRow"\)/);
+assert.match(blocks, /children:\s*\{ allowed: true, types: \["url_button"\], minItems: 1, maxItems: 8 \}/);
 assert.match(blocks, /type:\s*"url_button", name:\s*t\("blocks\.registerCoreBlocks\.urlButton"\), category:\s*t\("blocks\.registerCoreBlocks\.semantics"\)/);
 assert.match(blocks, /type:\s*"thinking", name:\s*t\("blocks\.registerCoreBlocks\.thinking"\), paletteHidden:true, category:\s*t\("blocks\.category\.system"\)/,
   "Thinking must stay compatible with old documents without appearing in the block palette");

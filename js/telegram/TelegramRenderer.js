@@ -5,7 +5,8 @@ import { renderableRichText } from "../links/LinkRelationAst.js?v=1.5.9";
 /*
   Telegram wire adapter.
   Internal AST stays editor-centric. Semantic Builder blocks are lowered to ordinary
-  RichText-in-Paragraph wire objects, while URL Button nodes become reply_markup.
+  RichText-in-Paragraph wire objects, while URL Button nodes become native
+  InputRichBlockButtons rows.
 */
 export class TelegramRenderer {
   constructor(registry) { this.registry = registry; }
@@ -17,17 +18,13 @@ export class TelegramRenderer {
 
   renderEnvelope(tree, { allowThinking = false } = {}) {
     const richMessage = this.render(tree, { allowThinking });
-    const buttons = [];
-    tree.walk(node => {
-      if (node.type !== "url_button") return;
-      const button = makeUrlButton(node.props || {});
-      if (button) buttons.push([button]);
-    });
     return {
       richMessage,
-      // Always provide the keyboard, including an empty keyboard, so editMessageText
-      // can remove buttons that existed in the previous preview snapshot.
-      replyMarkup: { inline_keyboard: buttons }
+      // URL buttons used to be lowered to an inline keyboard. Keep sending an
+      // empty markup during the migration so editing an existing preview or
+      // publication removes that legacy keyboard; the buttons themselves now
+      // live in InputRichBlockButtons and retain their AST position.
+      replyMarkup: { inline_keyboard: [] }
     };
   }
 
@@ -38,7 +35,22 @@ export class TelegramRenderer {
   #renderNode(node, options) {
     const definition = this.registry.get(node.type);
     if (definition?.kind === "meta") return this.#renderChildren(node.children || [], options);
-    if (definition?.wire?.kind === "reply_markup" || node.type === "url_button") return [];
+    if (node.type === "button_row") {
+      const buttons = (node.children || [])
+        .filter(child => child?.type === "url_button")
+        .map(child => makeUrlButton(child.props || {}))
+        .filter(Boolean);
+      if (!buttons.length) return [];
+      const align = ["left", "center", "right"].includes(node.props?.buttonAlign)
+        ? node.props.buttonAlign
+        : undefined;
+      return [compactObject({ type: "buttons", buttons, align })];
+    }
+    if (node.type === "url_button") {
+      const button = makeUrlButton(node.props || {});
+      return button ? [{ type: "buttons", buttons: [button] }] : [];
+    }
+    if (definition?.wire?.kind === "reply_markup") return [];
     return [this.#renderBlock(node, options)];
   }
 

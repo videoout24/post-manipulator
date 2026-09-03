@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.2";
 import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.7.9";
 
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });
@@ -76,9 +76,16 @@ export function registerTelegramCore(registry) {
       prop("anchor.target", "targetAnchorId")
     ], { category: t("blocks.registerCoreBlocks.navigation") }),
     {
-      type: "url_button", name: t("blocks.registerCoreBlocks.urlButton"), category: t("blocks.registerCoreBlocks.semantics"),
-      wire: { kind: "reply_markup" },
+      type: "button_row", name: t("blocks.registerCoreBlocks.buttonRow"), category: t("blocks.registerCoreBlocks.semantics"),
+      wire: { kind: "rich_block", type: "buttons" },
       constraints: { allowedParents: ["document"] },
+      accepts: { properties: [prop("button.align", "buttonAlign")] },
+      children: { allowed: true, types: ["url_button"], minItems: 1, maxItems: 8 }
+    },
+    {
+      type: "url_button", name: t("blocks.registerCoreBlocks.urlButton"), category: t("blocks.registerCoreBlocks.semantics"),
+      wire: { kind: "rich_button" },
+      constraints: { allowedParents: ["document", "button_row"] },
       accepts: { properties: [
         prop("semantic.text", "text", { default: t("blocks.registerCoreBlocks.open") }),
         prop("link.url", "url", { required: true }),

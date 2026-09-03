@@ -29,6 +29,8 @@ nav.openBotStart({ token: 'owner-token' });
 assert.equal(telegramLinks.at(-1), 'https://t.me/publisher_bot?start=owner-token');
 nav.openPrivateMessage({ chatId: -1001234567890, messageId: 10 });
 assert.equal(telegramLinks.at(-1), 'https://t.me/c/1234567890/10');
+nav.openMessageComments({ chatId: -1001234567890, messageId: 10, commentId: 25 });
+assert.equal(telegramLinks.at(-1), 'https://t.me/c/1234567890/10?comment=25');
 nav.openBot('BotFather');
 assert.equal(telegramLinks.at(-1), 'https://t.me/BotFather');
 assert.equal(clicks.length, 0, 'Mini App navigation must use Telegram.WebApp instead of synthetic links');
@@ -37,6 +39,8 @@ nav.openBotStart({ token: 'owner-token' });
 assert.equal(externalLinks.at(-1), 'https://t.me/publisher_bot?start=owner-token');
 nav.openPrivateMessage({ chatId: -1001234567890, messageId: 10 });
 assert.equal(externalLinks.at(-1), 'https://t.me/c/1234567890/10');
+nav.openMessageComments({ username: 'public_channel', messageId: 10, commentId: 25 });
+assert.equal(externalLinks.at(-1), 'https://t.me/public_channel/10?comment=25');
 
 store.set('settings:telegramNativeIntegration', true);
 const fallback = new TelegramNavigation({ db, documentRef: fakeDocument, webApp: null });

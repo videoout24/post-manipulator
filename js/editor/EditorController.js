@@ -8,7 +8,7 @@ import {
   definitionFootprint,
   depthOf,
   subtreeHeight
-} from "../core/DocumentLimits.js?v=1.5.9";
+} from "../core/DocumentLimits.js?v=1.7.17";
 
 export class EditorController {
   constructor({ tree, registry, validator, events, selection }) {
@@ -289,7 +289,9 @@ export class EditorController {
     const structuralError = this.structuralAcceptError(parent, childType, null);
     if (structuralError) return structuralError;
 
-    const footprint = definitionFootprint(def);
+    const footprint = parent.type === "button_row" && childType === "url_button"
+      ? { count: 0, height: 0 }
+      : definitionFootprint(def);
     const nextCount = countBlocks(this.tree) + footprint.count;
     if (nextCount > TELEGRAM_LIMITS.maxBlocks) {
       return `Block limit: ${nextCount} / ${TELEGRAM_LIMITS.maxBlocks}`;

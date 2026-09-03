@@ -560,6 +560,15 @@ body.drag-delete-active::before {
 .publication-content-filter-chips { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .publication-content-filter-chip { padding: 6px 9px; border-radius: 999px; color: #8798ac; font-size: 9px; }
 .publication-content-filter-chip.active { border-color: #3f6fae; background: #193758; color: #c5dcf5; }
+.publication-project-filter-scroll {
+  flex: 1 1 auto; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+  padding-bottom: 3px; overscroll-behavior-inline: contain; scrollbar-width: thin;
+}
+.publication-project-filter-chip {
+  flex: 0 0 auto; max-width: min(240px, 45vw); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.publication-target-posts { color: #a7c7e8; }
 .publication-date-range { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-left: 62px; }
 .publication-date-field { display: flex; align-items: center; gap: 5px; color: #8193a7; font-size: 9px; }
 .publication-date-field input { padding: 5px 7px; border: 1px solid #303b49; border-radius: 5px; background: #080b0f; color: #d8e2ee; color-scheme: dark; font-size: 9px; }

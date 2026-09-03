@@ -1,17 +1,17 @@
-import { createDefaultPropertyRegistry } from "../core/PropertyRegistry.js?v=1.7.11";
+import { createDefaultPropertyRegistry } from "../core/PropertyRegistry.js?v=1.7.17";
 import { createTelegramFormattingRegistry } from "../core/FormattingRegistry.js?v=1.7.9";
 import { BlockRegistry } from "../core/BlockRegistry.js?v=1.5.9";
 import { MetaBlockRegistry } from "../core/MetaBlockRegistry.js?v=1.7.0";
 import { SelectionModel } from "../core/SelectionModel.js?v=1.5.9";
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
-import { Validator } from "../core/Validator.js?v=1.7.15";
-import { registerTelegramCore } from "../blocks/registerCoreBlocks.js?v=1.7.9";
+import { Validator } from "../core/Validator.js?v=1.7.17";
+import { registerTelegramCore } from "../blocks/registerCoreBlocks.js?v=1.7.17";
 import { registerProjectBlocks } from "../blocks/registerProjectBlocks.js?v=1.7.11";
-import { EditorController } from "../editor/EditorController.js?v=1.5.9";
+import { EditorController } from "../editor/EditorController.js?v=1.7.17";
 import { FormulaTemplateLibrary } from "../editor/FormulaTemplateLibrary.js?v=1.5.9";
 import { DraftStore } from "../editor/DraftStore.js?v=1.7.15";
 import { DraftEditorSession } from "../editor/DraftEditorSession.js?v=1.5.9";
-import { TelegramRenderer } from "../telegram/TelegramRenderer.js?v=1.5.9";
+import { TelegramRenderer } from "../telegram/TelegramRenderer.js?v=1.7.17";
 import { Storage } from "../storage/Storage.js?v=1.7.0";
 import { migrateDocumentTree } from "../core/DocumentMigrations.js?v=1.5.9";
 

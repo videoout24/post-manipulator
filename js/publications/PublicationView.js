@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.0";
+import { getLocale, t } from "../i18n/index.js?v=1.8.2";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
@@ -23,6 +23,7 @@ export class PublicationView {
     this.filter = "all";
     this.statusFilter = "all";
     this.sourceFilter = "all";
+    this.selectedProjectId = null;
     this.timeFilter = "all";
     this.dateRange = { from: "", to: "" };
     this.targets = [];
@@ -30,6 +31,7 @@ export class PublicationView {
     this.selectedTargetId = null;
     this.selectedPublicationId = null;
     this.publicationSelectionDismissed = false;
+    this.projectPostOrders = new Map();
     this.linkTargetSlotKey = "";
     this.linkedTargets = {};
     this.session = null;
@@ -43,6 +45,11 @@ export class PublicationView {
       this.events?.on?.("telegram:publication-binding", session => { this.session = session?.status === "idle" ? null : session; this.render(); }),
       this.events?.on?.("telegram:publications-changed", rows => { this.publications = rows || []; this.render(); }),
       this.events?.on?.("project:publication", () => this.render()),
+      this.events?.on?.("project:changed", event => {
+        if (event?.reason === "deleted") this.projectPostOrders.delete(String(event.projectId || ""));
+        else if (event?.project) this.#rememberProjectOrder(event.project);
+        this.render();
+      }),
       this.events?.on?.("draft:session-changed", () => this.render()),
       this.events?.on?.("publication:draft-requested", draft => this.#showPublishDraftDialog(draft)),
       this.events?.on?.("publication:draft-schedule-requested", draft => this.#showScheduleDraftDialog(draft)),
@@ -64,11 +71,16 @@ export class PublicationView {
       })
     );
     this.events?.emit?.("links:state-requested");
-    [this.targets, this.session, this.publications] = await Promise.all([
+    const [targets, session, publications, projects] = await Promise.all([
       this.telegramCore.publications.listTargets(),
       this.telegramCore.publications.getBindingSession(),
-      this.telegramCore.publications.list()
+      this.telegramCore.publications.list(),
+      this.projectStore?.listProjects?.() || []
     ]);
+    this.targets = targets;
+    this.session = session;
+    this.publications = publications;
+    for (const project of projects) this.#rememberProjectOrder(project);
     const incompleteChannels = this.targets.filter(target =>
       target.type === "channel" && target.commentsEnabled && !target.linkedDiscussionTitle
     );
@@ -119,7 +131,12 @@ export class PublicationView {
     ], this.statusFilter, value => { this.statusFilter = value; this.render(); }));
     filterPanel.append(this.#contentFilterRow(t("gallery.galleryView.source"), [
       ["all", t("editor.blockPalette.all")], ["draft", t("editor.draftListView.drafts")], ["project", t("project.projectLibraryView.projects")]
-    ], this.sourceFilter, value => { this.sourceFilter = value; this.render(); }));
+    ], this.sourceFilter, value => {
+      this.sourceFilter = value;
+      if (value !== "project") this.selectedProjectId = null;
+      this.render();
+    }));
+    if (this.sourceFilter === "project") filterPanel.append(this.#projectFilterRow());
     filterPanel.append(this.#contentFilterRow(t("publications.publicationView.period"), [
       ["all", t("publications.publicationView.allTime")], ["today", t("publications.publicationView.today")], ["7d", t("publications.publicationView.7Days")], ["month", t("publications.publicationView.month")], ["custom", t("publications.publicationView.customRange")]
     ], this.timeFilter, value => { this.timeFilter = value; this.render(); }));
@@ -150,13 +167,30 @@ export class PublicationView {
         : this.timeFilter === "month" ? now - 30 * 86400000
           : this.timeFilter === "custom" && this.dateRange.from ? new Date(this.dateRange.from).getTime() : 0;
     const to = this.timeFilter === "custom" && this.dateRange.to ? new Date(`${this.dateRange.to}T23:59:59`).getTime() : Infinity;
-    return this.publications.filter(record => {
+    const publications = this.publications.filter(record => {
       if (this.selectedTargetId && Number(record.chatId) !== Number(this.selectedTargetId)) return false;
       if (this.sourceFilter !== "all" && record.source?.kind !== this.sourceFilter) return false;
+      if (this.sourceFilter === "project" && this.selectedProjectId
+        && String(record.source?.projectId || "") !== String(this.selectedProjectId)) return false;
       if (this.statusFilter === "published" && record.scheduledAt) return false;
       if (this.statusFilter === "scheduled" && !record.scheduledAt) return false;
       return this.timeFilter === "all" || (Number(record.publishedAt || record.scheduledAt) >= from && Number(record.publishedAt || record.scheduledAt) <= to);
     });
+    return this.sourceFilter === "project"
+      ? sortProjectPublications(publications, this.projectPostOrders)
+      : publications;
+  }
+
+  #rememberProjectOrder(project) {
+    const projectId = String(project?.id || "");
+    if (!projectId) return;
+    const rootPostId = String(project?.structure?.rootPostId || "");
+    const posts = Array.isArray(project?.posts) ? project.posts : [];
+    const orderedIds = [
+      ...posts.filter(post => rootPostId && String(post?.id || "") === rootPostId),
+      ...posts.filter(post => !rootPostId || String(post?.id || "") !== rootPostId)
+    ].map(post => String(post?.id || ""));
+    this.projectPostOrders.set(projectId, new Map(orderedIds.map((postId, index) => [postId, index])));
   }
 
   #normalizePublicationSelection(publications) {
@@ -369,7 +403,15 @@ export class PublicationView {
   }
 
   #openDiscussion(record) {
-    if (!record.discussionChatId || !record.discussionMessageId) return false;
+    if (!record?.messageId || !record?.discussionMessageId) return false;
+    const opened = this.navigation?.openMessageComments?.({
+      username: record.target?.username || "",
+      chatId: record.chatId,
+      messageId: record.messageId,
+      commentId: record.discussionMessageId
+    });
+    if (opened) return true;
+    if (!record.discussionChatId) return false;
     return record.discussionUsername
       ? this.navigation?.openPublicMessage?.({ username: record.discussionUsername, messageId: record.discussionMessageId })
       : this.navigation?.openPrivateMessage?.({ chatId: record.discussionChatId, messageId: record.discussionMessageId });
@@ -743,6 +785,7 @@ export class PublicationView {
           : await this.projectPublications.publishProject(project.id, targetChatId, { commentsEnabled: !disableComments.checked });
         this.selectedTargetId = result.target.chatId;
         this.sourceFilter = "project";
+        this.selectedProjectId = String(project.id);
         dialog.close("published");
         document.querySelector('[data-tab="publications"]')?.click?.();
         this.render();
@@ -856,6 +899,7 @@ export class PublicationView {
         });
         this.selectedTargetId = result.target.chatId;
         this.sourceFilter = "project";
+        this.selectedProjectId = String(project.id);
         dialog.close("scheduled");
         this.render();
         this.notifications?.show?.({ message: t("publications.publicationView.postponed", { 0: post.title || t("editor.blockInspector.post") }), type: "success" });
@@ -887,6 +931,36 @@ export class PublicationView {
       chips.append(chip);
     }
     row.append(chips);
+    return row;
+  }
+
+  #projectFilterRow() {
+    const projects = publishedProjectOptions(this.publications, this.selectedTargetId);
+    if (this.selectedProjectId && !projects.some(project => project.id === String(this.selectedProjectId))) {
+      this.selectedProjectId = null;
+    }
+    const row = el("div", "publication-content-filter-row publication-project-filter-row");
+    row.setAttribute("aria-label", t("publications.publicationView.publishedProjects"));
+    row.append(el("span", "publication-content-filter-label", t("project.projectLibraryView.projects")));
+    const scroller = el("div", "publication-content-filter-chips publication-project-filter-scroll");
+    const options = [{ id: "", title: t("editor.blockPalette.all") }, ...projects];
+    for (const project of options) {
+      const chip = button(project.title, () => {
+        this.selectedProjectId = project.id || null;
+        this.render();
+      }, "publication-content-filter-chip publication-project-filter-chip");
+      chip.classList.toggle("active", String(this.selectedProjectId || "") === project.id);
+      chip.setAttribute("aria-pressed", String(String(this.selectedProjectId || "") === project.id));
+      chip.title = project.title;
+      scroller.append(chip);
+    }
+    scroller.addEventListener("wheel", event => {
+      if (!event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      const previous = scroller.scrollLeft;
+      scroller.scrollLeft += event.deltaY;
+      if (scroller.scrollLeft !== previous) event.preventDefault();
+    }, { passive: false });
+    row.append(scroller);
     return row;
   }
 
@@ -942,10 +1016,14 @@ export class PublicationView {
     const meta = el("div", "publication-target-meta");
     meta.append(el("span", "", target.status === "ready" ? t("publications.publicationView.botReadyForPublishing") : t("publications.publicationView.unavailable", { 0: target.reason || t("publications.publicationView.noPermissions") })));
     const metrics = el("div", "publication-target-metrics");
+    const publishedCount = countPublishedPosts(this.publications, target.chatId);
+    const posts = el("span", "publication-target-metric publication-target-posts", `📰 ${formatCount(publishedCount)}`);
+    posts.title = t("publications.publicationView.publishedPostsCount", { 0: publishedCount });
+    posts.setAttribute("aria-label", posts.title);
     const members = el("span", "publication-target-metric publication-target-members", `👥 ${formatCount(target.memberCount)}`);
     members.title = target.memberCount === null ? t("publications.publicationView.numberOfParticipantsUnknown") : t("publications.publicationView.participants", { 0: target.memberCount });
     members.setAttribute("aria-label", members.title);
-    metrics.append(members);
+    metrics.append(posts, members);
     if (target.type === "channel") {
       const comments = el(
         "span",
@@ -1015,6 +1093,48 @@ export class PublicationView {
 function formatCount(value) {
   const count = Number(value);
   return Number.isFinite(count) ? count.toLocaleString(getLocale()) : "—";
+}
+
+export function sortProjectPublications(publications, projectPostOrders = new Map()) {
+  const rows = (publications || []).map((record, index) => ({ record, index }));
+  const projectRanks = new Map();
+  for (const { record } of rows) {
+    const projectId = String(record?.source?.projectId || "");
+    if (!projectRanks.has(projectId)) projectRanks.set(projectId, projectRanks.size);
+  }
+  rows.sort((left, right) => {
+    const leftProjectId = String(left.record?.source?.projectId || "");
+    const rightProjectId = String(right.record?.source?.projectId || "");
+    const projectDifference = projectRanks.get(leftProjectId) - projectRanks.get(rightProjectId);
+    if (projectDifference) return projectDifference;
+    const order = projectPostOrders.get(leftProjectId);
+    const leftPosition = order?.get(String(left.record?.source?.postId || ""));
+    const rightPosition = order?.get(String(right.record?.source?.postId || ""));
+    const positionDifference = (leftPosition ?? Number.MAX_SAFE_INTEGER) - (rightPosition ?? Number.MAX_SAFE_INTEGER);
+    return positionDifference || left.index - right.index;
+  });
+  return rows.map(({ record }) => record);
+}
+
+export function publishedProjectOptions(publications, selectedTargetId = null) {
+  const projects = new Map();
+  for (const record of publications || []) {
+    if (selectedTargetId && Number(record?.chatId) !== Number(selectedTargetId)) continue;
+    if (record?.source?.kind !== "project" || !record?.messageId || record?.scheduledAt) continue;
+    const id = String(record.source.projectId || "");
+    if (!id || projects.has(id)) continue;
+    projects.set(id, {
+      id,
+      title: record.source.projectTitle || record.source.title || t("publications.publicationView.untitled")
+    });
+  }
+  return [...projects.values()];
+}
+
+export function countPublishedPosts(publications, chatId) {
+  return (publications || []).filter(record =>
+    Number(record?.chatId) === Number(chatId) && Boolean(record?.messageId) && !record?.scheduledAt
+  ).length;
 }
 
 function reactionEmoji(type = {}) {

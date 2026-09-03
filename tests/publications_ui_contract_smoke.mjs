@@ -15,6 +15,8 @@ assert.match(html, /id="publicationsApp"/);
 assert.match(view, /t\("publications\.publicationView\.addChannelGroup"\)/);
 for (const key of ["editor.blockPalette.all", "publications.publicationView.channels", "publications.publicationView.groups"]) assert.ok(view.includes(`t("${key}")`));
 assert.match(view, /publication-target-members[\s\S]*?👥/);
+assert.match(view, /publication-target-posts[\s\S]*?📰/);
+assert.match(view, /countPublishedPosts\(this\.publications, target\.chatId\)/);
 assert.match(view, /publication-target-comments[\s\S]*?connected[\s\S]*?disconnected/);
 assert.match(view, /t\("publications\.publicationView\.commentGroupConnected"\)/);
 assert.match(view, /t\("publications\.publicationView\.deleteService"\)/);
@@ -42,6 +44,10 @@ for (const key of ["published", "scheduled", "allTime", "today", "7Days", "month
   assert.ok(view.includes(`publications.publicationView.${key}`), `${key} filter missing`);
 }
 assert.match(view, /input\.type = "date"/);
+assert.match(view, /#projectFilterRow/);
+assert.match(view, /publishedProjectOptions\(this\.publications, this\.selectedTargetId\)/);
+assert.match(view, /scroller\.scrollLeft \+= event\.deltaY/);
+assert.match(view, /\{ passive: false \}/);
 assert.match(view, /#showPublishDraftDialog/);
 assert.match(view, /t\("publications\.publicationView\.commentsEnabled"\)/);
 assert.match(view, /t\("publications\.publicationView\.disableComments"\)/);
@@ -69,6 +75,8 @@ assert.match(view, /record\.source\?\.kind === "project" && !projectMissing/,
   "an orphaned Project publication must fall back to the ordinary publication cleanup path");
 assert.match(view, /publication-comment-badge/);
 assert.match(view, /const comments = button\("💬"/);
+assert.match(view, /openMessageComments/);
+assert.match(view, /commentId: record\.discussionMessageId/);
 assert.doesNotMatch(view, /`💬 \$\{Number\(record\.commentCount/);
 assert.match(view, /reactionEmoji\(reaction\.type\)/);
 assert.match(view, /publication-reaction-row/);

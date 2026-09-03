@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.2";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -637,6 +637,7 @@ export class TreeView {
       const anchor = p.targetAnchorId ? this.tree.find(p.targetAnchorId) : null;
       return `⚓→ ${p.text || t("blocks.registerCoreBlocks.go")} → ${anchor?.props?.name || (p.targetAnchorId ? t("editor.treeView.deleted") : t("editor.treeView.top"))}`;
     }
+    if (node.type === "button_row") return `▣ ${t("blocks.registerCoreBlocks.buttonRow")} · ${(node.children || []).length}/8`;
     if (node.type === "url_button") return `▣ ${p.text || t("blocks.registerCoreBlocks.open")} → ${p.url || "URL"}`;
     if (p.text) return richTextToPlain(p.text).slice(0, 180);
     if (p.summary) return richTextToPlain(p.summary);
@@ -713,6 +714,7 @@ export class TreeView {
       hashtag: "#",
       text_link: "🔗",
       anchor_link: "⚓→",
+      button_row: "▣",
       url_button: "▣",
       list: "☷",
       block_quotation: "❝",

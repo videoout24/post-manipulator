@@ -1,6 +1,6 @@
 {
   "engine": "schema-driven-block-editor",
-  "version": "1.7.16",
+  "version": "1.7.17",
   "limits": {
     "maxBlocks": 500,
     "maxDepth": 16
@@ -109,7 +109,8 @@
       "hashtag.value",
       "link.url",
       "anchor.target",
-      "button.style"
+      "button.style",
+      "button.align"
     ],
     "formatting": [
       "bold",
@@ -1104,6 +1105,22 @@
       }
     },
     {
+      "type": "button_row",
+      "properties": [
+        "button.align"
+      ],
+      "richTextCapabilities": {},
+      "wire": {
+        "kind": "rich_block",
+        "type": "buttons"
+      },
+      "children": {
+        "types": ["url_button"],
+        "minItems": 1,
+        "maxItems": 8
+      }
+    },
+    {
       "type": "url_button",
       "properties": [
         "semantic.text",
@@ -1112,7 +1129,7 @@
       ],
       "richTextCapabilities": {},
       "wire": {
-        "kind": "reply_markup"
+        "kind": "rich_button"
       }
     },
     {
