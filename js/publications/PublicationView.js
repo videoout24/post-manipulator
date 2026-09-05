@@ -403,15 +403,7 @@ export class PublicationView {
   }
 
   #openDiscussion(record) {
-    if (!record?.messageId || !record?.discussionMessageId) return false;
-    const opened = this.navigation?.openMessageComments?.({
-      username: record.target?.username || "",
-      chatId: record.chatId,
-      messageId: record.messageId,
-      commentId: record.discussionMessageId
-    });
-    if (opened) return true;
-    if (!record.discussionChatId) return false;
+    if (!record?.discussionChatId || !record?.discussionMessageId) return false;
     return record.discussionUsername
       ? this.navigation?.openPublicMessage?.({ username: record.discussionUsername, messageId: record.discussionMessageId })
       : this.navigation?.openPrivateMessage?.({ chatId: record.discussionChatId, messageId: record.discussionMessageId });

@@ -75,8 +75,10 @@ assert.match(view, /record\.source\?\.kind === "project" && !projectMissing/,
   "an orphaned Project publication must fall back to the ordinary publication cleanup path");
 assert.match(view, /publication-comment-badge/);
 assert.match(view, /const comments = button\("💬"/);
-assert.match(view, /openMessageComments/);
-assert.match(view, /commentId: record\.discussionMessageId/);
+assert.match(view, /record\.discussionUsername[\s\S]*?openPublicMessage/);
+assert.match(view, /openPrivateMessage\?\.\(\{ chatId: record\.discussionChatId, messageId: record\.discussionMessageId \}\)/);
+assert.doesNotMatch(view, /commentId: record\.discussionMessageId/,
+  "the auto-forwarded discussion root is not a comment ID and must not be used as Telegram's comment parameter");
 assert.doesNotMatch(view, /`💬 \$\{Number\(record\.commentCount/);
 assert.match(view, /reactionEmoji\(reaction\.type\)/);
 assert.match(view, /publication-reaction-row/);
