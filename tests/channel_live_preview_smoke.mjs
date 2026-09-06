@@ -15,13 +15,21 @@ const events = new EventBus();
 const statuses = [];
 events.on("telegram:preview-status", status => statuses.push(status));
 const calls = [];
+let pinnedMessageId = null;
+let nextMessageId = 42;
 const client = {
   hasToken: () => true,
+  async getChat() {
+    return { pinned_message: pinnedMessageId ? { message_id: pinnedMessageId } : undefined };
+  },
   async sendRichMessage(options) {
     calls.push(options);
-    return { message_id: 42 };
+    return { message_id: nextMessageId++ };
   },
-  async pinChatMessage(chatId, messageId) { calls.push({ pin: true, chatId, messageId }); },
+  async pinChatMessage(chatId, messageId) {
+    pinnedMessageId = Number(messageId);
+    calls.push({ pin: true, chatId, messageId });
+  },
   async deleteMessage() {}
 };
 const previewChannelBinding = {
@@ -54,6 +62,20 @@ assert.deepEqual(calls[1], { pin: true, chatId: -1001234567890, messageId: 42 })
 assert.equal(result.pinned, true);
 assert.deepEqual(await controller.getMessage(), result);
 
+pinnedMessageId = null;
+client.editRichMessage = async () => {
+  throw new TelegramApiError("message is not modified", {
+    method: "editMessageText",
+    errorCode: 400,
+    description: "Bad Request: message is not modified"
+  });
+};
+const repinned = await controller.sync();
+assert.equal(repinned.mode, "repinned");
+assert.equal(repinned.messageId, result.messageId);
+assert.equal(pinnedMessageId, result.messageId);
+
+pinnedMessageId = null;
 client.editRichMessage = async () => {
   throw new TelegramApiError("message to edit not found", {
     method: "editMessageText",
@@ -61,10 +83,11 @@ client.editRichMessage = async () => {
     description: "Bad Request: message to edit not found"
   });
 };
-const recovered = await controller.sync({ force: true });
+const recovered = await controller.sync();
 assert.equal(recovered.mode, "recreated");
 assert.equal(recovered.pinned, true);
-assert.equal(calls.filter(call => call.pin).length, 2);
+assert.notEqual(recovered.messageId, result.messageId);
+assert.equal(calls.filter(call => call.pin).length, 3);
 assert.equal((await controller.getMessage()).messageId, recovered.messageId);
 
 console.log("channel_live_preview_smoke: OK");

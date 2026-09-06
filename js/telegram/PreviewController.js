@@ -112,8 +112,15 @@ export class PreviewController {
     const { richMessage, replyMarkup } = envelope;
     const hash = stableHash(envelope);
     const previous = await this.db.get("preview", LIVE_MESSAGE_KEY, null);
+    let shouldRestorePin = false;
     if (!this.#isSyncAllowed()) return { skipped: "guarded" };
-    if (!force && previous?.hash === hash && Number(previous.chatId) === Number(channel.chatId)) return { skipped: "unchanged", previous };
+    if (!force && previous?.hash === hash && Number(previous.chatId) === Number(channel.chatId)) {
+      const pinned = await this.#isCurrentPinnedMessage(previous, channel);
+      // A failed health probe must not turn otherwise valid editor content into
+      // an unavailable preview. The next edit/manual sync will retry it.
+      if (pinned !== false) return { skipped: "unchanged", previous };
+      shouldRestorePin = true;
+    }
 
     this.events?.emit("telegram:preview-status", { state: "syncing", message: t("telegram.previewController.updatingPreview") });
     if (previous?.messageId && Number(previous.chatId) === Number(channel.chatId)) {
@@ -125,15 +132,36 @@ export class PreviewController {
           richMessage,
           replyMarkup
         });
-        const state = await this.#saveMessage({ message: edited, channel, hash, mode: "edited" });
+        if (shouldRestorePin) {
+          await this.client.pinChatMessage(channel.chatId, previous.messageId, { disableNotification: true });
+        }
+        const state = await this.#saveMessage({
+          message: edited,
+          channel,
+          hash,
+          mode: shouldRestorePin ? "repinned" : "edited",
+          pinned: shouldRestorePin ? true : null
+        });
         this.events?.emit("telegram:preview-status", { state: "synced", message: t("telegram.previewController.previewSynchronized"), preview: state });
         return state;
       } catch (error) {
         if (error instanceof TelegramApiError && error.isNotModified()) {
-          const state = { ...previous, hash, syncedAt: Date.now() };
-          await this.db.put("preview", LIVE_MESSAGE_KEY, state);
-          this.events?.emit("telegram:preview-status", { state: "synced", message: t("telegram.previewController.previewSynchronized"), preview: state });
-          return state;
+          try {
+            if (shouldRestorePin) {
+              await this.client.pinChatMessage(channel.chatId, previous.messageId, { disableNotification: true });
+            }
+            const state = {
+              ...previous,
+              hash,
+              ...(shouldRestorePin ? { mode: "repinned", pinned: true } : {}),
+              syncedAt: Date.now()
+            };
+            await this.db.put("preview", LIVE_MESSAGE_KEY, state);
+            this.events?.emit("telegram:preview-status", { state: "synced", message: t("telegram.previewController.previewSynchronized"), preview: state });
+            return state;
+          } catch (pinError) {
+            error = pinError;
+          }
         }
         if (!(error instanceof TelegramApiError && error.isMessageMissing())) {
           await this.#handleChannelError(error);
@@ -194,6 +222,16 @@ export class PreviewController {
     };
     await this.db.put("preview", LIVE_MESSAGE_KEY, state);
     return state;
+  }
+
+  async #isCurrentPinnedMessage(previous, channel) {
+    if (typeof this.client.getChat !== "function") return null;
+    try {
+      const chat = await this.client.getChat(channel.chatId);
+      return Number(chat?.pinned_message?.message_id || 0) === Number(previous?.messageId || 0);
+    } catch {
+      return null;
+    }
   }
 
   async #handleChannelError(error) {

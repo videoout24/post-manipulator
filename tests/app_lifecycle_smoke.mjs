@@ -60,7 +60,7 @@ const lifecycle = new AppLifecycle({
   previewChannelBinding: { async getSession() { return null; } },
   telegramRuntime,
   telegramClient,
-  telegramCore: { editor: { preview: { async isEnabled() { return false; } } } },
+  telegramCore: { editor: { preview: { async isEnabled() { return true; }, async sync(options) { calls.push(["preview:sync", options]); } } } },
   editorPreviewStatus: { showLivePreviewSetting: enabled => calls.push(["preview:setting", enabled]) },
   stoppables: [stopped],
   logger: { error: () => {} }
@@ -73,7 +73,10 @@ assert.equal(calls.filter(call => typeof call === "string" && call.startsWith("s
 assert(calls.includes("splitter:projectLibraryRight"));
 assert(!calls.includes("client:set-token"));
 assert(!calls.includes("runtime:start"));
-assert.deepEqual(calls.at(-1), ["preview:setting", false]);
+assert.deepEqual(calls.slice(-2), [
+  ["preview:setting", true],
+  ["preview:sync", { force: true }]
+]);
 assert.match(galleryRoot.innerHTML, /&lt;gallery &amp; failed&gt;/);
 assert.match(galleryRoot.innerHTML, /build 1\.5\.9/);
 assert(notices.some(item => item.message.startsWith("Gallery:")));

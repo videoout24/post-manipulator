@@ -92,6 +92,10 @@ export class AppLifecycle {
     try {
       const enabled = await this.telegramCore.editor.preview.isEnabled();
       this.editorPreviewStatus?.showLivePreviewSetting?.(enabled);
+      // Verify the saved Telegram address on every launch. If the pinned live
+      // message was removed while the app was closed, PreviewController will
+      // recreate and pin it instead of leaving preview stuck on a stale id.
+      if (enabled) await this.telegramCore.editor.preview.sync?.({ force: true });
     } catch (error) {
       this.logger.error("Preview state initialization failed", error);
     }

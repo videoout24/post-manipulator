@@ -21,7 +21,7 @@ export class TelegramApiError extends Error {
   isConflict() { return this.errorCode === 409; }
   isNotModified() { return /message is not modified/i.test(this.description); }
   isMessageMissing() {
-    return /message to (?:edit|delete) not found|message not found|message can(?:not|'t) be edited|message_id_invalid|message identifier is not specified/i.test(this.description);
+    return /message to (?:edit|delete|pin) not found|message not found|message can(?:not|'t) be edited|message_id_invalid|message identifier is not specified/i.test(this.description);
   }
   isMessageDeleteForbidden() {
     return /message can(?:not|'t) be deleted|message is too old/i.test(this.description);
