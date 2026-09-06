@@ -2,7 +2,7 @@ import { getLocale, t } from "./i18n/index.js?v=1.8.0";
 import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.7.0";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.3";
-import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.7.6";
+import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.7.19";
 import { GalleryView } from "./gallery/GalleryView.js?v=1.7.6";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.7.6";
 import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.7.10";
@@ -376,7 +376,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.7.18",
+  build: "1.7.19",
   notifications,
   layoutPreferences,
   telegramNavigation,
@@ -397,7 +397,7 @@ const lifecycle = new AppLifecycle({
   telegramClient,
   telegramCore,
   editorPreviewStatus,
-  stoppables: [notifications, publicationView, linkingController, linkRelationNavigator, publicationService, projectPublicationService, ...editorShellStoppables, projectGraphReconciler]
+  stoppables: [notifications, telegramSettings, publicationView, linkingController, linkRelationNavigator, publicationService, projectPublicationService, ...editorShellStoppables, projectGraphReconciler]
 });
 let started = false;
 const handle = Object.freeze({

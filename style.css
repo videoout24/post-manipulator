@@ -724,6 +724,9 @@ body.drag-delete-active::before {
 .settings-field input { width: 100%; min-width: 0; padding: 8px 9px; border: 1px solid #344154; border-radius: 6px; background: #0a1017; color: #d9e2ec; }
 .settings-meta { margin: 6px 0; color: #7e8ea2; font-size: 10px; line-height: 1.45; }
 .settings-state { padding: 9px 10px; border: 1px solid #2c394a; border-radius: 7px; background: #0c121a; color: #b5c0ce; font-size: 11px; }
+.settings-state[data-state="open"] { border-color: #2b6b4a; color: #7ed8a7; background: #10231b; }
+.settings-state[data-state="connecting"] { border-color: #6b5b2b; color: #f0cf72; background: #261f10; }
+.settings-state[data-state="error"] { border-color: #7b3441; color: #ff98a5; background: #2b1419; }
 .settings-actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
 .settings-actions.secondary { margin-top: 6px; }
 .settings-runtime-actions { flex-wrap: nowrap; overflow-x: auto; }

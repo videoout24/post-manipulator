@@ -1,10 +1,11 @@
-import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.0";
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.3";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
+import { SseProbe } from "../network/SseProbe.js?v=1.7.19";
 
 const NATIVE_INTEGRATION_KEY = "telegramNativeIntegration";
 const NETWORK_PANEL_START_EXPANDED_KEY = "networkPanelStartExpanded";
 export class TelegramSettingsView {
-  constructor({ root, db, events, client, runtime, ownerBinding, previewChannelBinding, previewController, botIdentity, navigation = null, verifiedBot = null }) {
+  constructor({ root, db, events, client, runtime, ownerBinding, previewChannelBinding, previewController, botIdentity, navigation = null, verifiedBot = null, sseProbe = null }) {
     this.root = root;
     this.db = db;
     this.events = events;
@@ -16,6 +17,7 @@ export class TelegramSettingsView {
     this.botIdentity = botIdentity;
     this.navigation = navigation;
     this.verifiedBot = verifiedBot;
+    this.sseProbe = sseProbe || new SseProbe({ db, events });
     this.documentRoot = root?.ownerDocument || globalThis.document;
     this.storageManager = globalThis.navigator?.storage || null;
     this.storagePersistence = { supported: Boolean(this.storageManager?.persist), granted: false, usage: null, quota: null };
@@ -30,6 +32,7 @@ export class TelegramSettingsView {
   async initialize() {
     await this.botIdentity?.initialize();
     this.bot = this.verifiedBot || await this.botIdentity?.getIdentity();
+    await this.sseProbe.initialize();
     this.networkPanelStartExpanded = Boolean(await this.db.get("settings", NETWORK_PANEL_START_EXPANDED_KEY, false));
     this.networkPanel?.setExpanded(this.networkPanelStartExpanded);
     await this.#refreshStoragePersistence();
@@ -58,6 +61,7 @@ export class TelegramSettingsView {
       this.previewStatus = status;
       refresh();
     });
+    this.events?.on("network:sse-probe", state => this.#renderSseProbe(state));
     this.events?.on("telegram:channel-binding-rejected", payload => {
       const reason = payload?.reason === "public_channel"
         ? t("telegram.telegramSettingsView.thisSlotAcceptsOnlyAPrivateChannel")
@@ -110,6 +114,16 @@ export class TelegramSettingsView {
         this.networkPanel?.setExpanded(this.networkPanelStartExpanded);
       });
     });
+    this.root.querySelector("#sseBaseUrl")?.addEventListener("change", event => {
+      this.#run(() => this.sseProbe.setBaseUrl(event.target.value));
+    });
+    this.root.querySelector("#sseConnect")?.addEventListener("click", () => {
+      this.#run(() => this.sseProbe.connect(this.root.querySelector("#sseBaseUrl")?.value));
+    });
+    this.root.querySelector("#ssePushTest")?.addEventListener("click", () => {
+      this.#run(() => this.sseProbe.pushTest(this.root.querySelector("#sseBaseUrl")?.value));
+    });
+    this.root.querySelector("#sseDisconnect")?.addEventListener("click", () => this.sseProbe.disconnect());
     for (const input of this.root.querySelectorAll("[data-owner-media]")) {
       input.addEventListener("change", () => this.#saveMediaSettings());
     }
@@ -160,6 +174,9 @@ export class TelegramSettingsView {
     const persistence = this.storagePersistence;
     const languagePreference = this.root.querySelector("#appLanguagePreference");
     if (languagePreference) languagePreference.value = getLanguagePreference();
+    const sseBaseUrl = this.root.querySelector("#sseBaseUrl");
+    if (sseBaseUrl && this.documentRoot?.activeElement !== sseBaseUrl) sseBaseUrl.value = this.sseProbe.getState().baseUrl;
+    this.#renderSseProbe(this.sseProbe.getState());
     setText(this.root, "#storagePersistenceState", !persistence.supported
       ? t("telegram.telegramSettingsView.browserDoesNotSupportPersistentStorageRequest")
       : persistence.granted
@@ -299,6 +316,35 @@ export class TelegramSettingsView {
     });
   }
 
+  #renderSseProbe(state) {
+    const status = this.root.querySelector("#sseProbeStatus");
+    if (status) {
+      const labels = {
+        idle: t("telegram.telegramSettingsView.sseNotConnected"),
+        connecting: t("telegram.telegramSettingsView.sseConnecting"),
+        open: t("telegram.telegramSettingsView.sseConnected"),
+        error: t("telegram.telegramSettingsView.sseConnectionError"),
+        closed: t("telegram.telegramSettingsView.sseDisconnected")
+      };
+      status.textContent = state.error || labels[state.connection] || labels.idle;
+      status.dataset.state = state.connection;
+    }
+    const lastEvent = this.root.querySelector("#sseProbeLastEvent");
+    if (lastEvent) {
+      lastEvent.hidden = !state.lastEvent && state.lastPush == null;
+      lastEvent.textContent = state.lastEvent
+        ? t("telegram.telegramSettingsView.sseLastEvent", { 0: state.lastEvent })
+        : state.lastPush != null
+          ? t("telegram.telegramSettingsView.ssePostResponse", { 0: formatDiagnosticValue(state.lastPush) })
+          : "";
+    }
+    setDisabled(this.root, "#sseConnect", !state.baseUrl || state.connection === "connecting");
+    setDisabled(this.root, "#ssePushTest", !state.baseUrl);
+    setDisabled(this.root, "#sseDisconnect", !["connecting", "open", "error"].includes(state.connection));
+  }
+
+  stop() { this.sseProbe.stop(); }
+
 }
 
 function setText(root, selector, text) { const el = root.querySelector(selector); if (el) el.textContent = text; }
@@ -323,4 +369,8 @@ function formatBytes(value) {
   let unit = 0;
   while (amount >= 1024 && unit < units.length - 1) { amount /= 1024; unit += 1; }
   return `${amount >= 10 || unit === 0 ? Math.round(amount) : amount.toFixed(1)} ${units[unit]}`;
+}
+
+function formatDiagnosticValue(value) {
+  return typeof value === "string" ? value : JSON.stringify(value);
 }

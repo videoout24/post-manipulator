@@ -21,6 +21,11 @@ assert(/class="settings-actions settings-runtime-actions"[\s\S]*?id="tgStart"[\s
 assert(/\.settings-runtime-actions\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), 'Runtime controls must stay on one line');
 assert(/\.settings-runtime-actions \.settings-action-end\s*\{[^}]*margin-left:\s*auto/.test(css), 'BotFather must align to the right');
 assert(/#tgOpenBotFather[\s\S]*?openBot\?\.\("BotFather"\)/.test(telegramSettings), 'BotFather must open through Telegram navigation');
+for (const id of ['sseBaseUrl', 'sseProbeStatus', 'sseConnect', 'ssePushTest', 'sseDisconnect']) {
+  assert(new RegExp(`id=["']${id}["']`).test(html), `SSE test control ${id} must exist`);
+}
+assert(/\.connect\(this\.root\.querySelector\("#sseBaseUrl"\)/.test(telegramSettings), 'SSE connection must use the configured base URL');
+assert(/\.pushTest\(this\.root\.querySelector\("#sseBaseUrl"\)/.test(telegramSettings), 'Test POST must use the configured base URL');
 assert(/this\.#listen\(this\.settingsBrandButton,\s*["']click["'],\s*\(\)\s*=>\s*this\.activateTab\(["']settings["']\)\)/.test(navigation), 'Brand click must activate Settings');
 
 console.log('settings layout smoke: OK');
