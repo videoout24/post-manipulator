@@ -7,7 +7,7 @@ import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?
 import { TelegramCore } from "../telegram/TelegramCore.js?v=1.7.15";
 import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.7.3";
 import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.7.9";
-import { PreviewController } from "../telegram/PreviewController.js?v=1.7.6";
+import { PreviewController } from "../telegram/PreviewController.js?v=1.7.20";
 import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.7.17";
 import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.7.9";
 import { PublicationService } from "../telegram/PublicationService.js?v=1.7.15";

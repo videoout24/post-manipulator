@@ -1,5 +1,4 @@
 import { t } from "../i18n/index.js?v=1.8.0";
-import { TelegramApiError } from "./TelegramClient.js?v=1.5.9";
 
 const LIVE_PREVIEW_KEY = "livePreviewEnabled";
 const LIVE_MESSAGE_KEY = "liveMessage";
@@ -145,7 +144,7 @@ export class PreviewController {
         this.events?.emit("telegram:preview-status", { state: "synced", message: t("telegram.previewController.previewSynchronized"), preview: state });
         return state;
       } catch (error) {
-        if (error instanceof TelegramApiError && error.isNotModified()) {
+        if (isNotModifiedError(error)) {
           try {
             if (shouldRestorePin) {
               await this.client.pinChatMessage(channel.chatId, previous.messageId, { disableNotification: true });
@@ -163,7 +162,7 @@ export class PreviewController {
             error = pinError;
           }
         }
-        if (!(error instanceof TelegramApiError && error.isMessageMissing())) {
+        if (!isMessageMissingError(error)) {
           await this.#handleChannelError(error);
           throw error;
         }
@@ -235,8 +234,8 @@ export class PreviewController {
   }
 
   async #handleChannelError(error) {
-    if (!(error instanceof TelegramApiError)) return;
-    if (error.errorCode === 403 || /not enough rights|chat not found|bot was kicked|bot is not a member/i.test(error.description || "")) {
+    const description = error?.description || error?.message || "";
+    if (Number(error?.errorCode || 0) === 403 || /not enough rights|chat not found|bot was kicked|bot is not a member/i.test(description)) {
       await this.previewChannelBinding.markUnavailable(`telegram_${error.errorCode || "error"}`, error).catch(() => {});
     }
   }
@@ -266,4 +265,19 @@ function stableHash(value) {
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+function isNotModifiedError(error) {
+  try {
+    if (typeof error?.isNotModified === "function" && error.isNotModified()) return true;
+  } catch { /* fall through to the wire description */ }
+  return /message is not modified/i.test(error?.description || error?.message || "");
+}
+
+function isMessageMissingError(error) {
+  try {
+    if (typeof error?.isMessageMissing === "function" && error.isMessageMissing()) return true;
+  } catch { /* fall through to the wire description */ }
+  return /message to (?:edit|delete|pin) not found|message not found|message can(?:not|'t) be edited|message_id_invalid|message identifier is not specified/i
+    .test(error?.description || error?.message || "");
 }

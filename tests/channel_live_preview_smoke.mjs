@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js?v=1.5.9";
-import { PreviewController } from "../js/telegram/PreviewController.js?v=1.5.9";
-import { TelegramApiError } from "../js/telegram/TelegramClient.js?v=1.5.9";
+import { PreviewController } from "../js/telegram/PreviewController.js?v=1.7.20";
+// Deliberately use the same different cache-busting URL as the real domain.
+// Browser module identity includes the query string, so instanceof checks against
+// a TelegramApiError imported by PreviewController used to reject this error.
+import { TelegramApiError } from "../js/telegram/TelegramClient.js?v=1.7.16";
 
 const values = new Map([
   ["settings:livePreviewEnabled", true],
