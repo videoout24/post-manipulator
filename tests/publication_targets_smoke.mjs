@@ -8,6 +8,12 @@ class MemoryDb {
   async get(store, key, fallback = null) { return structuredClone(this.data.get(this.key(store, key)) ?? fallback); }
   async put(store, key, value) { this.data.set(this.key(store, key), structuredClone(value)); return value; }
   async delete(store, key) { this.data.delete(this.key(store, key)); }
+  async all(store) {
+    const prefix = `${store}:`;
+    return [...this.data.entries()]
+      .filter(([key]) => key.startsWith(prefix))
+      .map(([key, value]) => ({ key: key.slice(prefix.length), value: structuredClone(value) }));
+  }
 }
 
 const db = new MemoryDb();
@@ -85,6 +91,16 @@ await assert.rejects(
   () => service.setServiceMessageCleanup(-404, true),
   error => error.message === t("telegram.publicationTargetService.channelOrGroupNotFound")
 );
+
+await db.put("publications", "scheduled-1", { chatId: -2002, scheduledAt: Date.now() + 60_000 });
+await assert.rejects(
+  () => service.remove(-2002),
+  error => error.message === t("telegram.publicationTargetService.channelOrGroupHasPublications"),
+  "a target with a scheduled publication must not be removed");
+await db.delete("publications", "scheduled-1");
+await service.remove(-2002);
+assert.equal((await service.list()).some(item => item.chatId === -2002), false,
+  "an empty target can be removed");
 
 await service.handleMyChatMember({ my_chat_member: {
   chat: { id: -999, type: "channel", title: "Preview" },

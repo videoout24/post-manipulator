@@ -336,10 +336,6 @@ export class PublicationService {
     }
     const nextPinned = Boolean(pinned);
     if (nextPinned === Boolean(record.pinned)) return structuredClone(record);
-    if (nextPinned && record.commentsEnabled && (!record.discussionChatId || !record.discussionMessageId)) {
-      throw new Error(t("telegram.publicationService.waitForTheMessageToAppearIn"));
-    }
-
     const messages = [{ chatId: record.chatId, messageId: record.messageId }];
     if (record.commentsEnabled && record.discussionChatId && record.discussionMessageId) {
       messages.push({ chatId: record.discussionChatId, messageId: record.discussionMessageId });
@@ -536,7 +532,13 @@ export class PublicationService {
     if (!record.commentsEnabled) {
       await this.client.deleteMessage(record.discussionChatId, record.discussionMessageId);
       record.commentsDisabled = true;
-    } else if (record.pinned) {
+      await this.#save(record);
+    } else {
+      // Persist the discussion identity before optional housekeeping. A missing pin
+      // permission must not make comment navigation lose an update we did receive.
+      await this.#save(record);
+    }
+    if (record.commentsEnabled && record.pinned) {
       // Legacy records or a forward received during an older app session may already
       // be pinned in the channel. Bring the newly discovered discussion message into
       // the same state as soon as Telegram exposes its identity.
@@ -545,11 +547,17 @@ export class PublicationService {
         messageId: record.discussionMessageId
       }, true);
     }
-    await this.#save(record);
     return true;
   }
 
   async #handleComment(message) {
+    const forwardedRoot = message.reply_to_message;
+    if (forwardedRoot?.is_automatic_forward) {
+      await this.#handleAutomaticForward({
+        ...forwardedRoot,
+        chat: forwardedRoot.chat || message.chat
+      });
+    }
     const replyId = Number(message.reply_to_message?.message_id || 0);
     const threadId = Number(message.message_thread_id || 0);
     if (!replyId && !threadId) return false;

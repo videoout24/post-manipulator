@@ -141,6 +141,10 @@ export class PublicationTargetService {
   }
 
   async remove(chatId) {
+    const publications = await this.db.all("publications");
+    if (publications.some(row => Number(row?.value?.chatId) === Number(chatId))) {
+      throw new Error(t("telegram.publicationTargetService.channelOrGroupHasPublications"));
+    }
     const targets = (await this.list()).filter(item => Number(item.chatId) !== Number(chatId));
     await this.db.put("bindings", TARGETS_KEY, targets);
     this.events?.emit("telegram:publication-targets", targets);

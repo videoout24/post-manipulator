@@ -33,15 +33,17 @@ const validator=new ProjectValidator({richMessageValidator:new Validator(registr
 const compiler=new ProjectCompiler();
 const renderer=new TelegramRenderer(registry);
 class Transport {
-  constructor(){ this.next=100; this.channel={chatId:-100500}; this.syncCalls=[]; this.deleteCalls=[]; }
+  constructor(){ this.next=100; this.channel={chatId:-100500}; this.syncCalls=[]; this.syncEnvelopes=[]; this.deleteCalls=[]; }
   async getChannel(){ return this.channel; }
   render(tree){ return renderer.renderEnvelope(tree); }
   async sendEnvelope(){ return {message_id:++this.next}; }
-  async syncEnvelope(id){ this.syncCalls.push(Number(id)); return {action:'edited',message:{message_id:Number(id)}}; }
+  async syncEnvelope(id,envelope){ this.syncCalls.push(Number(id)); this.syncEnvelopes.push({id:Number(id),envelope:structuredClone(envelope)}); return {action:'edited',message:{message_id:Number(id)}}; }
   async deleteDeployment(deployment){ this.deleteCalls.push(Number(deployment?.messageId)); return true; }
 }
 const transport=new Transport();
 const sync=new ProjectPreviewSync({store,compiler,validator,transport,events,autoSyncDelay:120});
+const previewEvents=[];
+events.on('project:preview-sync', event=>previewEvents.push(event));
 let project=await store.createProject({title:'Auto',firstPostTitle:'Map'});
 const mapHost=project.posts[0].id;
 let made=await store.createPost(project.id,{title:'Target'}); project=made.project; const target=made.post.id;
@@ -63,10 +65,23 @@ assert(transport.syncCalls.includes(idOf(mapHost)),'dependent Map host must auto
 assert(!transport.syncCalls.includes(idOf(unrelated)),'unrelated post must not autosync');
 
 transport.syncCalls=[];
+transport.syncEnvelopes=[];
+previewEvents.length=0;
+made=await store.createPost(project.id,{title:'Added from Map'}); project=made.project; const added=made.post.id;
+await sleep(450);
+project=await store.getProject(project.id);
+assert(project.posts.find(p=>p.id===added).deployments.preview?.messageId,'a post added from the Map must receive a preview identity');
+assert(previewEvents.some(event=>event.state==='synced' && event.full===true && event.automatic===true),
+  'adding a Map slot must run a full two-pass preview sync so all links are rebuilt');
+assert(transport.syncCalls.includes(idOf(mapHost)),'adding a Map slot must immediately refresh links in the preview Map');
+assert(transport.syncEnvelopes.some(call=>call.id===idOf(mapHost) && JSON.stringify(call.envelope).includes(`https://t.me/c/500/${idOf(added)}`)),
+  'the refreshed preview Map must contain the newly created post link');
+
+transport.syncCalls=[];
 await store.movePost(project.id,unrelated,'up');
 await sleep(450);
 project=await store.getProject(project.id);
-assert.deepEqual(getProjectRootMap(project).props.slots.map(slot=>slot.targetPostId),[unrelated,target],'slot order must persist');
+assert.deepEqual(getProjectRootMap(project).props.slots.map(slot=>slot.targetPostId),[unrelated,target,added],'slot order must persist');
 assert(transport.syncCalls.includes(idOf(mapHost)),'reordering must autosync the preview Map host');
 assert(!transport.syncCalls.includes(idOf(target)) && !transport.syncCalls.includes(idOf(unrelated)),'reordering must not rewrite unchanged child previews');
 

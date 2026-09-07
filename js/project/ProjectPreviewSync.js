@@ -361,7 +361,12 @@ export class ProjectPreviewSync {
     if (!AUTO_SYNC_REASONS.has(event?.reason)) return;
     const project = event?.project;
     if (!project?.id || !hasPreviewDeployment(project)) return;
-    const affected = normalizePostIds(event?.affectedPostIds || (event?.postId ? [event.postId] : null));
+    // Creating a post from a Map changes three identities at once: the new post,
+    // its managed backlink and the Map entry. Use the existing two-pass full sync
+    // so the post is materialized before every link is rebuilt.
+    const affected = event.reason === "post-created"
+      ? null
+      : normalizePostIds(event?.affectedPostIds || (event?.postId ? [event.postId] : null));
     // Generic project save has no entity-level provenance and therefore remains a full
     // sync. Editor/post and graph events carry precise affected post ids.
     this.schedule(project.id, { affectedPostIds: affected });

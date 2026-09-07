@@ -530,6 +530,7 @@ body.drag-delete-active::before {
 .publication-binding-actions button, .publication-target-actions button { padding: 6px 8px; font-size: 9px; }
 .publication-target-cleanup { margin-right: auto; color: #8596aa; }
 .publication-target-cleanup.active { border-color: #315a4b; background: #10271c; color: #72c997; }
+.publication-target-remove { color: #e79aa5; border-color: #633942 !important; }
 .publication-target-list { display: grid; gap: 8px; }
 .publication-target-empty { padding: 14px 8px; color: #6f8095; font-size: 10px; text-align: center; }
 .publication-target-card { display: grid; gap: 8px; padding: 10px; border: 1px solid #293746; border-radius: 8px; background: #0b1118; }

@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.2";
+import { getLocale, t } from "../i18n/index.js?v=1.8.4";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
@@ -236,11 +236,13 @@ export class PublicationView {
     if (!scheduled && record.commentsEnabled && record.discussionMessageId) {
       pin.title = record.pinned ? t("publications.publicationView.unpinPostAndComments") : t("publications.publicationView.pinPostAndComments");
     }
-    const discussionPending = !record.pinned && record.commentsEnabled && !record.discussionMessageId;
-    if (discussionPending) pin.title = t("publications.publicationView.messageExpectedInDiscussionGroup");
+    const discussionPending = record.commentsEnabled && !record.discussionMessageId;
+    if (!scheduled && discussionPending) pin.title = record.pinned
+      ? t("publications.publicationView.unpinPost")
+      : t("publications.publicationView.pinPostWhileWaitingForDiscussion");
     pin.setAttribute("aria-label", pin.title);
     pin.setAttribute("aria-pressed", String(Boolean(record.pinned)));
-    pin.disabled = scheduled || discussionPending;
+    pin.disabled = scheduled;
     const open = button("👁", () => this.#openMessage(record), "publication-record-open");
     open.title = scheduled ? t("publications.publicationView.postNotYetPublished") : t("publications.publicationView.openMessageInTelegram");
     open.disabled = scheduled;
@@ -263,9 +265,11 @@ export class PublicationView {
     }
     if (record.commentsEnabled) {
       const comments = button("💬", () => this.#openDiscussion(record), "publication-comment-badge");
-      comments.title = record.discussionMessageId ? t("publications.publicationView.openDiscussion") : t("publications.publicationView.messageExpectedInDiscussionGroup");
+      comments.title = record.discussionMessageId
+        ? t("publications.publicationView.openDiscussion")
+        : t("publications.publicationView.openPostToViewComments");
       comments.setAttribute("aria-label", comments.title);
-      comments.disabled = !record.discussionMessageId;
+      comments.disabled = scheduled || !record.messageId;
       stats.append(comments);
     }
     card.append(head);
@@ -333,7 +337,7 @@ export class PublicationView {
     if (record.scheduledAt) {
       actions.append(button(t("project.projectPostCard.cancelTheScheduling"), () => this.#cancelScheduledPublication(record)));
     }
-    if (record.commentsEnabled && record.discussionMessageId) {
+    if (record.commentsEnabled && record.messageId) {
       actions.append(button(t("publications.publicationView.discussion"), () => this.#openDiscussion(record)));
     }
 
@@ -403,7 +407,7 @@ export class PublicationView {
   }
 
   #openDiscussion(record) {
-    if (!record?.discussionChatId || !record?.discussionMessageId) return false;
+    if (!record?.discussionChatId || !record?.discussionMessageId) return this.#openMessage(record);
     return record.discussionUsername
       ? this.navigation?.openPublicMessage?.({ username: record.discussionUsername, messageId: record.discussionMessageId })
       : this.navigation?.openPrivateMessage?.({ chatId: record.discussionChatId, messageId: record.discussionMessageId });
@@ -1044,6 +1048,12 @@ export class PublicationView {
       ? t("publications.publicationView.deletingServiceMessagesEnabled")
       : t("publications.publicationView.deletingServiceMessagesDisabled");
     actions.append(cleanup, button(t("publications.publicationView.check"), () => this.#refresh(target.chatId)));
+    if (countTargetPublications(this.publications, target.chatId) === 0) {
+      const remove = button("🗑", () => this.#requestTargetRemoval(card, target), "publication-target-remove danger-soft");
+      remove.title = t("publications.publicationView.removeTarget");
+      remove.setAttribute("aria-label", remove.title);
+      actions.append(remove);
+    }
     card.append(head, meta, actions);
     card.onclick = event => {
       if (event.target.closest("button")) return;
@@ -1066,6 +1076,35 @@ export class PublicationView {
   async #refresh(chatId) {
     try { await this.telegramCore.publications.refreshTarget(chatId); }
     catch (error) { this.notifications?.show?.({ message: t("publications.publicationView.check2", { 0: error?.message || error }), type: "error" }); }
+  }
+
+  #requestTargetRemoval(card, target) {
+    showCardDeleteConfirmation(card, {
+      message: t("publications.publicationView.removeTargetConfirmation", { 0: target?.title || target?.chatId }),
+      onConfirm: () => this.#removeTarget(target)
+    });
+  }
+
+  async #removeTarget(target) {
+    try {
+      // Re-read before deleting: a scheduled publication may have fired while the
+      // confirmation was open, in which case the target must remain attached.
+      this.publications = await this.telegramCore.publications.list();
+      if (countTargetPublications(this.publications, target.chatId) > 0) {
+        this.render();
+        this.notifications?.show?.({ message: t("publications.publicationView.targetNowHasPublications"), type: "warning" });
+        return false;
+      }
+      await this.telegramCore.publications.removeTarget(target.chatId);
+      if (Number(this.selectedTargetId) === Number(target.chatId)) this.selectedTargetId = null;
+      this.targets = await this.telegramCore.publications.listTargets();
+      this.render();
+      this.notifications?.show?.({ message: t("publications.publicationView.targetRemoved"), type: "success" });
+      return true;
+    } catch (error) {
+      this.notifications?.show?.({ message: t("publications.publicationView.targetRemoval", { 0: error?.message || error }), type: "error" });
+      return false;
+    }
   }
 
   async #toggleServiceMessageCleanup(target) {
@@ -1127,6 +1166,10 @@ export function countPublishedPosts(publications, chatId) {
   return (publications || []).filter(record =>
     Number(record?.chatId) === Number(chatId) && Boolean(record?.messageId) && !record?.scheduledAt
   ).length;
+}
+
+export function countTargetPublications(publications, chatId) {
+  return (publications || []).filter(record => Number(record?.chatId) === Number(chatId)).length;
 }
 
 function reactionEmoji(type = {}) {

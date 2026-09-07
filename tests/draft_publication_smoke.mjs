@@ -94,14 +94,24 @@ assert.deepEqual(pinned.slice(-3).map(item => item.slice(0, 3)), [
 assert.equal((await db.get("publications", record.id)).pinned, false);
 client.pinChatMessage = pinMessage;
 
-const lateForwardRecord = {
+const pendingPinRecord = {
   ...(await db.get("publications", record.id)),
-  id: "late-forward",
+  id: "pending-pin",
   messageId: 43,
   discussionMessageId: null,
-  pinned: true,
-  pinnedAt: Date.now()
+  pinned: false,
+  pinnedAt: null
 };
+await db.put("publications", pendingPinRecord.id, pendingPinRecord);
+const pendingPinned = await service.setPinned(pendingPinRecord.id, true);
+assert.equal(pendingPinned.pinned, true, "the channel post can be pinned before Telegram exposes the discussion identity");
+assert.deepEqual(pinned.at(-1), ["pin", -1001, 43, { disableNotification: true }]);
+
+const lateForwardRecord = {
+  ...(await db.get("publications", pendingPinRecord.id)),
+  id: "late-forward"
+};
+await db.delete("publications", pendingPinRecord.id);
 await db.put("publications", lateForwardRecord.id, lateForwardRecord);
 await service.handleUpdate({ message: {
   message_id: 73, chat: { id: -2001 }, is_automatic_forward: true,
@@ -109,7 +119,35 @@ await service.handleUpdate({ message: {
 } });
 assert.deepEqual(pinned.at(-1), ["pin", -2001, 73, { disableNotification: true }],
   "a late automatic forward must inherit an existing channel pin");
+assert.equal((await db.get("publications", lateForwardRecord.id)).discussionMessageId, 73,
+  "discussion identity must be stored before late pin housekeeping");
 await db.delete("publications", lateForwardRecord.id);
+
+const recoveredRecord = {
+  ...(await db.get("publications", record.id)),
+  id: "recovered-from-comment",
+  messageId: 44,
+  discussionMessageId: null,
+  commentMessageIds: [],
+  commentCount: 0,
+  pinned: false,
+  pinnedAt: null
+};
+await db.put("publications", recoveredRecord.id, recoveredRecord);
+await service.handleUpdate({ message: {
+  message_id: 75,
+  chat: { id: -2001 },
+  message_thread_id: 74,
+  reply_to_message: {
+    message_id: 74,
+    is_automatic_forward: true,
+    forward_origin: { type: "channel", chat: { id: -1001 }, message_id: 44 }
+  }
+} });
+const recovered = await db.get("publications", recoveredRecord.id);
+assert.equal(recovered.discussionMessageId, 74, "a comment must recover a missed automatic-forward identity");
+assert.deepEqual(recovered.commentMessageIds, [75]);
+await db.delete("publications", recoveredRecord.id);
 
 const expired = { ...record, id: "expired", deleteUntil: record.publishedAt + 1 };
 await db.put("publications", expired.id, expired);

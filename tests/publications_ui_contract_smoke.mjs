@@ -23,7 +23,12 @@ assert.match(view, /t\("publications\.publicationView\.deleteService"\)/);
 assert.match(view, /publication-target-cleanup\$\{cleanupEnabled \? " active" : ""\}/);
 assert.match(view, /cleanup\.setAttribute\("aria-pressed"/);
 assert.match(view, /setServiceMessageCleanup\(target\.chatId, enabled\)/);
-assert.doesNotMatch(view, /button\("×", \(\) => this\.telegramCore\.publications\.removeTarget/);
+assert.match(view, /countTargetPublications\(this\.publications, target\.chatId\) === 0/);
+assert.match(view, /publication-target-remove danger-soft/);
+assert.match(view, /removeTarget\(target\.chatId\)/);
+assert.match(view, /showCardDeleteConfirmation\(card/);
+assert.match(service, /this\.db\.all\("publications"\)[\s\S]*?channelOrGroupHasPublications/,
+  "target removal must be guarded against published and scheduled records in the service layer");
 assert.match(runtime, /publicationTargets\?\.handleMyChatMember/);
 assert.match(service, /t\("telegram\.publicationTargetService\.previewChannelCannotBeAddedToPublications"\)/);
 assert.match(service, /deleteServiceMessages: existing\?\.deleteServiceMessages === true/);
@@ -77,6 +82,8 @@ assert.match(view, /publication-comment-badge/);
 assert.match(view, /const comments = button\("💬"/);
 assert.match(view, /record\.discussionUsername[\s\S]*?openPublicMessage/);
 assert.match(view, /openPrivateMessage\?\.\(\{ chatId: record\.discussionChatId, messageId: record\.discussionMessageId \}\)/);
+assert.match(view, /if \(!record\?\.discussionChatId \|\| !record\?\.discussionMessageId\) return this\.#openMessage\(record\)/,
+  "missing discussion identity must fall back to the source channel post");
 assert.doesNotMatch(view, /commentId: record\.discussionMessageId/,
   "the auto-forwarded discussion root is not a comment ID and must not be used as Telegram's comment parameter");
 assert.doesNotMatch(view, /`💬 \$\{Number\(record\.commentCount/);
@@ -101,6 +108,8 @@ assert.match(publicationService, /record\.discussionChatId[\s\S]*record\.discuss
 assert.match(publicationService, /for \(const message of changed\.reverse\(\)\)/,
   "a partial channel/discussion pin operation must be rolled back");
 assert.match(client, /unpinChatMessage\(chatId, messageId, options\)/);
-assert.match(view, /discussionPending[\s\S]*pin\.disabled = scheduled \|\| discussionPending/);
+assert.match(view, /discussionPending[\s\S]*pin\.disabled = scheduled/);
+assert.doesNotMatch(view, /pin\.disabled = scheduled \|\| discussionPending/,
+  "channel pinning must remain available while the discussion identity is pending");
 
 console.log("publications UI contract smoke: OK");
