@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { AppLifecycle } from "../js/app/AppLifecycle.js?v=1.5.9";
+import { AppLifecycle } from "../js/app/AppLifecycle.js?v=1.7.21";
 
 const calls = [];
 const notices = [];

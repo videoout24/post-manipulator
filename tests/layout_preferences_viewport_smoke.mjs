@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { LayoutPreferences, layoutForViewport } from "../js/core/LayoutPreferences.js?v=1.7.4";
+import { LayoutPreferences, layoutForViewport } from "../js/core/LayoutPreferences.js?v=1.7.21";
 
 assert.deepEqual(layoutForViewport(900), {
   editorLeft: 162,
