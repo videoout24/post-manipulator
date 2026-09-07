@@ -68,6 +68,7 @@ export class AppLifecycle {
     if (this.stopped) return;
     this.stopped = true;
     this.windowRoot?.removeEventListener?.("beforeunload", this.onBeforeUnload);
+    this.layoutPreferences?.stop?.();
     for (const service of this.stoppables) service?.stop?.();
     this.projectSession?.flush?.().catch?.(() => {});
     this.telegramRuntime?.stop?.();

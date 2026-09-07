@@ -1,7 +1,7 @@
 import { getLocale, t } from "./i18n/index.js?v=1.8.0";
 import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.7.0";
-import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.3";
+import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.4";
 import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.7.19";
 import { GalleryView } from "./gallery/GalleryView.js?v=1.7.6";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.7.6";

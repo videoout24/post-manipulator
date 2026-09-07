@@ -1865,11 +1865,20 @@
   "uiLayout": {
     "store": "settings/ui.layout.preferences",
     "editor": [
-      "editorLeft"
+      "editorLeft",
+      "editorProject"
     ],
     "gallery": [
       "galleryLeft",
       "galleryRight"
+    ],
+    "project": [
+      "projectLibraryLeft",
+      "projectLibraryRight"
+    ],
+    "publications": [
+      "publicationsLeft",
+      "publicationsRight"
     ]
   }
 }

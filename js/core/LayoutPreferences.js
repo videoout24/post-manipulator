@@ -31,25 +31,58 @@ const VIEWPORT_RATIOS = Object.freeze({
   publicationsRight: 0.27
 });
 
+const TAB_KEYS = Object.freeze({
+  editor: Object.freeze(["editorLeft", "editorProject"]),
+  gallery: Object.freeze(["galleryLeft", "galleryRight"]),
+  project: Object.freeze(["projectLibraryLeft", "projectLibraryRight"]),
+  publications: Object.freeze(["publicationsLeft", "publicationsRight"])
+});
+
+const MAX_RATIOS = Object.freeze({
+  editorLeft: 0.30,
+  editorProject: 0.32,
+  galleryLeft: 0.28,
+  galleryRight: 0.32,
+  projectLibraryLeft: 0.30,
+  projectLibraryRight: 0.32,
+  publicationsLeft: 0.30,
+  publicationsRight: 0.32
+});
+
+const SETTINGS_KEY = "ui.layout.preferences";
+const SETTINGS_VERSION = 1;
+
 export class LayoutPreferences {
   constructor({ db, events = null, windowRoot = globalThis.window, documentRoot = globalThis.document } = {}) {
-    // db remains accepted for compatibility, but panel geometry is deliberately
-    // session-only: a width saved on one monitor must not break another one.
     this.db = db;
     this.events = events;
     this.windowRoot = windowRoot;
     this.documentRoot = documentRoot;
     this.values = { ...DEFAULTS };
+    this.ratios = { ...VIEWPORT_RATIOS };
+    this.pendingKeys = new Set();
     this.bound = new WeakSet();
     this.initialized = false;
+    this.viewportWidth = 0;
+    this.onResize = () => this.#restoreRatios();
   }
 
   async initialize() {
     if (this.initialized) return this.snapshot();
-    this.values = layoutForViewport(this.#viewportWidth());
+    const stored = await this.db?.get?.("settings", SETTINGS_KEY, null);
+    this.ratios = readStoredRatios(stored);
+    this.viewportWidth = this.#viewportWidth();
+    this.values = layoutForViewport(this.viewportWidth, this.ratios);
     this.initialized = true;
     this.apply();
+    this.windowRoot?.addEventListener?.("resize", this.onResize);
+    this.windowRoot?.visualViewport?.addEventListener?.("resize", this.onResize);
     return this.snapshot();
+  }
+
+  stop() {
+    this.windowRoot?.removeEventListener?.("resize", this.onResize);
+    this.windowRoot?.visualViewport?.removeEventListener?.("resize", this.onResize);
   }
 
   snapshot() { return { ...this.values }; }
@@ -71,10 +104,22 @@ export class LayoutPreferences {
   setLocal(key, value) {
     if (!(key in DEFAULTS)) return;
     this.values[key] = clampValue(key, value);
+    this.pendingKeys.add(key);
     this.apply();
   }
 
   async save() {
+    const viewportWidth = this.#viewportWidth();
+    const changedKeys = [...this.pendingKeys];
+    for (const key of changedKeys) {
+      this.ratios[key] = clampRatio(key, this.get(key) / viewportWidth);
+      this.values[key] = clampValue(key, viewportWidth * this.ratios[key]);
+    }
+    if (changedKeys.length) this.apply();
+    if (changedKeys.length && this.db?.put) {
+      await this.db.put("settings", SETTINGS_KEY, serializeRatios(this.ratios));
+    }
+    for (const key of changedKeys) this.pendingKeys.delete(key);
     this.events?.emit?.("layout:changed", this.snapshot());
   }
 
@@ -92,7 +137,7 @@ export class LayoutPreferences {
       const startX = event.clientX;
       const startValue = this.get(key);
       element.classList.add("active");
-      document.body.classList.add("resizing-layout");
+      this.documentRoot?.body?.classList?.add("resizing-layout");
       element.setPointerCapture?.(event.pointerId);
 
       const move = moveEvent => {
@@ -104,7 +149,7 @@ export class LayoutPreferences {
         element.removeEventListener("pointerup", end);
         element.removeEventListener("pointercancel", end);
         element.classList.remove("active");
-        document.body.classList.remove("resizing-layout");
+        this.documentRoot?.body?.classList?.remove("resizing-layout");
         try { element.releasePointerCapture?.(endEvent.pointerId); } catch {}
         await this.save();
       };
@@ -132,14 +177,58 @@ export class LayoutPreferences {
       1280
     );
   }
+
+  #restoreRatios() {
+    if (!this.initialized) return;
+    const viewportWidth = this.#viewportWidth();
+    if (viewportWidth === this.viewportWidth) return;
+    this.viewportWidth = viewportWidth;
+    this.values = layoutForViewport(viewportWidth, this.ratios);
+    this.apply();
+    this.events?.emit?.("layout:changed", this.snapshot());
+  }
 }
 
-export function layoutForViewport(viewportWidth) {
+export function layoutForViewport(viewportWidth, ratios = VIEWPORT_RATIOS) {
   const width = positiveWidth(viewportWidth, 1280);
   return Object.fromEntries(Object.keys(DEFAULTS).map(key => [
     key,
-    clampValue(key, Math.round(width * VIEWPORT_RATIOS[key]))
+    clampValue(key, Math.round(width * validRatio(key, ratios?.[key])))
   ]));
+}
+
+function readStoredRatios(stored) {
+  const ratios = { ...VIEWPORT_RATIOS };
+  for (const [tab, keys] of Object.entries(TAB_KEYS)) {
+    const tabRatios = stored?.version === SETTINGS_VERSION ? stored.tabs?.[tab] : null;
+    for (const key of keys) ratios[key] = validRatio(key, tabRatios?.[key]);
+  }
+  return ratios;
+}
+
+function serializeRatios(ratios) {
+  return {
+    version: SETTINGS_VERSION,
+    tabs: Object.fromEntries(Object.entries(TAB_KEYS).map(([tab, keys]) => [
+      tab,
+      Object.fromEntries(keys.map(key => [key, roundRatio(validRatio(key, ratios?.[key]))]))
+    ]))
+  };
+}
+
+function validRatio(key, value) {
+  const ratio = Number(value);
+  return Number.isFinite(ratio) && ratio > 0
+    ? clampRatio(key, ratio)
+    : VIEWPORT_RATIOS[key];
+}
+
+function clampRatio(key, value) {
+  return Math.max(0.001, Math.min(MAX_RATIOS[key] || 0.8, Number(value)));
+}
+
+function roundRatio(value) {
+  return Math.round(value * 1_000_000) / 1_000_000;
 }
 
 function clampValue(key, value) {
@@ -158,3 +247,4 @@ function positiveWidth(...values) {
 }
 
 export const LAYOUT_DEFAULTS = DEFAULTS;
+export const LAYOUT_TAB_KEYS = TAB_KEYS;

@@ -20,7 +20,8 @@ const windowRoot = {
 const service = name => ({ async initialize() { calls.push(`${name}:initialize`); } });
 const layoutPreferences = {
   async initialize() { calls.push("layout:initialize"); },
-  bindSplitter(_root, options) { calls.push(`splitter:${options.key}`); }
+  bindSplitter(_root, options) { calls.push(`splitter:${options.key}`); },
+  stop() { calls.push("layout:stop"); }
 };
 const galleryCore = { start() { calls.push("gallery-core:start"); } };
 const galleryView = { async initialize() { calls.push("gallery:initialize"); throw new Error("<gallery & failed>"); } };
@@ -84,6 +85,7 @@ assert(notices.some(item => item.message.startsWith("Gallery:")));
 listeners.get("beforeunload")();
 await Promise.resolve();
 assert(calls.includes("service:stop"));
+assert(calls.includes("layout:stop"));
 assert(calls.includes("project:flush"));
 assert(calls.includes("runtime:stop"));
 assert.equal(listeners.size, 0);
