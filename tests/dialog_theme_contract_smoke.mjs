@@ -9,14 +9,14 @@ const [css, dialogs, gallery, settings, metaDialog] = await Promise.all([
   readFile(new URL("../js/editor/MetaBlockDialog.js", import.meta.url), "utf8")
 ]);
 
-assert.match(css, /dialog \{[\s\S]*?color-scheme: dark;[\s\S]*?background: #10161e;[\s\S]*?color: #e9eef5;/);
-assert.match(css, /:root \{[\s\S]*?color-scheme: dark;/);
-assert.match(css, /select option \{ background: #0c1117; color: #e9eef5; \}/);
-assert.match(css, /dialog::backdrop \{ background: rgba\(0, 0, 0, \.72\); \}/);
-assert.match(css, /dialog input,[\s\S]*?dialog select,[\s\S]*?dialog textarea \{[\s\S]*?background: #0b1118;[\s\S]*?color: #e9eef5;/);
-assert.match(css, /#securityGate \{[\s\S]*?color: #e9eef5;/);
-assert.match(css, /\.security-gate-card \{[\s\S]*?border: 1px solid #334357;[\s\S]*?background: #141d28;/);
-assert.match(css, /\.security-gate-copy \{ margin: 0; color: #a6b4c5;/);
+assert.match(css, /dialog \{[\s\S]*?color-scheme: var\(--theme-color-scheme\);[\s\S]*?background: var\(--theme-surface-raised, #10161e\);[\s\S]*?color: var\(--theme-text, #e9eef5\);/);
+assert.match(css, /:root \{[\s\S]*?color-scheme: var\(--theme-color-scheme\);/);
+assert.match(css, /select option \{ background: var\(--theme-field-bg, #0c1117\); color: var\(--theme-text, #e9eef5\); \}/);
+assert.match(css, /dialog::backdrop \{ background: var\(--theme-backdrop, rgba\(0, 0, 0, \.72\)\); \}/);
+assert.match(css, /dialog input,[\s\S]*?dialog select,[\s\S]*?dialog textarea \{[\s\S]*?background: var\(--theme-field-bg, #0b1118\);[\s\S]*?color: var\(--theme-text, #e9eef5\);/);
+assert.match(css, /#securityGate \{[\s\S]*?color: var\(--theme-text, #e9eef5\);/);
+assert.match(css, /\.security-gate-card \{[\s\S]*?border: 1px solid var\(--theme-border, #334357\);[\s\S]*?background: var\(--theme-surface-raised, #141d28\);/);
+assert.match(css, /\.security-gate-copy \{ margin: 0; color: var\(--theme-text-secondary, #a6b4c5\);/);
 assert.doesNotMatch(css, /security-gate-card[\s\S]*?tg-theme-secondary-bg-color/);
 assert.match(css, /\.app-modal-dialog \{ width: min\(420px, calc\(100vw - 28px\)\); \}/);
 assert.match(dialogs, /requestTextDialog/);

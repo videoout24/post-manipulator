@@ -28,7 +28,7 @@ assert.match(cards, /dataset\.mapId = mapId/);
 
 // Navigation controls are visually link-like and blue-highlight destinations.
 assert.match(css, /\.project-post-preview-nav-link/);
-assert.match(css, /color:\s*#69a8ff/);
+assert.match(css, /color:\s*var\(--theme-accent, #69a8ff\)/);
 assert.match(css, /\.project-post-card\.nav-highlight/);
 assert.match(css, /\.project-post-preview-map\.nav-highlight/);
 

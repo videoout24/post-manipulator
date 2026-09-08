@@ -12,6 +12,6 @@ assert.deepEqual(
   ["code"],
   "Only Preformatted may intentionally restrict the standard RichText toolbar"
 );
-assert.match(css, /\.rich-text-editor textarea\s*\{[^}]*background:\s*#0c1117;[^}]*color:\s*inherit;/);
+assert.match(css, /\.rich-text-editor textarea\s*\{[^}]*background:\s*var\(--theme-field-bg, #0c1117\);[^}]*color:\s*inherit;/);
 
 console.log("rich_text_block_styles_smoke: OK");

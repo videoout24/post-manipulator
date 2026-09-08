@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Theme browser smoke</title>
+<link rel="stylesheet" href="../style.css">
+<body>
+<script type="module">
+import { themePreferences } from "../js/core/ThemePreferences.js?v=1.8.5";
+import { TelegramSettingsView } from "../js/telegram/TelegramSettingsView.js?v=1.8.5";
+import { applyDocumentTranslations } from "../js/i18n/index.js?v=1.8.5";
+import { requestTextDialog } from "../js/core/DarkDialog.js?v=1.6.5";
+
+// Use the real shell and Settings handler in an isolated fixture. Never import
+// bootstrap/app.js or open a bot database/network session from this test page.
+try {
+  const source = new DOMParser().parseFromString(await (await fetch("../index.html")).text(), "text/html");
+  source.querySelectorAll("script").forEach(node => node.remove());
+  document.body.replaceChildren(...source.body.childNodes);
+  document.body.dataset.appLocked = "false";
+  document.querySelector("#appShell").removeAttribute("inert");
+  document.querySelector("#appShell").removeAttribute("aria-hidden");
+  document.querySelector("#securityGate").hidden = true;
+  applyDocumentTranslations(document);
+
+  document.querySelector("#palette").innerHTML = `
+    <div class="category">Content</div>
+    <div class="palette-item"><strong>Heading</strong><span>Title and section headings</span></div>
+    <div class="palette-item"><strong>Text</strong><span>Rich text with formatting</span></div>
+    <div class="palette-item"><strong>Table</strong><span>Rows, columns and merged cells</span></div>
+    <div class="palette-item"><strong>Photo</strong><span>Image from the gallery</span></div>`;
+  document.querySelector("#canvas").innerHTML = `
+    <article class="block selected"><div class="block-head">Text <span class="meta-badge">Selected</span></div>
+      <div class="rich-text-editor"><div class="rich-text-toolbar">
+        <button class="rich-format-button active">B</button><button class="rich-format-button">I</button>
+        <button class="rich-format-button link-relation-button is-linked">Link</button>
+        <button class="rich-format-button link-target-button is-selected">Target</button>
+      </div><textarea id="themeSmokeText">An unfinished post: preserved while switching themes.</textarea></div>
+      <p class="hint">Draft text and selection must survive a theme change.</p>
+    </article>
+    <article class="block"><div class="block-head">Table</div><div class="table-live-grid">
+      <div class="table-live-cell header-cell"><textarea class="table-cell-text">Header</textarea></div>
+      <div class="table-live-cell selected"><textarea class="table-cell-text">Selected cell</textarea></div>
+    </div></article>
+    <article class="block validation-invalid"><div class="block-head">Schedule</div>
+      <div class="prop"><label>Date and time</label><input type="datetime-local" value="2026-10-12T10:00"></div>
+      <div class="prop"><label>Target</label><select><option>Preview channel</option><option>Publication channel</option></select></div>
+      <div class="format-config-error">Choose a publication target.</div>
+    </article>
+    <div class="runtime-pill" data-state="running">Connected</div>
+    <div class="canvas-stat warning">Publication pending</div>`;
+
+  const settingsRoot = document.querySelector("#telegramSettings");
+  new TelegramSettingsView({ root: settingsRoot, events: { on() {} }, sseProbe: {} });
+  const telegramEvents = new Map();
+  window.Telegram = { WebApp: {
+    colorScheme: "light",
+    onEvent: (name, fn) => telegramEvents.set(name, fn),
+    offEvent: name => telegramEvents.delete(name),
+    isVersionAtLeast: () => false
+  } };
+  themePreferences.start();
+  const themeSelect = document.querySelector("#appThemePreference");
+  const choose = value => {
+    themeSelect.value = value;
+    themeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  };
+  const check = (condition, message) => { if (!condition) throw Error(message); };
+  const css = node => getComputedStyle(node);
+  const text = document.querySelector("#themeSmokeText");
+  text.focus();
+  text.setSelectionRange(3, 17);
+  const value = text.value;
+  const beforeHistory = history.length;
+  for (const theme of ["light", "dark", "light"]) {
+    choose(theme);
+    check(document.documentElement.dataset.theme === theme, "Settings change did not apply");
+    check(css(document.documentElement).colorScheme === theme, "Native color scheme disagrees");
+    check(text.value === value && text.selectionStart === 3 && text.selectionEnd === 17, "Editing state changed");
+    check(document.activeElement === text, "Changing CSS stole editor focus");
+    check(history.length === beforeHistory, "Theme change navigated");
+    check(localStorage.getItem("postManipulatorTheme") === theme, "Choice was not saved");
+  }
+  choose("auto");
+  window.Telegram.WebApp.colorScheme = "dark";
+  telegramEvents.get("themeChanged")();
+  check(document.documentElement.dataset.theme === "dark" && themeSelect.value === "auto", "Telegram auto mode failed");
+  choose("light");
+  telegramEvents.get("themeChanged")();
+  check(document.documentElement.dataset.theme === "light", "Telegram overrode manual selection");
+
+  const closed = requestTextDialog({ title: "Theme check", label: "Post title", value: "Unsaved title" });
+  const dialog = document.querySelector(".app-modal-dialog");
+  const dialogInput = dialog.querySelector("input");
+  const select = document.querySelector("#canvas select");
+  check(css(dialog).backgroundColor === "rgb(255, 255, 255)", "Dialog surface stayed dark");
+  check(css(dialogInput).backgroundColor === "rgb(255, 255, 255)", "Dialog input stayed dark");
+  check(css(select).backgroundImage.includes("rgb(83, 101, 122)"), "Select arrow lost its contrast");
+  choose("dark");
+  check(dialog.open && dialogInput.value === "Unsaved title", "Open dialog was rebuilt");
+  check(css(dialog).backgroundColor === "rgb(16, 22, 30)", "Dark dialog appearance changed");
+  check(css(select).backgroundColor === "rgb(11, 17, 24)", "Dark select appearance changed");
+  dialog.close("cancel");
+  await closed;
+  choose("light");
+  document.querySelector("#securityGate").hidden = false;
+  check(css(document.querySelector(".security-gate-card")).backgroundColor === "rgb(255, 255, 255)", "Security gate stayed dark");
+  document.querySelector("#securityGate").hidden = true;
+
+  // Check text contrast in the real light shell, including small status labels.
+  let contrastChecks = 0;
+  for (const selector of [".hint", ".block-head", ".format-config-error", ".runtime-pill", ".canvas-stat.warning", ".settings-hint", ".settings-field", ".top-tab.active"]) {
+    const node = document.querySelector(selector);
+    let surface = node;
+    while (surface.parentElement && css(surface).backgroundColor === "rgba(0, 0, 0, 0)") surface = surface.parentElement;
+    const ratio = contrast(css(node).color, css(surface).backgroundColor);
+    check(ratio >= 4.5, `${selector} contrast is ${ratio.toFixed(2)}`);
+    contrastChecks++;
+  }
+
+  window.showThemeFixture = (theme, page = "editor") => {
+    choose(theme);
+    document.querySelectorAll("[data-tab-page]").forEach(node => node.classList.toggle("active", node.dataset.tabPage === page));
+    document.querySelectorAll("[data-tab]").forEach(node => node.classList.toggle("active", node.dataset.tab === page));
+    document.querySelector("#securityGate").hidden = page !== "gate";
+  };
+  window.showThemeFixture("light");
+  window.themeSmokeResult = { ok: true, contrastChecks };
+  console.log("theme_browser_smoke: OK");
+} catch (error) {
+  window.themeSmokeResult = { ok: false, error: error.stack || String(error) };
+  console.error(error);
+}
+
+function contrast(a, b) {
+  const luminance = value => {
+    const channels = value.match(/[\d.]+/g).slice(0, 3).map(Number).map(v => {
+      v /= 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4;
+    });
+    return channels[0] * .2126 + channels[1] * .7152 + channels[2] * .0722;
+  };
+  const x = luminance(a), y = luminance(b);
+  return (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+}
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@ assert.match(list, /showRenameEditor\(card, draft, onRename\)/);
 assert.doesNotMatch(panel, /confirm\(/);
 assert.doesNotMatch(panel, /prompt\(/);
 assert.match(css, /\.draft-card\s*\{[^}]*position:\s*relative;/s);
-assert.match(css, /\.draft-project-select-field select\s*\{[^}]*background:\s*#080b0f;/s);
-assert.match(css, /\.draft-project-select-field select option\s*\{[^}]*background:\s*#080b0f;/s);
+assert.match(css, /\.draft-project-select-field select\s*\{[^}]*background:\s*var\(--theme-field-bg, #080b0f\);/s);
+assert.match(css, /\.draft-project-select-field select option\s*\{[^}]*background:\s*var\(--theme-field-bg, #080b0f\);/s);
 
 console.log("draft_delete_confirmation_contract_smoke: OK");

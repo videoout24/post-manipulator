@@ -6,6 +6,13 @@ Post Manipulator is a Telegram Mini App for composing Rich Messages, managing pr
 
 The application runs only inside **Telegram Desktop**. Opening it as a regular browser page is intentionally blocked.
 
+Choose Light, Dark, or `Telegram (auto)` in Settings → General → Appearance.
+Dark is the default. Changes apply immediately without reloading, and the choice
+is saved locally for the next launch, including the password screen. Auto follows
+Telegram's light or dark theme, falling back to the system color scheme when
+Telegram's value is unavailable. Switching themes preserves the open document,
+selection, and editing history.
+
 The project is a practical MVP for composing, publishing, and managing interconnected posts. It is built around Telegram capabilities and requires neither an application backend nor paid hosting.
 
 ## Features
@@ -132,7 +139,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.7.22
+https://videoout24.github.io/post-manipulator/?build=1.8.5
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -209,7 +216,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.7.22`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.8.5`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 
@@ -218,5 +225,12 @@ Run smoke tests with Node.js:
 ```bash
 for test_file in tests/*_smoke.mjs; do node "$test_file"; done
 ```
+
+For the browser theme check, run `python3 -m http.server 8000` and open
+`http://localhost:8000/tests/theme_browser_smoke.html` in a regular browser.
+The console reports `theme_browser_smoke: OK`; details are in
+`window.themeSmokeResult`. This isolated UI fixture does not connect a bot.
+Use `showThemeFixture("light", "settings")` for visual checks; `dark` and the
+`editor` / `gate` pages are also available.
 
 The complete authorization and Telegram CloudStorage flow can be tested only in Telegram Desktop. Never publish the Bot API token in source code, commits, or GitHub Pages settings.

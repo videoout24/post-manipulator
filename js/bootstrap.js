@@ -1,4 +1,4 @@
-import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.0";
+import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.5";
 import { AppDatabase } from "./storage/AppDatabase.js?v=1.7.1";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
 import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.5.9";
@@ -10,8 +10,10 @@ import { SECURITY_GATE_CONFIG } from "./security/SecurityGateConfig.js?v=1.7.5";
 import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.15";
 import { TelegramEnvironmentGate, TelegramEnvironmentError } from "./security/TelegramEnvironmentGate.js?v=1.7.0";
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
+import { themePreferences } from "./core/ThemePreferences.js?v=1.8.5";
 
 const documentRoot = globalThis.document;
+themePreferences.start();
 applyDocumentTranslations(documentRoot);
 const appShell = documentRoot?.querySelector?.("#appShell");
 const gateView = new SecurityGateView({ root: documentRoot?.querySelector?.("#securityGate") });
@@ -88,7 +90,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.7.22");
+      const { startApplication } = await import("./app.js?v=1.8.5");
       application = await startApplication({
         appDb,
         token: result.token,

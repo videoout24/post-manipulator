@@ -1,6 +1,7 @@
-import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.3";
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.5";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { SseProbe } from "../network/SseProbe.js?v=1.7.19";
+import { themePreferences } from "../core/ThemePreferences.js?v=1.8.5";
 
 const NATIVE_INTEGRATION_KEY = "telegramNativeIntegration";
 const NETWORK_PANEL_START_EXPANDED_KEY = "networkPanelStartExpanded";
@@ -72,6 +73,9 @@ export class TelegramSettingsView {
   }
 
   #bind() {
+    this.root.querySelector("#appThemePreference")?.addEventListener("change", event => {
+      themePreferences.setPreference(event.target.value);
+    });
     this.root.querySelector("#appLanguagePreference")?.addEventListener("change", event => {
       setLanguagePreference(event.target.value);
       globalThis.location?.reload?.();
@@ -174,6 +178,8 @@ export class TelegramSettingsView {
     const persistence = this.storagePersistence;
     const languagePreference = this.root.querySelector("#appLanguagePreference");
     if (languagePreference) languagePreference.value = getLanguagePreference();
+    const themePreference = this.root.querySelector("#appThemePreference");
+    if (themePreference) themePreference.value = themePreferences.getPreference();
     const sseBaseUrl = this.root.querySelector("#sseBaseUrl");
     if (sseBaseUrl && this.documentRoot?.activeElement !== sseBaseUrl) sseBaseUrl.value = this.sseProbe.getState().baseUrl;
     this.#renderSseProbe(this.sseProbe.getState());
