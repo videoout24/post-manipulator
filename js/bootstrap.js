@@ -1,11 +1,12 @@
-import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.5";
-import { AppDatabase } from "./storage/AppDatabase.js?v=1.7.1";
+import { safeErrorDetails } from "./core/SafeDiagnostics.js?v=1.8.6";
+import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.6";
+import { AppDatabase } from "./storage/AppDatabase.js?v=1.8.6";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
-import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.5.9";
+import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.8.6";
 import { OwnerBindingService } from "./telegram/OwnerBindingService.js?v=1.5.9";
-import { TelegramClient } from "./telegram/TelegramClient.js?v=1.5.9";
+import { TelegramClient } from "./telegram/TelegramClient.js?v=1.8.6";
 import { TelegramViewportController } from "./telegram/TelegramViewportController.js?v=1.7.5";
-import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.7.15";
+import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.8.6";
 import { SECURITY_GATE_CONFIG } from "./security/SecurityGateConfig.js?v=1.7.5";
 import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.15";
 import { TelegramEnvironmentGate, TelegramEnvironmentError } from "./security/TelegramEnvironmentGate.js?v=1.7.0";
@@ -90,7 +91,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.8.5");
+      const { startApplication } = await import("./app.js?v=1.8.6");
       application = await startApplication({
         appDb,
         token: result.token,
@@ -106,7 +107,7 @@ async function bootstrapSecurityGate() {
       controller.clearSensitiveState();
       await appDb?.close?.().catch(() => {});
       // Keep the detailed error off screen: it can include third-party payloads.
-      console.error("Application startup failed after security gate", error);
+      console.error("Application startup failed after security gate", safeErrorDetails(error));
     }
   }
 }
@@ -130,7 +131,7 @@ async function recoverBackupBeforeApplication({ appDb, token, verifiedBot, teleg
   } catch (error) {
     inspectionError = error;
     if (state) state.textContent = t("bootstrap.failedToCheckThePinnedCopyManual");
-    console.warn("Pinned backup discovery before application startup failed", error);
+    console.warn("Pinned backup discovery before application startup failed", safeErrorDetails(error));
   }
 
   const shouldPrompt = manual || inspection?.shouldOfferRestore === true;
@@ -312,15 +313,6 @@ function safeMessage(error) {
 }
 
 function logBootstrapFailure(stage, error) {
-  // Environment and authorization errors can contain third-party causes.
-  // The database path is the only one whose full IndexedDB diagnostic is safe.
-  if (stage === "database") {
-    console.error("[Post Manipulator] Local database startup failed", error);
-    return;
-  }
-  console.error("[Post Manipulator] Security bootstrap failed", {
-    stage,
-    name: error?.name || "Error",
-    message: safeMessage(error)
-  });
+  const label = stage === "database" ? "Local database startup failed" : "Security bootstrap failed";
+  console.error(`[Post Manipulator] ${label}`, safeErrorDetails(error));
 }

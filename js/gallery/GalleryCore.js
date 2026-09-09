@@ -1,5 +1,6 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 const SETTINGS_KEY = "gallerySettings";
+let uploadSequence = 0;
 const DEFAULT_SETTINGS = Object.freeze({
   deleteSourceAfterIndexing: false
 });
@@ -90,17 +91,51 @@ export class GalleryCore {
     return this.store.upsertTopic({ ...topic, source: "gallery" });
   }
 
-  async deleteTopic(threadId) {
+  async getTopicDeletionInfo(threadId) {
     const id = Number(threadId || 0);
-    if (!id) throw new Error(t("gallery.galleryCore.invalidMessageThreadId"));
-    const remote = await this.telegramCore.topics.delete(id);
-    const assets = await this.store.list({ threadId: id });
-    if (assets.length) {
-      const topic = await this.store.markTopicDeleted(id);
-      return { threadId: id, retained: true, assetCount: assets.length, topic, alreadyMissing: !!remote?.alreadyMissing };
+    if (!Number.isSafeInteger(id) || id <= 0) throw new Error(t("gallery.galleryCore.invalidMessageThreadId"));
+    const [topic, assets] = await Promise.all([this.store.getTopic(id), this.store.list({ threadId: id })]);
+    if (!topic) throw new Error(t("gallery.topicDelete.notFound"));
+    return { threadId: id, topic, assets, assetCount: assets.length, hasRemote: !topic.telegramDeleted };
+  }
+
+  async deleteTopic(threadId, { deleteFromBot = false, deleteFromEditor = false } = {}) {
+    let info = await this.getTopicDeletionInfo(threadId);
+    const id = info.threadId;
+    const removeRemote = deleteFromBot && info.hasRemote;
+    if (!removeRemote && !deleteFromEditor) throw new Error(t("gallery.topicDelete.chooseScope"));
+
+    // Check every index before touching Telegram or the local folder. A used
+    // asset must not cause a partially deleted topic.
+    if (deleteFromEditor) await this.#assertTopicAssetsUnused(info.assets);
+    let remote = null;
+    if (removeRemote) {
+      remote = await this.telegramCore.topics.delete(id);
+      await this.store.markTopicDeleted(id);
+      // Uploads/updates may have arrived while the Telegram request was pending.
+      info = await this.getTopicDeletionInfo(id);
     }
-    await this.store.removeTopic(id);
-    return { threadId: id, retained: false, assetCount: 0, topic: null, alreadyMissing: !!remote?.alreadyMissing };
+    if (deleteFromEditor) {
+      await this.#assertTopicAssetsUnused(info.assets);
+      await this.store.removeTopicAndAssets(id, info.assets);
+      await Promise.all(info.assets.map(asset => this.thumbnails.remove(asset.id)));
+    }
+    return {
+      threadId: id,
+      retained: !deleteFromEditor,
+      assetCount: info.assetCount,
+      topic: deleteFromEditor ? null : info.topic,
+      deletedFromBot: removeRemote,
+      deletedFromEditor: deleteFromEditor,
+      alreadyMissing: !!remote?.alreadyMissing
+    };
+  }
+
+  async #assertTopicAssetsUnused(assets) {
+    for (const asset of assets) {
+      const usages = await this.findAssetUsages(asset.id);
+      if (usages.length) throw new GalleryAssetInUseError(asset.id, usages);
+    }
   }
 
   async uploadFiles(files, { threadId, caption = "" } = {}) {
@@ -115,10 +150,11 @@ export class GalleryCore {
 
     const assets = [];
     const failures = [];
+    const uploadId = ++uploadSequence;
     for (let index = 0; index < selected.length; index += 1) {
       const file = selected[index];
       try {
-        this.events?.emit("gallery:upload-progress", { state: "uploading", current: index + 1, total: selected.length, fileName: file.name || "file" });
+        this.events?.emit("gallery:upload-progress", { uploadId, state: "uploading", current: index + 1, total: selected.length, fileName: file.name || "file" });
         const message = await this.client.uploadMedia({
           chatId: Number(owner.chatId),
           messageThreadId: topicId,
@@ -143,7 +179,7 @@ export class GalleryCore {
       }
     }
     const result = { assets, failures, total: selected.length };
-    this.events?.emit("gallery:upload-progress", { state: failures.length ? "partial" : "complete", ...result });
+    this.events?.emit("gallery:upload-progress", { uploadId, state: failures.length ? "partial" : "complete", ...result });
     if (failures.length) {
       const error = new Error(t("gallery.galleryCore.uploadedOfErrors", { 0: assets.length, 1: selected.length, 2: failures.length }));
       error.uploadResult = result;
@@ -254,4 +290,4 @@ function describeAssetUsage(usage) {
   if (usage.kind === "draft") return t("gallery.galleryCore.draft", { 0: usage.draftTitle || usage.draftId });
   return t("gallery.galleryCore.currentEditorDocument");
 }
-import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.5.9";
+import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.8.6";

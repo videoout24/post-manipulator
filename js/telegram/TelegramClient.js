@@ -1,17 +1,20 @@
-import { t } from "../i18n/index.js?v=1.8.1";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
 const DEFAULT_UPLOAD_TIMEOUT_MS = 120_000;
 const LONG_POLLING_GRACE_MS = 10_000;
+let operationSequence = 0;
 
 export class TelegramApiError extends Error {
-  constructor(message, { method = "", errorCode = 0, description = "", parameters = null, cause = null, timedOut = false } = {}) {
-    super(message || description || "Telegram API error", cause ? { cause } : undefined);
+  constructor(message, { method = "", errorCode = 0, description = "", parameters = null, timedOut = false } = {}) {
+    // Fetch causes can retain authenticated request URLs. Do not attach them to
+    // propagated errors, including errors later reported as unhandled promises.
+    super(redactTelegramSecrets(message || description || "Telegram API error"));
     this.name = "TelegramApiError";
     this.method = method;
     this.errorCode = errorCode;
-    this.description = description || message || "";
+    this.description = redactTelegramSecrets(description || message || "");
     this.parameters = parameters || null;
     this.timedOut = Boolean(timedOut);
   }
@@ -29,6 +32,12 @@ export class TelegramApiError extends Error {
   isTopicProblem() {
     return /message thread not found|thread.*not found|topic.*not found|topic.*closed|message_thread_id|topic_id_invalid/i.test(this.description);
   }
+}
+
+function redactTelegramSecrets(value) {
+  return String(value)
+    .replace(/(\/(?:file\/)?bot)[^/\s?#]+/gi, "$1[REDACTED]")
+    .replace(/\b\d{5,}:[A-Za-z0-9_-]{20,}\b/g, "[REDACTED]");
 }
 
 export class TelegramClient {
@@ -55,16 +64,30 @@ export class TelegramClient {
   hasToken() { return Boolean(this.#token); }
 
   async call(method, params = {}, { signal } = {}) {
-    if (isScheduledMutation(method)) {
-      return this.scheduler.schedule(
+    return this.#trackOperation(method, () => isScheduledMutation(method)
+      ? this.scheduler.schedule(
         () => this.#callNow(method, params, { signal }),
         {
           chatId: params?.chat_id,
           coalesceKey: telegramCoalesceKey(method, params)
         }
-      );
+      )
+      : this.#callNow(method, params, { signal }));
+  }
+
+  async #trackOperation(method, operation, { fileName = "" } = {}) {
+    if (method === "getUpdates") return operation();
+    const id = ++operationSequence;
+    // Start before the scheduler: rate-limit waits/retries are part of the action.
+    this.events?.emit?.("telegram:operation-start", { id, method, fileName });
+    let success = false;
+    try {
+      const result = await operation();
+      success = true;
+      return result;
+    } finally {
+      this.events?.emit?.("telegram:operation-end", { id, method, success });
     }
-    return this.#callNow(method, params, { signal });
   }
 
   async #callNow(method, params = {}, { signal } = {}) {
@@ -170,7 +193,7 @@ export class TelegramClient {
   uploadMedia({ chatId, messageThreadId = null, file, caption = "", type = null } = {}, options = {}) {
     if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "uploadMedia" });
     const media = uploadMediaMethod(file, type);
-    return this.scheduler.schedule(
+    return this.#trackOperation(media.method, () => this.scheduler.schedule(
       () => this.#callMultipart(media.method, {
         chat_id: chatId,
         message_thread_id: messageThreadId,
@@ -178,11 +201,11 @@ export class TelegramClient {
         [media.field]: file
       }, options),
       { chatId }
-    );
+    ), { fileName: file.name || "file" });
   }
   uploadDocument({ chatId, messageThreadId = null, file, caption = "" } = {}, options = {}) {
     if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "sendDocument" });
-    return this.scheduler.schedule(
+    return this.#trackOperation("sendDocument", () => this.scheduler.schedule(
       () => this.#callMultipart("sendDocument", {
         chat_id: chatId,
         message_thread_id: messageThreadId,
@@ -190,7 +213,7 @@ export class TelegramClient {
         document: file
       }, options),
       { chatId }
-    );
+    ), { fileName: file.name || "file" });
   }
   deleteMessage(chatId, messageId, options) { return this.call("deleteMessage", { chat_id: chatId, message_id: messageId }, options); }
   pinChatMessage(chatId, messageId, { disableNotification = true } = {}, options) {

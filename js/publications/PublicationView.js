@@ -1,8 +1,9 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.4";
+import { getLocale, t } from "../i18n/index.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.7.15";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.8.6";
+import { getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 
 export class PublicationView {
   constructor({
@@ -812,6 +813,11 @@ export class PublicationView {
       this.notifications?.show?.({ message: t("publications.publicationView.firstConnectAnAvailableChannelOrGroup"), type: "warning" });
       return;
     }
+    const eligibility = getProjectPostScheduleEligibility(project, post.id);
+    if (!eligibility.eligible) {
+      this.notifications?.show?.({ message: t("project.schedule.previousRequired"), type: "warning" });
+      return;
+    }
     const targetChatIds = [...new Set((project.posts || [])
       .map(item => Number(item.deployments?.production?.chatId || item.schedule?.chatId || 0))
       .filter(Boolean))];
@@ -855,9 +861,16 @@ export class PublicationView {
     const time = document.createElement("input");
     time.type = "datetime-local";
     time.step = "60";
-    time.min = datetimeLocalValue(Date.now() + 60_000);
-    time.value = datetimeLocalValue(Number(post?.schedule?.scheduledAt || Date.now() + 10 * 60_000));
+    const minimum = Math.ceil(Math.max(Date.now() + 1, eligibility.minScheduledAt) / 60_000) * 60_000;
+    time.min = datetimeLocalValue(minimum);
+    if (eligibility.maxScheduledAt !== null) time.max = datetimeLocalValue(eligibility.maxScheduledAt);
+    const preferred = Math.max(minimum, Number(post?.schedule?.scheduledAt || Date.now() + 10 * 60_000));
+    time.value = datetimeLocalValue(Math.min(preferred, eligibility.maxScheduledAt ?? Infinity));
     timeField.append(time);
+    if (eligibility.prerequisitePostIds.length) {
+      timeField.append(el("span", "settings-hint", t("project.schedule.earliest", { time: formatPublicationDate(minimum) })));
+    }
+    time.addEventListener("input", () => time.setCustomValidity(""));
 
     const commentsField = el("label", "publication-comments-option");
     commentsField.append(el("span", "", t("publications.publicationView.comments")));
@@ -879,6 +892,11 @@ export class PublicationView {
       const scheduledAt = new Date(time.value).getTime();
       if (!Number.isFinite(scheduledAt) || scheduledAt <= Date.now()) {
         time.setCustomValidity(t("publications.publicationView.specifyAFutureTime"));
+        time.reportValidity();
+        return;
+      }
+      if (scheduledAt < eligibility.minScheduledAt || (eligibility.maxScheduledAt !== null && scheduledAt > eligibility.maxScheduledAt)) {
+        time.setCustomValidity(t(scheduledAt < eligibility.minScheduledAt ? "project.schedule.tooEarly" : "project.schedule.tooLate"));
         time.reportValidity();
         return;
       }

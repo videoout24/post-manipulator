@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 export class TopicTransport {
   constructor({ client, ownerBinding, events = null }) {
     this.client = client;
@@ -71,4 +71,4 @@ function normalizeName(value) {
   if ([...name].length > 128) throw new Error(t("telegram.topicTransport.theTopicNameMustNotExceed128"));
   return name;
 }
-import { TelegramApiError } from "./TelegramClient.js?v=1.5.9";
+import { TelegramApiError } from "./TelegramClient.js?v=1.8.6";

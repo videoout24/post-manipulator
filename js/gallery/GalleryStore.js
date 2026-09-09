@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
 const ASSET_PREFIX = "asset_";
@@ -145,6 +145,17 @@ export class GalleryStore {
     await this.db.delete("topics", `${TOPIC_PREFIX}${id}`);
     this.events?.emit("gallery:topic-removed", { threadId: id });
     return true;
+  }
+
+  async removeTopicAndAssets(threadId, assets) {
+    const id = Number(threadId);
+    await this.db.deleteMany([
+      ...assets.map(asset => ({ store: "gallery", key: asset.id })),
+      { store: "topics", key: `${TOPIC_PREFIX}${id}` }
+    ]);
+    // Notify views only once the complete local deletion has committed.
+    for (const asset of assets) this.events?.emit("gallery:asset-removed", { id: asset.id });
+    this.events?.emit("gallery:topic-removed", { threadId: id });
   }
 
   async listTopics() {

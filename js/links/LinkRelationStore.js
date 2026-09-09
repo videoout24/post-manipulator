@@ -1,7 +1,7 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { telegramMessageUrl } from "../project/ProjectDeploymentResolver.js?v=1.5.9";
-import { materializeRelationUrl, relationIdsInAst } from "./LinkRelationAst.js?v=1.5.9";
+import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "./LinkRelationAst.js?v=1.5.9";
 
 export const LINK_RELATION_STATUS = Object.freeze({
   PENDING: "pending",
@@ -173,6 +173,60 @@ export class LinkRelationStore {
     await this.db.delete("link_relations", id);
     this.events?.emit("links:changed", { reason: "removed", id, relation: relation ? structuredClone(relation) : null });
     return relation;
+  }
+
+  reconcileMissingEndpoints() {
+    if (this.cleanupPromise) return this.cleanupPromise;
+    this.cleanupPromise = this.#removeMissingEndpoints().finally(() => { this.cleanupPromise = null; });
+    return this.cleanupPromise;
+  }
+
+  async #removeMissingEndpoints() {
+    const removed = [];
+    for (const relation of await this.list()) {
+      if (await this.#endpointExists(relation.source) && await this.#endpointExists(relation.target)) continue;
+      await this.#clearStoredMarkers(relation.id);
+      await this.db.delete("link_relations", relation.id);
+      removed.push(relation.id);
+      // Missing endpoints are a local repair, not a request to edit Telegram.
+      this.events?.emit("links:changed", { reason: "removed", id: relation.id, relation, localOnly: true });
+    }
+    return removed;
+  }
+
+  async #endpointExists(endpoint) {
+    if (endpoint?.kind === "publication") return !!await this.db.get("publications", endpoint.id, null);
+    if (endpoint?.kind === "draft") {
+      if (await this.db.get("drafts", endpoint.id, null)) return true;
+      // A scheduled/published draft can still be a target while its relation
+      // is being rebound to the publication identity.
+      return (await this.db.all("publications")).some(row => String(row.value?.source?.draftId || "") === String(endpoint.id));
+    }
+    if (endpoint?.kind === "project_post") {
+      const [legacyProjectId, ...legacyPostId] = String(endpoint.id || "").split(":");
+      const project = await this.db.get("projects", endpoint.projectId || legacyProjectId, null);
+      const postId = String(endpoint.postId || legacyPostId.join(":"));
+      return !!project?.posts?.some(post => String(post.id) === postId);
+    }
+    // External URLs and the transient editor cannot be checked in local storage.
+    return true;
+  }
+
+  async #clearStoredMarkers(relationId) {
+    for (const store of ["projects", "drafts", "publications"]) {
+      for (const row of await this.db.all(store)) {
+        const record = structuredClone(row.value);
+        const documents = store === "projects" ? record.posts || [] : [record];
+        const changed = documents.filter(doc => relationIdsInAst(doc.messageAst).includes(String(relationId)));
+        if (!changed.length) continue;
+        for (const doc of changed) doc.messageAst = removeLinkRelationFromAst(doc.messageAst, relationId);
+        record.updatedAt = Date.now();
+        await this.db.put(store, row.key || record.id, record);
+        if (store === "projects") this.events?.emit("project:changed", { reason: "link-removed", projectId: record.id, project: record, affectedPostIds: changed.map(doc => doc.id) });
+        if (store === "drafts") this.events?.emit("draft:changed", { reason: "link-removed", draftId: record.id, draft: record });
+        if (store === "publications") this.events?.emit("telegram:publication-updated", record);
+      }
+    }
   }
 
   async #publicationForTarget(target) {

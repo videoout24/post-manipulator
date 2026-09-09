@@ -1,10 +1,10 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
-import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";
+import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "./ProjectPublicationEligibility.js?v=1.8.6";
 import { productionContentSnapshot } from "./ProjectPublicationState.js?v=1.5.9";
 import { isLinearProject } from "./ProjectStore.js?v=1.7.6";
-import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.5.9";
+import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.8.6";
 
 const MAX_TIMER_DELAY = 2_147_000_000;
 const SCHEDULE_RETRY_DELAY = 60_000;
@@ -20,6 +20,8 @@ export class ProjectPublicationService {
   constructor({ db, store, compiler, validator, client, renderer, targets, events = null, editorSession = null } = {}) {
     Object.assign(this, { db, store, compiler, validator, client, renderer, targets, events, editorSession });
     this.scheduleTimers = new Map();
+    this.scheduleRuns = new Map();
+    this.stopped = false;
     this.structureSyncs = new Map();
     this.unsubscribers = [
       this.events?.on?.("project:changed", event => {
@@ -32,10 +34,12 @@ export class ProjectPublicationService {
   }
 
   async initialize() {
+    this.stopped = false;
     for (const project of await this.store.listProjects()) this.#syncProjectSchedules(project);
   }
 
   stop() {
+    this.stopped = true;
     for (const entry of this.scheduleTimers.values()) clearTimeout(entry.timer);
     this.scheduleTimers.clear();
     this.structureSyncs.clear();
@@ -179,10 +183,12 @@ export class ProjectPublicationService {
     this.#validate(project);
     this.#assertCommentsConfig(target, commentsEnabled);
     this.#assertSingleProductionTarget(project, target.chatId);
-    const eligibility = getProjectPostPublicationEligibility(project, post.id, new ProjectIndex(project));
+    const eligibility = getProjectPostScheduleEligibility(project, post.id, new ProjectIndex(project));
     if (!eligibility.eligible) {
-      throw new Error(t("project.projectPublicationService.firstPublishThePostMapOnWhich"));
+      throw new Error(t("project.schedule.previousRequired"));
     }
+    if (publishAt < eligibility.minScheduledAt) throw new Error(t("project.schedule.tooEarly"));
+    if (eligibility.maxScheduledAt !== null && publishAt > eligibility.maxScheduledAt) throw new Error(t("project.schedule.tooLate"));
 
     const schedule = {
       scheduledAt: publishAt,
@@ -208,6 +214,9 @@ export class ProjectPublicationService {
     const post = project.posts.find(item => String(item.id) === String(postId));
     if (!post?.schedule || post.publication?.state !== "scheduled") {
       throw new Error(t("project.projectPublicationService.thisProjectPostIsNotScheduled"));
+    }
+    if (getProjectPostScheduleEligibility(project, post.id).scheduledDependentPostIds.length) {
+      throw new Error(t("project.schedule.cancelFollowingFirst"));
     }
     const target = await this.#requireTarget(post.schedule.chatId);
     this.#clearSchedule(project.id, post.id);
@@ -352,19 +361,23 @@ export class ProjectPublicationService {
   async #syncPosts(project, postIds, target, { allowCreate = false, commentsEnabled = undefined, phase = "updating" } = {}) {
     const queue = [...new Set((postIds || []).map(String))];
     let current = project;
-    for (let i = 0; i < queue.length; i += 1) {
-      const result = await this.#syncPost(current, queue[i], target, { allowCreate, commentsEnabled });
-      current = result.project;
-      this.#emit(phase, current, {
-        target,
-        total: queue.length,
-        current: i + 1,
-        postId: queue[i],
-        action: result.action,
-        postIds: queue
-      });
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        const result = await this.#syncPost(current, queue[i], target, { allowCreate, commentsEnabled });
+        current = result.project;
+        this.#emit(phase, current, {
+          target,
+          total: queue.length,
+          current: i + 1,
+          postId: queue[i],
+          action: result.action,
+          postIds: queue
+        });
+      }
+      return current;
+    } finally {
+      this.events?.emit("project:publication-phase-ended", { projectId: project.id });
     }
-    return current;
   }
 
   // A Map renders the publication state and planned time of each target post.
@@ -623,6 +636,7 @@ export class ProjectPublicationService {
   }
 
   #armSchedule(projectId, postId, schedule, { runAt = Number(schedule?.scheduledAt || 0) } = {}) {
+    if (this.stopped) return;
     const scheduledAt = Number(schedule?.scheduledAt || 0);
     if (!scheduledAt || !schedule?.chatId) return;
     const key = scheduleKey(projectId, postId);
@@ -636,7 +650,7 @@ export class ProjectPublicationService {
         this.#armSchedule(projectId, postId, schedule);
         return;
       }
-      this.#runScheduledPost(projectId, postId, schedule).catch(() => {});
+      this.#runScheduledPosts(projectId).catch(() => {});
     }, delay);
     this.scheduleTimers.set(key, { timer, scheduledAt, runAt: Number(runAt || scheduledAt) });
   }
@@ -649,26 +663,43 @@ export class ProjectPublicationService {
     this.scheduleTimers.delete(key);
   }
 
-  async #runScheduledPost(projectId, postId, expectedSchedule) {
-    const project = await this.store.getProject(projectId);
-    const post = project?.posts?.find(item => String(item.id) === String(postId));
-    const schedule = post?.publication?.state === "scheduled" ? post.schedule : null;
-    if (!schedule || Number(schedule.scheduledAt) !== Number(expectedSchedule?.scheduledAt)) return;
-    if (Number(schedule.scheduledAt) > Date.now()) {
-      this.#armSchedule(projectId, postId, schedule);
-      return;
-    }
-    try {
-      await this.publishPost(projectId, postId, schedule.chatId, { commentsEnabled: schedule.commentsEnabled !== false });
-    } catch (error) {
-      this.#emit("schedule-error", project, {
-        postId: post.id,
-        postIds: [post.id],
-        scheduledAt: Number(schedule.scheduledAt),
-        error,
-        message: error?.message || String(error)
-      });
-      this.#armSchedule(projectId, postId, schedule, { runAt: Date.now() + SCHEDULE_RETRY_DELAY });
+  async #runScheduledPosts(projectId) {
+    // Timers with the same timestamp must share the Project's publication order.
+    // A run drains all due posts, so timer registration order cannot invert it.
+    const previous = this.scheduleRuns.get(projectId) || Promise.resolve();
+    const current = previous.catch(() => {}).then(() => this.#publishDuePosts(projectId));
+    this.scheduleRuns.set(projectId, current);
+    try { await current; }
+    finally { if (this.scheduleRuns.get(projectId) === current) this.scheduleRuns.delete(projectId); }
+  }
+
+  async #publishDuePosts(projectId) {
+    const initial = await this.store.getProject(projectId);
+    if (!initial) return;
+    for (const postId of publicationOrder(initial)) {
+      if (this.stopped) break;
+      const project = await this.store.getProject(projectId);
+      const post = project?.posts?.find(item => String(item.id) === String(postId));
+      const schedule = post?.publication?.state === "scheduled" ? post.schedule : null;
+      if (!schedule || Number(schedule.scheduledAt) > Date.now()) continue;
+      if (Number(this.scheduleTimers.get(scheduleKey(projectId, postId))?.runAt || 0) > Date.now()) continue;
+      this.#clearSchedule(projectId, postId);
+      if (!getProjectPostPublicationEligibility(project, postId).eligible) {
+        this.#armSchedule(projectId, postId, schedule, { runAt: Date.now() + SCHEDULE_RETRY_DELAY });
+        continue;
+      }
+      try {
+        await this.publishPost(projectId, postId, schedule.chatId, { commentsEnabled: schedule.commentsEnabled !== false });
+      } catch (error) {
+        this.#emit("schedule-error", project, {
+          postId: post.id,
+          postIds: [post.id],
+          scheduledAt: Number(schedule.scheduledAt),
+          error,
+          message: error?.message || String(error)
+        });
+        this.#armSchedule(projectId, postId, schedule, { runAt: Date.now() + SCHEDULE_RETRY_DELAY });
+      }
     }
   }
 

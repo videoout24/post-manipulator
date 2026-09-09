@@ -1,6 +1,6 @@
-import { t } from "../i18n/index.js?v=1.8.0";
-import { TelegramApiError } from "../telegram/TelegramClient.js?v=1.5.9";
-import { BotIdentityMismatchError, BotIdentityProbeTimeoutError } from "../telegram/BotIdentityService.js?v=1.5.9";
+import { t } from "../i18n/index.js?v=1.8.6";
+import { TelegramApiError } from "../telegram/TelegramClient.js?v=1.8.6";
+import { BotIdentityMismatchError, BotIdentityProbeTimeoutError } from "../telegram/BotIdentityService.js?v=1.8.6";
 import { DatabaseStateInspector, MINI_APP_USER_IDENTITY_KEY, PUBLISHER_BOT_IDENTITY_KEY } from "../storage/DatabaseStateInspector.js?v=1.5.9";
 import { InitDataVerificationError, verifyInitData } from "./InitDataVerifier.js?v=1.7.5";
 import { validateNewPassword, validatePassword } from "./PasswordPolicy.js?v=1.5.9";

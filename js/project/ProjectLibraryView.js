@@ -1,8 +1,8 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.0";
-import { createProjectPostCard } from "./ProjectPostCard.js?v=1.7.12";
+import { getLocale, t } from "../i18n/index.js?v=1.8.6";
+import { createProjectPostCard } from "./ProjectPostCard.js?v=1.8.6";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
-import { getProjectPostPublicationEligibility } from "./ProjectPublicationEligibility.js?v=1.5.9";
+import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "./ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { MAX_PROJECT_IMPORT_FILE_BYTES, parseProjectImportText } from "./ProjectImport.js?v=1.7.15";
 
@@ -207,6 +207,7 @@ export class ProjectLibraryView {
     }
     for (const post of project.posts) {
       const eligibility = getProjectPostPublicationEligibility(project, post.id, projectIndex);
+      const scheduling = getProjectPostScheduleEligibility(project, post.id, projectIndex);
       let card = null;
       const deleteButton = this.#postDeleteButton(project, post, () => showCardDeleteConfirmation(card, {
         message: t("editor.projectPostListView.deleteFromProject", { 0: post.title || t("editor.blockInspector.post") }),
@@ -217,7 +218,9 @@ export class ProjectLibraryView {
         variant: "overview",
         selected: post.id === selectedPostId,
         active: project.id === activeId && post.id === this.session.activePostId,
-        showPublicationActions: eligibility.eligible,
+        showPublicationActions: eligibility.eligible || scheduling.eligible || post.publication?.state === "scheduled",
+        canPublish: eligibility.eligible,
+        canSchedule: scheduling.eligible,
         onPublish: this.onPublishPost ? targetPost => this.#publishPost(project, targetPost) : null,
         onSchedule: this.onSchedulePost ? targetPost => this.#schedulePost(project, targetPost) : null,
         onCancelSchedule: this.onCancelPostSchedule ? targetPost => this.#cancelPostSchedule(project, targetPost) : null,

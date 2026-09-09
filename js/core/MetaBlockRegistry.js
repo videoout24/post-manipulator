@@ -1,4 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { safeErrorDetails } from "./SafeDiagnostics.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.8.6";
 
 export class MetaBlockRegistry {
   constructor(blockRegistry, options = "rich-message-meta-blocks") {
@@ -39,7 +40,7 @@ export class MetaBlockRegistry {
   save() {
     if (this.db) {
       this.db.put("settings", "editor.metaBlocks", this.blocks)
-        .catch(error => console.error("IndexedDB meta block save failed", error));
+        .catch(error => console.error("IndexedDB meta block save failed", safeErrorDetails(error)));
     }
   }
 

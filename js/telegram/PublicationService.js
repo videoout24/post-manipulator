@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 
@@ -13,7 +13,7 @@ export class PublicationService {
     this.scheduleTimers = new Map();
     this.recordOperations = new Map();
     this.linkUnsubscribe = this.events?.on?.("links:changed", event => {
-      if (event?.reason !== "removed" || event?.relation?.source?.kind !== "publication") return;
+      if (event?.reason !== "removed" || event?.localOnly || event?.relation?.source?.kind !== "publication") return;
       this.#removeRelationFromPublishedSource(event.relation).catch(error => {
         this.events?.emit?.("ui:toast", { message: t("telegram.publicationService.failedToUpdateUnlinkedPublication", { 0: error?.message || error }), type: "error" });
       });
@@ -382,6 +382,7 @@ export class PublicationService {
       if (!error?.isMessageMissing?.()) throw error;
     }
     await this.db.delete("publications", recordId);
+    await this.linkRelations?.reconcileMissingEndpoints?.();
     this.events?.emit("telegram:publications-changed", await this.list());
     return true;
   }
@@ -405,6 +406,7 @@ export class PublicationService {
     const record = await this.db.get("publications", recordId, null);
     if (!record) return false;
     await this.db.delete("publications", recordId);
+    await this.linkRelations?.reconcileMissingEndpoints?.();
     this.events?.emit("telegram:publications-changed", await this.list());
     return true;
   }
@@ -487,12 +489,16 @@ export class PublicationService {
     if (!relationIdsInAst(source.messageAst).includes(String(relation.id))) return false;
     const nextAst = removeLinkRelationFromAst(source.messageAst, relation.id);
     const envelope = this.renderer.renderEnvelope(astTree(nextAst));
-    await this.client.editRichMessage({
-      chatId: source.chatId,
-      messageId: source.messageId,
-      richMessage: envelope.richMessage,
-      replyMarkup: envelope.replyMarkup
-    });
+    try {
+      await this.client.editRichMessage({
+        chatId: source.chatId,
+        messageId: source.messageId,
+        richMessage: envelope.richMessage,
+        replyMarkup: envelope.replyMarkup
+      });
+    } catch (error) {
+      if (!error?.isMessageMissing?.()) throw error;
+    }
     source.messageAst = nextAst;
     source.editedAt = Date.now();
     await this.db.put("publications", source.id, source);

@@ -1,4 +1,5 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.0";
+import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
+import { getLocale, t } from "../i18n/index.js?v=1.8.6";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { hasUnappliedProductionChanges } from "./ProjectPublicationState.js?v=1.5.9";
 import { projectMapEntryText } from "./ProjectMapText.js?v=1.7.11";
@@ -19,6 +20,8 @@ export function createProjectPostCard({
   onNavigatePost = null,
   onNavigateMap = null,
   showPublicationActions = false,
+  canPublish = showPublicationActions,
+  canSchedule = showPublicationActions,
   onPublish = null,
   onSchedule = null,
   onCancelSchedule = null,
@@ -64,15 +67,16 @@ export function createProjectPostCard({
     publish.className = "project-publication-publish";
     publish.textContent = t("editor.draftListView.publish");
     publish.title = t("project.projectPostCard.publishThisProjectPostOnTelegram");
+    publish.disabled = !canPublish;
+    if (!canPublish) publish.title = t("project.schedule.publishPreviousFirst");
     publish.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
       onPublish(post);
     };
-    footer.append(
-      publish,
-      onSchedule ? scheduleButton(post, onSchedule) : placeholderButton(t("editor.draftListView.postpone"), t("project.projectPostCard.publicationsTheScheduledPublicationWillBeConnected"))
-    );
+    const schedule = onSchedule ? scheduleButton(post, onSchedule) : placeholderButton(t("editor.draftListView.postpone"), t("project.projectPostCard.publicationsTheScheduledPublicationWillBeConnected"));
+    if (!canSchedule) schedule.disabled = true;
+    footer.append(publish, schedule);
     card.append(footer);
   } else if (scheduled && showPublicationActions && onCancelSchedule) {
     const footer = el("div", "project-post-publication-actions");
@@ -377,7 +381,7 @@ async function hydrateMediaPreview(wrap, node, { gallery, thumbnails }) {
     thumb.replaceChildren(img);
     if (node.type === "video") thumb.append(el("span", "project-post-preview-video-badge", "▶"));
   } catch (error) {
-    console.warn("Project post media preview failed", error);
+    console.warn("Project post media preview failed", safeErrorDetails(error));
   }
 }
 

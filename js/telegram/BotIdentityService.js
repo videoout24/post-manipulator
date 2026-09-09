@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.0";
-import { TelegramClient } from "./TelegramClient.js?v=1.5.9";
+import { t } from "../i18n/index.js?v=1.8.6";
+import { TelegramClient } from "./TelegramClient.js?v=1.8.6";
 
 const IDENTITY_STORE = "bindings";
 const IDENTITY_KEY = "botIdentity";

@@ -1,6 +1,6 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { replaceRichTextRange, richTextToPlain, sliceRichText } from "../core/RichText.js?v=1.5.9";
-import { findLinkRelationAtRange, unwrapLinkRelation } from "./LinkRelationAst.js?v=1.5.9";
+import { findLinkRelationAtRange, relationIdsInAst, removeLinkRelationFromAst, unwrapLinkRelation } from "./LinkRelationAst.js?v=1.5.9";
 import { internalLinkUrl, linkTargetKey, normalizeLinkTarget, sameLinkTarget } from "./LinkTarget.js?v=1.5.9";
 
 // Link creation intentionally has no modal or transient "selection mode". A
@@ -24,10 +24,18 @@ export class LinkingController {
       this.events?.on?.("links:select-target-requested", request => this.attachInline(request?.source || request).catch(error => this.#report(error))),
       this.events?.on?.("links:block-target-requested", source => this.attachBlock(source).catch(error => this.#report(error))),
       this.events?.on?.("links:state-requested", () => this.#emitState()),
-      this.events?.on?.("links:changed", () => this.refreshRelations().catch(error => this.#report(error))),
+      this.events?.on?.("links:changed", event => {
+        if (event?.localOnly && event.reason === "removed") this.#clearRelationFromCurrentTree(event.relation, event.id);
+        this.refreshRelations().catch(error => this.#report(error));
+      }),
+      this.events?.on?.("telegram:publications-changed", () => this.#repairMissingEndpoints()),
+      this.events?.on?.("draft:changed", event => { if (event?.reason === "deleted") this.#repairMissingEndpoints(); }),
+      this.events?.on?.("project:removed", () => this.#repairMissingEndpoints()),
+      this.events?.on?.("project:post-removed", () => this.#repairMissingEndpoints()),
       this.events?.on?.("tree:changed", () => this.scheduleReconcile())
     );
     this.refreshRelations().catch(error => this.#report(error));
+    this.#repairMissingEndpoints();
     this.#emitSlot();
     return this;
   }
@@ -158,6 +166,13 @@ export class LinkingController {
     const rows = await this.linkRelations.list?.() || [];
     if (revision !== this.refreshRevision) return;
     this.relations = new Map(rows.filter(item => item?.id).map(item => [String(item.id), structuredClone(item)]));
+    const orphaned = new Set();
+    this.tree?.walk?.(node => {
+      for (const id of relationIdsInAst({ props: node.props })) {
+        if (!this.relations.has(id)) orphaned.add(id);
+      }
+    });
+    for (const id of orphaned) this.#clearRelationFromCurrentTree(null, id);
     this.#syncActiveBlockUrls();
     this.#emitRelations();
   }
@@ -212,6 +227,19 @@ export class LinkingController {
   }
 
   #clearRelationFromCurrentTree(relation, id) {
+    // A deleted source/target or an old orphaned marker may have no relation
+    // metadata left. Find its markers in the live tree without replacing edits.
+    if (this.tree?.walk) {
+      const nodes = [];
+      this.tree.walk(node => {
+        if (relationIdsInAst({ props: node.props }).includes(String(id))) nodes.push(node);
+      });
+      for (const node of nodes) {
+        const { props } = removeLinkRelationFromAst({ props: node.props }, id);
+        this.controller.updateNodeProperties(node.id, props, { inspectorSource: false });
+      }
+      return nodes.length > 0;
+    }
     const nodeId = relation?.source?.nodeId;
     const node = nodeId ? this.tree?.find?.(nodeId) : null;
     if (!node) return false;
@@ -276,6 +304,10 @@ export class LinkingController {
 
   #report(error) {
     this.events?.emit?.("ui:toast", { message: t("links.linkRelationNavigator.connection", { 0: error?.message || error }), type: "error" });
+  }
+
+  #repairMissingEndpoints() {
+    this.linkRelations.reconcileMissingEndpoints?.().catch(error => this.#report(error));
   }
 }
 

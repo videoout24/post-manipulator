@@ -1,4 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.8.6";
 export class AppLifecycle {
   constructor({
     windowRoot = window,
@@ -82,7 +83,7 @@ export class AppLifecycle {
       await service.initialize();
       return true;
     } catch (error) {
-      this.logger.error(`${name} initialization failed`, error);
+      this.logger.error(`${name} initialization failed`, safeErrorDetails(error));
       this.notifications?.show?.({ message: `${name}: ${error.message}`, type: "error" });
       if (name === "Gallery") this.#showGalleryError(error);
       return false;
@@ -98,7 +99,7 @@ export class AppLifecycle {
       // recreate and pin it instead of leaving preview stuck on a stale id.
       if (enabled) await this.telegramCore.editor.preview.sync?.({ force: true });
     } catch (error) {
-      this.logger.error("Preview state initialization failed", error);
+      this.logger.error("Preview state initialization failed", safeErrorDetails(error));
     }
   }
 

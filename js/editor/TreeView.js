@@ -1,4 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.2";
+import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -616,7 +617,7 @@ export class TreeView {
         thumb.replaceChildren(img);
       }
     } catch (error) {
-      console.warn("Canvas media preview failed", error);
+      console.warn("Canvas media preview failed", safeErrorDetails(error));
     }
   }
 

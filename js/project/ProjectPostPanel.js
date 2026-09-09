@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.0";
-import { createProjectPostCard } from "./ProjectPostCard.js?v=1.7.12";
+import { t } from "../i18n/index.js?v=1.8.6";
+import { createProjectPostCard } from "./ProjectPostCard.js?v=1.8.6";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
 

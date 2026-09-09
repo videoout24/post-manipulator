@@ -1,0 +1,221 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Gallery topic deletion browser smoke</title>
+<link rel="stylesheet" href="../style.css">
+<script type="module">
+import { IndexedDbAppDatabase } from "../js/storage/IndexedDbAppDatabase.js";
+import { EventBus } from "../js/core/EventBus.js";
+import { GalleryStore } from "../js/gallery/GalleryStore.js";
+import { GalleryCore } from "../js/gallery/GalleryCore.js";
+import { GalleryView } from "../js/gallery/GalleryView.js";
+import { deleteGalleryTopicDialog } from "../js/gallery/GalleryTopicDeleteDialog.js";
+import { SecurityGateView } from "../js/security/SecurityGateView.js";
+import { createProjectPostListView } from "../js/editor/ProjectPostListView.js";
+import { PublicationView } from "../js/publications/PublicationView.js";
+import { OperationFeedback } from "../js/app/OperationFeedback.js";
+import { applyDocumentTranslations } from "../js/i18n/index.js?v=1.8.6";
+
+// Isolated storage and mock Telegram transport: never bootstrap the application.
+const databaseName = `gallery-delete-smoke-${crypto.randomUUID()}`;
+const db = new IndexedDbAppDatabase({ databaseName });
+const check = (value, message) => { if (!value) throw new Error(message); };
+const until = async predicate => {
+  const end = Date.now() + 5000;
+  while (!await predicate()) {
+    if (Date.now() > end) throw new Error("Timed out waiting for UI");
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+};
+try {
+  const shell = new DOMParser().parseFromString(await (await fetch("../index.html")).text(), "text/html");
+  shell.querySelectorAll("script").forEach(node => node.remove());
+  document.body.replaceChildren(...shell.body.childNodes);
+  document.body.dataset.appLocked = "false";
+  document.querySelector("#appShell").removeAttribute("inert");
+  document.querySelector("#appShell").removeAttribute("aria-hidden");
+  document.documentElement.dataset.theme = "light";
+  applyDocumentTranslations(document);
+  const gate = new SecurityGateView({ root: document.querySelector("#securityGate") });
+  gate.show("UNLOCK_PASSWORD");
+  document.querySelector("#securityGate").hidden = true;
+  document.querySelectorAll("[data-tab-page]").forEach(node => node.classList.toggle("active", node.dataset.tabPage === "gallery"));
+  const events = new EventBus();
+  const store = new GalleryStore({ db, events });
+  const remote = [], thumbs = [];
+  let fail = false, release = null;
+  const thumbnails = { stats: async () => ({ count: 0 }), remove: async id => thumbs.push(id) };
+  const core = new GalleryCore({ db, events, store, thumbnails, telegramCore: { topics: {
+    async delete(id) {
+      remote.push(id);
+      if (release) await release;
+      if (fail) throw new Error("offline");
+      return {};
+    }
+  } } });
+  const seed = async (id, { local = false, empty = false } = {}) => {
+    await store.upsertTopic({ threadId: id, name: id === 9 ? '<img src=x onerror="window.injected=true"> Media' : `Topic ${id}`, telegramDeleted: local });
+    if (!empty) return store.ingest({ type: "photo", fileId: `file-${id}`, fileName: `Photo ${id}.jpg`, source: { threadId: id } });
+  };
+  const asset = await seed(9);
+  await seed(10, { local: true });
+  await seed(11, { empty: true });
+  const root = document.querySelector("#galleryApp");
+  const view = new GalleryView({ root, gallery: core, thumbnails, events });
+  await view.render();
+  check(root.querySelectorAll("[data-gallery-delete-topic]").length === 3, "every topic must have a trash button");
+  const open = async id => {
+    await view.render();
+    root.querySelector(`[data-gallery-delete-topic="${id}"]`).click();
+    await until(() => document.querySelector("#galleryTopicDeleteDialog")?.open);
+    return document.querySelector("#galleryTopicDeleteDialog");
+  };
+  const cancel = async dialog => {
+    dialog.querySelector(".app-modal-dialog-actions button").click();
+    await until(() => !view.topicDeletePending);
+  };
+  let dialog = await open(9);
+  check(dialog.querySelectorAll('input[type="checkbox"]').length === 2, "remote topic with indexes requires two choices");
+  check(dialog.querySelector("button.danger").disabled, "empty selection cannot delete");
+  check(!dialog.querySelector("img") && !window.injected, "topic names must be plain text");
+  await cancel(dialog);
+  check(!remote.length, "cancel must be a no-op");
+  dialog = await open(9);
+  dialog.querySelector('[name="deleteFromBot"]').click();
+  let resume;
+  release = new Promise(resolve => { resume = resolve; });
+  dialog.querySelector("button.danger").click();
+  await until(() => remote.length === 1);
+  check(dialog.querySelector("button.danger").disabled && dialog.querySelector("fieldset").disabled, "pending deletion must disable actions");
+  const escape = new Event("cancel", { cancelable: true });
+  dialog.dispatchEvent(escape);
+  check(escape.defaultPrevented, "pending deletion must not be dismissed");
+  resume(); release = null;
+  await until(() => !view.topicDeletePending);
+  check((await store.getTopic(9)).telegramDeleted && await store.get(asset.id), "bot-only deletion must retain local indexes");
+  dialog = await open(9);
+  check(!dialog.querySelector('input[type="checkbox"]'), "local-only topic needs a direct warning");
+  check(dialog.querySelector(".app-modal-dialog-copy").textContent.includes("1"), "local warning includes index count");
+  dialog.querySelector("button.danger").click();
+  await until(() => !view.topicDeletePending);
+  check(remote.length === 1 && !await store.get(asset.id) && !await store.getTopic(9), "local cleanup must not call Telegram");
+  check(thumbs.includes(asset.id), "local cleanup must invalidate thumbnails");
+
+  await seed(12);
+  dialog = await open(12);
+  dialog.querySelector('[name="deleteFromEditor"]').click();
+  dialog.querySelector("button.danger").click();
+  await until(() => !view.topicDeletePending);
+  check(remote.length === 1 && !await store.getTopic(12), "editor-only choice must leave Telegram untouched");
+  dialog = await open(11);
+  check(!dialog.querySelector('input[type="checkbox"]'), "empty topic needs a regular confirmation");
+  dialog.querySelector("button.danger").click();
+  await until(() => !view.topicDeletePending);
+  check(remote.includes(11) && !await store.getTopic(11), "empty topic removal must clean both sides");
+
+  const used = await seed(13);
+  core.tree = { toJSON: () => ({ props: { galleryId: used.id }, children: [] }) };
+  dialog = await open(13);
+  dialog.querySelectorAll('input[type="checkbox"]').forEach(input => input.click());
+  const before = remote.length;
+  dialog.querySelector("button.danger").click();
+  await until(() => !dialog.querySelector("button.danger").disabled);
+  check(remote.length === before && await store.get(used.id), "used indexes must block both deletions before any remote action");
+  check(dialog.querySelector('[role="status"]').textContent, "usage error must remain in the dialog");
+  await cancel(dialog);
+  core.tree = null;
+
+  fail = true;
+  dialog = await open(13);
+  dialog.querySelectorAll('input[type="checkbox"]').forEach(input => input.click());
+  dialog.querySelector("button.danger").click();
+  await until(() => dialog.querySelector('[role="status"]').textContent === "offline");
+  check(dialog.open && await store.get(used.id), "network failure must preserve indexes and allow retry");
+  fail = false;
+  dialog.querySelector("button.danger").click();
+  await until(() => !view.topicDeletePending);
+  check(!await store.getTopic(13) && !await store.get(used.id), "both-scope retry must finish cleanup");
+
+  // Abort a real IndexedDB transaction after its first queued delete.
+  await db.put("gallery", "rollback", { id: "rollback" });
+  await db.put("topics", "rollback", { id: "rollback" });
+  const originalDelete = IDBObjectStore.prototype.delete;
+  let deletes = 0, aborted = false;
+  IDBObjectStore.prototype.delete = function(key) {
+    if (++deletes === 2) throw new Error("simulated transaction failure");
+    return originalDelete.call(this, key);
+  };
+  try { await db.deleteMany([{ store: "gallery", key: "rollback" }, { store: "topics", key: "rollback" }]); }
+  catch { aborted = true; }
+  finally { IDBObjectStore.prototype.delete = originalDelete; }
+  check(aborted && await db.get("gallery", "rollback") && await db.get("topics", "rollback"), "topic/index deletion must roll back together");
+
+  // Exercise the actual project-card actions and schedule dialog.
+  const future = Math.ceil((Date.now() + 3600000) / 60000) * 60000;
+  const project = { id: "sequence", title: "Sequence", structure: { mode: "linear", rootPostId: "map", rootMapId: "map-node" }, posts: [
+    { id: "map", title: "Map", publication: { state: "scheduled" }, schedule: { scheduledAt: future, chatId: -1001 }, messageAst: { children: [] } },
+    { id: "first", title: "First", publication: { state: "draft" }, messageAst: { children: [] } },
+    { id: "last", title: "Last", publication: { state: "draft" }, messageAst: { children: [] } }
+  ] };
+  const cards = document.createElement("div");
+  cards.append(createProjectPostListView({ project, onPublish() {}, onSchedule() {}, onCancelSchedule() {} }));
+  document.querySelector("#projectLibraryDetail").replaceChildren(cards);
+  const first = cards.querySelector('[data-post-id="first"]');
+  check(first.querySelector(".project-publication-publish")?.disabled, "immediate publication must remain blocked");
+  check(first.querySelector(".project-publication-schedule")?.disabled === false, "the next post can be scheduled");
+  check(!cards.querySelector('[data-post-id="last"] .project-publication-schedule'), "cannot skip a predecessor");
+  const publicationView = new PublicationView({ root: document.querySelector("#publicationsApp"), telegramCore: { publications: {} }, projectPublications: { schedulePost() {} } });
+  publicationView.targets = [{ chatId: -1001, title: "Channel", status: "ready", type: "channel" }];
+  publicationView.requestProjectPostSchedule(project, project.posts[1]);
+  dialog = document.querySelector(".publication-draft-dialog");
+  const time = dialog.querySelector('input[type="datetime-local"]');
+  check(new Date(time.min).getTime() === future && new Date(time.value).getTime() >= future, "schedule dialog must use the predecessor time");
+  dialog.close();
+  publicationView.stop();
+
+  const feedbackEvents = new EventBus();
+  const feedback = new OperationFeedback({ events: feedbackEvents }).start();
+  const modal = document.createElement("dialog");
+  modal.textContent = "Upload in progress";
+  document.body.append(modal);
+  modal.showModal();
+  feedbackEvents.emit("telegram:operation-start", { id: 1, method: "sendPhoto", fileName: "photo.png" });
+  let panel = document.querySelector(".operation-feedback");
+  check(panel?.parentNode === modal && panel.textContent.includes("photo.png"), "request indicator must be visible in the active modal");
+  check(!panel.querySelector("progress").hasAttribute("value"), "unknown byte progress must remain indeterminate");
+  modal.close(); modal.remove();
+  await until(() => panel.parentNode === document.body);
+  feedbackEvents.emit("gallery:upload-progress", { uploadId: 1, state: "uploading", current: 2, total: 3, fileName: "second.png" });
+  check(panel.querySelector("progress").value === 1 && panel.querySelector("progress").max === 3, "batch indicator must count completed files");
+  feedbackEvents.emit("telegram:operation-end", { id: 1, success: false });
+  check(panel.dataset.active === "true", "finishing a request must not hide a running upload batch");
+  feedbackEvents.emit("gallery:upload-progress", { uploadId: 1, state: "partial", total: 3, assets: [{}], failures: [{}, {}] });
+  check(panel.dataset.active === "false" && panel.querySelector("progress").hidden, "failure must stop the progress indicator");
+  feedback.stop();
+  check(!document.querySelector(".operation-feedback"), "stopping the app must remove its indicator");
+
+  let buttons = 0;
+  for (const theme of ["light", "dark"]) {
+    document.documentElement.dataset.theme = theme;
+    for (const node of document.querySelectorAll("button, .button-link")) {
+      const css = getComputedStyle(node);
+      check(css.minHeight === "26px" && css.padding === "4px 8px" && css.borderRadius === "6px" && css.fontSize === "9px", `button sizing mismatch: ${node.className}`);
+      for (const label of node.querySelectorAll("span, strong, label")) check(getComputedStyle(label).fontSize === "9px", "button label mismatch");
+      buttons++;
+    }
+  }
+  document.documentElement.dataset.theme = "light";
+  await seed(20);
+  await view.render();
+  window.showGalleryDeleteFixture = () => deleteGalleryTopicDialog({ threadId: 20, gallery: { getTopicDeletionInfo: async () => ({ threadId: 20, hasRemote: true, assetCount: 3, topic: { name: "Фотографии проекта" } }) } });
+  window.showOperationFeedbackFixture = () => {
+    feedback.start();
+    feedbackEvents.emit("gallery:upload-progress", { uploadId: 2, state: "uploading", current: 2, total: 3, fileName: "project-photo-02.jpg" });
+  };
+  window.galleryDeleteSmokeResult = { ok: true, buttons };
+} catch (error) {
+  window.galleryDeleteSmokeResult = { ok: false, error: error.stack || String(error) };
+} finally {
+  await db.close();
+  indexedDB.deleteDatabase(databaseName);
+}
+</script>

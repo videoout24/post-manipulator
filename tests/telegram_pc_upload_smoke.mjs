@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { TelegramClient } from "../js/telegram/TelegramClient.js?v=1.5.9";
+import { TelegramClient } from "../js/telegram/TelegramClient.js?v=1.8.6";
 
 const scheduled = [];
 const requests = [];

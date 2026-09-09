@@ -1,7 +1,7 @@
-import { t } from "../i18n/index.js?v=1.8.0";
-import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.7.12";
+import { t } from "../i18n/index.js?v=1.8.6";
+import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.8.6";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
-import { getProjectPostPublicationEligibility } from "../project/ProjectPublicationEligibility.js?v=1.5.9";
+import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -34,6 +34,7 @@ export function createProjectPostListView({
   const index = new ProjectIndex(project);
   posts.forEach(post => {
     const eligibility = getProjectPostPublicationEligibility(project, post.id, index);
+    const scheduling = getProjectPostScheduleEligibility(project, post.id, index);
     const target = linkTargetForProjectPost(project, post);
     let card = null;
     const cardActions = [
@@ -61,7 +62,9 @@ export function createProjectPostListView({
       active: post.id === activePostId,
       project,
       projectIndex: index,
-      showPublicationActions: eligibility.eligible,
+      showPublicationActions: eligibility.eligible || scheduling.eligible || post.publication?.state === "scheduled",
+      canPublish: eligibility.eligible,
+      canSchedule: scheduling.eligible,
       onPublish: onPublish ? targetPost => onPublish(targetPost) : null,
       onSchedule: onSchedule ? targetPost => onSchedule(targetPost) : null,
       onCancelSchedule: onCancelSchedule ? targetPost => onCancelSchedule(targetPost) : null,

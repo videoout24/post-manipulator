@@ -1,4 +1,5 @@
-import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.5";
+import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.6";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { SseProbe } from "../network/SseProbe.js?v=1.7.19";
 import { themePreferences } from "../core/ThemePreferences.js?v=1.8.5";
@@ -261,7 +262,7 @@ export class TelegramSettingsView {
       await this.render();
       return result;
     } catch (error) {
-      console.error(error);
+      console.error("Telegram settings action failed", safeErrorDetails(error));
       this.#notice(error?.message || String(error), true);
       await this.render().catch(() => {});
       return false;

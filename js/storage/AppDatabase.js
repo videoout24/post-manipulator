@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.0";
-import { APP_DATABASE_STORES, IndexedDbAppDatabase } from "./IndexedDbAppDatabase.js?v=1.7.1";
+import { t } from "../i18n/index.js?v=1.8.6";
+import { APP_DATABASE_STORES, IndexedDbAppDatabase } from "./IndexedDbAppDatabase.js?v=1.8.6";
 
 export const APP_DATABASE_NAME_PREFIX = "post-manipulator-bot";
 
@@ -47,6 +47,10 @@ export class AppDatabase {
 
   async delete(store, key) {
     return (await this.#ready()).delete(store, key);
+  }
+
+  async deleteMany(entries) {
+    return (await this.#ready()).deleteMany(entries);
   }
 
   async clear(store) {

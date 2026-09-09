@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { linkTargetKey } from "./LinkTarget.js?v=1.5.9";
 
 // Target cards intentionally do not mutate relations.  Their green ↙ is a
@@ -23,7 +23,9 @@ export class LinkRelationNavigator {
   }
 
   async openTarget(target) {
+    const removed = await this.linkRelations?.reconcileMissingEndpoints?.() || [];
     const relation = await this.#latestRelationForTarget(target);
+    if (!relation && removed.length) return null;
     if (!relation) throw new Error(t("links.linkRelationNavigator.connectionForThisCardIsNoLonger"));
     return this.openRelation(relation);
   }

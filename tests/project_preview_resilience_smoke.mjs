@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { TelegramApiError } from '../js/telegram/TelegramClient.js?v=1.5.9';
+import { TelegramApiError } from '../js/telegram/TelegramClient.js?v=1.8.6';
 import { ProjectPreviewTransport } from '../js/telegram/ProjectPreviewTransport.js?v=1.5.9';
 import { ProjectStore } from '../js/project/ProjectStore.js?v=1.5.9';
 import { ProjectPreviewSync } from '../js/project/ProjectPreviewSync.js?v=1.5.9';

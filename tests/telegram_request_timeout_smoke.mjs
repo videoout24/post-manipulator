@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { EventBus } from "../js/core/EventBus.js?v=1.5.9";
-import { TelegramApiError, TelegramClient } from "../js/telegram/TelegramClient.js?v=1.8.1";
+import { TelegramApiError, TelegramClient } from "../js/telegram/TelegramClient.js?v=1.8.6";
 
 const originalFetch = globalThis.fetch;
 const events = new EventBus();

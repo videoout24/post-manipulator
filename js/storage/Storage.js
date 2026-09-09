@@ -1,3 +1,4 @@
+import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
 export class Storage {
   constructor(_key = "rich-message-builder", { db = null, initialValue = null } = {}) {
     this.db = db;
@@ -12,7 +13,7 @@ export class Storage {
   save(tree) {
     this.value = structuredClone(tree);
     if (this.db) {
-      this.db.put("settings", "editor.document", this.value).catch(error => console.error("IndexedDB document save failed", error));
+      this.db.put("settings", "editor.document", this.value).catch(error => console.error("IndexedDB document save failed", safeErrorDetails(error)));
     }
   }
 
@@ -23,7 +24,7 @@ export class Storage {
   clear() {
     this.value = null;
     if (this.db) {
-      this.db.delete("settings", "editor.document").catch(error => console.error("IndexedDB document clear failed", error));
+      this.db.delete("settings", "editor.document").catch(error => console.error("IndexedDB document clear failed", safeErrorDetails(error)));
     }
   }
 }

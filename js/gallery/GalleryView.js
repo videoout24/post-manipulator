@@ -1,5 +1,7 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.8.6";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
+import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
 
 const TYPE_META = Object.freeze({
   photo: { label: t("app.appNotifications.photo"), icon: "▧" },
@@ -23,6 +25,7 @@ export class GalleryView {
     this.selectedId = null;
     this.renderQueued = false;
     this.renderGeneration = 0;
+    this.topicDeletePending = false;
     this.#listen();
   }
 
@@ -119,7 +122,7 @@ export class GalleryView {
             <div class="gallery-topic-list">
               ${topics.map(topic => {
                 const count = countBy(allAssets, a => Number(a.topicThreadId) === Number(topic.threadId));
-                return t("gallery.galleryView.message", { 0: this.filterThread == topic.threadId ? "active" : "", 1: topic.telegramDeleted ? "local-only" : "", 2: topic.threadId, 3: escapeAttr(topic.name), 4: topic.systemRole === "preview" ? "◆ " : "", 5: escapeHtml(topic.name || `Topic ${topic.threadId}`), 6: count, 7: topic.telegramDeleted ? "" : t("gallery.galleryView.message2", { 0: topic.threadId }), 8: topic.threadId, 9: escapeAttr(topic.name || "") });
+                return t("gallery.galleryView.message", { 0: this.filterThread == topic.threadId ? "active" : "", 1: topic.telegramDeleted ? "local-only" : "", 2: topic.threadId, 3: escapeAttr(topic.name), 4: topic.systemRole === "preview" ? "◆ " : "", 5: escapeHtml(topic.name || `Topic ${topic.threadId}`), 6: count, 7: t("gallery.galleryView.message2", { 0: topic.threadId }), 8: topic.threadId, 9: escapeAttr(topic.name || "") });
               }).join("")}
             </div>
           </div>
@@ -208,11 +211,18 @@ export class GalleryView {
       button.addEventListener("click", event => {
         event.stopPropagation();
         this.#run(async () => {
-          const result = await this.gallery.deleteTopic(Number(button.dataset.galleryDeleteTopic));
-          if (!result.retained && this.filterThread === String(result.threadId)) this.filterThread = "all";
-          this.#notice(result.retained
-            ? t("gallery.galleryView.telegramTopicDeletedLocalFolderSaved", { 0: result.assetCount })
-            : t("gallery.galleryView.telegramTopicAndItsEmptyLocalFolder"));
+          if (this.topicDeletePending) return;
+          this.topicDeletePending = true;
+          try {
+            const result = await deleteGalleryTopicDialog({ gallery: this.gallery, threadId: Number(button.dataset.galleryDeleteTopic) });
+            if (!result) return;
+            if (!result.retained && this.filterThread === String(result.threadId)) this.filterThread = "all";
+            this.#notice(result.retained
+              ? t("gallery.galleryView.telegramTopicDeletedLocalFolderSaved", { 0: result.assetCount })
+              : t(result.deletedFromBot ? "gallery.topicDelete.deletedBoth" : "gallery.topicDelete.deletedLocal"));
+          } finally {
+            this.topicDeletePending = false;
+          }
         });
       });
     }
@@ -391,7 +401,7 @@ export class GalleryView {
         const freshUrl = await this.thumbnails.getUrl(asset, { forceRefresh: true });
         if (freshUrl && generation === this.renderGeneration) img.src = freshUrl;
       } catch (error) {
-        console.warn("Telegram thumbnail refresh failed", error);
+        console.warn("Telegram thumbnail refresh failed", safeErrorDetails(error));
       }
     });
     img.src = url;
@@ -403,7 +413,7 @@ export class GalleryView {
       await action();
       await this.render();
     } catch (error) {
-      console.error(error);
+      console.error("Gallery action failed", safeErrorDetails(error));
       this.#notice(error?.message || String(error), true);
     }
   }

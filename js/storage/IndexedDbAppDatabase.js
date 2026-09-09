@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.6";
 const DATABASE_VERSION = 1;
 const RECORDS_STORE = "records";
 const BY_STORE_INDEX = "by_store";
@@ -82,6 +82,15 @@ export class IndexedDbAppDatabase {
   async delete(store, key) {
     validateStore(store);
     await this.#withStore("readwrite", records => requestResult(records.delete([store, String(key)])));
+    return true;
+  }
+
+  async deleteMany(entries) {
+    const keys = entries.map(({ store, key }) => {
+      validateStore(store);
+      return [store, String(key)];
+    });
+    await this.#withStore("readwrite", records => Promise.all(keys.map(key => requestResult(records.delete(key)))));
     return true;
   }
 

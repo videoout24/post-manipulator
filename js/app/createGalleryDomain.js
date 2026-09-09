@@ -1,6 +1,6 @@
-import { GalleryStore } from "../gallery/GalleryStore.js?v=1.5.9";
+import { GalleryStore } from "../gallery/GalleryStore.js?v=1.8.6";
 import { ThumbnailCache } from "../gallery/ThumbnailCache.js?v=1.5.9";
-import { GalleryCore } from "../gallery/GalleryCore.js?v=1.5.9";
+import { GalleryCore } from "../gallery/GalleryCore.js?v=1.8.6";
 
 export function createGalleryDomain({ db, events, telegramCore, client, projects = null, drafts = null, tree = null, projectSession = null, draftSession = null } = {}) {
   const store = new GalleryStore({ db, events });

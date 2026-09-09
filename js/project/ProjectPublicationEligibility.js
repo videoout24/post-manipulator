@@ -35,3 +35,27 @@ export function getProjectPostPublicationEligibility(project, postId, index = nu
     blockingPostIds
   };
 }
+
+export function getProjectPostScheduleEligibility(project, postId, index = null) {
+  const publication = getProjectPostPublicationEligibility(project, postId, index);
+  const post = project?.posts?.find(item => String(item.id) === String(postId));
+  if (!post) return { ...publication, minScheduledAt: 0, maxScheduledAt: null, scheduledDependentPostIds: [] };
+  const prerequisites = publication.prerequisitePostIds.map(id => project.posts.find(item => String(item.id) === id));
+  const scheduledTime = item => item?.publication?.state === "scheduled" && Number.isFinite(Number(item.schedule?.scheduledAt))
+    ? Math.max(0, Number(item.schedule.scheduledAt)) : 0;
+  const blockingPostIds = prerequisites
+    .filter(item => item?.publication?.state !== "published" && !scheduledTime(item))
+    .map(item => String(item.id));
+  const minScheduledAt = Math.max(0, ...prerequisites.map(item => scheduledTime(item)
+    || Number(item?.publication?.publishedAt || item?.deployments?.production?.publishedAt || 0)));
+  const scheduledDependents = project.posts.filter(item => scheduledTime(item)
+    && getProjectPostPublicationEligibility(project, item.id, index).prerequisitePostIds.includes(String(postId)));
+  return {
+    eligible: blockingPostIds.length === 0,
+    prerequisitePostIds: publication.prerequisitePostIds,
+    blockingPostIds,
+    minScheduledAt,
+    maxScheduledAt: scheduledDependents.length ? Math.min(...scheduledDependents.map(scheduledTime)) : null,
+    scheduledDependentPostIds: scheduledDependents.map(item => String(item.id))
+  };
+}

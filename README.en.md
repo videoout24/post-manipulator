@@ -13,6 +13,17 @@ Telegram's light or dark theme, falling back to the system color scheme when
 Telegram's value is unavailable. Switching themes preserves the open document,
 selection, and editing history.
 
+Every gallery topic has a trash button. For topics with indexed files, deletion
+from the bot and from the editor can be selected independently. Local-only
+topics remove only the folder and indexes; indexes used in posts or drafts are
+protected. Links to deleted local publications and posts are cleaned up while
+preserving their text.
+
+Network actions show an activity panel, including inside dialogs. Uploads show
+the current filename and processed file count; project publication shows its
+current phase. Queue waits and retries remain part of the operation. Background
+long polling does not activate this panel.
+
 The project is a practical MVP for composing, publishing, and managing interconnected posts. It is built around Telegram capabilities and requires neither an application backend nor paid hosting.
 
 ## Features
@@ -49,6 +60,13 @@ This design has several limitations:
 A future backend is planned as an independent optional service rather than a mandatory centralized component. Its purpose would be to remove client-only limitations while keeping deployment and operating costs low.
 
 ### Scheduled publication limitations
+
+Project posts are scheduled in order: every predecessor must be published or
+scheduled, and the next time cannot be earlier than its predecessors. Equal
+times are allowed and send posts sequentially, starting with the project map.
+Immediate publication still requires all predecessors to be published. Cancel
+schedules from the end; moving a predecessor later requires adjusting any
+earlier successor schedules first.
 
 Schedules are stored in the local IndexedDB database. While the Mini App is open, a timer starts the publication. A closed static application cannot run background jobs: if a scheduled time has already passed, the post is sent immediately after the next successful launch. After a temporary failure, the service retries once per minute while the application remains open. Scheduling is therefore not a server-side job system and depends on the local database remaining available, a valid Bot API token, and access to the selected chat.
 
@@ -139,7 +157,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.8.5
+https://videoout24.github.io/post-manipulator/?build=1.8.6
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -216,7 +234,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.8.5`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.8.6`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 
