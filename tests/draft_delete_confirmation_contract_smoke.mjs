@@ -1,8 +1,9 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const panel = fs.readFileSync(new URL("../js/editor/EditorRightPanel.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 const list = fs.readFileSync(new URL("../js/editor/DraftListView.js", import.meta.url), "utf8");
 assert.match(list, /showCardDeleteConfirmation/);

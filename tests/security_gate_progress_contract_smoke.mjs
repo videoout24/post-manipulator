@@ -1,8 +1,9 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const view = fs.readFileSync(new URL("../js/security/SecurityGateView.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const config = fs.readFileSync(new URL("../js/security/SecurityGateConfig.js", import.meta.url), "utf8");
 

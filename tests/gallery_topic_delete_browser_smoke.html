@@ -198,8 +198,17 @@ try {
     document.documentElement.dataset.theme = theme;
     for (const node of document.querySelectorAll("button, .button-link")) {
       const css = getComputedStyle(node);
-      check(css.minHeight === "26px" && css.padding === "4px 8px" && css.borderRadius === "6px" && css.fontSize === "9px", `button sizing mismatch: ${node.className}`);
-      for (const label of node.querySelectorAll("span, strong, label")) check(getComputedStyle(label).fontSize === "9px", "button label mismatch");
+      const expectedFontSize = node.classList.contains("top-tab")
+        ? (innerWidth <= 1180 ? "12px" : "13px")
+        : node.classList.contains("settings-section-button") ? "12px" : "9px";
+      const sizing = {
+        minHeight: css.minHeight,
+        padding: css.padding,
+        borderRadius: css.borderRadius,
+        fontSize: css.fontSize
+      };
+      check(css.minHeight === "26px" && css.padding === "4px 8px" && css.borderRadius === "6px" && css.fontSize === expectedFontSize, `button sizing mismatch: ${node.className} ${JSON.stringify(sizing)}`);
+      for (const label of node.querySelectorAll("span, strong, label")) check(getComputedStyle(label).fontSize === expectedFontSize, "button label mismatch");
       buttons++;
     }
   }

@@ -1,8 +1,9 @@
+import { readStyles } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const [css, dialogs, gallery, settings, metaDialog] = await Promise.all([
-  readFile(new URL("../style.css", import.meta.url), "utf8"),
+  readStyles(),
   readFile(new URL("../js/core/DarkDialog.js", import.meta.url), "utf8"),
   readFile(new URL("../js/gallery/GalleryView.js", import.meta.url), "utf8"),
   readFile(new URL("../js/telegram/TelegramSettingsView.js", import.meta.url), "utf8"),

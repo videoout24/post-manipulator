@@ -1,3 +1,4 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createTelegramFormattingRegistry } from '../js/core/FormattingRegistry.js?v=1.5.9';
@@ -18,7 +19,7 @@ assert(inspector.includes('project-backlink-relation-row'));
 assert(inspector.includes('hasFreeSlot'));
 assert(inspector.includes('targetSlotId'));
 assert(inspector.includes('rebindBacklinkRelation'));
-const css=fs.readFileSync(new URL('../style.css',import.meta.url),'utf8');
+const css=readStylesSync();
 assert(css.includes('.project-backlink-relation-row'));
 assert(css.includes('grid-template-columns: minmax(0,1fr) minmax(0,1fr)'));
 console.log('project_backlink_relation_ui_contract_smoke: OK');

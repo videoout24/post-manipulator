@@ -1,9 +1,10 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const palette = fs.readFileSync(new URL("../js/editor/BlockPalette.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 const blocks = fs.readFileSync(new URL("../js/blocks/registerCoreBlocks.js", import.meta.url), "utf8");
 
 assert.match(html, /id="blockSearch"[\s\S]*id="blockCategoryFilters"/);

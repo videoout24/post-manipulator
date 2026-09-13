@@ -1,7 +1,8 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 const inspector = fs.readFileSync(new URL("../js/editor/BlockInspector.js", import.meta.url), "utf8");
 
 assert.match(css, /select:not\(\[multiple\]\)\s*\{[\s\S]*?-webkit-appearance:\s*none;[\s\S]*?appearance:\s*none;/);

@@ -1,10 +1,11 @@
+import { readStylesSync } from "./read_styles.mjs";
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { DraftStore } from '../js/editor/DraftStore.js?v=1.5.9';
 import { ProjectEditorSession } from '../js/project/ProjectEditorSession.js?v=1.5.9';
 
 const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const css = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+const css = readStylesSync();
 const app = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8');
 const commands = fs.readFileSync(new URL('../js/editor/EditorCommandController.js', import.meta.url), 'utf8');
 const panel = fs.readFileSync(new URL('../js/editor/EditorRightPanel.js', import.meta.url), 'utf8');

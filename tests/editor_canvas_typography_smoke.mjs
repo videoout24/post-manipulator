@@ -1,7 +1,8 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.match(css, /\.canvas\s*\{[\s\S]*?--canvas-font-size:\s*10px;/);
 assert.match(css, /\.block-preview\s*\{[^}]*font-size:\s*var\(--canvas-font-size\)/);

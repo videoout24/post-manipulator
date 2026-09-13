@@ -1,10 +1,11 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const app = fs.readFileSync(new URL("../js/app.js", import.meta.url), "utf8");
 const client = fs.readFileSync(new URL("../js/telegram/TelegramClient.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.match(html, /class="topbar-network" id="appNetPanel"/, "NetPanel must live in the global topbar");
 assert.match(app, /new NetPanel\(/);

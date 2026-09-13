@@ -1,8 +1,9 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const blocks = fs.readFileSync(new URL("../js/blocks/registerCoreBlocks.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.match(blocks, /type: "heading"[\s\S]*?rich\("content\.text", "text", FORMAT_GROUPS\.full/);
 assert.match(blocks, /type: "footer"[\s\S]*?rich\("content\.text", "text", FORMAT_GROUPS\.full/);

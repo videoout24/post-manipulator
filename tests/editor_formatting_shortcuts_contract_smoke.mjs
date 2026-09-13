@@ -1,9 +1,10 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const inspector = fs.readFileSync(new URL("../js/editor/BlockInspector.js", import.meta.url), "utf8");
 const sizing = fs.readFileSync(new URL("../js/editor/SessionTextareaSizing.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.match(sizing, /t\("editor\.sessionTextareaSizing\.altDownOneLineAltUpOne"\)/);
 assert.match(sizing, /event\.key === "ArrowDown" \? current \+ 1/);

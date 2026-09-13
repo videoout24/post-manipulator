@@ -1,9 +1,10 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const drafts = fs.readFileSync(new URL("../js/editor/DraftListView.js", import.meta.url), "utf8");
 const projectCards = fs.readFileSync(new URL("../js/project/ProjectPostCard.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.match(drafts, /else card\.classList\.add\("no-footer-actions"\)/);
 assert.match(projectCards, /const noFooter = variant === "compact" && !hasPublicationFooter/);

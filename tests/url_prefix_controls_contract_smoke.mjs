@@ -1,8 +1,9 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const inspector = fs.readFileSync(new URL("../js/editor/BlockInspector.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.match(inspector, /controls\.append\(makeUrlPrefixControl\(\)\)/);
 assert.match(inspector, /controls\.append\(relation\)/);

@@ -1,7 +1,8 @@
+import { readStyles } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const css = await readFile(new URL("../style.css", import.meta.url), "utf8");
+const css = await readStyles();
 
 assert.match(css, /\.workspace\s*\{[^}]*height:\s*calc\(var\(--app-viewport-height\)\s*-\s*56px\)/s);
 assert.match(css, /\.layout\s*\{\s*height:\s*100%;/s);

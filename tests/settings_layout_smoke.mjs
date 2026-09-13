@@ -1,8 +1,9 @@
+import { readStylesSync } from "./read_styles.mjs";
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const css = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+const css = readStylesSync();
 const app = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8');
 const navigation = fs.readFileSync(new URL('../js/app/AppNavigation.js', import.meta.url), 'utf8');
 const telegramSettings = fs.readFileSync(new URL('../js/telegram/TelegramSettingsView.js', import.meta.url), 'utf8');

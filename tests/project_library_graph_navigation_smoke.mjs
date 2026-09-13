@@ -1,9 +1,10 @@
+import { readStylesSync } from "./read_styles.mjs";
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const library = fs.readFileSync(new URL('../js/project/ProjectLibraryView.js', import.meta.url), 'utf8');
 const cards = fs.readFileSync(new URL('../js/project/ProjectPostCard.js', import.meta.url), 'utf8');
-const css = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+const css = readStylesSync();
 
 // Project overview is a strict vertical card stream.
 assert.match(css, /\.project-library-posts\s*\{[\s\S]*?display:\s*flex;[\s\S]*?flex-direction:\s*column;/);

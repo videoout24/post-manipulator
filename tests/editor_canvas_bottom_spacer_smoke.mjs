@@ -1,9 +1,10 @@
+import { readStyles } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const [html, css, viewportController] = await Promise.all([
   readFile(new URL("../index.html", import.meta.url), "utf8"),
-  readFile(new URL("../style.css", import.meta.url), "utf8"),
+  readStyles(),
   readFile(new URL("../js/telegram/TelegramViewportController.js", import.meta.url), "utf8")
 ]);
 

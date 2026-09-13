@@ -1,9 +1,10 @@
+import { readStylesSync } from "./read_styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { AVAILABLE_EMOJIS } from "../js/editor/EmojiCatalog.js";
 
 const inspector = fs.readFileSync(new URL("../js/editor/BlockInspector.js", import.meta.url), "utf8");
-const css = fs.readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readStylesSync();
 
 assert.ok(AVAILABLE_EMOJIS.length >= 1_000,
   "picker must expose a comprehensive catalog, including skin tones and country flags");

@@ -1,0 +1,115 @@
+/* v1.7.5 — one predictable themed select skin across Telegram Desktop WebViews. */
+select:not([multiple]) {
+  -webkit-appearance: none;
+  appearance: none;
+  color-scheme: var(--theme-color-scheme);
+  border: 1px solid var(--theme-field-border, #34475d);
+  border-radius: 6px;
+  background-color: var(--theme-field-bg, #0b1118);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--theme-control-icon, #8fa6bd) 50%),
+    linear-gradient(135deg, var(--theme-control-icon, #8fa6bd) 50%, transparent 50%);
+  background-position:
+    calc(100% - 10px) calc(50% - 1px),
+    calc(100% - 6px) calc(50% - 1px);
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  color: var(--theme-text, #d8e2ee);
+  min-height: 28px;
+  padding-right: 24px !important;
+}
+select:not([multiple]):hover { border-color: var(--theme-accent-border, #4a6685); background-color: var(--theme-field-bg, #101a26); }
+select:not([multiple]):focus-visible { outline: 1px solid var(--theme-accent-border, #6ba3ff); outline-offset: 1px; }
+select:not([multiple]):disabled { opacity: .55; cursor: not-allowed; }
+select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118); color: var(--theme-text, #d8e2ee); }
+
+.compact-select,
+.compact-field select,
+.rich-footer-control select,
+.block-type-switch {
+  min-height: 24px;
+  height: 24px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.date-time-picker.has-accessory {
+  grid-template-columns: minmax(0, 1fr) minmax(128px, 180px);
+}
+.date-time-picker-format {
+  width: 100%;
+  height: 28px;
+  min-height: 28px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.table-cell-controls .compact-field select { max-width: 112px; }
+.asset-picker-topic { height: 30px; min-height: 30px; }
+
+/* Native controls and default browser links must match the chosen palette too. */
+:root[data-theme="light"] input { accent-color: var(--theme-accent); }
+:root[data-theme="light"] ::placeholder { color: var(--theme-text-muted); opacity: 1; }
+:root[data-theme="light"] ::selection { color: var(--theme-text); background: var(--theme-selection-bg); }
+:root[data-theme="light"] a { color: var(--theme-accent); }
+:root[data-theme="light"] :is(button.primary, .button-link) {
+  background: var(--theme-primary-bg);
+  border-color: var(--theme-primary-border);
+  color: var(--theme-on-primary);
+}
+:root[data-theme="light"] :is(button.primary, .button-link):hover { background: var(--theme-primary-hover); }
+:root[data-theme="light"] :is(button, input, select, textarea, a):focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: 2px;
+}
+
+.gallery-topic-delete-options { display: grid; gap: 12px; margin: 0; padding: 0; border: 0; }
+.gallery-topic-delete-option { display: flex; align-items: flex-start; gap: 8px; color: var(--theme-text, #c6d2df); line-height: 1.5; }
+.gallery-topic-delete-option input { flex: 0 0 auto; margin: 3px 0 0; }
+.gallery-topic-delete-status { margin: 0; color: var(--theme-danger, #e79ba7); line-height: 1.5; }
+.gallery-topic-delete-status:empty { display: none; }
+
+/* Shared sizing contract for every action, including the startup gate and
+   dynamically created dialogs. Component rules still control layout/colors. */
+:is(button, .button-link, input[type="button"], input[type="submit"], input[type="reset"]) {
+  min-height: 26px !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  font-size: 9px !important;
+}
+:is(button, .button-link) * { font-size: inherit !important; }
+:is(button, .button-link)::before,
+:is(button, .button-link)::after,
+:is(button, .button-link) *::before,
+:is(button, .button-link) *::after { font-size: inherit !important; }
+
+/* Navigation labels need a larger type size than compact action buttons. */
+:is(button, .button-link).top-tab { font-size: 13px !important; }
+:is(button, .button-link).settings-section-button { font-size: 12px !important; }
+@media (max-width: 1180px) { :is(button, .button-link).top-tab { font-size: 12px !important; } }
+
+/* Leave enough room for icons after applying the shared horizontal padding. */
+.prop-label-accessory .link-relation-block-button,
+.list-count-button,
+.project-post-card-actions button,
+.project-map-slot-order-controls button,
+.project-library-item-tools button,
+.draft-card-tools button { width: 28px; min-width: 28px; }
+.net-panel__button, .net-panel__triangle-button { width: 34px; flex-shrink: 0; }
+
+.operation-feedback {
+  position: fixed; right: 18px; bottom: 18px; z-index: 10000;
+  width: min(320px, calc(100vw - 36px)); display: flex; gap: 12px;
+  padding: 14px; border: 1px solid var(--theme-accent-border, #45638a); border-radius: 8px;
+  background: var(--theme-surface-raised, #172232); color: var(--theme-text, #e9eef5);
+  box-shadow: 0 8px 28px var(--theme-shadow-modal, #0008); pointer-events: none;
+  font-size: 11px; line-height: 1.5;
+}
+.operation-feedback-content { min-width: 0; flex: 1; display: grid; gap: 4px; }
+.operation-feedback-detail { overflow-wrap: anywhere; color: var(--theme-text-secondary, #bac9db); }
+.operation-feedback-detail:empty, .operation-feedback-count:empty { display: none; }
+.operation-feedback-count { color: var(--theme-text-secondary, #bac9db); font-size: 10px; }
+.operation-feedback progress { display: block; width: 100%; height: 5px; margin-top: 4px; accent-color: var(--theme-accent, #6b9ddd); }
+.operation-feedback progress[hidden] { display: none; }
+.operation-feedback-spinner { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; border: 2px solid var(--theme-border, #43566c); border-top-color: var(--theme-accent, #8ab5ee); border-radius: 50%; animation: operation-spin .8s linear infinite; }
+.operation-feedback[data-active="false"] .operation-feedback-spinner { animation: none; border-color: var(--theme-text-muted, #8da4bd); }
+@keyframes operation-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .operation-feedback-spinner { animation: none; } }
