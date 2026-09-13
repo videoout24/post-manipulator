@@ -91,7 +91,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.8.6");
+      const { startApplication } = await import("./app.js?v=1.8.7");
       application = await startApplication({
         appDb,
         token: result.token,
