@@ -115,29 +115,37 @@ export class TelegramServiceMessageCleaner {
     const normalizedChatId = Number(chatId || 0);
     const normalizedThreadId = Number(threadId || 0);
     const normalizedServiceMessageId = Number(serviceMessageId || 0);
-    if (!normalizedChatId || !normalizedThreadId || !normalizedServiceMessageId) {
+    if (!normalizedChatId || !normalizedThreadId) {
       return { handled: false, reason: "invalid_private_topic" };
     }
-    const key = `${normalizedChatId}:${normalizedThreadId}:${normalizedServiceMessageId}`;
+    // A private topic ID and its creation service-message ID aren't guaranteed
+    // to be equal. Topic stabilization is therefore identified only by chat
+    // and thread; the real message ID is accepted later from getUpdates.
+    const key = `${normalizedChatId}:${normalizedThreadId}`;
     if (this.cleanedPrivateTopicServices.has(key)) {
       return { handled: true, stabilized: true, deleted: true, duplicate: true, chatId: normalizedChatId, threadId: normalizedThreadId };
     }
     const pending = this.privateTopicStabilizations.get(key);
-    if (pending) return pending;
+    if (pending) {
+      if (normalizedServiceMessageId) pending.serviceMessageId = normalizedServiceMessageId;
+      return pending.promise;
+    }
 
-    const operation = this.#stabilizePrivateTopicOnce({
+    const state = {
       key,
       chatId: normalizedChatId,
       threadId: normalizedThreadId,
       serviceMessageId: normalizedServiceMessageId,
       createdAt
-    });
-    this.privateTopicStabilizations.set(key, operation);
-    try { return await operation; }
+    };
+    state.promise = this.#stabilizePrivateTopicOnce(state);
+    this.privateTopicStabilizations.set(key, state);
+    try { return await state.promise; }
     finally { this.privateTopicStabilizations.delete(key); }
   }
 
-  async #stabilizePrivateTopicOnce({ key, chatId, threadId, serviceMessageId, createdAt }) {
+  async #stabilizePrivateTopicOnce(state) {
+    const { key, chatId, threadId, createdAt } = state;
     let markerMessageId = this.stabilizedPrivateTopics.get(key) ?? null;
     if (!this.stabilizedPrivateTopics.has(key)) {
       try {
@@ -149,8 +157,29 @@ export class TelegramServiceMessageCleaner {
         markerMessageId = Number(marker?.message_id || 0) || null;
         this.stabilizedPrivateTopics.set(key, markerMessageId);
       } catch (error) {
-        return this.#topicStabilizationFailure({ chatId, threadId, serviceMessageId, stabilized: false, error });
+        return this.#topicStabilizationFailure({
+          chatId,
+          threadId,
+          serviceMessageId: Number(state.serviceMessageId || 0),
+          stabilized: false,
+          error
+        });
       }
+    }
+
+    const serviceMessageId = Number(state.serviceMessageId || 0);
+    if (!serviceMessageId) {
+      return {
+        handled: true,
+        stabilized: true,
+        deleted: false,
+        reason: "awaiting_service_message",
+        scope: "owner_private",
+        chatId,
+        threadId,
+        messageId: null,
+        markerMessageId: Number(markerMessageId) || null
+      };
     }
 
     try {

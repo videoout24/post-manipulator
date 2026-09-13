@@ -92,6 +92,14 @@ assert.deepEqual(deleted, [
 ]);
 
 const deletedBeforeTopicCreation = deleted.length;
+const directCreation = await cleaner.stabilizePrivateTopic({
+  chatId: 6185107635,
+  threadId: 9,
+  createdAt: 1_800_000_000
+});
+assert.equal(directCreation.stabilized, true);
+assert.equal(directCreation.deleted, false);
+assert.equal(directCreation.reason, "awaiting_service_message");
 for (const from of [{ id: 6185107635 }, { id: 123, is_bot: true }]) {
   const result = await cleaner.handleUpdate({
     message: {

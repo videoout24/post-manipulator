@@ -54,7 +54,7 @@ assert.equal(
   assert.equal(topic.stabilized, true);
   assert.deepEqual(calls, [
     ["create"],
-    ["stabilize", { chatId: 123, threadId: 19, serviceMessageId: 19 }]
+    ["stabilize", { chatId: 123, threadId: 19 }]
   ]);
 }
 

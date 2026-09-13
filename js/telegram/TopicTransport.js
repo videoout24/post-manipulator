@@ -20,8 +20,7 @@ export class TopicTransport {
     };
     const stabilization = await this.serviceMessages?.stabilizePrivateTopic?.({
       chatId: topic.chatId,
-      threadId: topic.threadId,
-      serviceMessageId: topic.threadId
+      threadId: topic.threadId
     });
     topic.stabilized = stabilization?.stabilized === true;
     this.events?.emit("telegram:topic-created", topic);
