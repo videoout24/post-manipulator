@@ -67,6 +67,11 @@ export class TelegramServiceMessageCleaner {
   async handleUpdate(update) {
     const message = update?.message || update?.channel_post;
     if (!isTelegramServiceMessage(message)) return { handled: false, reason: "not_service" };
+    // Preserve the topic creation marker in private bot chats. It is not
+    // cosmetic service content and must never be passed to deleteMessage.
+    if (message.chat?.type === "private" && Object.prototype.hasOwnProperty.call(message, "forum_topic_created")) {
+      return { handled: false, reason: "private_topic_created" };
+    }
 
     const chatId = Number(message?.chat?.id || 0);
     const messageId = Number(message?.message_id || 0);

@@ -84,6 +84,22 @@ assert.deepEqual(deleted, [
   [-200555, 83]
 ]);
 
+const deletedBeforeTopicCreation = structuredClone(deleted);
+for (const from of [{ id: 6185107635 }, { id: 123, is_bot: true }]) {
+  const result = await cleaner.handleUpdate({
+    message: {
+      message_id: 84,
+      chat: { id: 6185107635, type: "private" },
+      from,
+      message_thread_id: 9,
+      forum_topic_created: { name: "Media", icon_color: 7322096 }
+    }
+  });
+  assert.equal(result.reason, "private_topic_created");
+  assert.equal(result.handled, false);
+}
+assert.deepEqual(deleted, deletedBeforeTopicCreation, "private topic creation must never call deleteMessage");
+
 assert.equal((await cleaner.handleUpdate({
   message: { message_id: 91, chat: { id: 6185107635, type: "private" }, document: {} }
 })).handled, false, "owner media must never be classified as service content");
