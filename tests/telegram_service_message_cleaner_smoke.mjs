@@ -5,8 +5,10 @@ import {
 } from "../js/telegram/TelegramServiceMessageCleaner.js?v=1.7.9";
 
 const deleted = [];
+const sent = [];
 const events = [];
 let failDeletion = false;
+let failSending = false;
 const publicationTargetRows = [
   {
     chatId: -100555,
@@ -18,6 +20,11 @@ const publicationTargetRows = [
 ];
 const cleaner = new TelegramServiceMessageCleaner({
   client: {
+    async sendMessage(chatId, text, options) {
+      if (failSending) throw Object.assign(new Error("send failed"), { errorCode: 400 });
+      sent.push([chatId, text, options]);
+      return { message_id: 85 };
+    },
     async deleteMessage(chatId, messageId) {
       if (failDeletion) throw Object.assign(new Error("forbidden"), { errorCode: 400 });
       deleted.push([chatId, messageId]);
@@ -84,21 +91,67 @@ assert.deepEqual(deleted, [
   [-200555, 83]
 ]);
 
-const deletedBeforeTopicCreation = structuredClone(deleted);
+const deletedBeforeTopicCreation = deleted.length;
 for (const from of [{ id: 6185107635 }, { id: 123, is_bot: true }]) {
   const result = await cleaner.handleUpdate({
     message: {
       message_id: 84,
       chat: { id: 6185107635, type: "private" },
       from,
+      date: 1_800_000_000,
       message_thread_id: 9,
       forum_topic_created: { name: "Media", icon_color: 7322096 }
     }
   });
-  assert.equal(result.reason, "private_topic_created");
-  assert.equal(result.handled, false);
+  assert.equal(result.stabilized, true);
+  assert.equal(result.deleted, true);
 }
-assert.deepEqual(deleted, deletedBeforeTopicCreation, "private topic creation must never call deleteMessage");
+assert.equal(sent.length, 1, "a replayed creation update must not add another marker");
+assert.deepEqual(sent[0], [6185107635, "2027-01-15T08:00:00.000Z", { messageThreadId: 9 }]);
+assert.deepEqual(deleted.slice(deletedBeforeTopicCreation), [[6185107635, 84]], "service cleanup must follow topic stabilization");
+
+const deletedBeforeFailedStabilization = deleted.length;
+failSending = true;
+const unstabilized = await cleaner.handleUpdate({
+  message: {
+    message_id: 86,
+    chat: { id: 6185107635, type: "private" },
+    date: 1_800_000_001,
+    message_thread_id: 10,
+    forum_topic_created: { name: "Unsafe to clean", icon_color: 7322096 }
+  }
+});
+failSending = false;
+assert.equal(unstabilized.stabilized, false);
+assert.equal(unstabilized.deleted, false);
+assert.equal(deleted.length, deletedBeforeFailedStabilization, "a creation marker must never be deleted when filling the topic failed");
+
+const sentBeforeDeleteRetry = sent.length;
+failDeletion = true;
+const filledButNotCleaned = await cleaner.handleUpdate({
+  message: {
+    message_id: 87,
+    chat: { id: 6185107635, type: "private" },
+    date: 1_800_000_002,
+    message_thread_id: 11,
+    forum_topic_created: { name: "Retry cleanup", icon_color: 7322096 }
+  }
+});
+failDeletion = false;
+assert.equal(filledButNotCleaned.stabilized, true);
+assert.equal(filledButNotCleaned.deleted, false);
+const cleanupRetry = await cleaner.handleUpdate({
+  message: {
+    message_id: 87,
+    chat: { id: 6185107635, type: "private" },
+    date: 1_800_000_002,
+    message_thread_id: 11,
+    forum_topic_created: { name: "Retry cleanup", icon_color: 7322096 }
+  }
+});
+assert.equal(cleanupRetry.stabilized, true);
+assert.equal(cleanupRetry.deleted, true);
+assert.equal(sent.length, sentBeforeDeleteRetry + 1, "cleanup retry must reuse the existing marker message");
 
 assert.equal((await cleaner.handleUpdate({
   message: { message_id: 91, chat: { id: 6185107635, type: "private" }, document: {} }
@@ -128,6 +181,6 @@ const forbidden = await cleaner.handleUpdate({
 assert.equal(forbidden.handled, true);
 assert.equal(forbidden.deleted, false, "Telegram deletion limits must not break update polling");
 assert.equal(forbidden.error.code, 400);
-assert.equal(events.filter(([name]) => name === "telegram:service-message-cleanup").length, 6);
+assert.equal(events.filter(([name]) => name === "telegram:service-message-cleanup").length, 10);
 
 console.log("telegram_service_message_cleaner_smoke: OK");

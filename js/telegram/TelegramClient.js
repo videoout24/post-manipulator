@@ -157,6 +157,13 @@ export class TelegramClient {
   }
   getUpdates(params = {}, options) { return this.call("getUpdates", params, options); }
   getFile(fileId, options) { return this.call("getFile", { file_id: fileId }, options); }
+  sendMessage(chatId, text, { messageThreadId = null } = {}, options) {
+    return this.call("sendMessage", {
+      chat_id: chatId,
+      message_thread_id: messageThreadId,
+      text: String(text || "")
+    }, options);
+  }
   buildFileUrl(filePath) {
     if (!this.#token) throw new TelegramApiError(t("telegram.botIdentityService.telegramTokenNotSet"), { method: "getFileUrl", errorCode: 401 });
     const normalizedPath = String(filePath || "").replace(/^\/+/, "");
@@ -310,6 +317,7 @@ function uploadMediaMethod(file, explicitType = null) {
 function isScheduledMutation(method) {
   return new Set([
     "sendRichMessage",
+    "sendMessage",
     "editMessageText",
     "deleteMessage",
     "pinChatMessage",

@@ -62,15 +62,25 @@ const SERVICE_MESSAGE_FIELDS = Object.freeze([
 export class TelegramServiceMessageCleaner {
   constructor({ client, ownerBinding, previewChannelBinding, publicationTargets = null, events = null } = {}) {
     Object.assign(this, { client, ownerBinding, previewChannelBinding, publicationTargets, events });
+    this.stabilizedPrivateTopics = new Map();
+    this.cleanedPrivateTopicServices = new Set();
+    this.privateTopicStabilizations = new Map();
   }
 
   async handleUpdate(update) {
     const message = update?.message || update?.channel_post;
     if (!isTelegramServiceMessage(message)) return { handled: false, reason: "not_service" };
-    // Preserve the topic creation marker in private bot chats. It is not
-    // cosmetic service content and must never be passed to deleteMessage.
     if (message.chat?.type === "private" && Object.prototype.hasOwnProperty.call(message, "forum_topic_created")) {
-      return { handled: false, reason: "private_topic_created" };
+      const owner = await this.ownerBinding?.getOwner?.();
+      if (Number(owner?.chatId || 0) !== Number(message.chat.id)) {
+        return { handled: false, reason: "outside_cleanup_scope" };
+      }
+      return this.stabilizePrivateTopic({
+        chatId: message.chat.id,
+        threadId: message.message_thread_id,
+        serviceMessageId: message.message_id,
+        createdAt: message.date
+      });
     }
 
     const chatId = Number(message?.chat?.id || 0);
@@ -101,6 +111,87 @@ export class TelegramServiceMessageCleaner {
     }
   }
 
+  async stabilizePrivateTopic({ chatId, threadId, serviceMessageId, createdAt = null } = {}) {
+    const normalizedChatId = Number(chatId || 0);
+    const normalizedThreadId = Number(threadId || 0);
+    const normalizedServiceMessageId = Number(serviceMessageId || 0);
+    if (!normalizedChatId || !normalizedThreadId || !normalizedServiceMessageId) {
+      return { handled: false, reason: "invalid_private_topic" };
+    }
+    const key = `${normalizedChatId}:${normalizedThreadId}:${normalizedServiceMessageId}`;
+    if (this.cleanedPrivateTopicServices.has(key)) {
+      return { handled: true, stabilized: true, deleted: true, duplicate: true, chatId: normalizedChatId, threadId: normalizedThreadId };
+    }
+    const pending = this.privateTopicStabilizations.get(key);
+    if (pending) return pending;
+
+    const operation = this.#stabilizePrivateTopicOnce({
+      key,
+      chatId: normalizedChatId,
+      threadId: normalizedThreadId,
+      serviceMessageId: normalizedServiceMessageId,
+      createdAt
+    });
+    this.privateTopicStabilizations.set(key, operation);
+    try { return await operation; }
+    finally { this.privateTopicStabilizations.delete(key); }
+  }
+
+  async #stabilizePrivateTopicOnce({ key, chatId, threadId, serviceMessageId, createdAt }) {
+    let markerMessageId = this.stabilizedPrivateTopics.get(key) ?? null;
+    if (!this.stabilizedPrivateTopics.has(key)) {
+      try {
+        const marker = await this.client.sendMessage(
+          chatId,
+          privateTopicCreationMarker(createdAt),
+          { messageThreadId: threadId }
+        );
+        markerMessageId = Number(marker?.message_id || 0) || null;
+        this.stabilizedPrivateTopics.set(key, markerMessageId);
+      } catch (error) {
+        return this.#topicStabilizationFailure({ chatId, threadId, serviceMessageId, stabilized: false, error });
+      }
+    }
+
+    try {
+      // Deleting an empty topic's creation message desynchronizes Telegram
+      // clients. Only clean it after Telegram has accepted a regular message
+      // into the new topic.
+      await this.client.deleteMessage(chatId, serviceMessageId);
+      this.cleanedPrivateTopicServices.add(key);
+      const result = {
+        handled: true,
+        stabilized: true,
+        deleted: true,
+        scope: "owner_private",
+        chatId,
+        threadId,
+        messageId: serviceMessageId,
+        markerMessageId: Number(markerMessageId) || null
+      };
+      this.events?.emit?.("telegram:service-message-cleanup", result);
+      return result;
+    } catch (error) {
+      return this.#topicStabilizationFailure({ chatId, threadId, serviceMessageId, markerMessageId, stabilized: true, error });
+    }
+  }
+
+  #topicStabilizationFailure({ chatId, threadId, serviceMessageId, markerMessageId = null, stabilized, error }) {
+    const result = {
+      handled: true,
+      stabilized,
+      deleted: false,
+      scope: "owner_private",
+      chatId,
+      threadId,
+      messageId: serviceMessageId,
+      markerMessageId: Number(markerMessageId) || null,
+      error: { name: error?.name || "Error", code: Number(error?.errorCode || 0) }
+    };
+    this.events?.emit?.("telegram:service-message-cleanup", result);
+    return result;
+  }
+
   async #scopeFor(message) {
     const chatId = Number(message.chat?.id || 0);
     if (message.chat?.type === "private") {
@@ -125,6 +216,11 @@ export class TelegramServiceMessageCleaner {
     if (parentChannel) return "publication_discussion";
     return "";
   }
+}
+
+export function privateTopicCreationMarker(createdAt = null) {
+  const milliseconds = Number(createdAt || 0) > 0 ? Number(createdAt) * 1000 : Date.now();
+  return new Date(milliseconds).toISOString();
 }
 
 export function isTelegramServiceMessage(message) {

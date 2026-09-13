@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.6";
-import { TelegramApiError } from "./TelegramClient.js?v=1.8.6";
+import { TelegramApiError } from "./TelegramClient.js?v=1.8.8";
 
 /*
   Project-facing transport.

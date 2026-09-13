@@ -1,8 +1,9 @@
 import { t } from "../i18n/index.js?v=1.8.6";
 export class TopicTransport {
-  constructor({ client, ownerBinding, events = null }) {
+  constructor({ client, ownerBinding, serviceMessages = null, events = null }) {
     this.client = client;
     this.ownerBinding = ownerBinding;
+    this.serviceMessages = serviceMessages;
     this.events = events;
   }
 
@@ -17,6 +18,12 @@ export class TopicTransport {
       iconColor: result.icon_color || null,
       iconCustomEmojiId: result.icon_custom_emoji_id || null
     };
+    const stabilization = await this.serviceMessages?.stabilizePrivateTopic?.({
+      chatId: topic.chatId,
+      threadId: topic.threadId,
+      serviceMessageId: topic.threadId
+    });
+    topic.stabilized = stabilization?.stabilized === true;
     this.events?.emit("telegram:topic-created", topic);
     return topic;
   }
@@ -71,4 +78,4 @@ function normalizeName(value) {
   if ([...name].length > 128) throw new Error(t("telegram.topicTransport.theTopicNameMustNotExceed128"));
   return name;
 }
-import { TelegramApiError } from "./TelegramClient.js?v=1.8.6";
+import { TelegramApiError } from "./TelegramClient.js?v=1.8.8";

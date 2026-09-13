@@ -25,6 +25,7 @@ for (const key of [
 assert.equal(telegram.botIdentity.client, telegram.client);
 assert.equal(telegram.runtime.client, telegram.client);
 assert.equal(telegram.runtime.ownerBinding, telegram.ownerBinding);
+assert.equal(telegram.topics.serviceMessages, telegram.serviceMessages);
 assert.equal(telegram.previewController.treeProvider, treeProvider);
 assert.equal(telegram.previewController.syncGuard, previewSyncGuard);
 assert.equal(telegram.core.client, telegram.client);

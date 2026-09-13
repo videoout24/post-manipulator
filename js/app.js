@@ -12,9 +12,9 @@ import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { OperationFeedback } from "./app/OperationFeedback.js?v=1.8.6";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.8.6";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.8.7";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.8.8";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.7.15";
-import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.8.6";
+import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.8.8";
 import { createEditorDomain } from "./app/createEditorDomain.js?v=1.8.6";
 import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.8.6";
 import { createEditorShell } from "./app/createEditorShell.js?v=1.8.6";
@@ -378,7 +378,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.8.7",
+  build: "1.8.8",
   notifications,
   layoutPreferences,
   telegramNavigation,

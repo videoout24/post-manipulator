@@ -1,12 +1,12 @@
-import { TelegramClient } from "../telegram/TelegramClient.js?v=1.8.6";
-import { BotIdentityService } from "../telegram/BotIdentityService.js?v=1.8.6";
+import { TelegramClient } from "../telegram/TelegramClient.js?v=1.8.8";
+import { BotIdentityService } from "../telegram/BotIdentityService.js?v=1.8.8";
 import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5";
 import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.7.16";
-import { TopicTransport } from "../telegram/TopicTransport.js?v=1.8.6";
-import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.8.6";
+import { TopicTransport } from "../telegram/TopicTransport.js?v=1.8.8";
+import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.8.8";
 import { TelegramCore } from "../telegram/TelegramCore.js?v=1.7.15";
-import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.8.6";
-import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.8.7";
+import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.8.8";
+import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.8.8";
 import { PreviewController } from "../telegram/PreviewController.js?v=1.7.20";
 import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.7.17";
 import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.7.22";
@@ -29,7 +29,7 @@ export function createTelegramDomain({ db, events, renderer, validator, tree, tr
     publicationTargets,
     events
   });
-  const topics = new TopicTransport({ events, client, ownerBinding });
+  const topics = new TopicTransport({ events, client, ownerBinding, serviceMessages });
   const runtime = new TelegramRuntime({
     db,
     events,

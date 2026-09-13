@@ -2,11 +2,11 @@ import { safeErrorDetails } from "./core/SafeDiagnostics.js?v=1.8.6";
 import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.6";
 import { AppDatabase } from "./storage/AppDatabase.js?v=1.8.6";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
-import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.8.6";
+import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.8.8";
 import { OwnerBindingService } from "./telegram/OwnerBindingService.js?v=1.5.9";
-import { TelegramClient } from "./telegram/TelegramClient.js?v=1.8.6";
+import { TelegramClient } from "./telegram/TelegramClient.js?v=1.8.8";
 import { TelegramViewportController } from "./telegram/TelegramViewportController.js?v=1.7.5";
-import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.8.6";
+import { AuthBootstrapController, AuthBootstrapError } from "./security/AuthBootstrapController.js?v=1.8.8";
 import { SECURITY_GATE_CONFIG } from "./security/SecurityGateConfig.js?v=1.7.5";
 import { SecurityGateView } from "./security/SecurityGateView.js?v=1.7.15";
 import { TelegramEnvironmentGate, TelegramEnvironmentError } from "./security/TelegramEnvironmentGate.js?v=1.7.0";
@@ -91,7 +91,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.8.7");
+      const { startApplication } = await import("./app.js?v=1.8.8");
       application = await startApplication({
         appDb,
         token: result.token,

@@ -33,6 +33,31 @@ assert.equal(
   "TOPIC_ID_INVALID means the remote topic is already absent"
 );
 
+{
+  const calls = [];
+  const created = new TopicTransport({
+    ownerBinding: { async getOwner() { return { chatId: 123 }; } },
+    client: {
+      async createForumTopic() {
+        calls.push(["create"]);
+        return { message_thread_id: 19, name: "Media" };
+      }
+    },
+    serviceMessages: {
+      async stabilizePrivateTopic(value) {
+        calls.push(["stabilize", value]);
+        return { stabilized: true };
+      }
+    }
+  });
+  const topic = await created.create("Media");
+  assert.equal(topic.stabilized, true);
+  assert.deepEqual(calls, [
+    ["create"],
+    ["stabilize", { chatId: 123, threadId: 19, serviceMessageId: 19 }]
+  ]);
+}
+
 function fixture({ localOnly = false, assets = [{ id: "asset", topicThreadId: 9 }], used = false, remoteError = null, localError = null, alreadyMissing = false } = {}) {
   const calls = [];
   let topic = { threadId: 9, name: "Media", telegramDeleted: localOnly };
