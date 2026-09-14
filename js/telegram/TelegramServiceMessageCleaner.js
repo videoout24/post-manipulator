@@ -123,7 +123,16 @@ export class TelegramServiceMessageCleaner {
     // and thread; the real message ID is accepted later from getUpdates.
     const key = `${normalizedChatId}:${normalizedThreadId}`;
     if (this.cleanedPrivateTopicServices.has(key)) {
-      return { handled: true, stabilized: true, deleted: true, duplicate: true, chatId: normalizedChatId, threadId: normalizedThreadId };
+      return {
+        handled: true,
+        stabilized: true,
+        deleted: false,
+        retained: true,
+        reason: "topic_creation_service_not_deletable",
+        duplicate: true,
+        chatId: normalizedChatId,
+        threadId: normalizedThreadId
+      };
     }
     const pending = this.privateTopicStabilizations.get(key);
     if (pending) {
@@ -182,27 +191,23 @@ export class TelegramServiceMessageCleaner {
       };
     }
 
-    try {
-      // Deleting an empty topic's creation message desynchronizes Telegram
-      // clients. Only clean it after Telegram has accepted a regular message
-      // into the new topic.
-      await this.client.deleteMessage(chatId, serviceMessageId);
-      this.cleanedPrivateTopicServices.add(key);
-      const result = {
-        handled: true,
-        stabilized: true,
-        deleted: true,
-        scope: "owner_private",
-        chatId,
-        threadId,
-        messageId: serviceMessageId,
-        markerMessageId: Number(markerMessageId) || null
-      };
-      this.events?.emit?.("telegram:service-message-cleanup", result);
-      return result;
-    } catch (error) {
-      return this.#topicStabilizationFailure({ chatId, threadId, serviceMessageId, markerMessageId, stabilized: true, error });
-    }
+    // Telegram Bot API forbids deleting a forum topic's creation service
+    // message. Keep it and stop retrying it on repeated getUpdates.
+    this.cleanedPrivateTopicServices.add(key);
+    const result = {
+      handled: true,
+      stabilized: true,
+      deleted: false,
+      retained: true,
+      reason: "topic_creation_service_not_deletable",
+      scope: "owner_private",
+      chatId,
+      threadId,
+      messageId: serviceMessageId,
+      markerMessageId: Number(markerMessageId) || null
+    };
+    this.events?.emit?.("telegram:service-message-cleanup", result);
+    return result;
   }
 
   #topicStabilizationFailure({ chatId, threadId, serviceMessageId, markerMessageId = null, stabilized, error }) {

@@ -112,11 +112,13 @@ for (const from of [{ id: 6185107635 }, { id: 123, is_bot: true }]) {
     }
   });
   assert.equal(result.stabilized, true);
-  assert.equal(result.deleted, true);
+  assert.equal(result.deleted, false);
+  assert.equal(result.retained, true);
+  assert.equal(result.reason, "topic_creation_service_not_deletable");
 }
 assert.equal(sent.length, 1, "a replayed creation update must not add another marker");
 assert.deepEqual(sent[0], [6185107635, "2027-01-15T08:00:00.000Z", { messageThreadId: 9 }]);
-assert.deepEqual(deleted.slice(deletedBeforeTopicCreation), [[6185107635, 84]], "service cleanup must follow topic stabilization");
+assert.deepEqual(deleted.slice(deletedBeforeTopicCreation), [], "topic-creation services must not be sent to deleteMessage");
 
 const deletedBeforeFailedStabilization = deleted.length;
 failSending = true;
@@ -134,9 +136,8 @@ assert.equal(unstabilized.stabilized, false);
 assert.equal(unstabilized.deleted, false);
 assert.equal(deleted.length, deletedBeforeFailedStabilization, "a creation marker must never be deleted when filling the topic failed");
 
-const sentBeforeDeleteRetry = sent.length;
-failDeletion = true;
-const filledButNotCleaned = await cleaner.handleUpdate({
+const sentBeforeRetainedServiceReplay = sent.length;
+const retainedTopicCreation = await cleaner.handleUpdate({
   message: {
     message_id: 87,
     chat: { id: 6185107635, type: "private" },
@@ -145,10 +146,10 @@ const filledButNotCleaned = await cleaner.handleUpdate({
     forum_topic_created: { name: "Retry cleanup", icon_color: 7322096 }
   }
 });
-failDeletion = false;
-assert.equal(filledButNotCleaned.stabilized, true);
-assert.equal(filledButNotCleaned.deleted, false);
-const cleanupRetry = await cleaner.handleUpdate({
+assert.equal(retainedTopicCreation.stabilized, true);
+assert.equal(retainedTopicCreation.deleted, false);
+assert.equal(retainedTopicCreation.retained, true);
+const retainedReplay = await cleaner.handleUpdate({
   message: {
     message_id: 87,
     chat: { id: 6185107635, type: "private" },
@@ -157,9 +158,11 @@ const cleanupRetry = await cleaner.handleUpdate({
     forum_topic_created: { name: "Retry cleanup", icon_color: 7322096 }
   }
 });
-assert.equal(cleanupRetry.stabilized, true);
-assert.equal(cleanupRetry.deleted, true);
-assert.equal(sent.length, sentBeforeDeleteRetry + 1, "cleanup retry must reuse the existing marker message");
+assert.equal(retainedReplay.stabilized, true);
+assert.equal(retainedReplay.deleted, false);
+assert.equal(retainedReplay.retained, true);
+assert.equal(retainedReplay.duplicate, true);
+assert.equal(sent.length, sentBeforeRetainedServiceReplay + 1, "a replay must reuse the existing marker message");
 
 assert.equal((await cleaner.handleUpdate({
   message: { message_id: 91, chat: { id: 6185107635, type: "private" }, document: {} }
@@ -189,6 +192,6 @@ const forbidden = await cleaner.handleUpdate({
 assert.equal(forbidden.handled, true);
 assert.equal(forbidden.deleted, false, "Telegram deletion limits must not break update polling");
 assert.equal(forbidden.error.code, 400);
-assert.equal(events.filter(([name]) => name === "telegram:service-message-cleanup").length, 10);
+assert.equal(events.filter(([name]) => name === "telegram:service-message-cleanup").length, 9);
 
 console.log("telegram_service_message_cleaner_smoke: OK");
