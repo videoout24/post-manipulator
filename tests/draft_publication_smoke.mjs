@@ -42,7 +42,7 @@ assert.equal(sent.length, 1);
 assert.deepEqual((await drafts.get("d1")).messageAst, draft.messageAst, "publishing preserves the original source");
 assert.equal((await drafts.get("d1")).source.publicationId, record.id);
 assert.equal((await drafts.get("d1")).source.retained, true);
-assert.deepEqual(cleared, [], "publishing keeps the active source draft open");
+assert.deepEqual(cleared, ["d1"], "publishing removes the active source draft from Canvas");
 await assert.rejects(drafts.delete("d1"), error => error.message === t("editor.draftListView.deletePublishedDraftBlocked"));
 await assert.rejects(drafts.assertCanMoveToProject("d1"), error => error.message === t("editor.draftListView.movePublishedDraftBlocked"));
 await assert.rejects(service.publishDraft("d1", -1001), error => error.message === t("editor.draftListView.draftAlreadyPublished"));
@@ -50,6 +50,8 @@ assert.equal(sent.length, 1, "a linked draft cannot create a duplicate publicati
 const renamed = await drafts.rename("d1", "Renamed source");
 assert.equal(renamed.title, "Renamed source");
 assert.equal(renamed.source.publicationId, record.id, "renaming preserves the publication link");
+assert.equal((await db.get("publications", record.id)).source.title, "Renamed source",
+  "renaming a published Draft must update its Publications card immediately");
 assert.equal(record.messageId, 42);
 assert.equal(record.pinned, false);
 assert.equal(publicationDeleteHoursLeft(record, record.publishedAt), 48);

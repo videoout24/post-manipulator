@@ -1,8 +1,9 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.6";
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.8.15";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { SseProbe } from "../network/SseProbe.js?v=1.7.19";
 import { themePreferences } from "../core/ThemePreferences.js?v=1.8.5";
+import { AUTOMATIC_PUBLICATION_BACKUP_KEY } from "../storage/AutomaticPublicationBackup.js?v=1.8.15";
 
 const NATIVE_INTEGRATION_KEY = "telegramNativeIntegration";
 const NETWORK_PANEL_START_EXPANDED_KEY = "networkPanelStartExpanded";
@@ -82,6 +83,13 @@ export class TelegramSettingsView {
       globalThis.location?.reload?.();
     });
     this.root.querySelector("#requestPersistentStorage")?.addEventListener("click", () => this.#requestPersistentStorage());
+    this.root.querySelector("#automaticPublicationBackups")?.addEventListener("change", event => {
+      this.#run(async () => {
+        const enabled = Boolean(event.target.checked);
+        await this.db.put("settings", AUTOMATIC_PUBLICATION_BACKUP_KEY, enabled);
+        this.events?.emit("telegram:automatic-publication-backup-setting", { enabled });
+      });
+    });
     this.root.querySelector("#tgStart")?.addEventListener("click", () => this.#run(() => this.runtime.start()));
     this.root.querySelector("#tgStop")?.addEventListener("click", () => this.#run(() => this.runtime.stop()));
     this.root.querySelector("#tgClearWebhook")?.addEventListener("click", () => this.#run(async () => {
@@ -163,14 +171,15 @@ export class TelegramSettingsView {
   }
 
   async render() {
-    const [owner, slot, channelSession, media, liveEnabled, liveMessage, nativeEnabled] = await Promise.all([
+    const [owner, slot, channelSession, media, liveEnabled, liveMessage, nativeEnabled, automaticPublicationBackups] = await Promise.all([
       this.ownerBinding.getOwner(),
       this.previewChannelBinding.getSlot(),
       this.previewChannelBinding.getSession(),
       this.runtime.getMediaSettings(),
       this.previewController.isEnabled(),
       this.previewController.getMessage(),
-      this.db.get("settings", NATIVE_INTEGRATION_KEY, true)
+      this.db.get("settings", NATIVE_INTEGRATION_KEY, true),
+      this.db.get("settings", AUTOMATIC_PUBLICATION_BACKUP_KEY, false)
     ]);
     this.bot = this.bot || await this.botIdentity?.getIdentity();
     const runtimeStatus = this.runtime.getStatus();
@@ -181,6 +190,8 @@ export class TelegramSettingsView {
     if (languagePreference) languagePreference.value = getLanguagePreference();
     const themePreference = this.root.querySelector("#appThemePreference");
     if (themePreference) themePreference.value = themePreferences.getPreference();
+    const automaticBackups = this.root.querySelector("#automaticPublicationBackups");
+    if (automaticBackups) automaticBackups.checked = Boolean(automaticPublicationBackups);
     const sseBaseUrl = this.root.querySelector("#sseBaseUrl");
     if (sseBaseUrl && this.documentRoot?.activeElement !== sseBaseUrl) sseBaseUrl.value = this.sseProbe.getState().baseUrl;
     this.#renderSseProbe(this.sseProbe.getState());

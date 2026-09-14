@@ -7,9 +7,21 @@ const css = readStylesSync();
 const app = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8');
 const navigation = fs.readFileSync(new URL('../js/app/AppNavigation.js', import.meta.url), 'utf8');
 const telegramSettings = fs.readFileSync(new URL('../js/telegram/TelegramSettingsView.js', import.meta.url), 'utf8');
+const controlsCss = fs.readFileSync(new URL('../styles/controls.css', import.meta.url), 'utf8');
 
 assert(!/data-tab=["']settings["']/.test(html), 'Settings must not appear as a top tab');
 assert(/id=["']openSettingsFromBrand["']/.test(html), 'Brand must be the Settings entry point');
+assert(/<title>PM<\/title>/.test(html), 'The window title must use the compact PM name');
+assert(/brand-settings-trigger[^>]*><strong>PM<\/strong>/.test(html), 'The top-bar brand must use the compact PM name');
+assert(/settings-sidebar-subtitle["']>PM<\/div>/.test(html), 'The Settings sidebar must use the compact PM name');
+assert(/id=["']automaticPublicationBackups["'][^>]*type=["']checkbox["']/.test(html),
+  'Backups settings must expose the automatic publication backup checkbox');
+assert(/data-tab=["']publications["'][^>]*>[\s\S]*?data-tab=["']project["']/.test(html),
+  'Publications must appear before the specialized Projects tab');
+assert.match(controlsCss, /\.top-tab\s*\{\s*font-size:\s*15px\s*!important;/,
+  'Top-level tab labels must use the larger desktop font');
+assert.match(controlsCss, /max-width:\s*1180px[\s\S]*?\.top-tab\s*\{\s*font-size:\s*14px\s*!important;/,
+  'Top-level tab labels must remain readable in the compact layout');
 assert(/data-settings-section=["']general["']/.test(html), 'General section must exist in left navigation');
 assert(/data-settings-panel=["']general["']/.test(html), 'General settings panel must exist');
 assert(/class=["'][^"']*settings-sidebar/.test(html), 'Settings left sidebar must exist');

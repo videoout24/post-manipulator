@@ -17,6 +17,7 @@ for (const key of ["editor.blockPalette.all", "publications.publicationView.chan
 assert.match(view, /publication-target-members[\s\S]*?👥/);
 assert.match(view, /publication-target-posts[\s\S]*?📰/);
 assert.match(view, /countPublishedPosts\(this\.publications, target\.chatId\)/);
+assert.match(view, /if \(value === "all"\) this\.selectedTargetId = null/);
 assert.match(view, /publication-target-comments[\s\S]*?connected[\s\S]*?disconnected/);
 assert.match(view, /t\("publications\.publicationView\.commentGroupConnected"\)/);
 assert.match(view, /t\("publications\.publicationView\.deleteService"\)/);
@@ -50,6 +51,12 @@ for (const key of ["published", "scheduled", "allTime", "today", "7Days", "month
 }
 assert.match(view, /input\.type = "date"/);
 assert.match(view, /#projectFilterRow/);
+assert.doesNotMatch(view, /content\.append\(el\("h1"/);
+assert.match(view, /input\.type = "search"/);
+assert.match(view, /publicationMatchesSearch\(record, this\.searchQuery\)/);
+assert.match(view, /publications\.publicationView\.searchDraftsAndPostTitles/);
+assert.match(view, /const open = button\("👁"/);
+assert.match(view, /actions\.append\(cleanup, open, button\(t\("publications\.publicationView\.check"\)/);
 assert.match(view, /publishedProjectOptions\(this\.publications, this\.selectedTargetId\)/);
 assert.match(view, /scroller\.scrollLeft \+= event\.deltaY/);
 assert.match(view, /\{ passive: false \}/);

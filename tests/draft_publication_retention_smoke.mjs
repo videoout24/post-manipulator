@@ -46,8 +46,10 @@ const project = await projects.createProject({ title: "Destination" });
 const draft = await drafts.create({ title: "Source", messageAst: tree.toJSON(), source: { kind: "draft" } });
 draftSession.activate(draft);
 const record = await service.publishDraft(draft.id, -100123);
-assert.equal(draftSession.activeDraftId, draft.id);
-assert.equal(draftSession.draft.source.publicationId, record.id, "the live editor must observe the publication binding");
+assert.equal(draftSession.activeDraftId, null, "a published Draft must leave Canvas after successful delivery");
+assert.equal((await drafts.get(draft.id)).source.publicationId, record.id, "the retained source must keep its publication binding");
+await documents.openDraft(draft.id);
+assert.equal(draftSession.activeDraftId, draft.id, "the retained source can still be reopened explicitly");
 await assert.rejects(documents.discardDraft(draft.id), error => error.message === t("editor.draftListView.deletePublishedDraftBlocked"));
 assert.equal(draftSession.activeDraftId, draft.id, "a rejected deletion must keep the editor session open");
 await assert.rejects(documents.moveDraftToProject(draft.id, project.id), error => error.message === t("editor.draftListView.movePublishedDraftBlocked"));
@@ -57,6 +59,8 @@ assert.equal((await drafts.get(draft.id)).source.publicationId, record.id, "a fa
 
 await drafts.rename(draft.id, "Renamed published source");
 assert.equal(draftSession.draft.title, "Renamed published source", "renaming must refresh the live editor");
+assert.equal((await db.get("publications", record.id)).source.title, "Renamed published source",
+  "renaming the retained source must keep the publication title synchronized");
 tree.root.children[0].props.text = "Latest unpublished edits";
 draftSession.scheduleAutosave();
 await documents.closeDraft(draft.id);

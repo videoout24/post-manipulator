@@ -29,6 +29,7 @@ export class AppNavigation {
 
   activateTab(name) {
     if (!this.tabPages.some(page => page.dataset.tabPage === name)) return false;
+    const previousTab = this.activeTab;
     this.activeTab = name;
     for (const button of this.tabButtons) {
       const active = button.dataset.tab === name;
@@ -41,8 +42,8 @@ export class AppNavigation {
       this.settingsBrandButton.classList.toggle("active", active);
       this.settingsBrandButton.setAttribute("aria-pressed", String(active));
     }
-    if (name === "editor") this.onEditor?.();
-    else if (name === "project") this.onProject?.();
+    if (name === "editor") this.onEditor?.({ previousTab, tab: name });
+    else if (name === "project") this.onProject?.({ previousTab, tab: name });
     return true;
   }
 

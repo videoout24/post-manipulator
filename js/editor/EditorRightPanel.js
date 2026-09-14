@@ -1,6 +1,7 @@
-import { t } from "../i18n/index.js?v=1.8.12";
-import { createDraftListView } from "./DraftListView.js?v=1.8.12";
+import { t } from "../i18n/index.js?v=1.8.15";
+import { createDraftListView } from "./DraftListView.js?v=1.8.15";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.8.6";
+import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
 
 export class EditorRightPanel {
   constructor({
@@ -122,7 +123,7 @@ export class EditorRightPanel {
     this.root.replaceChildren(createProjectPostListView({
       project,
       activePostId: state.activePostId,
-      onClose: () => this.#run(() => this.session.closeProject()),
+      onClose: () => this.#run(() => this.#closeProject()),
       onSelect: post => this.#run(() => this.session.openPost(post.id)),
       onSelectTarget: target => this.#selectLinkTarget(target),
       onOpenLinkedSource: target => this.#openLinkedSource(target),
@@ -257,13 +258,32 @@ export class EditorRightPanel {
 
   async #cancelPublicationEdit(draft) {
     return this.#run(async () => {
+      if (draft.source?.retained) {
+        await this.documents?.saveCurrentContext?.();
+        const record = await this.onApplyDraftChanges?.(draft.id);
+        if (!record) throw new Error(t("editor.editorRightPanel.publicationUpdatedButFailedToClearEditor"));
+      }
       const discarded = await this.#finishPublicationEdit(draft, "publication-edit-cancelled");
       if (!discarded) throw new Error(t("editor.editorRightPanel.failedToClosePostEditing"));
       this.onToast?.({ message: draft.source?.retained
-        ? t("editor.editorCommandController.draftSaved", { 0: draft.title })
+        ? t("editor.editorRightPanel.publicationUpdated", { 0: draft.title })
         : t("editor.editorRightPanel.postEditingCanceled"), type: "info" });
       return true;
     });
+  }
+
+  async #closeProject() {
+    await this.session?.flush?.();
+    const project = this.session?.snapshot?.().project;
+    const changedPostIds = unappliedPublishedPostIds(project);
+    for (const postId of changedPostIds) {
+      const current = this.session?.snapshot?.().project;
+      const post = current?.posts?.find(item => String(item.id) === String(postId));
+      if (!post || !hasUnappliedProductionChanges(current, post)) continue;
+      const result = await this.onApplyProjectChanges?.(current.id, post.id);
+      if (!result) throw new Error(t("editor.editorRightPanel.failedToClosePostEditing"));
+    }
+    return this.session?.closeProject?.();
   }
 
   async #finishPublicationEdit(draft, reason) {
@@ -370,6 +390,12 @@ function chooseProject(projects, preferredId = null) {
     }, { once: true });
     dialog.showModal();
   });
+}
+
+export function unappliedPublishedPostIds(project) {
+  return (project?.posts || [])
+    .filter(post => hasUnappliedProductionChanges(project, post))
+    .map(post => post.id);
 }
 
 function button(text, title, handler) {

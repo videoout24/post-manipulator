@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.12";
+import { getLocale, t } from "../i18n/index.js?v=1.8.15";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 

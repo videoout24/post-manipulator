@@ -27,6 +27,10 @@ const nav = new TelegramNavigation({ db, documentRef: fakeDocument, webApp, botI
 await nav.initialize();
 nav.openBotStart({ token: 'owner-token' });
 assert.equal(telegramLinks.at(-1), 'https://t.me/publisher_bot?start=owner-token');
+nav.openChat({ username: 'public_channel' });
+assert.equal(telegramLinks.at(-1), 'https://t.me/public_channel');
+nav.openChat({ chatId: -1001234567890, messageId: 9 });
+assert.equal(telegramLinks.at(-1), 'https://t.me/c/1234567890/9');
 nav.openPrivateMessage({ chatId: -1001234567890, messageId: 10 });
 assert.equal(telegramLinks.at(-1), 'https://t.me/c/1234567890/10');
 nav.openMessageComments({ chatId: -1001234567890, messageId: 10, commentId: 25 });

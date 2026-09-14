@@ -1,8 +1,8 @@
-import { AppNavigation } from "./AppNavigation.js?v=1.5.9";
+import { AppNavigation } from "./AppNavigation.js?v=1.8.15";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
 import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.5.9";
-import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.5.9";
-import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.8.12";
+import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.8.15";
+import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.8.15";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.5.9";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.8.6";
 import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.5.9";
@@ -75,7 +75,10 @@ export function createEditorShell({
   let projectLibrary = null;
   const navigation = new AppNavigation({
     root: documentRoot,
-    onEditor: () => workspace?.render?.(),
+    onEditor: ({ previousTab } = {}) => {
+      workspace?.render?.();
+      if (previousTab && previousTab !== "editor") telegramControls?.openLivePreviewChannelOnEntry?.();
+    },
     onProject: () => projectLibrary?.render?.()
   }).start();
 

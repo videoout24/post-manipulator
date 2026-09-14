@@ -8,6 +8,7 @@ assert.equal(dateTime.toolbar, true, "date/time must be available in the RichTex
 assert.equal(dateTime.metadataEditor, "date-time");
 assert.equal(dateTime.inheritMetadata, true, "typing inheritance must preserve a timestamp");
 assert.equal(dateTime.replaceExisting, true, "reapplying a timestamp updates metadata without nested wrappers");
+assert.deepEqual(dateTime.exclusiveWith, ["code", "url"], "date/time must replace code and text-link wrappers");
 assert.ok(FORMAT_GROUPS.full.includes("date_time"));
 
 const local = "2030-04-05T06:07";

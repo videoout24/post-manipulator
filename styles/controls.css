@@ -84,9 +84,9 @@ select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118)
 
 /* Navigation labels need a larger type size than compact action buttons. */
 :is(button, .button-link).brand-settings-trigger { font-size: 20px !important; line-height: 1.2; }
-:is(button, .button-link).top-tab { font-size: 13px !important; }
+:is(button, .button-link).top-tab { font-size: 15px !important; }
 :is(button, .button-link).settings-section-button { font-size: 12px !important; }
-@media (max-width: 1180px) { :is(button, .button-link).top-tab { font-size: 12px !important; } }
+@media (max-width: 1180px) { :is(button, .button-link).top-tab { font-size: 14px !important; } }
 
 /* Leave enough room for icons after applying the shared horizontal padding. */
 .prop-label-accessory .link-relation-block-button,

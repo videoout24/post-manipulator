@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.12";
+import { t } from "../i18n/index.js?v=1.8.15";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 
@@ -143,6 +143,7 @@ export class PublicationService {
       await this.linkRelations?.bindTargetPublicationToDraft?.(record.id, restored.id);
       await this.db.delete("publications", record.id);
       this.events?.emit("telegram:draft-publication-schedule-cancelled", { record: structuredClone(record), draft: structuredClone(restored) });
+      this.events?.emit("telegram:publication-deleted", { record: structuredClone(record), reason: "schedule-cancelled" });
       this.events?.emit("telegram:publications-changed", await this.list());
       return restored;
     });
@@ -207,6 +208,10 @@ export class PublicationService {
     await this.linkRelations?.bindSourceDraftToPublication?.(draft.id, record.id);
     const resolvedRelations = await this.linkRelations?.resolveWaitingForPublication?.(record) || [];
     await this.#applyResolvedRelations(resolvedRelations);
+    if (this.documents?.clearPublishedDraft) await this.documents.clearPublishedDraft(draft.id);
+    else if (this.draftSession?.activeDraftId === draft.id) {
+      await this.draftSession.deactivate({ flush: false, reason: "published" });
+    }
     this.events?.emit("telegram:publication-created", record);
     this.events?.emit("telegram:publications-changed", await this.list());
     // An automatic forward may have reached polling before sendRichMessage returned.
@@ -427,6 +432,7 @@ export class PublicationService {
     await this.drafts?.releasePublication?.(recordId);
     await this.db.delete("publications", recordId);
     await this.linkRelations?.reconcileMissingEndpoints?.();
+    this.events?.emit("telegram:publication-deleted", { record: structuredClone(record), reason: "removed" });
     this.events?.emit("telegram:publications-changed", await this.list());
     return true;
   }
@@ -470,12 +476,16 @@ export class PublicationService {
       if (errors.length) throw new Error(errors.join("; "));
       if (!record.scheduledAt) {
         const envelope = this.renderer.renderEnvelope(tree);
-        await this.client.editRichMessage({
-          chatId: record.chatId,
-          messageId: record.messageId,
-          richMessage: envelope.richMessage,
-          replyMarkup: envelope.replyMarkup
-        });
+        try {
+          await this.client.editRichMessage({
+            chatId: record.chatId,
+            messageId: record.messageId,
+            richMessage: envelope.richMessage,
+            replyMarkup: envelope.replyMarkup
+          });
+        } catch (error) {
+          if (!error?.isNotModified?.()) throw error;
+        }
       }
       record.messageAst = structuredClone(appliedAst);
       if (draft.source.retained && record.source?.draftId === draft.id) record.source.title = draft.title;

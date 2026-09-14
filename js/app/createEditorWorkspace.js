@@ -1,5 +1,5 @@
 import { BlockPalette } from "../editor/BlockPalette.js?v=1.5.9";
-import { BlockInspector } from "../editor/BlockInspector.js?v=1.8.12";
+import { BlockInspector } from "../editor/BlockInspector.js?v=1.8.15";
 import { TreeView } from "../editor/TreeView.js?v=1.8.6";
 import { MediaAssetBinder } from "../editor/MediaAssetBinder.js?v=1.5.9";
 import { EditorAssetPicker } from "../editor/EditorAssetPicker.js?v=1.5.9";

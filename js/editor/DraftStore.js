@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.12";
+import { t } from "../i18n/index.js?v=1.8.15";
 const PREFIX = "draft_";
 
 export class DraftStore {
@@ -68,8 +68,29 @@ export class DraftStore {
     current.title = String(title || "").trim() || current.title || t("editor.draftListView.draft");
     current.updatedAt = Date.now();
     await this.db?.put?.("drafts", id, current);
+    await this.#renamePublishedSources(current);
     this.events?.emit?.("draft:changed", { reason: "renamed", draft: structuredClone(current), draftId: id });
     return structuredClone(current);
+  }
+
+  async #renamePublishedSources(draft) {
+    const rows = await this.db?.all?.("publications") || [];
+    const updated = [];
+    for (const row of rows) {
+      const publication = row?.value;
+      if (!publication?.messageId || publication.source?.kind !== "draft"
+        || String(publication.source.draftId || "") !== String(draft.id)) continue;
+      publication.source.title = draft.title;
+      await this.db.put("publications", row.key, publication);
+      updated.push(publication);
+    }
+    if (!updated.length) return;
+    for (const publication of updated) {
+      this.events?.emit?.("telegram:publication-updated", structuredClone(publication));
+    }
+    const publications = rows.map(row => row.value)
+      .sort((a, b) => Number(b.publishedAt || b.scheduledAt || 0) - Number(a.publishedAt || a.scheduledAt || 0));
+    this.events?.emit?.("telegram:publications-changed", structuredClone(publications));
   }
 
   async retainPublication(record) {

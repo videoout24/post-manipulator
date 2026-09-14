@@ -13,7 +13,7 @@ export const DATE_TIME_FORMAT_OPTIONS = Object.freeze([
 ]);
 
 export const INLINE_SEMANTIC_TYPES = new Set([
-  "date_time", "phone", "email", "hashtag", "text_link", "anchor_link"
+  "date_time", "phone", "email", "hashtag", "anchor_link"
 ]);
 
 export function buildSemanticRichText(type, props = {}, tree = null) {

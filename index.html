@@ -7,29 +7,29 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<meta content="1.8.12" name="rmb-build"/>
-<title>Post Manipulator</title>
+<meta content="1.8.15" name="rmb-build"/>
+<title>PM</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<script src="./js/theme-init.js?v=1.8.12"></script>
+<script src="./js/theme-init.js?v=1.8.15"></script>
 <link href="./assets/post-manipulator.png" rel="icon" type="image/png"/>
 <link href="./assets/post-manipulator.png" rel="apple-touch-icon"/>
-<link href="./style.css?v=1.8.12" rel="stylesheet"/>
+<link href="./style.css?v=1.8.15" rel="stylesheet"/>
 </head>
 <body data-app-locked="true">
 <div aria-hidden="true" id="appShell" inert>
 <header class="topbar">
 <div class="topbar-left">
-<div class="brand"><button class="brand-settings-trigger" data-i18n-aria-label="html.openPostManipulatorSettings" data-i18n-title="html.openSettings" id="openSettingsFromBrand" type="button"><strong>Post Manipulator</strong></button>
+<div class="brand"><button class="brand-settings-trigger" data-i18n-aria-label="html.openPostManipulatorSettings" data-i18n-title="html.openSettings" id="openSettingsFromBrand" type="button"><strong>PM</strong></button>
 
-<span class="muted">build 1.8.12</span>
+<span class="muted">build 1.8.15</span>
 </div>
 <nav class="top-tabs" data-i18n-aria-label="html.postManipulatorSections">
 
 <button class="top-tab backup-tab" data-i18n="html.backup" data-i18n-title="html.createAndSendBackup" id="createTelegramBackup" type="button"></button>
 <button aria-selected="false" class="top-tab" data-i18n="html.gallery" data-tab="gallery"></button>
 <button aria-selected="true" class="top-tab active" data-i18n="html.editor" data-tab="editor"></button>
-<button aria-selected="false" class="top-tab" data-i18n="html.projects" data-tab="project"></button>
 <button aria-selected="false" class="top-tab" data-i18n="html.publications" data-tab="publications"></button>
+<button aria-selected="false" class="top-tab" data-i18n="html.projects" data-tab="project"></button>
 </nav>
 </div>
 <div class="topbar-network" id="appNetPanel"></div>
@@ -40,7 +40,7 @@
 <aside class="settings-sidebar" data-i18n-aria-label="html.settingsSections">
 <div class="settings-sidebar-head">
 <div class="settings-sidebar-title" data-i18n="html.settings"></div>
-<div class="settings-sidebar-subtitle">Post Manipulator</div>
+<div class="settings-sidebar-subtitle">PM</div>
 </div>
 <nav class="settings-sections">
 <button aria-selected="true" class="settings-section-button active" data-i18n="html.general" data-settings-section="general" type="button"></button>
@@ -76,7 +76,9 @@
 <button class="primary" data-i18n="html.checkPinned" id="telegramBackupCheckPinned" type="button"></button>
 <button data-i18n="html.restoreFromFile" id="telegramBackupRestoreManual" type="button"></button>
 </div>
+<label class="toggle-line"><input id="automaticPublicationBackups" type="checkbox"/> <span data-i18n="html.automaticPublicationBackups"></span></label>
 <p class="settings-hint" data-i18n="html.backupHint"></p>
+<p class="settings-hint" data-i18n="html.automaticPublicationBackupsHint"></p>
 </section><section class="settings-card">
 <h2 data-i18n="html.botAndLongPolling"></h2>
 <div class="settings-meta" data-i18n="html.tokenNotSet" id="tgTokenStored"></div>
@@ -170,7 +172,7 @@
 <div class="gallery-bootstrap">
 <strong data-i18n="html.gallery"></strong>
 <span data-i18n="html.initializingGalleryCore"></span>
-<code>build 1.8.12</code>
+<code>build 1.8.15</code>
 </div>
 </div>
 </section>
@@ -299,6 +301,6 @@
 <section aria-live="polite" aria-modal="true" id="securityGate" role="dialog">
 <div class="security-gate-card"><h1 class="security-gate-title" data-i18n="html.secureLaunch"></h1><p class="security-gate-copy" data-i18n="html.checkingTelegramEnvironment"></p><p class="security-gate-detail" data-i18n="html.launchWindowHint"></p></div>
 </section>
-<script src="./js/bootstrap.js?v=1.8.12" type="module"></script>
+<script src="./js/bootstrap.js?v=1.8.15" type="module"></script>
 </body>
 </html>

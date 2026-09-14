@@ -1,9 +1,8 @@
 import { t } from "../i18n/index.js?v=1.8.0";
 const BUSY_STATES = new Set(["materializing", "updating", "resolving", "removing"]);
 
-// Editor -> Telegram navigation is deliberately manual-only. Background autosave,
-// Project selection and post switching may update staging, but never steal focus by
-// opening Telegram. The only external navigation entry point here is manualButton.
+// Background autosave, Project selection and post switching never open Telegram.
+// Navigation happens from the manual button or from an explicit transition to Editor.
 export class EditorTelegramControls {
   constructor({
     manualButton,
@@ -92,6 +91,11 @@ export class EditorTelegramControls {
       : false;
     if (!opened) this.onToast?.({ message: t("editor.editorTelegramControls.previewNotYetCreatedInTheChannel"), type: "warning" });
     return opened;
+  }
+
+  openLivePreviewChannelOnEntry() {
+    if (!this.livePreviewEnabled || !this.livePreviewMessage?.messageId) return false;
+    return this.navigation?.openPrivateMessage?.(this.livePreviewMessage) || false;
   }
 
   render() {

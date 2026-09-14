@@ -1,13 +1,9 @@
 import { t } from "../i18n/index.js?v=1.8.6";
 import { TelegramApiError } from "./TelegramClient.js?v=1.8.8";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
 
 const OFFSET_KEY = "telegramOffset";
 const MEDIA_SETTINGS_KEY = "acceptedOwnerMedia";
-const PRIVATE_MEDIA_FIELDS = Object.freeze([
-  "photo", "video", "audio", "voice", "document", "animation", "video_note", "sticker", "paid_media"
-]);
 const DEFAULT_MEDIA_SETTINGS = Object.freeze({
   photo: true,
   video: true,
@@ -128,16 +124,13 @@ export class TelegramRuntime {
         for (const update of updates || []) {
           if (!this.running || signal.aborted) break;
           try {
-            this.#logMediaUpdate(update, "received");
             await this.#processUpdate(update);
           } catch (error) {
-            this.#logMediaUpdate(update, "failed", { retryUpdate: error?.retryTelegramUpdate === true }, error);
             this.#log("error", t("telegram.telegramRuntime.errorProcessingUpdate", { 0: update?.update_id ?? "?" }), error);
             if (error?.retryTelegramUpdate) throw error;
           }
           offset = Number(update.update_id) + 1;
           await this.db.put("runtime", OFFSET_KEY, offset);
-          this.#logMediaUpdate(update, "offset-saved", { offset });
           this.events?.emit("telegram:offset", { offset });
         }
       } catch (error) {
@@ -178,69 +171,39 @@ export class TelegramRuntime {
       }
 
       if (update.message && await this.publicationTargets?.handleMessage?.(update)) {
-        this.#logMediaUpdate(update, "skipped", { reason: "handled-by-publication-targets" });
         return;
       }
 
       let owner = await this.ownerBinding.getOwner();
-      this.#logMediaUpdate(update, "owner-checked", {
-        ownerBound: Boolean(owner),
-        ownerUserId: Number(owner?.userId) || null,
-        ownerChatId: Number(owner?.chatId) || null
-      });
       if (!owner) {
         const result = await this.ownerBinding.handleUpdate(update);
         if (result?.bound) owner = result.owner;
-        this.#logMediaUpdate(update, "skipped", { reason: "owner-not-bound", boundByUpdate: Boolean(result?.bound) });
         return;
       }
 
       const message = update.message;
       if (!message) return;
-      if (Number(message.from?.id || 0) !== Number(owner.userId)) {
-        this.#logMediaUpdate(update, "skipped", { reason: "sender-is-not-owner" });
-        return;
-      }
-      if (message.chat?.type !== "private" || Number(message.chat?.id || 0) !== Number(owner.chatId)) {
-        this.#logMediaUpdate(update, "skipped", { reason: "chat-is-not-owner-private-chat" });
-        return;
-      }
+      if (Number(message.from?.id || 0) !== Number(owner.userId)) return;
+      if (message.chat?.type !== "private" || Number(message.chat?.id || 0) !== Number(owner.chatId)) return;
 
       const topicEvent = extractOwnerTopicEvent(message);
       if (topicEvent) await this.events?.emitAsync("telegram:owner-topic-event", topicEvent);
 
       const media = extractOwnerMedia(message);
-      if (!media) {
-        this.#logMediaUpdate(update, "skipped", { reason: "unsupported-media-type" });
-        return; // text, video_note, stickers and everything else are intentionally ignored.
-      }
-      this.#logMediaUpdate(update, "media-extracted", {
-        mediaType: media.type,
-        fileSize: Number(media.fileSize) || null,
-        hasFileId: Boolean(media.fileId)
-      });
+      if (!media) return; // text, video_note, stickers and everything else are intentionally ignored.
       const accepted = await this.getMediaSettings();
-      if (!accepted[media.type]) {
-        this.#logMediaUpdate(update, "skipped", { reason: "media-type-disabled", mediaType: media.type });
-        return;
-      }
+      if (!accepted[media.type]) return;
 
       const source = {
         chatId: Number(message.chat.id),
         messageId: Number(message.message_id),
         threadId: message.message_thread_id ? Number(message.message_thread_id) : null
       };
-      this.#logMediaUpdate(update, "dispatching", {
-        event: "telegram:owner-media", mediaType: media.type, source: { ...source }
-      });
       await this.events?.emitAsync("telegram:owner-media", {
         ...media,
         source,
         caption: message.caption || "",
         date: message.date || null
-      });
-      this.#logMediaUpdate(update, "dispatched", {
-        event: "telegram:owner-media", mediaType: media.type, source: { ...source }
       });
     } finally {
       // Service messages are cleaned only after every interested domain has
@@ -252,30 +215,6 @@ export class TelegramRuntime {
   #setStatus(state, message, extra = {}) {
     this.status = { state, message, at: Date.now(), ...extra };
     this.events?.emit("telegram:runtime-status", this.getStatus());
-  }
-
-  #logMediaUpdate(update, stage, details = {}, error = null) {
-    const message = update?.message;
-    if (message?.chat?.type !== "private") return;
-    const mediaTypes = PRIVATE_MEDIA_FIELDS.filter(field => Boolean(message[field]));
-    if (!mediaTypes.length) return;
-
-    // Keep raw updates, captions, file objects and Error instances out of the console.
-    const entry = {
-      updateId: Number(update.update_id) || null,
-      messageId: Number(message.message_id) || null,
-      chatId: Number(message.chat.id) || null,
-      senderId: Number(message.from?.id) || null,
-      message_thread_id: Number(message.message_thread_id) || null,
-      hasMessageThreadId: message.message_thread_id != null,
-      is_topic_message: message.is_topic_message === true,
-      mediaGroupId: typeof message.media_group_id === "string" ? message.media_group_id : null,
-      mediaTypes,
-      stage,
-      ...details
-    };
-    if (error) console.error(`[TelegramRuntime] private media update: ${stage}`, { ...entry, error: safeErrorDetails(error) });
-    else console.info(`[TelegramRuntime] private media update: ${stage}`, entry);
   }
 
   #log(level, message, error = null) {

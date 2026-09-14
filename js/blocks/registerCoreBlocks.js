@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.2";
-import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.8.12";
+import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.8.15";
 
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });
 const rich = (property, key, formats = FORMAT_GROUPS.full, extra = {}) =>
@@ -50,8 +50,8 @@ export function registerTelegramCore(registry) {
     },
 
     // Parameterized RichText entities are represented as explicit Builder blocks.
-    // If a Paragraph cursor is active, clicking these palette entries configures and
-    // inserts the corresponding RichText entity directly at the caret.
+    // Entries marked inline can also be inserted at an active Paragraph cursor.
+    // Text Link stays a standalone block because inline URLs use the format toolbar.
     semantic("date_time", t("blocks.registerCoreBlocks.dateTime"), [
       prop("semantic.dateTime", "dateTime", { required: true }),
       prop("semantic.dateTimeFormat", "dateTimeFormat")
@@ -70,7 +70,7 @@ export function registerTelegramCore(registry) {
     semantic("text_link", t("blocks.registerCoreBlocks.textLink"), [
       prop("semantic.text", "text", { default: t("blocks.registerCoreBlocks.more") }),
       prop("link.url", "url", { required: true })
-    ]),
+    ], { semantic: { inline: false } }),
     semantic("anchor_link", t("blocks.registerCoreBlocks.anchorLink"), [
       prop("semantic.text", "text", { default: t("blocks.registerCoreBlocks.go") }),
       prop("anchor.target", "targetAnchorId")

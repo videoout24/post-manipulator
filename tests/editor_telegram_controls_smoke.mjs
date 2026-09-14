@@ -34,4 +34,24 @@ const controls = new EditorTelegramControls({
 assert.equal(controls.openCurrent(), true);
 assert.deepEqual(destinations[0], { targetProject: project, postId: 'b', deployment: 'preview' });
 
+const previewDestinations = [];
+const previewControls = new EditorTelegramControls({
+  session: { isProjectActive: () => false, project: null },
+  livePreview: {
+    async isEnabled() { return true; },
+    async getMessage() { return { chatId: -100777, messageId: 42 }; },
+    async getChannel() { return { status: 'bound', chatId: -100777 }; }
+  },
+  navigation: { openPrivateMessage(message) { previewDestinations.push(message); return true; } }
+});
+await previewControls.initialize();
+assert.equal(previewControls.openLivePreviewChannelOnEntry(), true);
+assert.deepEqual(previewDestinations, [{ chatId: -100777, messageId: 42 }]);
+
+const disabledPreviewControls = new EditorTelegramControls({
+  session: { isProjectActive: () => false, project: null },
+  navigation: { openPrivateMessage() { throw new Error('Disabled preview must not open'); } }
+});
+assert.equal(disabledPreviewControls.openLivePreviewChannelOnEntry(), false);
+
 console.log('editor_telegram_controls_smoke: OK');

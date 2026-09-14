@@ -1,10 +1,10 @@
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.8.15";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "./ProjectPublicationEligibility.js?v=1.8.6";
 import { productionContentSnapshot } from "./ProjectPublicationState.js?v=1.5.9";
 import { isLinearProject } from "./ProjectStore.js?v=1.7.6";
-import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.8.6";
+import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.8.15";
 
 const MAX_TIMER_DELAY = 2_147_000_000;
 const SCHEDULE_RETRY_DELAY = 60_000;
@@ -221,12 +221,15 @@ export class ProjectPublicationService {
     const target = await this.#requireTarget(post.schedule.chatId);
     this.#clearSchedule(project.id, post.id);
     let nextProject = await this.store.clearPostSchedule(project.id, post.id);
-    await this.db.delete("publications", projectPublicationId(project.id, post.id));
+    const recordId = projectPublicationId(project.id, post.id);
+    const record = await this.db.get("publications", recordId, null);
+    await this.db.delete("publications", recordId);
     await this.#emitPublicationsChanged();
     const refreshedPostIds = await this.#refreshPublishedMapDependents(nextProject, post.id, target, "updating");
     if (refreshedPostIds.length) nextProject = await this.store.getProject(nextProject.id);
     const postIds = [post.id, ...refreshedPostIds];
     this.#emit("schedule-cancelled", nextProject, { target, postId: post.id, postIds });
+    this.events?.emit("telegram:publication-deleted", { record: record ? structuredClone(record) : null, reason: "schedule-cancelled" });
     return { project: nextProject, target, postIds };
   }
 
@@ -344,7 +347,9 @@ export class ProjectPublicationService {
 
   async #discardPostProjection({ project, post, target }) {
     let nextProject = await this.store.clearPostProduction(project.id, post.id);
-    await this.db.delete("publications", projectPublicationId(nextProject.id, post.id));
+    const recordId = projectPublicationId(nextProject.id, post.id);
+    const record = await this.db.get("publications", recordId, null);
+    await this.db.delete("publications", recordId);
     await this.#emitPublicationsChanged();
 
     const index = new ProjectIndex(nextProject);
@@ -355,6 +360,7 @@ export class ProjectPublicationService {
       .filter(id => id !== String(post.id))
       .filter(id => nextProject.posts.some(item => item.id === id && item.deployments?.production?.messageId));
     if (dependents.length) nextProject = await this.#syncPosts(nextProject, dependents, target, { allowCreate: false, phase: "resolving" });
+    this.events?.emit("telegram:publication-deleted", { record: record ? structuredClone(record) : null, reason: "removed" });
     return nextProject;
   }
 
@@ -620,6 +626,7 @@ export class ProjectPublicationService {
     const record = await this.db.get("publications", id, null);
     if (!record?.scheduledAt) return;
     await this.db.delete("publications", id);
+    this.events?.emit("telegram:publication-deleted", { record: structuredClone(record), reason: "schedule-cleared" });
     await this.#emitPublicationsChanged();
   }
 
@@ -632,6 +639,9 @@ export class ProjectPublicationService {
       .filter(record => record?.scheduledAt && record?.source?.kind === "project" && String(record.source.projectId) === String(projectId));
     if (!scheduled.length) return;
     await Promise.all(scheduled.map(record => this.db.delete("publications", record.id)));
+    for (const record of scheduled) {
+      this.events?.emit("telegram:publication-deleted", { record: structuredClone(record), reason: "project-removed" });
+    }
     await this.#emitPublicationsChanged();
   }
 

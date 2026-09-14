@@ -63,6 +63,12 @@ export class TelegramNavigation {
     return this.#open(links);
   }
 
+  openChat({ username = "", chatId, messageId } = {}) {
+    return username
+      ? this.#open(buildPublicChatLinks(username))
+      : this.openPrivateMessage({ chatId, messageId });
+  }
+
   openBotStart({ botUsername = this.bot?.username, token = "" } = {}) {
     return this.#open(buildBotStartLinks(botUsername, token));
   }
@@ -140,6 +146,15 @@ export function buildBotLinks(botUsername) {
   return {
     nativeUrl: `tg://resolve?domain=${encodeURIComponent(username)}`,
     webUrl: `https://t.me/${encodeURIComponent(username)}`
+  };
+}
+
+export function buildPublicChatLinks(username) {
+  const domain = normalizeUsername(username);
+  if (!domain) return { nativeUrl: "", webUrl: "" };
+  return {
+    nativeUrl: `tg://resolve?domain=${encodeURIComponent(domain)}`,
+    webUrl: `https://t.me/${encodeURIComponent(domain)}`
   };
 }
 

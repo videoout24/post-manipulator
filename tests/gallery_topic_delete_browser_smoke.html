@@ -199,7 +199,7 @@ try {
     for (const node of document.querySelectorAll("button, .button-link")) {
       const css = getComputedStyle(node);
       const expectedFontSize = node.classList.contains("top-tab")
-        ? (innerWidth <= 1180 ? "12px" : "13px")
+        ? (innerWidth <= 1180 ? "14px" : "15px")
         : node.classList.contains("settings-section-button") ? "12px" : "9px";
       const sizing = {
         minHeight: css.minHeight,

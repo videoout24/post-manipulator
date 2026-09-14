@@ -1469,9 +1469,11 @@ export class BlockInspector {
     const end = textarea.selectionEnd ?? start;
     const applyBatch = state.applyFormatBatch && state.shouldApplyFormatBatch?.() !== false;
 
-    const applyRange = metadata => {
+    const applyRange = (metadata, { remove = false } = {}) => {
       const current = state.getCurrent?.() ?? textarea.value;
-      const next = this.applyRichTextFormatValue(current, start, end, format, metadata);
+      const next = remove
+        ? this.removeRichTextFormatValue(current, start, end, format)
+        : this.applyRichTextFormatValue(current, start, end, format, metadata);
       state.onChange?.(next);
       textarea.value = richTextToPlain(next);
       state.lastPlain = textarea.value;
@@ -1508,6 +1510,7 @@ export class BlockInspector {
           state.configHost.innerHTML = "";
           // Focusing the editor resyncs typing styles from the caret first.
           textarea.focus();
+          this.deactivateExclusiveTypingFormats(state, format);
           state.typingSession.formats.add(format.id);
           state.typingSession.metadata.set(format.id, metadata);
           state.setStatusMessage?.("");
@@ -1521,6 +1524,7 @@ export class BlockInspector {
 
       const current = state.getCurrent?.() ?? textarea.value;
       const currentMetadata = richTextFormatMetadataAtPosition(current, end > start ? start + 1 : start, format);
+      const currentApplied = !applyBatch && end > start && richTextRangeHasFormat(current, start, end, format);
       const apply = metadata => {
         if (applyBatch) {
           state.applyFormatBatch(format, metadata);
@@ -1528,11 +1532,12 @@ export class BlockInspector {
           state.setStatusMessage?.("");
         } else applyRange(metadata);
       };
+      const remove = () => applyRange(null, { remove: true });
       renderConfig(state.configHost, format, apply, () => {
         state.configHost.innerHTML = "";
         textarea.focus();
         textarea.setSelectionRange(start, end);
-      }, currentMetadata);
+      }, currentMetadata, { applied: currentApplied, onRemove: remove });
       return;
     }
 
@@ -1553,7 +1558,10 @@ export class BlockInspector {
       }
       state.typingSession.formats ||= new Set();
       if (state.typingSession.formats.has(format.id)) state.typingSession.formats.delete(format.id);
-      else state.typingSession.formats.add(format.id);
+      else {
+        this.deactivateExclusiveTypingFormats(state, format);
+        state.typingSession.formats.add(format.id);
+      }
       state.setStatusMessage?.("");
       this.refreshRichTextToolbarState(state);
       textarea.focus();
@@ -1572,8 +1580,12 @@ export class BlockInspector {
   }
 
   applyRichTextFormatValue(value, start, end, format, metadata = {}) {
+    let selected = sliceRichText(value, start, end);
+    for (const formatId of format?.exclusiveWith || []) {
+      const exclusive = this.registry.properties?.formatting?.get(formatId);
+      if (exclusive) selected = removeRichTextFormat(selected, exclusive);
+    }
     if (format?.replaceExisting) {
-      const selected = sliceRichText(value, start, end);
       const withoutCurrentFormat = removeRichTextFormat(selected, format);
       const nextSelection = applyRichTextFormat(
         withoutCurrentFormat,
@@ -1584,12 +1596,25 @@ export class BlockInspector {
       );
       return replaceRichTextRange(value, start, end, nextSelection);
     }
-    return format?.wrapperField
-      ? toggleRichTextFormat(value, start, end, format, metadata)
-      : applyRichTextFormat(value, start, end, format, metadata);
+    const nextSelection = format?.wrapperField
+      ? toggleRichTextFormat(selected, 0, richTextLength(selected), format, metadata)
+      : applyRichTextFormat(selected, 0, richTextLength(selected), format, metadata);
+    return replaceRichTextRange(value, start, end, nextSelection);
   }
 
-  renderDateTimeFormatConfig(host, format, onApply, onCancel, initialMetadata = null) {
+  removeRichTextFormatValue(value, start, end, format) {
+    const selected = sliceRichText(value, start, end);
+    return replaceRichTextRange(value, start, end, removeRichTextFormat(selected, format));
+  }
+
+  deactivateExclusiveTypingFormats(state, format) {
+    for (const formatId of format?.exclusiveWith || []) {
+      state?.typingSession?.formats?.delete(formatId);
+      state?.typingSession?.metadata?.delete(formatId);
+    }
+  }
+
+  renderDateTimeFormatConfig(host, format, onApply, onCancel, initialMetadata = null, { applied = false, onRemove = null } = {}) {
     host.innerHTML = "";
     const panel = document.createElement("div");
     panel.className = "format-config format-date-time-config";
@@ -1634,8 +1659,13 @@ export class BlockInspector {
     cancel.onclick = onCancel;
     const apply = document.createElement("button");
     apply.type = "button";
-    apply.textContent = t("editor.blockInspector.apply");
+    apply.dataset.action = applied ? "remove" : "apply";
+    apply.textContent = t(applied ? "editor.blockInspector.removeFormatting" : "editor.blockInspector.apply");
     apply.onclick = () => {
+      if (applied) {
+        onRemove?.();
+        return;
+      }
       const metadata = dateTimeFormatMetadata({ dateTime, date_time_format: display.value });
       const invalid = !Number.isFinite(new Date(String(dateTime || "")).getTime());
       timestampField.classList.toggle("required-missing", invalid);
@@ -1651,14 +1681,19 @@ export class BlockInspector {
     host.append(panel);
   }
 
-  renderFormatConfig(host, format, onApply, onCancel, initialMetadata = null) {
+  renderFormatConfig(host, format, onApply, onCancel, initialMetadata = null, { applied = false, onRemove = null } = {}) {
     host.innerHTML = "";
     const panel = document.createElement("div");
     panel.className = "format-config";
     const title = document.createElement("div");
     title.className = "format-config-title";
     title.textContent = format.label || format.id;
-    panel.append(title);
+    if (format.id === "url") {
+      const titleRow = document.createElement("div");
+      titleRow.className = "format-config-title-row";
+      titleRow.append(title, makeUrlPrefixControl(() => panel.querySelector('input[type="url"]')));
+      panel.append(titleRow);
+    } else panel.append(title);
 
     const commandSchema = this.registry.properties?.get(`format.${format.id}`);
     const fields = this.registry.properties?.resolveFields(commandSchema?.fields || []) || [];
@@ -1696,12 +1731,21 @@ export class BlockInspector {
     cancel.onclick = onCancel;
     const apply = document.createElement("button");
     apply.type = "button";
-    apply.textContent = t("editor.blockInspector.apply");
+    apply.dataset.action = applied ? "remove" : "apply";
+    apply.textContent = t(applied ? "editor.blockInspector.removeFormatting" : "editor.blockInspector.apply");
     apply.onclick = () => {
+      if (applied) {
+        onRemove?.();
+        return;
+      }
       let invalid = false;
       [...panel.querySelectorAll(".format-config-registry-field")].forEach((fieldWrap, index) => {
         const field = fields[index];
-        if (field.type === "url" && typeof values[field.key] === "string") values[field.key] = values[field.key].trim();
+        if (field.type === "url" && typeof values[field.key] === "string") {
+          values[field.key] = normalizeUrlValue(values[field.key]);
+          const urlInput = fieldWrap.querySelector('input[type="url"]');
+          if (urlInput) urlInput.value = values[field.key];
+        }
         const value = values[field.key];
         const missing = field.required && (value === undefined || value === null || value === "");
         fieldWrap.classList.toggle("required-missing", !!missing);
@@ -2499,7 +2543,7 @@ function compactRelationFragment(value) {
   return text.length > maxLength ? `${text.slice(0, maxLength - 1).trimEnd()}…` : text;
 }
 
-function makeUrlPrefixControl() {
+function makeUrlPrefixControl(inputGetter = null) {
   const wrap = document.createElement("span");
   wrap.className = "url-prefix-control";
   for (const prefix of URL_PREFIXES) {
@@ -2510,7 +2554,7 @@ function makeUrlPrefixControl() {
     button.onclick = event => {
       event.preventDefault();
       event.stopPropagation();
-      const input = wrap.closest(".prop")?.querySelector("input");
+      const input = inputGetter?.() || wrap.closest(".prop")?.querySelector("input");
       if (!input) return;
       input.value = applyUrlPrefix(input.value, prefix);
       input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -2528,6 +2572,14 @@ export function applyUrlPrefix(value, prefix) {
   rest = rest.replace(/^[a-z][a-z0-9+.-]*:(?:\/\/)?/i, "");
   if (selected.endsWith("//")) rest = rest.replace(/^\/+/, "");
   return `${selected}${rest}`;
+}
+
+export function normalizeUrlValue(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed || /^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed;
+  return /^(?:localhost|(?:[\p{L}\p{N}-]+\.)+[\p{L}]{2,})(?::\d+)?(?:[/?#]|$)/iu.test(trimmed)
+    ? `https://${trimmed}`
+    : trimmed;
 }
 
 export function markerTypeForCheckboxMode(markerType, checkboxMode) {

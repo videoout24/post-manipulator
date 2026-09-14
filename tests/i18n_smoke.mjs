@@ -38,6 +38,13 @@ assert.deepEqual(enKeys, ruKeys, "ru and en dictionaries must expose the same ke
 for (const key of ruKeys) {
   assert.deepEqual(placeholders(en[key]), placeholders(ru[key]), `placeholder mismatch for ${key}`);
 }
+for (const [locale, dictionary] of [["ru", ru], ["en", en]]) {
+  assert.equal(dictionary["publications.publicationView.search"], locale === "ru" ? "Поиск" : "Search");
+  assert.ok(dictionary["html.automaticPublicationBackups"], `${locale} automatic backup label is missing`);
+  assert.ok(dictionary["publications.publicationView.openTarget"], `${locale} target-open label is missing`);
+  assert.equal(Object.values(dictionary).some(value => /Post Manipulator/.test(String(value))), false,
+    `${locale} user-facing translations must use the compact PM name`);
+}
 
 const indexHtml = await readFile(path.join(root, "index.html"), "utf8");
 const bootstrap = await readFile(path.join(root, "js/bootstrap.js"), "utf8");

@@ -11,6 +11,7 @@ import {
   toggleRichTextFormat,
   wrapRichTextWithFormats
 } from "../js/core/RichText.js?v=1.5.9";
+import { BlockInspector } from "../js/editor/BlockInspector.js?v=1.5.9";
 
 const bold = { id: "bold", telegramType: "bold", wrapperField: "text" };
 const italic = { id: "italic", telegramType: "italic", wrapperField: "text" };
@@ -65,5 +66,40 @@ assert.deepEqual(scopedUpdate, [
   " ",
   { type: "date_time", text: "second", unix_time: 1_900_000_000, date_time_format: "d" }
 ], "updating one timestamp must not alter another timestamp in the same RichText field");
+
+const url = { id: "url", telegramType: "url", wrapperField: "text", replaceExisting: true, exclusiveWith: ["date_time"] };
+dateTime.exclusiveWith = ["url"];
+const formatting = new Map([["url", url], ["date_time", dateTime]]);
+const inspector = new BlockInspector({ registry: { properties: { formatting } }, controller: {} });
+const linked = inspector.applyRichTextFormatValue("visit", 0, 5, url, { url: "https://example.com" });
+const datedInstead = inspector.applyRichTextFormatValue(linked, 0, 5, dateTime, {
+  unix_time: 1_900_000_000,
+  date_time_format: "DT"
+});
+assert.equal(richTextRangeHasFormat(datedInstead, 0, 5, url), false, "date/time must remove a link from the same range");
+assert.equal(richTextRangeHasFormat(datedInstead, 0, 5, dateTime), true);
+const plainAgain = inspector.removeRichTextFormatValue(datedInstead, 0, 5, dateTime);
+assert.equal(plainAgain, "visit", "a parameterized wrapper must be removable without changing its text");
+
+const code = { id: "code", telegramType: "code", wrapperField: "text", exclusiveWith: ["url", "date_time"] };
+formatting.set("code", code);
+const linkedAgain = inspector.applyRichTextFormatValue("copy", 0, 4, url, { url: "https://example.com" });
+const codeInstead = inspector.applyRichTextFormatValue(linkedAgain, 0, 4, code);
+assert.equal(richTextRangeHasFormat(codeInstead, 0, 4, url), false, "monospace must remove a link from the same range");
+assert.equal(richTextRangeHasFormat(codeInstead, 0, 4, code), true);
+const datedCode = inspector.applyRichTextFormatValue("copy", 0, 4, dateTime, {
+  unix_time: 1_900_000_000,
+  date_time_format: "DT"
+});
+const copiedInstead = inspector.applyRichTextFormatValue(datedCode, 0, 4, code);
+assert.equal(richTextRangeHasFormat(copiedInstead, 0, 4, dateTime), false, "monospace must remove date/time from the same range");
+assert.equal(richTextRangeHasFormat(copiedInstead, 0, 4, code), true);
+const typingState = { typingSession: {
+  formats: new Set(["url", "date_time"]),
+  metadata: new Map([["url", { url: "https://example.com" }], ["date_time", { unix_time: 1_900_000_000 }]])
+} };
+inspector.deactivateExclusiveTypingFormats(typingState, code);
+assert.deepEqual([...typingState.typingSession.formats], [], "monospace inheritance must disable link and date/time inheritance");
+assert.deepEqual([...typingState.typingSession.metadata], []);
 
 console.log("rich_text_format_toggle_smoke: OK");

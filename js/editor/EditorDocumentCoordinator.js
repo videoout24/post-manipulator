@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.12";
+import { t } from "../i18n/index.js?v=1.8.15";
 export class EditorDocumentCoordinator {
   constructor({ projectSession, draftSession, drafts, projects, graphReconciler = null, tree = null, storage = null } = {}) {
     this.projectSession = projectSession;

@@ -37,11 +37,14 @@ export function createTelegramFormattingRegistry() {
   wrapper("subscript", t("core.formattingRegistry.subscript"), "x₂");
   wrapper("superscript", t("core.formattingRegistry.superscript"), "x²");
   wrapper("marked", t("core.formattingRegistry.highlight"), "▣");
-  wrapper("code", t("core.formattingRegistry.monospaceCode"), "</>");
+  wrapper("code", t("core.formattingRegistry.monospaceCode"), "</>", {
+    exclusiveWith: ["url", "date_time"]
+  });
   semanticWrapper("url", t("core.formattingRegistry.link"), "🔗", {
     toolbar: true,
     inheritMetadata: true,
     replaceExisting: true,
+    exclusiveWith: ["code", "date_time"],
     fields: [field("url", "URL", "url", { required: true })]
   });
 
@@ -50,6 +53,7 @@ export function createTelegramFormattingRegistry() {
     metadataEditor: "date-time",
     inheritMetadata: true,
     replaceExisting: true,
+    exclusiveWith: ["code", "url"],
     fields: [
       field("unix_time", t("core.formattingRegistry.unixTime"), "integer", { required: true }),
       field("date_time_format", t("core.formattingRegistry.dateTimeFormat"), "text", { required: true })

@@ -1,8 +1,8 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.6";
+import { getLocale, t } from "../i18n/index.js?v=1.8.15";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.8.6";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.8.15";
 import { getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 
 export class PublicationView {
@@ -27,6 +27,7 @@ export class PublicationView {
     this.selectedProjectId = null;
     this.timeFilter = "all";
     this.dateRange = { from: "", to: "" };
+    this.searchQuery = "";
     this.targets = [];
     this.publications = [];
     this.selectedTargetId = null;
@@ -110,7 +111,11 @@ export class PublicationView {
     const add = button(t("publications.publicationView.addChannelGroup"), () => this.#startBinding(), "primary publication-add-target");
     const filters = el("div", "publication-filters");
     for (const [value, label] of [["all", t("editor.blockPalette.all")], ["channel", t("publications.publicationView.channels")], ["group", t("publications.publicationView.groups")]]) {
-      const chip = button(label, () => { this.filter = value; this.render(); }, "publication-filter-chip");
+      const chip = button(label, () => {
+        this.filter = value;
+        if (value === "all") this.selectedTargetId = null;
+        this.render();
+      }, "publication-filter-chip");
       chip.classList.toggle("active", this.filter === value);
       chip.setAttribute("aria-pressed", String(this.filter === value));
       filters.append(chip);
@@ -125,8 +130,8 @@ export class PublicationView {
     sidebar.append(list);
 
     const content = el("section", "publication-content");
-    content.append(el("h1", "", t("publications.publicationView.posts")));
     const filterPanel = el("div", "publication-content-filters");
+    filterPanel.append(this.#searchFilterRow());
     filterPanel.append(this.#contentFilterRow(t("project.projectLibraryView.status"), [
       ["all", t("editor.blockPalette.all")], ["published", t("publications.publicationView.published")], ["scheduled", t("publications.publicationView.scheduled")]
     ], this.statusFilter, value => { this.statusFilter = value; this.render(); }));
@@ -170,6 +175,7 @@ export class PublicationView {
     const to = this.timeFilter === "custom" && this.dateRange.to ? new Date(`${this.dateRange.to}T23:59:59`).getTime() : Infinity;
     const publications = this.publications.filter(record => {
       if (this.selectedTargetId && Number(record.chatId) !== Number(this.selectedTargetId)) return false;
+      if (!publicationMatchesSearch(record, this.searchQuery)) return false;
       if (this.sourceFilter !== "all" && record.source?.kind !== this.sourceFilter) return false;
       if (this.sourceFilter === "project" && this.selectedProjectId
         && String(record.source?.projectId || "") !== String(this.selectedProjectId)) return false;
@@ -948,6 +954,29 @@ export class PublicationView {
     return row;
   }
 
+  #searchFilterRow() {
+    const row = el("label", "publication-content-filter-row publication-content-search-row");
+    row.append(el("span", "publication-content-filter-label", t("publications.publicationView.search")));
+    const input = document.createElement("input");
+    input.type = "search";
+    input.className = "publication-content-search-input";
+    input.value = this.searchQuery;
+    input.placeholder = t("publications.publicationView.searchDraftsAndPostTitles");
+    input.setAttribute("aria-label", input.placeholder);
+    input.oninput = () => {
+      this.searchQuery = input.value;
+      const cursor = input.selectionStart;
+      this.render();
+      queueMicrotask(() => {
+        const next = this.root?.querySelector?.(".publication-content-search-input");
+        next?.focus?.();
+        if (cursor !== null) next?.setSelectionRange?.(cursor, cursor);
+      });
+    };
+    row.append(input);
+    return row;
+  }
+
   #projectFilterRow() {
     const projects = publishedProjectOptions(this.publications, this.selectedTargetId);
     if (this.selectedProjectId && !projects.some(project => project.id === String(this.selectedProjectId))) {
@@ -1065,7 +1094,14 @@ export class PublicationView {
     cleanup.title = cleanupEnabled
       ? t("publications.publicationView.deletingServiceMessagesEnabled")
       : t("publications.publicationView.deletingServiceMessagesDisabled");
-    actions.append(cleanup, button(t("publications.publicationView.check"), () => this.#refresh(target.chatId)));
+    const targetAnchor = this.publications.find(record =>
+      Number(record.chatId) === Number(target.chatId) && Number(record.messageId) > 0
+    );
+    const open = button("👁", () => this.#openTarget(target, targetAnchor), "publication-target-open");
+    open.title = t("publications.publicationView.openTarget");
+    open.setAttribute("aria-label", open.title);
+    open.disabled = !target.username && !targetAnchor;
+    actions.append(cleanup, open, button(t("publications.publicationView.check"), () => this.#refresh(target.chatId)));
     if (countTargetPublications(this.publications, target.chatId) === 0) {
       const remove = button("🗑", () => this.#requestTargetRemoval(card, target), "publication-target-remove danger-soft");
       remove.title = t("publications.publicationView.removeTarget");
@@ -1094,6 +1130,14 @@ export class PublicationView {
   async #refresh(chatId) {
     try { await this.telegramCore.publications.refreshTarget(chatId); }
     catch (error) { this.notifications?.show?.({ message: t("publications.publicationView.check2", { 0: error?.message || error }), type: "error" }); }
+  }
+
+  #openTarget(target, anchor) {
+    return this.navigation?.openChat?.({
+      username: target?.username,
+      chatId: target?.chatId,
+      messageId: anchor?.messageId
+    });
   }
 
   #requestTargetRemoval(card, target) {
@@ -1275,4 +1319,10 @@ function el(tag, className = "", text = "") {
   if (className) node.className = className;
   if (text !== "") node.textContent = text;
   return node;
+}
+
+export function publicationMatchesSearch(record, query) {
+  const needle = String(query || "").trim().toLocaleLowerCase(getLocale());
+  if (!needle) return true;
+  return String(record?.source?.title || "").toLocaleLowerCase(getLocale()).includes(needle);
 }

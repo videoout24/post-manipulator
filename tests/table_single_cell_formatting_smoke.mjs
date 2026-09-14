@@ -8,6 +8,6 @@ assert.match(inspector, /textarea\.selectionStart[\s\S]*?=== \(textarea\.selecti
 assert.match(inspector, /state\.applyFormatBatch && state\.shouldApplyFormatBatch\?\.\(\) !== false/);
 assert.match(inspector, /toggleRichTextFormat\(current, 0, length, format, metadata\)/);
 assert.match(inspector, /applyRichTextFormatValue\(current, start, end, format, metadata\)/);
-assert.match(inspector, /toggleRichTextFormat\(value, start, end, format, metadata\)/);
+assert.match(inspector, /toggleRichTextFormat\(selected, 0, richTextLength\(selected\), format, metadata\)/);
 
 console.log("table single-cell formatting smoke: OK");

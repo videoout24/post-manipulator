@@ -64,27 +64,34 @@ try {
   inputUrl("not a URL");
   apply();
   check(!richTextRangeHasFormat(value, 7, 11, url), "An invalid URL must not create a link");
-  inputUrl("https://example.com/first");
+  inputUrl("google.com/first");
   // The URL form must retain the range captured when it was opened.
   textarea.setSelectionRange(0, 0);
   apply();
   await settle();
-  equal(value, ["Before ", { type: "url", url: "https://example.com/first", text: { type: "bold", text: "link" } }, " after"],
+  equal(value, ["Before ", { type: "url", url: "https://google.com/first", text: { type: "bold", text: "link" } }, " after"],
     "Only the selected text must become a link, preserving its bold formatting");
   equal([textarea.selectionStart, textarea.selectionEnd], [7, 11], "Applying a link must restore selection");
   check(link.getAttribute("aria-pressed") === "true", "A selected link must activate the toolbar button");
 
   link.click();
-  check(editor.querySelector('input[type="url"]').value === "https://example.com/first", "Editing must prefill the current URL");
-  inputUrl("https://example.com/cancelled");
+  check(editor.querySelector('input[type="url"]').value === "https://google.com/first", "An existing URL must prefill the field");
+  check([...editor.querySelectorAll(".format-config-title-row .url-prefix-control button")].map(button => button.textContent).join("|") === "https://|tg://",
+    "Link settings must show explicit HTTPS and Telegram prefix buttons");
+  check(editor.querySelector(".format-config-actions button:last-child").dataset.action === "remove",
+    "An applied link must offer removal");
   cancel();
-  equal(richTextFormatMetadataAtPosition(value, 8, url), { url: "https://example.com/first" }, "Cancel must keep the original URL");
+  equal(richTextFormatMetadataAtPosition(value, 8, url), { url: "https://google.com/first" }, "Cancel must keep the original URL");
   equal([textarea.selectionStart, textarea.selectionEnd], [7, 11], "Cancel must restore selection");
   link.click();
-  inputUrl("tg://resolve?domain=example");
+  apply();
+  check(!richTextRangeHasFormat(value, 7, 11, url), "Remove must unwrap the selected link");
+  link.click();
+  inputUrl("resolve?domain=example");
+  editor.querySelectorAll(".format-config-title-row .url-prefix-control button")[1].click();
   apply();
   equal(value, ["Before ", { type: "url", url: "tg://resolve?domain=example", text: { type: "bold", text: "link" } }, " after"],
-    "Editing must replace the URL without nesting links or removing bold");
+    "The tg:// shortcut must wrap the text without removing bold");
 
   const rendered = new TelegramRenderer(registry).renderEnvelope({ root: { children: [
     { type: "paragraph", props: { text: value }, children: [] }
@@ -120,7 +127,14 @@ try {
   await select(7, 11);
   inspector.applyRichTextFormatToState(state, dateTime);
   check(Boolean(editor.querySelector('input[type="datetime-local"]')), "Date/time must retain its specialized picker");
-  editor.querySelector(".format-config-actions button:first-child").click();
+  apply();
+  check(!richTextRangeHasFormat(value, 7, 11, url), "Date/time and URL wrappers must be mutually exclusive");
+  check(richTextRangeHasFormat(value, 7, 11, dateTime), "Date/time must be applied to the selection");
+  inspector.applyRichTextFormatToState(state, dateTime);
+  check(editor.querySelector(".format-config-actions button:last-child").dataset.action === "remove",
+    "An applied date/time wrapper must offer removal");
+  apply();
+  check(!richTextRangeHasFormat(value, 7, 11, dateTime), "Remove must unwrap date/time formatting");
 
   document.querySelector("#result").textContent = "text_link_toolbar_browser_smoke: OK";
   document.body.dataset.result = "passed";

@@ -39,9 +39,10 @@ const root = {
 
 let editorActivations = 0;
 let projectActivations = 0;
+let editorTransition = null;
 const navigation = new AppNavigation({
   root,
-  onEditor: () => editorActivations++,
+  onEditor: transition => { editorActivations++; editorTransition = transition; },
   onProject: () => projectActivations++
 }).start();
 
@@ -58,12 +59,16 @@ assert(settingsPage.classes.has("active"));
 assert(settingsBrand.classes.has("active"));
 assert.equal(settingsBrand.attributes.get("aria-pressed"), "true");
 
+editorButton.click();
+assert.equal(editorActivations, 1);
+assert.deepEqual(editorTransition, { previousTab: "settings", tab: "editor" });
+
 generalButton.click();
 assert(generalPanel.classes.has("active"));
 assert.equal(generalButton.attributes.get("aria-selected"), "true");
 
 navigation.stop();
 assert.equal(projectButton.listeners.size, 0);
-assert.equal(editorActivations, 0);
+assert.equal(editorActivations, 1);
 
 console.log("app_navigation_smoke: OK");
