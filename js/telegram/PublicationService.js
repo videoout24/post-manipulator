@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.8.12";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 
@@ -28,6 +28,12 @@ export class PublicationService {
   async initialize() {
     for (const record of await this.list()) {
       if (record?.source?.kind === "draft" && record.scheduledAt && !record.messageId) this.#armSchedule(record);
+      if (record?.source?.kind === "draft" && record.messageId) await this.drafts.retainPublication(record);
+    }
+    for (const draft of await this.drafts?.list?.() || []) {
+      if (draft.source?.kind === "publication" && !await this.db.get("publications", draft.source.publicationId, null)) {
+        await this.drafts.releasePublication(draft.source.publicationId);
+      }
     }
   }
 
@@ -58,6 +64,7 @@ export class PublicationService {
     ]);
     if (!draft) throw new Error(t("editor.editorRightPanel.draftNotFound"));
     if (draft.source?.kind === "publication") throw new Error(t("telegram.publicationService.workingCopyOfThePublicationCannotBe"));
+    await this.#assertUnpublishedDraft(draft);
     if (!draft.messageAst?.children?.length) throw new Error(t("telegram.publicationService.emptyDraftCannotBeScheduled"));
     this.#assertCommentsConfig(target, commentsEnabled);
     const errors = this.validator.validate(astTree(draft.messageAst));
@@ -142,11 +149,13 @@ export class PublicationService {
   }
 
   async publishDraft(draftId, targetChatId, { commentsEnabled = true } = {}) {
+    if (this.draftSession?.activeDraftId === draftId) await this.draftSession.flush();
     const [draft, target] = await Promise.all([
       this.drafts.get(draftId),
       this.targets.list().then(rows => rows.find(item => Number(item.chatId) === Number(targetChatId)))
     ]);
     if (!draft) throw new Error(t("editor.editorRightPanel.draftNotFound"));
+    await this.#assertUnpublishedDraft(draft);
     if (!draft.messageAst?.children?.length) throw new Error(t("telegram.publicationService.emptyDraftCannotBePublished"));
     if (!target || target.status !== "ready") throw new Error(t("project.projectPublicationService.channelOrGroupNotAvailableForPublishing"));
     if (target.type === "channel" && target.commentsEnabled && commentsEnabled === false && !target.discussionRights?.canDelete) {
@@ -168,7 +177,12 @@ export class PublicationService {
     const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
     const record = {
       id: `publication_${randomUUID()}`,
-      source: { kind: "draft", draftId: draft.id, title: draft.title },
+      source: {
+        kind: "draft", draftId: draft.id, title: draft.title,
+        draftSource: draft.source ? structuredClone(draft.source) : null,
+        draftCreatedAt: draft.createdAt,
+        draftUpdatedAt: draft.updatedAt
+      },
       messageAst: structuredClone(publishAst),
       target: structuredClone(target),
       chatId: Number(target.chatId),
@@ -189,14 +203,10 @@ export class PublicationService {
       reactionActors: {}
     };
     await this.db.put("publications", record.id, record);
+    await this.drafts.retainPublication(record);
     await this.linkRelations?.bindSourceDraftToPublication?.(draft.id, record.id);
     const resolvedRelations = await this.linkRelations?.resolveWaitingForPublication?.(record) || [];
     await this.#applyResolvedRelations(resolvedRelations);
-    if (this.documents?.clearPublishedDraft) await this.documents.clearPublishedDraft(draft.id);
-    else if (this.draftSession?.activeDraftId === draft.id) {
-      await this.draftSession.deactivate({ flush: false, reason: "published" });
-    }
-    await this.drafts.delete(draft.id);
     this.events?.emit("telegram:publication-created", record);
     this.events?.emit("telegram:publications-changed", await this.list());
     // An automatic forward may have reached polling before sendRichMessage returned.
@@ -206,6 +216,12 @@ export class PublicationService {
       this.events?.emit("telegram:publication-discussion-error", { record, error });
     });
     return record;
+  }
+
+  async #assertUnpublishedDraft(draft) {
+    if (draft.source?.kind === "publication" || (await this.list()).some(record =>
+      record.source?.kind === "draft" && record.source.draftId === draft.id
+    )) throw new Error(t("editor.draftListView.draftAlreadyPublished"));
   }
 
   #armSchedule(record, { runAt = Number(record?.scheduledAt || 0) } = {}) {
@@ -287,6 +303,7 @@ export class PublicationService {
     record.discussionChatId = target.linkedDiscussionChatId || null;
     record.discussionUsername = target.linkedDiscussionUsername || "";
     await this.db.put("publications", record.id, record);
+    await this.drafts.retainPublication(record);
     const resolvedRelations = await this.linkRelations?.resolveWaitingForPublication?.(record) || [];
     await this.#applyResolvedRelations(resolvedRelations);
     this.events?.emit("telegram:publication-created", structuredClone(record));
@@ -381,10 +398,7 @@ export class PublicationService {
       // leave the user with an undeletable stale projection.
       if (!error?.isMessageMissing?.()) throw error;
     }
-    await this.db.delete("publications", recordId);
-    await this.linkRelations?.reconcileMissingEndpoints?.();
-    this.events?.emit("telegram:publications-changed", await this.list());
-    return true;
+    return this.discardLocal(recordId);
   }
 
   async checkExpiredDeletion(recordId) {
@@ -405,6 +419,12 @@ export class PublicationService {
   async discardLocal(recordId) {
     const record = await this.db.get("publications", recordId, null);
     if (!record) return false;
+    if (this.draftSession?.draft?.source?.publicationId === recordId) await this.draftSession.flush();
+    if (record.source?.kind === "draft" && record.messageId) {
+      await this.drafts.retainPublication(record);
+      await this.linkRelations?.bindSourcePublicationToDraft?.(record.id, record.source.draftId);
+    }
+    await this.drafts?.releasePublication?.(recordId);
     await this.db.delete("publications", recordId);
     await this.linkRelations?.reconcileMissingEndpoints?.();
     this.events?.emit("telegram:publications-changed", await this.list());
@@ -415,6 +435,10 @@ export class PublicationService {
     const record = await this.db.get("publications", recordId, null);
     if (!record) throw new Error(t("telegram.publicationService.publicationNotFound"));
     if (!record.messageAst?.children) throw new Error(t("telegram.publicationService.thereIsNoLocalCopyOfThe"));
+    if (record.source?.kind === "draft" && record.messageId) {
+      const original = await this.drafts.retainPublication(record);
+      if (original) return original;
+    }
     const existing = (await this.drafts.list()).find(draft =>
       draft.source?.kind === "publication" && draft.source?.publicationId === record.id
     );
@@ -454,6 +478,7 @@ export class PublicationService {
         });
       }
       record.messageAst = structuredClone(appliedAst);
+      if (draft.source.retained && record.source?.draftId === draft.id) record.source.title = draft.title;
       record.editedAt = Date.now();
       await this.db.put("publications", record.id, record);
       this.events?.emit("telegram:publication-updated", structuredClone(record));

@@ -28,6 +28,12 @@ The project is a practical MVP for composing, publishing, and managing interconn
 
 ## Features
 
+Published drafts are kept as source documents. They can be renamed and edited;
+Apply changes updates the linked publication. Deleting a draft or moving it to
+a project becomes available after its publication and local link are removed.
+A successful move creates the project post and removes the source from Drafts.
+Missing source drafts from earlier versions are restored from local publication copies.
+
 - compose and edit Rich Messages;
 - manage projects, drafts, publications, and media;
 - schedule regular drafts and Project posts, edit them before delivery, and cancel scheduled publications;
@@ -157,7 +163,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.8.9
+https://videoout24.github.io/post-manipulator/?build=1.8.12
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -234,7 +240,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.8.9`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.8.12`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

@@ -4,7 +4,7 @@ import fs from "node:fs";
 
 const css = readStylesSync();
 
-assert.match(css, /\.canvas\s*\{[\s\S]*?--canvas-font-size:\s*10px;/);
+assert.match(css, /\.canvas\s*\{[\s\S]*?--canvas-font-size:\s*12px;/);
 assert.match(css, /\.block-preview\s*\{[^}]*font-size:\s*var\(--canvas-font-size\)/);
 for (const property of ["content.caption", "content.captionCredit", "content.credit", "details.summary"]) {
   assert.match(css, new RegExp(`data-property=["']${property.replace('.', '\\.')}`));

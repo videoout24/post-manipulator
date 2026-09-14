@@ -127,6 +127,10 @@ assert.equal(sent.length, 1, "an overdue Draft publishes when the application st
 assert.equal(published.scheduledAt, null);
 assert.ok(published.messageId);
 assert.equal(published.messageAst.children[0].props.text, "Уйдёт после запуска");
+const retained = await drafts.get(dueDraft.id);
+assert.equal(retained.source.publicationId, published.id, "delivery restores and links the original source draft");
+assert.deepEqual(retained.messageAst, published.messageAst);
+await assert.rejects(drafts.delete(dueDraft.id), /./, "scheduled delivery must protect its source after publication");
 restarted.stop();
 
 console.log("draft publication schedule smoke: OK");

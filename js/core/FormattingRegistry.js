@@ -26,7 +26,7 @@ export function createTelegramFormattingRegistry() {
   const semanticWrapper = (id, label, shortLabel, extra = {}) =>
     wrapper(id, label, shortLabel, { toolbar: false, semantic: true, ...extra });
 
-  // Toolbar = visual formatting plus the date/time wrapper. Other parameterized
+  // Toolbar = visual formatting plus link and date/time wrappers. Other parameterized
   // semantic entities stay in the registry for wire compatibility and are exposed
   // as dedicated palette elements.
   wrapper("bold", t("core.formattingRegistry.bold"), "B");
@@ -38,6 +38,12 @@ export function createTelegramFormattingRegistry() {
   wrapper("superscript", t("core.formattingRegistry.superscript"), "x²");
   wrapper("marked", t("core.formattingRegistry.highlight"), "▣");
   wrapper("code", t("core.formattingRegistry.monospaceCode"), "</>");
+  semanticWrapper("url", t("core.formattingRegistry.link"), "🔗", {
+    toolbar: true,
+    inheritMetadata: true,
+    replaceExisting: true,
+    fields: [field("url", "URL", "url", { required: true })]
+  });
 
   semanticWrapper("date_time", t("core.formattingRegistry.dateTime"), "🕒", {
     toolbar: true,
@@ -51,9 +57,6 @@ export function createTelegramFormattingRegistry() {
   });
   semanticWrapper("text_mention", t("core.formattingRegistry.userMention"), "@id", {
     fields: [field("user", t("core.formattingRegistry.userJson"), "json", { required: true })]
-  });
-  semanticWrapper("url", t("core.formattingRegistry.link"), "🔗", {
-    fields: [field("url", "URL", "url", { required: true })]
   });
   semanticWrapper("email_address", "E-mail", "✉", {
     fields: [field("email_address", "E-mail", "text", { required: true })]
@@ -110,6 +113,6 @@ export const FORMAT_GROUPS = Object.freeze({
   code: ["code"],
   full: [
     "bold", "italic", "underline", "strikethrough", "spoiler",
-    "subscript", "superscript", "marked", "code", "date_time"
+    "subscript", "superscript", "marked", "code", "url", "date_time"
   ]
 });

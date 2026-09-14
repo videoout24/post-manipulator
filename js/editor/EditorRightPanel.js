@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.8.6";
-import { createDraftListView } from "./DraftListView.js?v=1.7.15";
+import { t } from "../i18n/index.js?v=1.8.12";
+import { createDraftListView } from "./DraftListView.js?v=1.8.12";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.8.6";
 
 export class EditorRightPanel {
@@ -48,6 +48,9 @@ export class EditorRightPanel {
         if (this.mode === "project" && event?.projectId === this.session.activeProjectId) this.render();
       }),
       this.events?.on?.("draft:changed", () => {
+        if (this.mode === "drafts") this.render();
+      }),
+      this.events?.on?.("telegram:publications-changed", () => {
         if (this.mode === "drafts") this.render();
       }),
       this.events?.on?.("draft:session-changed", ({ activeDraftId }) => {
@@ -137,7 +140,7 @@ export class EditorRightPanel {
   async #renderDrafts(revision) {
     let rows = await this.drafts?.list?.() || [];
     const activeDraft = rows.find(draft => draft.id === this.draftSession?.activeDraftId);
-    if (activeDraft?.source?.kind === "publication") rows = [activeDraft];
+    if (activeDraft?.source?.kind === "publication" && !activeDraft.source.retained) rows = [activeDraft];
     // Events may request another render while persistent storage is resolving this
     // one. Only the newest result may commit DOM; otherwise both results append
     // identical Draft lists.
@@ -207,8 +210,10 @@ export class EditorRightPanel {
       await this.documents?.saveCurrentContext?.();
       const record = await this.onApplyDraftChanges?.(draft.id);
       if (!record) return record;
-      const discarded = await this.#finishPublicationEdit(draft, "publication-edit-applied");
-      if (!discarded) throw new Error(t("editor.editorRightPanel.publicationUpdatedButFailedToClearEditor"));
+      if (!draft.source?.retained) {
+        const discarded = await this.#finishPublicationEdit(draft, "publication-edit-applied");
+        if (!discarded) throw new Error(t("editor.editorRightPanel.publicationUpdatedButFailedToClearEditor"));
+      }
       this.onToast?.({ message: t("editor.editorRightPanel.publicationUpdated", { 0: record.source?.title || draft.title }), type: "success" });
       return record;
     });
@@ -254,13 +259,17 @@ export class EditorRightPanel {
     return this.#run(async () => {
       const discarded = await this.#finishPublicationEdit(draft, "publication-edit-cancelled");
       if (!discarded) throw new Error(t("editor.editorRightPanel.failedToClosePostEditing"));
-      this.onToast?.({ message: t("editor.editorRightPanel.postEditingCanceled"), type: "info" });
+      this.onToast?.({ message: draft.source?.retained
+        ? t("editor.editorCommandController.draftSaved", { 0: draft.title })
+        : t("editor.editorRightPanel.postEditingCanceled"), type: "info" });
       return true;
     });
   }
 
   async #finishPublicationEdit(draft, reason) {
-    const discarded = await this.documents?.discardDraft?.(draft.id, { reason });
+    const discarded = draft.source?.retained
+      ? await this.documents?.closeDraft?.(draft.id, { reason })
+      : await this.documents?.discardDraft?.(draft.id, { reason });
     if (!discarded) return false;
     this.mode = "drafts";
     await this.render();
@@ -274,6 +283,7 @@ export class EditorRightPanel {
 
   async #deleteDraft(draft) {
     return this.#run(async () => {
+      await this.drafts.assertCanDelete?.(draft.id);
       const active = this.draftSession?.activeDraftId === draft.id;
       if (active && this.documents?.discardDraft) {
         const discarded = await this.documents.discardDraft(draft.id, { reason: "deleted" });

@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.12";
 const PREFIX = "draft_";
 
 export class DraftStore {
@@ -72,8 +72,70 @@ export class DraftStore {
     return structuredClone(current);
   }
 
+  async retainPublication(record) {
+    if (record?.source?.kind !== "draft" || !record.source.draftId || !record.messageId) return null;
+    let draft = await this.get(record.source.draftId);
+    if (!draft) {
+      draft = await this.restore({
+        id: record.source.draftId,
+        title: record.source.title,
+        messageAst: record.messageAst,
+        source: record.source.draftSource || null,
+        createdAt: record.source.draftCreatedAt,
+        updatedAt: record.source.draftUpdatedAt || record.publishedAt
+      });
+    }
+    if (draft.source?.kind === "publication" && draft.source.publicationId !== record.id
+      && await this.db.get("publications", draft.source.publicationId, null)) return null;
+    if (draft.source?.retained && draft.source.publicationId === record.id) return draft;
+    const originalSource = draft.source?.kind === "publication" ? draft.source.originalSource || null : draft.source;
+    return this.#saveSource(draft, {
+      kind: "publication",
+      publicationId: record.id,
+      retained: true,
+      originalSource,
+      chatId: record.chatId,
+      messageId: record.messageId,
+      targetTitle: record.target?.title || ""
+    }, "publication-linked");
+  }
+
+  async releasePublication(recordId) {
+    for (const draft of await this.list()) {
+      if (draft.source?.kind !== "publication" || draft.source.publicationId !== recordId) continue;
+      await this.#saveSource(draft, draft.source.originalSource || null, "publication-unlinked");
+    }
+  }
+
+  async #saveSource(draft, source, reason) {
+    draft.source = source ? structuredClone(source) : null;
+    await this.db.put("drafts", draft.id, draft);
+    this.events?.emit?.("draft:changed", { reason, draft: structuredClone(draft), draftId: draft.id });
+    return structuredClone(draft);
+  }
+
+  async #hasPublishedRecord(id) {
+    const rows = await this.db?.all?.("publications") || [];
+    return rows.some(({ value }) => value?.messageId && value.source?.kind === "draft" && value.source.draftId === id);
+  }
+
+  async assertCanDelete(id) {
+    const draft = await this.get(id);
+    if ((draft?.source?.retained && draft.source.publicationId) || await this.#hasPublishedRecord(id)) {
+      throw new Error(t("editor.draftListView.deletePublishedDraftBlocked"));
+    }
+  }
+
+  async assertCanMoveToProject(id) {
+    const draft = await this.get(id);
+    if ((draft?.source?.kind === "publication" && draft.source.publicationId) || await this.#hasPublishedRecord(id)) {
+      throw new Error(t("editor.draftListView.movePublishedDraftBlocked"));
+    }
+  }
+
   async delete(id) {
     if (!id) return;
+    await this.assertCanDelete(id);
     await this.db?.delete?.("drafts", id);
     this.events?.emit?.("draft:changed", { reason: "deleted", draftId: id });
   }

@@ -39,6 +39,7 @@ class FakeElement {
     this.parentElement = null;
   }
   set innerHTML(value) { if (value === "") this.children = []; }
+  get childElementCount() { return this.children.length; }
 }
 
 globalThis.document = {
@@ -88,6 +89,49 @@ renameInput.value = "Renamed Draft";
 renameSave.onclick({ stopPropagation() {} });
 await new Promise(resolve => queueMicrotask(resolve));
 assert.deepEqual(renamed, [[row.id, "Renamed Draft"]], "the inline editor must pass the new title to DraftStore");
+
+const publishedRow = {
+  ...row, title: "Published source",
+  source: { kind: "publication", publicationId: "publication_one", retained: true }
+};
+panel.draftSession.activeDraftId = publishedRow.id;
+const publishedRender = panel.render();
+pending.at(-1)([publishedRow, { ...row, id: "other-draft" }]);
+await publishedRender;
+assert.equal(root.children[1].children.length, 2, "retained published drafts must not hide the other drafts");
+const publishedCard = root.children[1].children[0];
+const publishedTools = publishedCard.children[0].children[1];
+assert.equal(publishedTools.children.length, 3, "the published source keeps its rename and delete controls");
+assert.equal(publishedTools.children[2].disabled, true, "deleting a published source is disabled");
+const publishedActions = publishedCard.children[1];
+assert.equal(publishedActions.children[0].disabled, true, "moving a published source is disabled");
+publishedTools.children[1].onclick({ stopPropagation() {} });
+const publishedRename = publishedCard.children.at(-1);
+publishedRename.children[0].value = "Renamed published source";
+await publishedRename.children[1].children[1].onclick({ stopPropagation() {} });
+assert.deepEqual(renamed.at(-1), [publishedRow.id, "Renamed published source"], "renaming a published source remains available in the editor");
+let discarded = false;
+let closed = false;
+panel.onApplyDraftChanges = async () => ({ source: { title: "Renamed published source" } });
+panel.documents = {
+  async saveCurrentContext() {},
+  async discardDraft() { discarded = true; return true; },
+  async closeDraft() { closed = true; return true; }
+};
+await publishedActions.children[1].onclick({ stopPropagation() {} });
+assert.equal(discarded, false, "applying publication edits must keep the retained source");
+const closing = publishedActions.children[2].onclick({ stopPropagation() {} });
+await new Promise(resolve => setImmediate(resolve));
+pending.at(-1)([publishedRow]);
+await closing;
+assert.equal(closed, true, "closing the editor must use the nondestructive operation");
+assert.equal(discarded, false);
+const releasedRender = panel.render();
+pending.at(-1)([{ ...publishedRow, source: null, messageAst: { children: [{ type: "paragraph" }] } }]);
+await releasedRender;
+const releasedCard = root.children[1].children[0];
+assert.equal(releasedCard.children[0].children[1].children[2].disabled, false, "unlinking a publication enables draft deletion");
+assert.notEqual(releasedCard.children[1].children[0].disabled, true, "unlinking a publication enables transfer to a project");
 
 const projectEvents = new EventBus();
 const projectRoot = new FakeElement("aside");

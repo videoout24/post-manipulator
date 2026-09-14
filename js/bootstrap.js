@@ -1,5 +1,5 @@
 import { safeErrorDetails } from "./core/SafeDiagnostics.js?v=1.8.6";
-import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.6";
+import { applyDocumentTranslations, getLocale, t } from "./i18n/index.js?v=1.8.12";
 import { AppDatabase } from "./storage/AppDatabase.js?v=1.8.6";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
 import { BotIdentityService } from "./telegram/BotIdentityService.js?v=1.8.8";
@@ -91,7 +91,7 @@ async function bootstrapSecurityGate() {
         manual: manualBackupRecovery
       });
       bootstrapStage = "application";
-      const { startApplication } = await import("./app.js?v=1.8.9");
+      const { startApplication } = await import("./app.js?v=1.8.12");
       application = await startApplication({
         appDb,
         token: result.token,

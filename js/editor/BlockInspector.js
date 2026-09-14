@@ -1334,12 +1334,14 @@ export class BlockInspector {
   syncRichTypingStylesFromSelection(state, valueOverride = undefined) {
     if (!state?.typingSession?.enabled) return;
     const current = valueOverride ?? state.getCurrent?.() ?? state.textarea?.value ?? "";
+    const start = state.textarea?.selectionStart ?? 0;
+    const end = state.textarea?.selectionEnd ?? start;
     const formats = this.richTextSelectionStyleIds(state, current);
     const metadata = new Map();
     for (const formatId of formats) {
       const format = this.registry.properties?.formatting?.get(formatId);
       if (!format?.inheritMetadata) continue;
-      const value = richTextFormatMetadataAtPosition(current, state.textarea?.selectionStart ?? 0, format);
+      const value = richTextFormatMetadataAtPosition(current, end > start ? start + 1 : start, format);
       if (value) metadata.set(formatId, value);
       else formats.delete(formatId);
     }
@@ -1482,7 +1484,10 @@ export class BlockInspector {
       state.setStatusMessage?.("");
     };
 
-    if (format.metadataEditor === "date-time") {
+    if (format.inheritMetadata && format.fields?.length) {
+      const renderConfig = format.metadataEditor === "date-time"
+        ? this.renderDateTimeFormatConfig.bind(this)
+        : this.renderFormatConfig.bind(this);
       if (!applyBatch && start === end) {
         if (!state.typingSession?.enabled) {
           state.setStatusMessage?.(t("editor.blockInspector.selectTextFirstOrEnableStyleInheritance"));
@@ -1499,13 +1504,14 @@ export class BlockInspector {
           textarea.focus();
           return;
         }
-        this.renderDateTimeFormatConfig(state.configHost, format, metadata => {
+        renderConfig(state.configHost, format, metadata => {
+          state.configHost.innerHTML = "";
+          // Focusing the editor resyncs typing styles from the caret first.
+          textarea.focus();
           state.typingSession.formats.add(format.id);
           state.typingSession.metadata.set(format.id, metadata);
-          state.configHost.innerHTML = "";
           state.setStatusMessage?.("");
           this.refreshRichTextToolbarState(state);
-          textarea.focus();
         }, () => {
           state.configHost.innerHTML = "";
           textarea.focus();
@@ -1514,7 +1520,7 @@ export class BlockInspector {
       }
 
       const current = state.getCurrent?.() ?? textarea.value;
-      const currentMetadata = richTextFormatMetadataAtPosition(current, start, format);
+      const currentMetadata = richTextFormatMetadataAtPosition(current, end > start ? start + 1 : start, format);
       const apply = metadata => {
         if (applyBatch) {
           state.applyFormatBatch(format, metadata);
@@ -1522,7 +1528,7 @@ export class BlockInspector {
           state.setStatusMessage?.("");
         } else applyRange(metadata);
       };
-      this.renderDateTimeFormatConfig(state.configHost, format, apply, () => {
+      renderConfig(state.configHost, format, apply, () => {
         state.configHost.innerHTML = "";
         textarea.focus();
         textarea.setSelectionRange(start, end);
@@ -1645,7 +1651,7 @@ export class BlockInspector {
     host.append(panel);
   }
 
-  renderFormatConfig(host, format, onApply, onCancel) {
+  renderFormatConfig(host, format, onApply, onCancel, initialMetadata = null) {
     host.innerHTML = "";
     const panel = document.createElement("div");
     panel.className = "format-config";
@@ -1659,16 +1665,15 @@ export class BlockInspector {
     const values = {};
 
     for (const field of fields) {
-      if (field.default !== undefined) values[field.key] = structuredClone(field.default);
+      const initialValue = initialMetadata?.[field.key] ?? field.default;
+      if (initialValue !== undefined) values[field.key] = structuredClone(initialValue);
       const fieldWrap = document.createElement("div");
       fieldWrap.className = "format-config-registry-field";
       const head = document.createElement("div");
       head.className = "nested-field-head";
       const label = document.createElement("span");
       label.textContent = field.label || field.key;
-      const id = document.createElement("code");
-      id.textContent = field.property || "";
-      head.append(label, id);
+      head.append(label);
       fieldWrap.append(head);
       fieldWrap.append(this.makeEditor({
         schema: field,
@@ -1696,10 +1701,13 @@ export class BlockInspector {
       let invalid = false;
       [...panel.querySelectorAll(".format-config-registry-field")].forEach((fieldWrap, index) => {
         const field = fields[index];
+        if (field.type === "url" && typeof values[field.key] === "string") values[field.key] = values[field.key].trim();
         const value = values[field.key];
         const missing = field.required && (value === undefined || value === null || value === "");
         fieldWrap.classList.toggle("required-missing", !!missing);
         invalid ||= !!missing;
+        const urlInput = fieldWrap.querySelector('input[type="url"]');
+        if (urlInput && !urlInput.reportValidity()) invalid = true;
       });
       if (invalid) {
         error.textContent = t("editor.blockInspector.fillInRequiredParameters");
@@ -1711,6 +1719,7 @@ export class BlockInspector {
     actions.append(cancel, apply);
     panel.append(actions);
     host.append(panel);
+    panel.querySelector("input, textarea, select")?.focus();
   }
 
   makeListItemsEditor({ schema, value, onChange, node }) {

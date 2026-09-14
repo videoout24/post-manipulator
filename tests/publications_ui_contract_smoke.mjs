@@ -93,7 +93,7 @@ assert.match(view, /reactionRow\.append\(badge\)/);
 assert.match(panel, /await this\.documents\?\.saveCurrentContext\?\.\(\)/);
 assert.match(panel, /this\.onPublishDraft\(fresh\)/);
 assert.match(panel, /this\.onScheduleDraft\(fresh\)/);
-assert.match(panel, /activeDraft\?\.source\?\.kind === "publication"\) rows = \[activeDraft\]/);
+assert.match(panel, /activeDraft\?\.source\?\.kind === "publication" && !activeDraft\.source\.retained\) rows = \[activeDraft\]/);
 assert.match(panel, /onApplyChanges: draft => this\.#applyDraftChanges\(draft\)/);
 assert.match(panel, /onCancelPublicationEdit: draft => this\.#cancelPublicationEdit\(draft\)/);
 assert.match(panel, /documents\?\.discardDraft\?\.\(draft\.id/);

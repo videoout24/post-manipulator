@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.8.12";
 export class EditorDocumentCoordinator {
   constructor({ projectSession, draftSession, drafts, projects, graphReconciler = null, tree = null, storage = null } = {}) {
     this.projectSession = projectSession;
@@ -66,6 +66,7 @@ export class EditorDocumentCoordinator {
     await this.saveCurrentContext();
     const draft = await this.drafts.get(draftId);
     if (!draft) throw new Error(t("editor.editorDocumentCoordinator.draftNotFound", { 0: draftId }));
+    await this.drafts.assertCanMoveToProject?.(draftId);
     const { post } = await this.projects.createPost(projectId, {
       title: draft.title || t("editor.blockInspector.post"),
       messageAst: draft.messageAst
@@ -104,8 +105,19 @@ export class EditorDocumentCoordinator {
   async discardDraft(draftId, { reason = "discarded" } = {}) {
     if (this.projectSession?.isProjectActive?.()) return false;
     if (this.draftSession?.activeDraftId !== draftId) return false;
+    await this.drafts.assertCanDelete?.(draftId);
     await this.draftSession.deactivate({ flush: false, reason });
     await this.drafts.delete(draftId);
+    await this.projectSession.openStandaloneAst(
+      { id: "root", type: "document", props: {}, children: [] },
+      { reason, persist: false }
+    );
+    return true;
+  }
+
+  async closeDraft(draftId, { reason = "closed" } = {}) {
+    if (this.projectSession?.isProjectActive?.() || this.draftSession?.activeDraftId !== draftId) return false;
+    await this.draftSession.deactivate({ flush: true, reason });
     await this.projectSession.openStandaloneAst(
       { id: "root", type: "document", props: {}, children: [] },
       { reason, persist: false }

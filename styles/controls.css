@@ -76,12 +76,14 @@ select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118)
   font-size: 9px !important;
 }
 :is(button, .button-link) * { font-size: inherit !important; }
+.draft-card button:disabled { opacity: .45; cursor: not-allowed; }
 :is(button, .button-link)::before,
 :is(button, .button-link)::after,
 :is(button, .button-link) *::before,
 :is(button, .button-link) *::after { font-size: inherit !important; }
 
 /* Navigation labels need a larger type size than compact action buttons. */
+:is(button, .button-link).brand-settings-trigger { font-size: 20px !important; line-height: 1.2; }
 :is(button, .button-link).top-tab { font-size: 13px !important; }
 :is(button, .button-link).settings-section-button { font-size: 12px !important; }
 @media (max-width: 1180px) { :is(button, .button-link).top-tab { font-size: 12px !important; } }

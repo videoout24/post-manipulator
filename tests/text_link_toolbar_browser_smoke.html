@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Text link toolbar smoke</title>
+<link rel="stylesheet" href="../style.css">
+<body>
+<main id="fixture"></main>
+<pre id="result">Running…</pre>
+<script type="module">
+import { createTelegramFormattingRegistry } from "../js/core/FormattingRegistry.js";
+import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js";
+import { BlockRegistry } from "../js/core/BlockRegistry.js";
+import { registerTelegramCore } from "../js/blocks/registerCoreBlocks.js";
+import { BlockInspector } from "../js/editor/BlockInspector.js";
+import { richTextToPlain, richTextFormatMetadataAtPosition, richTextRangeHasFormat } from "../js/core/RichText.js";
+import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js";
+
+const check = (condition, message) => { if (!condition) throw Error(message); };
+const equal = (actual, expected, message) => check(JSON.stringify(actual) === JSON.stringify(expected), message);
+const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+
+try {
+  const formatting = createTelegramFormattingRegistry();
+  const properties = createDefaultPropertyRegistry(formatting);
+  const registry = new BlockRegistry(properties);
+  registerTelegramCore(registry);
+  const inspector = new BlockInspector({ registry, controller: {} });
+  const fixture = document.querySelector("#fixture");
+  const url = formatting.get("url");
+  let value = ["Before ", { type: "bold", text: "link" }, " after"];
+  let state;
+  const editor = inspector.makeRichTextEditor({
+    node: { id: "paragraph", type: "paragraph" },
+    schema: registry.propertyBindings("paragraph").find(field => field.key === "text"),
+    value,
+    getCurrent: () => value,
+    onChange: next => { value = next; },
+    onReady: ready => { state = ready; }
+  });
+  fixture.append(editor);
+  const textarea = editor.querySelector("textarea");
+  const link = editor.querySelector('[data-format-id="url"]');
+  check(link?.previousElementSibling?.dataset.formatId === "code", "Link must immediately follow monospace");
+  const select = async (start, end) => {
+    textarea.focus();
+    textarea.setSelectionRange(start, end);
+    await settle();
+  };
+  const inputUrl = text => {
+    const input = editor.querySelector('input[type="url"]');
+    check(Boolean(input), "Link button must open a URL input");
+    input.value = text;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    return input;
+  };
+  const apply = () => editor.querySelector(".format-config-actions button:last-child").click();
+  const cancel = () => editor.querySelector(".format-config-actions button:first-child").click();
+
+  await select(7, 11);
+  link.click();
+  check(document.activeElement?.type === "url", "URL input must receive focus");
+  apply();
+  check(Boolean(editor.querySelector(".required-missing")), "An empty URL must not be applied");
+  inputUrl("not a URL");
+  apply();
+  check(!richTextRangeHasFormat(value, 7, 11, url), "An invalid URL must not create a link");
+  inputUrl("https://example.com/first");
+  // The URL form must retain the range captured when it was opened.
+  textarea.setSelectionRange(0, 0);
+  apply();
+  await settle();
+  equal(value, ["Before ", { type: "url", url: "https://example.com/first", text: { type: "bold", text: "link" } }, " after"],
+    "Only the selected text must become a link, preserving its bold formatting");
+  equal([textarea.selectionStart, textarea.selectionEnd], [7, 11], "Applying a link must restore selection");
+  check(link.getAttribute("aria-pressed") === "true", "A selected link must activate the toolbar button");
+
+  link.click();
+  check(editor.querySelector('input[type="url"]').value === "https://example.com/first", "Editing must prefill the current URL");
+  inputUrl("https://example.com/cancelled");
+  cancel();
+  equal(richTextFormatMetadataAtPosition(value, 8, url), { url: "https://example.com/first" }, "Cancel must keep the original URL");
+  equal([textarea.selectionStart, textarea.selectionEnd], [7, 11], "Cancel must restore selection");
+  link.click();
+  inputUrl("tg://resolve?domain=example");
+  apply();
+  equal(value, ["Before ", { type: "url", url: "tg://resolve?domain=example", text: { type: "bold", text: "link" } }, " after"],
+    "Editing must replace the URL without nesting links or removing bold");
+
+  const rendered = new TelegramRenderer(registry).renderEnvelope({ root: { children: [
+    { type: "paragraph", props: { text: value }, children: [] }
+  ] } });
+  equal(rendered.richMessage.blocks[0].text, value, "Telegram output must preserve the text-link wrapper");
+
+  await select(textarea.value.length, textarea.value.length);
+  link.click();
+  check(!editor.querySelector(".format-config"), "A caret without inheritance must not create an empty link");
+  const inherit = editor.querySelector('.rich-style-inherit input[type="checkbox"]');
+  inherit.checked = true;
+  inherit.dispatchEvent(new Event("change", { bubbles: true }));
+  link.click();
+  inputUrl("https://example.com/typing");
+  apply();
+  await settle();
+  check(state.typingSession.formats.has("url"), "Restoring focus must preserve configured link inheritance");
+  equal(inspector.richTextInsertionPayload(state, "new"), {
+    type: "url", url: "https://example.com/typing", text: "new"
+  }, "Inherited text must include the configured URL");
+  textarea.setRangeText("new", textarea.selectionStart, textarea.selectionEnd, "end");
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  await settle();
+  equal(richTextFormatMetadataAtPosition(value, richTextToPlain(value).length - 1, url), {
+    url: "https://example.com/typing"
+  }, "Typing must persist the link metadata in the actual document");
+  link.click();
+  check(!state.typingSession.formats.has("url"), "Clicking an active typing style must disable inheritance");
+
+  // Table cells use all toolbar formats from the property registry.
+  check(properties.get("table.cell.text").formats.includes("url"), "Table cells must expose link formatting");
+  const dateTime = formatting.get("date_time");
+  await select(7, 11);
+  inspector.applyRichTextFormatToState(state, dateTime);
+  check(Boolean(editor.querySelector('input[type="datetime-local"]')), "Date/time must retain its specialized picker");
+  editor.querySelector(".format-config-actions button:first-child").click();
+
+  document.querySelector("#result").textContent = "text_link_toolbar_browser_smoke: OK";
+  document.body.dataset.result = "passed";
+} catch (error) {
+  document.querySelector("#result").textContent = `text_link_toolbar_browser_smoke: FAILED\n${error.stack}`;
+  document.body.dataset.result = "failed";
+}
+</script>
+</body>
+</html>

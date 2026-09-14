@@ -165,7 +165,7 @@ button:hover { background: var(--theme-surface-hover, #202b39); }
 .palette-item:hover { background: var(--theme-surface-hover, #18202b); border-color: var(--theme-border-strong, #29313d); }
 .canvas-panel { overflow: auto; }
 .canvas {
-  --canvas-font-size: 10px;
+  --canvas-font-size: 12px;
   --canvas-secondary-font-size: 9px;
   min-height: 100%; padding: 28px; max-width: 820px; margin: auto;
   font-size: var(--canvas-font-size); line-height: 1.4;
@@ -470,4 +470,3 @@ body.drag-delete-active::before {
 .format-date-time-config { margin-block: 3px; padding-block: 5px; }
 .format-date-time-config .format-config-registry-field { margin-block: 3px; }
 .format-date-time-config .format-config-actions { margin-top: 3px; }
-

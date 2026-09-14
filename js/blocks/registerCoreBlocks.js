@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.2";
-import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.7.9";
+import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.8.12";
 
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });
 const rich = (property, key, formats = FORMAT_GROUPS.full, extra = {}) =>

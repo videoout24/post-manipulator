@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.0";
+import { getLocale, t } from "../i18n/index.js?v=1.8.12";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -24,7 +24,7 @@ export function createDraftListView({
   const titleWrap = el("div", "project-panel-heading");
   const publicationContext = drafts.length === 1
     && drafts[0].id === activeDraftId
-    && drafts[0].source?.kind === "publication";
+    && drafts[0].source?.kind === "publication" && !drafts[0].source?.retained;
   titleWrap.append(
     el("strong", "", publicationContext ? t("editor.draftListView.editPublication") : t("editor.draftListView.drafts")),
     el("span", "", publicationContext ? (drafts[0].source?.targetTitle || "Telegram") : t("editor.draftListView.saved", { 0: drafts.length }))
@@ -71,7 +71,8 @@ function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
   onSchedule, onApplyChanges, onCancelPublicationEdit, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
 }) {
-  const publicationCopy = draft.source?.kind === "publication" && draft.source?.publicationId;
+  const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
+  const publicationCopy = publicationLinked && !draft.source.retained;
   const card = el("article", `draft-card${selected ? " selected" : ""}${publicationCopy ? " draft-publication-edit" : ""}`);
   card.dataset.draftId = draft.id;
   card.tabIndex = 0;
@@ -87,9 +88,12 @@ function createDraftCard({
   const target = linkTargetForDraft(draft);
   tools.append(createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }));
   if (!publicationCopy) {
+    const remove = button("🗑", t("editor.draftListView.deleteDraft"), () => showCardDeleteConfirmation(card, { message: t("editor.blockPalette.delete", { 0: draft?.title || t("editor.draftListView.draft") }), onConfirm: () => onDelete?.(draft) }));
+    remove.disabled = Boolean(publicationLinked);
+    if (publicationLinked) remove.title = t("editor.draftListView.deletePublishedDraftBlocked");
     tools.append(
       button("✎", t("editor.draftListView.renameDraft"), () => showRenameEditor(card, draft, onRename)),
-      button("🗑", t("editor.draftListView.deleteDraft"), () => showCardDeleteConfirmation(card, { message: t("editor.blockPalette.delete", { 0: draft?.title || t("editor.draftListView.draft") }), onConfirm: () => onDelete?.(draft) }))
+      remove
     );
     tools.lastElementChild?.classList.add("danger-soft");
   }
@@ -97,8 +101,8 @@ function createDraftCard({
   card.append(head);
 
   const actions = el("div", "draft-card-actions draft-card-lifecycle-actions");
-  if (publicationCopy) {
-    actions.classList.add("publication-edit-actions");
+  if (publicationLinked) {
+    if (publicationCopy) actions.classList.add("publication-edit-actions");
     const scheduledCopy = Boolean(draft.source?.scheduledAt);
     const apply = button(
       t("editor.draftListView.applyChanges"),
@@ -106,8 +110,18 @@ function createDraftCard({
       () => onApplyChanges?.(draft)
     );
     apply.classList.add("publication-edit-apply");
-    const cancel = button(t("core.cardDeleteConfirmation.cancel"), t("editor.draftListView.cancelEditingAndDeleteWorkingCopy"), () => onCancelPublicationEdit?.(draft));
-    cancel.classList.add("publication-edit-cancel");
+    const cancel = button(
+      publicationCopy ? t("core.cardDeleteConfirmation.cancel") : t("editor.draftListView.closePublicationDraft"),
+      publicationCopy ? t("editor.draftListView.cancelEditingAndDeleteWorkingCopy") : t("editor.draftListView.closePublicationDraftHint"),
+      () => onCancelPublicationEdit?.(draft)
+    );
+    if (publicationCopy) cancel.classList.add("publication-edit-cancel");
+    if (!publicationCopy) {
+      cancel.disabled = !selected;
+      const move = button(t("editor.draftListView.toProject"), t("editor.draftListView.movePublishedDraftBlocked"), () => {});
+      move.disabled = true;
+      actions.append(move);
+    }
     actions.append(apply, cancel);
   } else if (draftHasBlocks(draft)) {
     actions.append(button(t("editor.draftListView.toProject"), t("editor.draftListView.moveDraftToProject"), () => onMoveToProject?.(draft)));

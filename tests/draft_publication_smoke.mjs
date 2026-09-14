@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { DraftStore } from "../js/editor/DraftStore.js";
 import { PublicationService, isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../js/telegram/PublicationService.js?v=1.5.9";
 import { t } from "../js/i18n/index.js?v=1.8.0";
 
@@ -13,17 +14,8 @@ class MemoryDb {
 
 const db = new MemoryDb();
 const draft = { id: "d1", title: "Draft", messageAst: { id: "root", type: "document", props: {}, children: [{ id: "p", type: "paragraph", props: { text: "Hello" }, children: [] }] } };
-const draftRows = new Map([[draft.id, structuredClone(draft)]]);
-const drafts = {
-  async get(id) { return structuredClone(draftRows.get(id) || null); },
-  async list() { return [...draftRows.values()].map(row => structuredClone(row)); },
-  async create(input) {
-    const created = { id: `draft-${draftRows.size + 1}`, updatedAt: Date.now(), ...structuredClone(input) };
-    draftRows.set(created.id, created);
-    return structuredClone(created);
-  },
-  async delete(id) { this.deleted = id; draftRows.delete(id); }
-};
+const drafts = new DraftStore({ db });
+await drafts.restore(draft);
 const sent = [];
 const deleted = [];
 const pinned = [];
@@ -40,7 +32,6 @@ const service = new PublicationService({
   validator: { validate() { return []; } },
   renderer: { renderEnvelope() { return { richMessage: { blocks: [] }, replyMarkup: { inline_keyboard: [] } }; } },
   documents: { async clearPublishedDraft(id) {
-    assert.equal(drafts.deleted, undefined, "active Canvas must be cleared before Draft deletion resets its session");
     cleared.push(id);
     return true;
   } }
@@ -48,8 +39,17 @@ const service = new PublicationService({
 
 const record = await service.publishDraft("d1", -1001, { commentsEnabled: true });
 assert.equal(sent.length, 1);
-assert.equal(drafts.deleted, "d1");
-assert.deepEqual(cleared, ["d1"]);
+assert.deepEqual((await drafts.get("d1")).messageAst, draft.messageAst, "publishing preserves the original source");
+assert.equal((await drafts.get("d1")).source.publicationId, record.id);
+assert.equal((await drafts.get("d1")).source.retained, true);
+assert.deepEqual(cleared, [], "publishing keeps the active source draft open");
+await assert.rejects(drafts.delete("d1"), error => error.message === t("editor.draftListView.deletePublishedDraftBlocked"));
+await assert.rejects(drafts.assertCanMoveToProject("d1"), error => error.message === t("editor.draftListView.movePublishedDraftBlocked"));
+await assert.rejects(service.publishDraft("d1", -1001), error => error.message === t("editor.draftListView.draftAlreadyPublished"));
+assert.equal(sent.length, 1, "a linked draft cannot create a duplicate publication");
+const renamed = await drafts.rename("d1", "Renamed source");
+assert.equal(renamed.title, "Renamed source");
+assert.equal(renamed.source.publicationId, record.id, "renaming preserves the publication link");
 assert.equal(record.messageId, 42);
 assert.equal(record.pinned, false);
 assert.equal(publicationDeleteHoursLeft(record, record.publishedAt), 48);
@@ -173,12 +173,15 @@ assert.equal(stored.reactionCount, 5);
 assert.deepEqual(stored.reactions.map(item => [item.type.emoji, item.total_count]), [["👍", 3], ["🔥", 2]]);
 
 const editDraft = await service.createEditDraft(record.id);
+assert.equal(editDraft.id, "d1", "editing reuses the retained source draft");
 assert.equal(editDraft.source.publicationId, record.id);
 client.editRichMessage = async payload => { sent.push({ edit: payload }); return { message_id: 42 }; };
 editDraft.messageAst.children[0].props.text = "Updated";
-draftRows.set(editDraft.id, structuredClone(editDraft));
+await drafts.saveAst(editDraft.id, editDraft.messageAst);
 const updated = await service.applyDraftChanges(editDraft.id);
 assert.equal(updated.messageAst.children[0].props.text, "Updated");
+assert.equal(updated.source.title, "Renamed source");
+assert.equal((await drafts.get("d1")).messageAst.children[0].props.text, "Updated");
 assert.equal(sent.at(-1).edit.messageId, 42);
 
 const deletablePublishedAt = Date.now();
@@ -192,5 +195,12 @@ client.deleteMessage = async () => { throw { isMessageMissing: () => true }; };
 assert.equal(await service.delete(record.id), true,
   "a message already removed from its channel or group must still be removable from the local publications tab");
 assert.equal(await db.get("publications", record.id), null);
+const retained = await drafts.get("d1");
+assert.equal(retained.title, "Renamed source");
+assert.equal(retained.messageAst.children[0].props.text, "Updated");
+assert.equal(retained.source, null, "deleting the publication releases the source draft");
+await drafts.assertCanMoveToProject(retained.id);
+await drafts.delete(retained.id);
+assert.equal(await drafts.get(retained.id), null);
 
 console.log("draft publication smoke: OK");
