@@ -15,7 +15,8 @@ export class Validator {
 
     for (const [key, schema] of Object.entries(def.properties || {})) {
       const value = node.props?.[key];
-      if (schema.required && isMissingRequiredValue(value, schema)) {
+      const alternative = schema.alternativeKey ? node.props?.[schema.alternativeKey] : null;
+      if (schema.required && isMissingRequiredValue(value, schema) && isMissingValue(alternative)) {
         errors.push(`${node.type}.${key} is required`);
       }
       if (!isMissingValue(value) && schema.type === "integer" && !Number.isInteger(value)) {
@@ -30,6 +31,9 @@ export class Validator {
 
     if (node.type === "list") {
       errors.push(...validateListMode(node.props?.items));
+    }
+    if (isMediaBlock(node.type) && node.props?.url && !isTelegramMediaSource(node.props.url, node.props.fileId)) {
+      errors.push(`${node.type}.url must be an HTTPS URL or Telegram file_id`);
     }
 
     if (parent && parent.id !== "root" && def.constraints?.allowedParents &&
@@ -165,4 +169,15 @@ function validateListMode(items) {
     return ["list items must be either all ordered or all unordered"];
   }
   return [];
+}
+
+function isMediaBlock(type) {
+  return ["animation", "audio", "document", "photo", "video", "voice_note"].includes(type);
+}
+
+function isTelegramMediaSource(value, fileId = "") {
+  const source = String(value || "").trim();
+  return /^https:\/\//i.test(source)
+    || (source && source === String(fileId || "").trim())
+    || /^[A-Za-z0-9_-]{20,}$/.test(source);
 }

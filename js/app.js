@@ -1,27 +1,27 @@
-import { getLocale, t } from "./i18n/index.js?v=1.8.15";
+import { getLocale, t } from "./i18n/index.js?v=1.9.0";
 import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.8.6";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.22";
-import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.8.15";
+import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.9.0";
 import { GalleryView } from "./gallery/GalleryView.js?v=1.8.6";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.7.22";
-import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.8.15";
-import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js?v=1.8.15";
+import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.9.0";
+import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js?v=1.9.0";
 import { EditorCanvasPreferences } from "./editor/EditorCanvasPreferences.js?v=1.5.9";
 import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { OperationFeedback } from "./app/OperationFeedback.js?v=1.8.6";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.8.6";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.8.15";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.9.0";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.7.15";
-import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.8.15";
-import { createEditorDomain } from "./app/createEditorDomain.js?v=1.8.15";
-import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.8.15";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.8.15";
+import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.9.0";
+import { createEditorDomain } from "./app/createEditorDomain.js?v=1.9.0";
+import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.9.0";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.9.0";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
-import { PublicationView } from "./publications/PublicationView.js?v=1.8.15";
+import { PublicationView } from "./publications/PublicationView.js?v=1.9.0";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
-import { AutomaticPublicationBackup } from "./storage/AutomaticPublicationBackup.js?v=1.8.15";
+import { AutomaticPublicationBackup } from "./storage/AutomaticPublicationBackup.js?v=1.9.0";
 import { LinkingController } from "./links/LinkingController.js?v=1.8.6";
 import { LinkRelationNavigator } from "./links/LinkRelationNavigator.js?v=1.8.6";
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
@@ -283,6 +283,7 @@ const publicationView = new PublicationView({
 });
 
 const editorShell = createEditorShell({
+  db: appDb,
   documentRoot: document,
   events,
   notifications,
@@ -392,7 +393,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.8.15",
+  build: "1.9.0",
   notifications,
   layoutPreferences,
   telegramNavigation,

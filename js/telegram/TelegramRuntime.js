@@ -189,6 +189,31 @@ export class TelegramRuntime {
       const topicEvent = extractOwnerTopicEvent(message);
       if (topicEvent) await this.events?.emitAsync("telegram:owner-topic-event", topicEvent);
 
+      const aiDraftText = extractOwnerAiDraftResponseText(message);
+      if (aiDraftText) {
+        await this.events?.emitAsync("telegram:ai-draft-response", {
+          text: aiDraftText,
+          source: {
+            chatId: Number(message.chat.id),
+            messageId: Number(message.message_id),
+            replyToMessageId: Number(message.reply_to_message?.message_id || 0)
+          }
+        });
+        return;
+      }
+      if (isOwnerAiDraftDocument(message)) {
+        await this.events?.emitAsync("telegram:ai-draft-document", {
+          fileId: message.document.file_id,
+          fileName: message.document.file_name || "",
+          source: {
+            chatId: Number(message.chat.id),
+            messageId: Number(message.message_id),
+            replyToMessageId: Number(message.reply_to_message?.message_id || 0)
+          }
+        });
+        return;
+      }
+
       const media = extractOwnerMedia(message);
       if (!media) return; // text, video_note, stickers and everything else are intentionally ignored.
       const accepted = await this.getMediaSettings();
@@ -278,6 +303,26 @@ export function extractOwnerMedia(message) {
   if (message?.voice) return mediaFromObject("voice", message.voice);
   if (message?.document) return mediaFromObject("document", message.document);
   return null;
+}
+
+export function extractOwnerAiDraftResponseText(message) {
+  const text = String(message?.text || message?.caption || "").trim();
+  if (!text || !text.includes("rich-current-ai-draft")) return "";
+  const fenced = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)?.[1] || text;
+  try {
+    const value = JSON.parse(fenced);
+    return value?.format === "rich-current-ai-draft" ? text : "";
+  } catch {
+    return "";
+  }
+}
+
+export function isOwnerAiDraftDocument(message) {
+  const document = message?.document;
+  if (!document) return false;
+  const name = String(document.file_name || "");
+  const caption = String(message.caption || "");
+  return /-ai(?:-[A-Za-z0-9_-]{8,64}|-response)?\.json$/i.test(name) || caption.includes("rich-current-ai-draft");
 }
 
 function choosePhotoThumbnail(sizes) {

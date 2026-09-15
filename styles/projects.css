@@ -936,6 +936,11 @@
   color: var(--theme-text-secondary, #91a3b7);
 }
 .draft-card-tools .danger-soft { color: var(--theme-danger, #d8a4aa); border-color: var(--theme-danger-border, #55353a); background: var(--theme-surface-raised, #26191c); }
+.draft-ai-context-setting {
+  display: flex; align-items: center; gap: 6px; padding: 0 9px 8px;
+  color: var(--theme-text-muted, #718399); font-size: 8px; cursor: pointer;
+}
+.draft-ai-context-setting input { width: auto; margin: 0; }
 .draft-card-lifecycle-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .draft-card-lifecycle-actions button:first-child {
   border-color: var(--theme-accent-border, #3f6fae);
@@ -955,6 +960,12 @@
   background: var(--theme-surface-raised, #26191c);
   color: var(--theme-danger, #d8a4aa);
 }
+.draft-card-lifecycle-actions .draft-ai-send {
+  border-color: var(--theme-purple, #7257aa);
+  background: var(--theme-purple-subtle, #261d3b);
+  color: var(--theme-text, #dbcfff);
+}
+.draft-card-lifecycle-actions .draft-close { color: var(--theme-text-secondary, #9cabbc); }
 
 /* Compact cards without a publication footer still need a comfortable hit area. */
 .project-post-panel .project-post-card-compact.no-footer-actions > .project-post-card-head,
@@ -980,4 +991,3 @@
   background: var(--theme-field-bg, #080b0f); color: var(--theme-text, #d8e2ee); color-scheme: var(--theme-color-scheme);
 }
 .draft-project-select-field select option { background: var(--theme-field-bg, #080b0f); color: var(--theme-text, #d8e2ee); }
-

@@ -1,6 +1,6 @@
-import { t } from "../i18n/index.js?v=1.8.15";
-import { createDraftListView } from "./DraftListView.js?v=1.8.15";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.9.0";
+import { createDraftListView } from "./DraftListView.js?v=1.9.0";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.9.0";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
 
 export class EditorRightPanel {
@@ -134,6 +134,7 @@ export class EditorRightPanel {
       onSchedule: post => this.#scheduleProjectPost(post),
       onCancelSchedule: post => this.#cancelProjectPostSchedule(post),
       onApplyChanges: post => this.#applyProjectChanges(post),
+      onAiContextChange: (post, includeFullContext) => this.#setPostAiContext(post, includeFullContext),
       onDelete: post => this.#deleteProjectPost(post)
     }));
   }
@@ -159,6 +160,9 @@ export class EditorRightPanel {
       onSchedule: draft => this.#requestDraftSchedule(draft),
       onApplyChanges: draft => this.#applyDraftChanges(draft),
       onCancelPublicationEdit: draft => this.#cancelPublicationEdit(draft),
+      onCloseDraft: draft => this.#closeOrdinaryDraft(draft),
+      onSendAi: draft => this.#sendDraftAi(draft),
+      onAiContextChange: (draft, includeFullContext) => this.#setDraftAiContext(draft, includeFullContext),
       onSelectTarget: target => this.#selectLinkTarget(target),
       onOpenLinkedSource: target => this.#openLinkedSource(target),
       linkTargetSlotKey: this.linkTargetSlotKey,
@@ -299,6 +303,32 @@ export class EditorRightPanel {
 
   async #renameDraft(draft, title) {
     return this.#run(() => this.drafts.rename(draft.id, title));
+  }
+
+  async #setDraftAiContext(draft, includeFullContext) {
+    return this.#run(() => this.drafts.setAiSettings(draft.id, { includeFullContext }));
+  }
+
+  async #setPostAiContext(post, includeFullContext) {
+    return this.#run(() => this.session.setPostAiSettings(post.id, { includeFullContext }));
+  }
+
+  async #closeOrdinaryDraft(draft) {
+    return this.#run(async () => {
+      if (this.draftSession?.activeDraftId !== draft.id) return false;
+      const closed = await this.documents?.closeDraft?.(draft.id, { reason: "closed" });
+      if (!closed) throw new Error(t("editor.editorRightPanel.failedToCloseDraft"));
+      this.onToast?.({ message: t("editor.editorRightPanel.draftClosed", { 0: draft.title }), type: "info" });
+      return true;
+    });
+  }
+
+  async #sendDraftAi(draft) {
+    return this.#run(async () => {
+      if (this.draftSession?.activeDraftId !== draft.id) await this.documents?.openDraft?.(draft.id);
+      await this.events?.emitAsync?.("ai:document-send-requested", { kind: "draft", draftId: draft.id });
+      return true;
+    });
   }
 
   async #deleteDraft(draft) {

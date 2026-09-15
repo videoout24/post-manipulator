@@ -19,6 +19,7 @@ export function createProjectPostListView({
   onSchedule = null,
   onCancelSchedule = null,
   onApplyChanges = null,
+  onAiContextChange = null,
   onDelete = null
 } = {}) {
   const fragment = document.createDocumentFragment();
@@ -72,6 +73,18 @@ export function createProjectPostListView({
       onSelect: selectedPost => onSelect?.(selectedPost),
       actions: cardActions
     });
+    if (post.id === activePostId) {
+      const aiContext = el("label", "draft-ai-context-setting project-post-ai-context-setting");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = post.ai?.includeFullContext === true;
+      input.onchange = event => {
+        event.stopPropagation();
+        onAiContextChange?.(post, input.checked);
+      };
+      aiContext.append(input, el("span", "", t("editor.projectPostListView.includeFullAiContext")));
+      card.append(aiContext);
+    }
     list.append(card);
   });
 

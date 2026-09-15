@@ -325,6 +325,46 @@
 .local-file-drop { border: 1px dashed transparent; border-radius: 6px; padding: 4px 5px; transition: border-color .12s, background .12s; }
 .local-file-drop.drag-active { border-color: var(--theme-accent-border, #5d91d8); background: var(--theme-surface, #14253b); }
 
+.block-ai-prompt {
+  margin: 5px 0 8px; border: 1px solid var(--theme-border, #2b3b4e); border-radius: 7px;
+  background: var(--theme-surface-inset, #0c141d);
+}
+.block-ai-prompt > summary {
+  min-height: 28px; padding: 5px 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  color: var(--theme-text-secondary, #9eafc2); cursor: pointer; font-size: 9px; user-select: none;
+}
+.block-ai-prompt.has-prompt > summary { color: var(--theme-purple, #bda1ff); }
+.block-ai-prompt-state { color: var(--theme-text-muted, #687d94); font-size: 8px; }
+.block-ai-prompt-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; padding: 0 6px 6px; }
+.block-ai-prompt-controls select,
+.block-ai-prompt-controls button {
+  min-width: 0; height: 27px; padding: 3px 7px; font-size: 8px;
+}
+.block-ai-prompt textarea {
+  display: block; width: calc(100% - 12px); min-height: 62px; margin: 0 6px 6px; padding: 7px 8px;
+  border: 1px solid var(--theme-field-border, #34465a); border-radius: 6px;
+  background: var(--theme-field-bg, #091119); color: var(--theme-text, #dce8f4); font-size: 10px; line-height: 1.45; resize: vertical;
+}
+
+#aiDraftDialog { width: min(920px, calc(100vw - 28px)); max-height: calc(100vh - 32px); padding: 0; }
+.ai-draft-dialog-body { display: grid; gap: 10px; padding: 12px; }
+.ai-draft-dialog-body p,
+.ai-draft-dialog-body small { margin: 0; color: var(--theme-text-secondary, #93a5b8); line-height: 1.45; }
+.ai-draft-dialog-body small { color: var(--theme-text-muted, #718499); font-size: 10px; }
+#aiDraftJson {
+  width: 100%; height: min(56vh, 560px); min-height: 260px; padding: 10px;
+  border: 1px solid var(--theme-field-border, #34465a); border-radius: 7px;
+  background: var(--theme-field-bg, #081018); color: var(--theme-text, #dce8f4);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; line-height: 1.45; resize: vertical;
+}
+.ai-draft-dialog-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.button-like {
+  display: inline-flex; align-items: center; padding: 7px 11px; border: 1px solid var(--theme-border, #313b49);
+  border-radius: 7px; background: var(--theme-surface, #18202b); cursor: pointer;
+}
+.button-like:hover { background: var(--theme-surface-hover, #202b39); }
+.button-like input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
 /* v1.2.1 — semantic palette elements + compact Unicode emoji picker */
 .basic-emoji-picker {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); gap: 4px;
@@ -355,4 +395,3 @@
   background: var(--theme-field-bg, #0a1017); color: var(--theme-text, #dce6f1);
 }
 .semantic-insert-field small { color: var(--theme-text-muted, #65778c); font-size: 9px; }
-

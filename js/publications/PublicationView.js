@@ -1,8 +1,8 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.15";
+import { getLocale, t } from "../i18n/index.js?v=1.9.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.8.15";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.9.0";
 import { getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 
 export class PublicationView {

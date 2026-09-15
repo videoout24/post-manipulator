@@ -1,16 +1,18 @@
-import { AppNavigation } from "./AppNavigation.js?v=1.8.15";
+import { AppNavigation } from "./AppNavigation.js?v=1.9.0";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
 import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.5.9";
-import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.8.15";
-import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.8.15";
+import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.9.0";
+import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.9.0";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.5.9";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.8.6";
 import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.5.9";
 import { EditorToolController } from "../editor/EditorToolController.js?v=1.6.5";
+import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.0";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.6.5";
 import { t } from "../i18n/index.js?v=1.8.6";
 
 export function createEditorShell({
+  db = null,
   documentRoot = document,
   events,
   notifications,
@@ -50,7 +52,12 @@ export function createEditorShell({
     graphReconciler,
     buildPreviewTree
   } = project || {};
-  const { core: telegramCore, navigation: telegramNavigation } = telegram || {};
+  const {
+    core: telegramCore,
+    navigation: telegramNavigation,
+    client: telegramClient,
+    ownerBinding
+  } = telegram || {};
   const { core: galleryCore, thumbnails } = gallery || {};
   const {
     inlineProperties,
@@ -209,6 +216,29 @@ export function createEditorShell({
     alertFn
   }).start();
 
+  const aiDraftExchange = new AiDraftExchange({
+    dialog: query("#aiDraftDialog"),
+    input: query("#aiDraftJson"),
+    openButton: query("#aiDraftExchange"),
+    closeButton: query("#aiDraftClose"),
+    copyButton: query("#aiDraftCopy"),
+    downloadButton: query("#aiDraftDownload"),
+    sendButton: query("#aiDraftSend"),
+    importButton: query("#aiDraftImport"),
+    fileInput: query("#aiDraftFile"),
+    tree,
+    draftSession,
+    projectSession,
+    drafts: draftStore,
+    documents,
+    client: telegramClient,
+    ownerBinding,
+    db,
+    events,
+    notifications: editorNotifications,
+    documentRoot
+  }).start();
+
   const stoppables = Object.freeze([
     previewStatus,
     navigation,
@@ -218,7 +248,8 @@ export function createEditorShell({
     rightPanel,
     projectLibrary,
     commands,
-    tools
+    tools,
+    aiDraftExchange
   ].filter(Boolean));
 
   return Object.freeze({
@@ -231,6 +262,7 @@ export function createEditorShell({
     projectLibrary,
     commands,
     tools,
+    aiDraftExchange,
     stoppables
   });
 }

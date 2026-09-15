@@ -312,6 +312,10 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
     label: t("core.propertyRegistry.telegramFileId"), group: t("app.appNotifications.resource"), type: "string", editor: "textarea", default: "", readOnly: true, required: true, groupCollapsed: true,
     hint: t("core.propertyRegistry.fetchedFromGalleryAndUsedInPreview")
   });
+  add("media.remoteUrl", {
+    label: t("core.propertyRegistry.externalMediaUrl"), group: t("app.appNotifications.resource"), type: "url", editor: "url", default: "",
+    hint: t("core.propertyRegistry.externalMediaUrlHint"), telegramField: "media"
+  });
   // Legacy semantic media fields remain registered for compatibility with old Meta Blocks/extensions.
   add("media.animation", { label: t("blocks.registerCoreBlocks.animation"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "animation" });
   add("media.audio", { label: t("blocks.registerCoreBlocks.audio"), group: t("app.appNotifications.resource"), type: "media", editor: "media", default: "", groupCollapsed: true, telegramField: "audio" });

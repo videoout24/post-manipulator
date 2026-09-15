@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.15";
+import { t } from "../i18n/index.js?v=1.9.0";
 const PREFIX = "draft_";
 
 export class DraftStore {
@@ -70,6 +70,19 @@ export class DraftStore {
     await this.db?.put?.("drafts", id, current);
     await this.#renamePublishedSources(current);
     this.events?.emit?.("draft:changed", { reason: "renamed", draft: structuredClone(current), draftId: id });
+    return structuredClone(current);
+  }
+
+  async setAiSettings(id, patch = {}) {
+    const current = await this.get(id);
+    if (!current) throw new Error(`Draft not found: ${id}`);
+    current.ai = {
+      ...(current.ai || {}),
+      includeFullContext: Boolean(patch.includeFullContext)
+    };
+    current.updatedAt = Date.now();
+    await this.db?.put?.("drafts", id, current);
+    this.events?.emit?.("draft:changed", { reason: "ai-settings", draft: structuredClone(current), draftId: id });
     return structuredClone(current);
   }
 
@@ -168,6 +181,9 @@ function normalizeDraft(value, fallbackId = "") {
     id: String(input.id || fallbackId || makeId()),
     title: String(input.title || t("editor.draftListView.draft")),
     messageAst: normalizeAst(input.messageAst),
+    ai: {
+      includeFullContext: input.ai?.includeFullContext === true
+    },
     source: input.source && typeof input.source === "object" ? structuredClone(input.source) : null,
     createdAt: Number(input.createdAt || Date.now()),
     updatedAt: Number(input.updatedAt || input.createdAt || Date.now())

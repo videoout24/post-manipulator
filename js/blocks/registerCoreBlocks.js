@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.2";
-import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.8.15";
+import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.9.0";
 
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });
 const rich = (property, key, formats = FORMAT_GROUPS.full, extra = {}) =>
@@ -186,7 +186,8 @@ export function registerTelegramCore(registry) {
       type:"audio", name:t("blocks.registerCoreBlocks.audio"), category:t("blocks.category.media"), gallery:{acceptedTypes:["audio"]},
       accepts:{properties:[
         prop("media.galleryId", "galleryId"),
-        prop("media.fileId", "fileId", { required:true, mediaKind:"audio" }),
+        prop("media.fileId", "fileId", { required:true, alternativeKey:"url", mediaKind:"audio" }),
+        prop("media.remoteUrl", "url"),
         rich("content.caption", "caption", FORMAT_GROUPS.full),
         rich("content.captionCredit", "captionCredit", FORMAT_GROUPS.full)
       ]},
@@ -196,7 +197,8 @@ export function registerTelegramCore(registry) {
       type:"document", name:t("blocks.registerCoreBlocks.document"), category:t("blocks.category.media"), gallery:{acceptedTypes:["document"]},
       accepts:{properties:[
         prop("media.galleryId", "galleryId"),
-        prop("media.fileId", "fileId", { required:true, mediaKind:"document" }),
+        prop("media.fileId", "fileId", { required:true, alternativeKey:"url", mediaKind:"document" }),
+        prop("media.remoteUrl", "url"),
         rich("content.caption", "caption", FORMAT_GROUPS.full),
         rich("content.captionCredit", "captionCredit", FORMAT_GROUPS.full)
       ]},
@@ -206,7 +208,8 @@ export function registerTelegramCore(registry) {
       type:"photo", name:t("blocks.registerCoreBlocks.photo"), category:t("blocks.category.media"), gallery:{acceptedTypes:["photo"]},
       accepts:{properties:[
         prop("media.galleryId", "galleryId"),
-        prop("media.fileId", "fileId", { required:true, mediaKind:"photo" }),
+        prop("media.fileId", "fileId", { required:true, alternativeKey:"url", mediaKind:"photo" }),
+        prop("media.remoteUrl", "url"),
         prop("media.hasSpoiler", "hasSpoiler", { scope:"received/media" }),
         rich("content.caption", "caption", FORMAT_GROUPS.full),
         rich("content.captionCredit", "captionCredit", FORMAT_GROUPS.full)
@@ -217,7 +220,8 @@ export function registerTelegramCore(registry) {
       type:"video", name:t("blocks.registerCoreBlocks.video"), category:t("blocks.category.media"), gallery:{acceptedTypes:["video"]},
       accepts:{properties:[
         prop("media.galleryId", "galleryId"),
-        prop("media.fileId", "fileId", { required:true, mediaKind:"video" }),
+        prop("media.fileId", "fileId", { required:true, alternativeKey:"url", mediaKind:"video" }),
+        prop("media.remoteUrl", "url"),
         prop("media.hasSpoiler", "hasSpoiler", { scope:"received/media" }),
         rich("content.caption", "caption", FORMAT_GROUPS.full),
         rich("content.captionCredit", "captionCredit", FORMAT_GROUPS.full)
@@ -228,7 +232,8 @@ export function registerTelegramCore(registry) {
       type:"voice_note", name:t("blocks.registerCoreBlocks.voiceNote"), category:t("blocks.category.media"), gallery:{acceptedTypes:["voice"]},
       accepts:{properties:[
         prop("media.galleryId", "galleryId"),
-        prop("media.fileId", "fileId", { required:true, mediaKind:"voice_note" }),
+        prop("media.fileId", "fileId", { required:true, alternativeKey:"url", mediaKind:"voice_note" }),
+        prop("media.remoteUrl", "url"),
         rich("content.caption", "caption", FORMAT_GROUPS.full),
         rich("content.captionCredit", "captionCredit", FORMAT_GROUPS.full)
       ]},

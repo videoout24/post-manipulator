@@ -20,6 +20,7 @@ export class TreeView {
     this.renderGeneration = 0;
     // Canvas-only collapse state. It is deliberately not stored in the Rich Message AST.
     this.collapsedNodes = new Set();
+    this.openAiPromptNodes = new Set();
     this.installExternalDeleteDnD();
   }
 
@@ -218,6 +219,7 @@ export class TreeView {
         el.classList.add("canvas-block-collapsed");
         el.append(this.makeCollapsedSummary(node));
       } else {
+        el.append(this.makeAiPromptEditor(node));
         const bindings = this.registry.propertyBindings(def);
         const needsVisualPreview = this.mediaBinder?.supports(node) || this.mediaBinder?.isCollection(node) || !bindings.length;
         if (needsVisualPreview) el.append(this.makePreviewElement(node, generation));
@@ -289,6 +291,73 @@ export class TreeView {
     });
 
     parentEl.append(this.makeDropZone(parentNode.id, children.length, true));
+  }
+
+  makeAiPromptEditor(node) {
+    const details = document.createElement("details");
+    details.className = "block-ai-prompt";
+    details.open = this.openAiPromptNodes.has(node.id);
+
+    const summary = document.createElement("summary");
+    const title = document.createElement("span");
+    title.textContent = t("editor.treeView.aiPrompt");
+    const state = document.createElement("span");
+    state.className = "block-ai-prompt-state";
+    const syncState = () => {
+      const filled = Boolean(String(node.ai?.prompt || "").trim());
+      details.classList.toggle("has-prompt", filled);
+      state.textContent = filled ? t("editor.treeView.aiPromptSet") : t("editor.treeView.aiPromptEmpty");
+    };
+    syncState();
+    summary.append(title, state);
+
+    const controls = document.createElement("div");
+    controls.className = "block-ai-prompt-controls";
+    const scope = document.createElement("select");
+    scope.setAttribute("aria-label", t("editor.treeView.aiPromptScope"));
+    const entireBlock = document.createElement("option");
+    entireBlock.value = "";
+    entireBlock.textContent = t("editor.treeView.aiPromptWholeBlock");
+    scope.append(entireBlock);
+    const def = this.registry.get(node.type);
+    for (const binding of this.registry.propertyBindings(def).filter(item => !item.readOnly)) {
+      const option = document.createElement("option");
+      option.value = binding.key;
+      option.textContent = t("editor.treeView.aiPromptOnlyField", { 0: binding.label || binding.key });
+      scope.append(option);
+    }
+    scope.value = String(node.ai?.field || "");
+    if (!scope.querySelector(`option[value="${cssEscape(scope.value)}"]`)) scope.value = "";
+    scope.onchange = () => this.controller.updateNodeAiField?.(node.id, scope.value);
+
+    const exportBlock = document.createElement("button");
+    exportBlock.type = "button";
+    exportBlock.textContent = t("editor.treeView.aiPromptExportBlock");
+    exportBlock.onclick = event => {
+      event.stopPropagation();
+      if (!String(node.ai?.prompt || "").trim()) {
+        textarea.focus();
+        return;
+      }
+      this.controller.events?.emit?.("ai:block-export-requested", { nodeId: node.id });
+    };
+    controls.append(scope, exportBlock);
+
+    const textarea = document.createElement("textarea");
+    textarea.value = String(node.ai?.prompt || "");
+    textarea.rows = 3;
+    textarea.placeholder = t("editor.treeView.aiPromptPlaceholder");
+    textarea.setAttribute("aria-label", t("editor.treeView.aiPrompt"));
+    textarea.oninput = () => {
+      this.controller.updateNodeAiPrompt?.(node.id, textarea.value);
+      syncState();
+    };
+    details.ontoggle = () => {
+      if (details.open) this.openAiPromptNodes.add(node.id);
+      else this.openAiPromptNodes.delete(node.id);
+    };
+    details.append(summary, controls, textarea);
+    return details;
   }
 
   requestDeleteBlock(nodeId) {
@@ -577,6 +646,31 @@ export class TreeView {
     if (this.mediaBinder?.supports(node)) {
       const wrap = document.createElement("div");
       wrap.className = "block-preview media-block-preview";
+      const remoteUrl = /^https:\/\//i.test(String(node.props?.url || "").trim()) ? String(node.props.url).trim() : "";
+      if (remoteUrl) {
+        const thumb = document.createElement("div");
+        thumb.className = "media-block-thumb";
+        if (node.type === "photo") {
+          const img = document.createElement("img");
+          img.src = remoteUrl;
+          img.alt = String(node.props?.caption || this.registry.get(node.type)?.name || node.type);
+          img.loading = "lazy";
+          img.decoding = "async";
+          img.referrerPolicy = "no-referrer";
+          thumb.append(img);
+        } else {
+          thumb.append(document.createTextNode(this.iconFor(node.type)));
+        }
+        const info = document.createElement("div");
+        info.className = "media-block-info";
+        const title = document.createElement("strong");
+        title.textContent = t("editor.treeView.externalMedia");
+        const url = document.createElement("span");
+        url.textContent = remoteUrl;
+        info.append(title, url);
+        wrap.append(thumb, info);
+        return wrap;
+      }
       const galleryId = node.props?.galleryId;
       if (!galleryId) {
         wrap.innerHTML = t("editor.treeView.selectAResourceOnTheLeftOr", { 0: this.iconFor(node.type) });

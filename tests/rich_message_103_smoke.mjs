@@ -20,7 +20,8 @@ const tree = { root: { children: [
     { type: "url_button", props: { text: "Вторая", url: "https://example.com/second", buttonStyle: "danger" }, children: [] }
   ] },
   { type: "url_button", props: { text: "Старая", url: "https://example.com/legacy", buttonStyle: "primary" }, children: [] },
-  { type: "document", props: { fileId: "telegram-document-id", caption: "Файл" }, children: [] }
+  { type: "document", props: { fileId: "telegram-document-id", caption: "Файл" }, children: [] },
+  { type: "photo", props: { fileId: "old-telegram-photo-id", url: "https://cdn.example.com/generated.jpg" }, children: [] }
 ] } };
 const envelope = renderer.renderEnvelope(tree);
 const blocks = envelope.richMessage.blocks;
@@ -50,6 +51,17 @@ assert.deepEqual(envelope.replyMarkup, { inline_keyboard: [] }, "editing removes
 assert.equal(blocks[4].type, "document");
 assert.equal(blocks[4].document.type, "document");
 assert.equal(blocks[4].document.media, "telegram-document-id");
+assert.equal(blocks[5].photo.media, "https://cdn.example.com/generated.jpg", "an explicit generated HTTPS URL takes precedence over an old file_id");
+
+const remoteMediaTree = new BlockTree({
+  id: "root",
+  type: "document",
+  props: {},
+  children: [{ id: "remote-photo", type: "photo", props: { url: "https://cdn.example.com/generated.jpg" }, children: [] }]
+});
+assert.deepEqual(new Validator(registry).validate(remoteMediaTree), [], "HTTPS media URL is a valid alternative to Telegram file_id");
+remoteMediaTree.root.children[0].props.url = "http://cdn.example.com/generated.jpg";
+assert.match(new Validator(registry).validate(remoteMediaTree).join("\n"), /must be an HTTPS URL/);
 
 const buttonOnlyTree = new BlockTree({
   id: "root",

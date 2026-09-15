@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.15";
+import { getLocale, t } from "../i18n/index.js?v=1.9.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -14,6 +14,9 @@ export function createDraftListView({
   onSchedule = null,
   onApplyChanges = null,
   onCancelPublicationEdit = null,
+  onCloseDraft = null,
+  onSendAi = null,
+  onAiContextChange = null,
   onSelectTarget = null,
   onOpenLinkedSource = null,
   linkTargetSlotKey = "",
@@ -55,6 +58,9 @@ export function createDraftListView({
         onSchedule,
         onApplyChanges,
         onCancelPublicationEdit,
+        onCloseDraft,
+        onSendAi,
+        onAiContextChange,
         onSelectTarget,
         onOpenLinkedSource,
         linkTargetSlotKey,
@@ -69,7 +75,7 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onSchedule, onApplyChanges, onCancelPublicationEdit, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
+  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onSendAi, onAiContextChange, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
   const publicationCopy = publicationLinked && !draft.source.retained;
@@ -123,13 +129,33 @@ function createDraftCard({
       actions.append(move);
     }
     actions.append(apply, cancel);
-  } else if (draftHasBlocks(draft)) {
-    actions.append(button(t("editor.draftListView.toProject"), t("editor.draftListView.moveDraftToProject"), () => onMoveToProject?.(draft)));
-    actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
-    actions.append(button(t("editor.draftListView.postpone"), t("editor.draftListView.scheduleDraftPublication"), () => onSchedule?.(draft)));
+  } else {
+    if (draftHasBlocks(draft)) {
+      actions.append(button(t("editor.draftListView.toProject"), t("editor.draftListView.moveDraftToProject"), () => onMoveToProject?.(draft)));
+      actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
+      actions.append(button(t("editor.draftListView.postpone"), t("editor.draftListView.scheduleDraftPublication"), () => onSchedule?.(draft)));
+    }
+    if (astHasAiPrompt(draft.messageAst)) {
+      const sendAi = button(t("editor.draftListView.sendAiToBot"), t("editor.draftListView.sendAiToBotHint"), () => onSendAi?.(draft));
+      sendAi.classList.add("draft-ai-send");
+      actions.append(sendAi);
+    }
+    if (selected) {
+      const closeDraft = button(t("editor.draftListView.closeDraft"), t("editor.draftListView.closeDraftHint"), () => onCloseDraft?.(draft));
+      closeDraft.classList.add("draft-close");
+      actions.append(closeDraft);
+    }
   }
   if (actions.childElementCount) card.append(actions);
   else card.classList.add("no-footer-actions");
+
+  const aiContext = el("label", "draft-ai-context-setting");
+  const aiContextInput = document.createElement("input");
+  aiContextInput.type = "checkbox";
+  aiContextInput.checked = draft.ai?.includeFullContext === true;
+  aiContextInput.onchange = () => onAiContextChange?.(draft, aiContextInput.checked);
+  aiContext.append(aiContextInput, el("span", "", t("editor.draftListView.includeFullAiContext")));
+  card.append(aiContext);
 
   const open = () => onOpen?.(draft);
   card.onclick = event => {
@@ -172,6 +198,12 @@ function linkTargetForDraft(draft) {
 
 export function draftHasBlocks(draft) {
   return Array.isArray(draft?.messageAst?.children) && draft.messageAst.children.length > 0;
+}
+
+export function astHasAiPrompt(ast) {
+  if (!ast || typeof ast !== "object") return false;
+  if (String(ast.ai?.prompt || "").trim()) return true;
+  return (ast.children || []).some(astHasAiPrompt);
 }
 
 function showRenameEditor(card, draft, onRename) {

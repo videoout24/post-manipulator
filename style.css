@@ -1,7 +1,7 @@
 /* Ordered stylesheet entry point. Keep imports in cascade order. */
-@import url("./styles/base.css?v=1.8.15");
-@import url("./styles/shell.css?v=1.8.15");
-@import url("./styles/gallery.css?v=1.8.15");
-@import url("./styles/editor.css?v=1.8.15");
-@import url("./styles/projects.css?v=1.8.15");
-@import url("./styles/controls.css?v=1.8.15");
+@import url("./styles/base.css?v=1.9.0");
+@import url("./styles/shell.css?v=1.9.0");
+@import url("./styles/gallery.css?v=1.9.0");
+@import url("./styles/editor.css?v=1.9.0");
+@import url("./styles/projects.css?v=1.9.0");
+@import url("./styles/controls.css?v=1.9.0");

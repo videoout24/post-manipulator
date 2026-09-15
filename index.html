@@ -7,13 +7,13 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<meta content="1.8.15" name="rmb-build"/>
+<meta content="1.9.0" name="rmb-build"/>
 <title>PM</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<script src="./js/theme-init.js?v=1.8.15"></script>
+<script src="./js/theme-init.js?v=1.9.0"></script>
 <link href="./assets/post-manipulator.png" rel="icon" type="image/png"/>
 <link href="./assets/post-manipulator.png" rel="apple-touch-icon"/>
-<link href="./style.css?v=1.8.15" rel="stylesheet"/>
+<link href="./style.css?v=1.9.0" rel="stylesheet"/>
 </head>
 <body data-app-locked="true">
 <div aria-hidden="true" id="appShell" inert>
@@ -21,7 +21,7 @@
 <div class="topbar-left">
 <div class="brand"><button class="brand-settings-trigger" data-i18n-aria-label="html.openPostManipulatorSettings" data-i18n-title="html.openSettings" id="openSettingsFromBrand" type="button"><strong>PM</strong></button>
 
-<span class="muted">build 1.8.15</span>
+<span class="muted">build 1.9.0</span>
 </div>
 <nav class="top-tabs" data-i18n-aria-label="html.postManipulatorSections">
 
@@ -172,7 +172,7 @@
 <div class="gallery-bootstrap">
 <strong data-i18n="html.gallery"></strong>
 <span data-i18n="html.initializingGalleryCore"></span>
-<code>build 1.8.15</code>
+<code>build 1.9.0</code>
 </div>
 </div>
 </section>
@@ -196,7 +196,7 @@
 <div class="canvas-header">
 <div class="panel-title canvas-title">
 <span data-i18n="html.canvas"></span>
-<div class="canvas-title-right"><button data-i18n="html.json" id="exportJson" type="button"></button><button data-i18n="html.telegramJson" id="previewTelegram" type="button"></button><span class="editor-preview-state" data-i18n="html.previewOff" data-state="idle" id="editorPreviewState"></span><div aria-live="polite" class="canvas-stats" id="canvasStats"></div></div>
+<div class="canvas-title-right"><button data-i18n="html.aiJson" id="aiDraftExchange" type="button"></button><button data-i18n="html.json" id="exportJson" type="button"></button><button data-i18n="html.telegramJson" id="previewTelegram" type="button"></button><span class="editor-preview-state" data-i18n="html.previewOff" data-state="idle" id="editorPreviewState"></span><div aria-live="polite" class="canvas-stats" id="canvasStats"></div></div>
 </div>
 <div class="canvas-editor-bar" id="canvasEditorBar">
 <button data-i18n="html.newDraft" id="newDoc" type="button"></button>
@@ -258,6 +258,24 @@
 </div>
 <pre id="jsonOutput"></pre>
 </dialog>
+<dialog id="aiDraftDialog">
+<div class="dialog-head">
+<strong data-i18n="html.aiDraftExchange"></strong>
+<button id="aiDraftClose" type="button">×</button>
+</div>
+<div class="ai-draft-dialog-body">
+<p data-i18n="html.aiDraftExchangeHint"></p>
+<textarea aria-label="AI JSON" id="aiDraftJson" spellcheck="false"></textarea>
+<div class="ai-draft-dialog-actions">
+<button data-i18n="html.copy" id="aiDraftCopy" type="button"></button>
+<button data-i18n="html.downloadJson" id="aiDraftDownload" type="button"></button>
+<button data-i18n="html.sendToBot" id="aiDraftSend" type="button"></button>
+<label class="button-like"><span data-i18n="html.selectResponseFile"></span><input accept=".json,application/json" id="aiDraftFile" type="file"/></label>
+<button class="primary" data-i18n="html.importAsDraft" id="aiDraftImport" type="button"></button>
+</div>
+<small data-i18n="html.aiDraftTelegramLimit"></small>
+</div>
+</dialog>
 <dialog id="metaDialog">
 <form id="metaForm" method="dialog">
 <div class="dialog-head">
@@ -301,6 +319,6 @@
 <section aria-live="polite" aria-modal="true" id="securityGate" role="dialog">
 <div class="security-gate-card"><h1 class="security-gate-title" data-i18n="html.secureLaunch"></h1><p class="security-gate-copy" data-i18n="html.checkingTelegramEnvironment"></p><p class="security-gate-detail" data-i18n="html.launchWindowHint"></p></div>
 </section>
-<script src="./js/bootstrap.js?v=1.8.15" type="module"></script>
+<script src="./js/bootstrap.js?v=1.9.0" type="module"></script>
 </body>
 </html>

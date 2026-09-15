@@ -200,6 +200,40 @@ export class EditorController {
     this.events.emit("tree:changed", inspectorSource ? { source: "property" } : { source: "bulk-property" });
   }
 
+  updateNodeAiPrompt(nodeId, value) {
+    const node = this.tree.find(nodeId);
+    if (!node) return;
+    const prompt = String(value || "");
+    const guarded = this.mutationError("property", { nodeId, node, key: "ai.prompt", value: prompt });
+    if (guarded) {
+      this.reportError(guarded);
+      return;
+    }
+    if (prompt.trim()) node.ai = { ...(node.ai || {}), prompt };
+    else {
+      if (node.ai) delete node.ai.prompt;
+      if (node.ai && !Object.keys(node.ai).length) delete node.ai;
+    }
+    this.events.emit("tree:changed", { source: "property" });
+  }
+
+  updateNodeAiField(nodeId, value) {
+    const node = this.tree.find(nodeId);
+    if (!node) return;
+    const field = String(value || "").trim();
+    const guarded = this.mutationError("property", { nodeId, node, key: "ai.field", value: field });
+    if (guarded) {
+      this.reportError(guarded);
+      return;
+    }
+    if (field) node.ai = { ...(node.ai || {}), field };
+    else if (node.ai) {
+      delete node.ai.field;
+      if (!Object.keys(node.ai).length) delete node.ai;
+    }
+    this.events.emit("tree:changed", { source: "property" });
+  }
+
   changeNodeType(nodeId, nextType) {
     const node = this.tree.find(nodeId);
     const nextDef = this.registry.get(nextType);

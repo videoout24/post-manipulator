@@ -52,6 +52,62 @@ Localization applies only to the interface, hints, and system errors. Project an
 
 AI is intentionally not integrated: the tool is primarily designed for working with author-written content. If needed, AI can be connected at the individual-block or whole-project level while controlling the request context and required response format. The codebase can be adapted to a specific integration.
 
+## AI JSON: requests without requiring an AI API
+
+Well, haha, since AI wrote the code, here is what came about "unintentionally":
+
+Every block on the Canvas has a collapsible **AI prompt** field directly below
+its title and buttons. A request can allow changes to the entire block or to only
+one of its fields. The instruction is stored in the service object `node.ai`,
+survives in the AST after a response, and is not included in the Telegram Rich
+Message when it is published.
+
+The `AI JSON` button creates a portable `rich-current-ai-draft` package containing:
+
+- the ID and version of the source draft or Project post;
+- either the complete structured AST or the target block's local context;
+- the exact permitted change scope (`message`, `block`, or `field`);
+- block instructions and a contract requiring the complete JSON to be returned without structural changes.
+
+The package contains only internal application identifiers: `request.id`, the
+draft/project/post IDs, and AST block IDs. It does not include `chat_id`,
+`message_id`, a channel ID, or the ID of an edited Telegram publication. Bot
+message associations are stored separately and only on the local device.
+
+The **Extended AI context** setting on the active draft or post card in the right
+panel controls the amount of context supplied with an isolated request. When it
+is enabled, the model receives the entire post; when disabled, it receives only
+the target block and its nested content. This does not expand the permitted
+change scope. If at least one block contains an AI prompt, an `AI → bot` button
+appears on the card. For a selected regular draft, **Close** saves it and clears
+the Canvas.
+
+The package can be copied, downloaded, or sent as a JSON document to the private
+bot chat and then passed to any AI model. Returned JSON can be pasted into the
+dialog or selected as a local file. A short response sent by the owner as text
+in the private bot chat is imported automatically. A large JSON document must
+be downloaded once and selected manually because the Telegram file endpoint
+does not allow a static Mini App to read it through CORS. A future AI API
+integration can use the same package and importer without changing the draft
+format.
+
+When a package is sent through the bot, the application stores the association
+between its `request.id` and `message_id`. After a successful import it attempts
+to delete both the JSON request and response from the private chat. This cleanup
+is optional: if the request was already deleted manually, a valid response is
+still imported and the missing message is not treated as an error.
+
+An isolated response is applied only to the permitted block or field. If the
+source version changed after export, the application does not overwrite the new
+content and instead creates a separate draft containing the AI result. A
+response for the entire message is also imported as a separate draft.
+
+For media, AI can return a direct HTTPS URL that Telegram loads when sending the
+message. The URL must point directly to a file with the correct MIME type and
+may be temporary. For durable publications, it is better to send the file to
+the bot and use the Telegram `file_id` stored in Gallery. URL upload constraints
+are documented in the [Telegram Bot API](https://core.telegram.org/bots/api#sending-files).
+
 ### Why there is no backend
 
 The MVP does not need a backend. It is intended for one owner working with their own bot, while Telegram already provides the required capabilities: Mini Apps, CloudStorage, the Bot API, and a private bot chat for backups. This allows free static hosting and avoids creating a separate server-side database containing the token.
@@ -163,7 +219,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.8.15
+https://videoout24.github.io/post-manipulator/?build=1.9.0
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -240,7 +296,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.8.15`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.9.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

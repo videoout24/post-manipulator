@@ -119,17 +119,17 @@ export class TelegramRenderer {
           caption: caption()
         });
       case "animation":
-        return compactObject({ type: "animation", animation: makeInputMedia("animation", (p.fileId || p.url), p.hasSpoiler), caption: caption() });
+        return compactObject({ type: "animation", animation: makeInputMedia("animation", mediaSource(p), p.hasSpoiler), caption: caption() });
       case "audio":
-        return compactObject({ type: "audio", audio: makeInputMedia("audio", (p.fileId || p.url)), caption: caption() });
+        return compactObject({ type: "audio", audio: makeInputMedia("audio", mediaSource(p)), caption: caption() });
       case "document":
-        return compactObject({ type: "document", document: makeInputMedia("document", (p.fileId || p.url)), caption: caption() });
+        return compactObject({ type: "document", document: makeInputMedia("document", mediaSource(p)), caption: caption() });
       case "photo":
-        return compactObject({ type: "photo", photo: makeInputMedia("photo", (p.fileId || p.url), p.hasSpoiler), caption: caption() });
+        return compactObject({ type: "photo", photo: makeInputMedia("photo", mediaSource(p), p.hasSpoiler), caption: caption() });
       case "video":
-        return compactObject({ type: "video", video: makeInputMedia("video", (p.fileId || p.url), p.hasSpoiler), caption: caption() });
+        return compactObject({ type: "video", video: makeInputMedia("video", mediaSource(p), p.hasSpoiler), caption: caption() });
       case "voice_note":
-        return compactObject({ type: "voice_note", voice_note: makeInputMedia("voice_note", (p.fileId || p.url)), caption: caption() });
+        return compactObject({ type: "voice_note", voice_note: makeInputMedia("voice_note", mediaSource(p)), caption: caption() });
       case "thinking":
         if (!options.allowThinking) throw new Error(t("telegram.telegramRenderer.thinkingBlockCanOnlyBeSentVia"));
         return { type: "thinking", text: richText(p.text) };
@@ -202,6 +202,11 @@ function makeInputMedia(type, source, hasSpoiler = false) {
     return compactObject({ type, ...structuredClone(source), has_spoiler: truthyOnly(source.has_spoiler ?? hasSpoiler) });
   }
   return compactObject({ type, media: String(source), has_spoiler: truthyOnly(hasSpoiler) });
+}
+
+function mediaSource(props = {}) {
+  const url = String(props.url || "").trim();
+  return /^https:\/\//i.test(url) ? url : (props.fileId || url);
 }
 
 function renderTableCells(value) {
