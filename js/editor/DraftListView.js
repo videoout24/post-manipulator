@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.9.1";
+import { getLocale, t } from "../i18n/index.js?v=1.9.5";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -15,7 +15,7 @@ export function createDraftListView({
   onApplyChanges = null,
   onCancelPublicationEdit = null,
   onCloseDraft = null,
-  onSendAi = null,
+  onOpenAi = null,
   onAiContextChange = null,
   onSelectTarget = null,
   onOpenLinkedSource = null,
@@ -59,7 +59,7 @@ export function createDraftListView({
         onApplyChanges,
         onCancelPublicationEdit,
         onCloseDraft,
-        onSendAi,
+        onOpenAi,
         onAiContextChange,
         onSelectTarget,
         onOpenLinkedSource,
@@ -75,7 +75,7 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onSendAi, onAiContextChange, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
+  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiContextChange, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
   const publicationCopy = publicationLinked && !draft.source.retained;
@@ -135,10 +135,10 @@ function createDraftCard({
       actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
       actions.append(button(t("editor.draftListView.postpone"), t("editor.draftListView.scheduleDraftPublication"), () => onSchedule?.(draft)));
     }
-    if (astHasAiPrompt(draft.messageAst)) {
-      const sendAi = button(t("editor.draftListView.sendAiToBot"), t("editor.draftListView.sendAiToBotHint"), () => onSendAi?.(draft));
-      sendAi.classList.add("draft-ai-send");
-      actions.append(sendAi);
+    if (draft.ai?.includeFullContext === true && astHasAiPrompt(draft.messageAst)) {
+      const openAi = button(t("editor.draftListView.openDraftAiJson"), t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft));
+      openAi.classList.add("draft-ai-json");
+      actions.append(openAi);
     }
     if (selected) {
       const closeDraft = button(t("editor.draftListView.closeDraft"), t("editor.draftListView.closeDraftHint"), () => onCloseDraft?.(draft));

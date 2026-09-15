@@ -22,4 +22,6 @@ assert(commands.includes('await this.documents.saveCurrentContext();'), 'New Dra
 assert(palette.includes('if (b.projectVirtual) return false;'), 'Project virtual blocks must stay unavailable in Palette');
 assert(projectView.includes('getProjectPostPublicationEligibility'), 'Editor Project cards must use shared publication eligibility');
 assert(library.includes('getProjectPostPublicationEligibility'), 'Project Library cards must use shared publication eligibility');
+assert(draftView.includes('draft.ai?.includeFullContext === true && astHasAiPrompt(draft.messageAst)'),
+  'Draft AI JSON must require both extended context and at least one block prompt');
 console.log('draft_project_ui_contract_v159_smoke: OK');

@@ -35,7 +35,9 @@ export class EditorEventCoordinator {
   #treeChanged(payload) {
     if (this.projectSession?.isProjectActive?.()) this.projectSession.scheduleAutosave();
     else if (this.draftSession?.isActive?.()) this.draftSession.scheduleAutosave();
-    if (!this.projectSession?.isProjectActive?.()) this.telegramPreview?.schedule?.();
+    if (!this.projectSession?.isProjectActive?.() && payload?.affectsTelegram !== false) {
+      this.telegramPreview?.schedule?.();
+    }
 
     // Property editors already contain their current value. Rebuilding Canvas on
     // every keystroke would replace the active input and lose focus.

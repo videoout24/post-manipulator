@@ -214,7 +214,7 @@ export class EditorController {
       if (node.ai) delete node.ai.prompt;
       if (node.ai && !Object.keys(node.ai).length) delete node.ai;
     }
-    this.events.emit("tree:changed", { source: "property" });
+    this.events.emit("tree:changed", { source: "property", affectsTelegram: false });
   }
 
   updateNodeAiField(nodeId, value) {
@@ -231,7 +231,7 @@ export class EditorController {
       delete node.ai.field;
       if (!Object.keys(node.ai).length) delete node.ai;
     }
-    this.events.emit("tree:changed", { source: "property" });
+    this.events.emit("tree:changed", { source: "property", affectsTelegram: false });
   }
 
   changeNodeType(nodeId, nextType) {

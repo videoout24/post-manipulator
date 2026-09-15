@@ -40,6 +40,8 @@ const history = new EditorSessionHistory({
   limit: 2,
   contextLimit: 2
 }).start();
+const treeChangePayloads = [];
+events.on("tree:changed", payload => treeChangePayloads.push(payload));
 
 const change = (text, source = "property") => {
   tree.root.children = [{ id: "paragraph", type: "paragraph", props: { text }, children: [] }];
@@ -80,6 +82,13 @@ tree.root = { id: "root", type: "document", props: {}, children: [{ id: "paragra
 events.emit("project:session-changed", {});
 assert.equal(history.canUndo(), true, "returning to standalone restores its session-only history");
 assert(selection.clears >= 2, "history restores clear stale block selection");
+
+tree.root.children[0].ai = { prompt: "Rewrite this block", field: "text" };
+events.emit("tree:changed", { source: "property", affectsTelegram: false });
+treeChangePayloads.length = 0;
+assert.equal(history.undo(), true);
+assert.equal(treeChangePayloads.at(-1)?.affectsTelegram, false,
+  "undoing an AI-only metadata edit must not schedule Telegram preview");
 
 history.stop();
 console.log("editor session history smoke: OK");

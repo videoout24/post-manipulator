@@ -65,6 +65,15 @@ assert(transport.syncCalls.includes(idOf(mapHost)),'dependent Map host must auto
 assert(!transport.syncCalls.includes(idOf(unrelated)),'unrelated post must not autosync');
 
 transport.syncCalls=[];
+const aiOnlyProject=await store.getProject(project.id);
+const aiOnlyAst=structuredClone(aiOnlyProject.posts.find(p=>p.id===target).messageAst);
+aiOnlyAst.children.find(n=>n.type==='heading').ai={prompt:'Rewrite the title',field:'text'};
+await store.savePostAst(project.id,target,aiOnlyAst);
+await sleep(450);
+assert.deepEqual(transport.syncCalls,[],
+  'editing node.ai metadata must save locally without syncing the Telegram Project preview');
+
+transport.syncCalls=[];
 transport.syncEnvelopes=[];
 previewEvents.length=0;
 made=await store.createPost(project.id,{title:'Added from Map'}); project=made.project; const added=made.post.id;

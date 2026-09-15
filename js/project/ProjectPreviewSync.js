@@ -359,6 +359,7 @@ export class ProjectPreviewSync {
 
   #onProjectChanged(event) {
     if (!AUTO_SYNC_REASONS.has(event?.reason)) return;
+    if (event?.reason === "post-saved" && event.telegramContentChanged === false) return;
     const project = event?.project;
     if (!project?.id || !hasPreviewDeployment(project)) return;
     // Creating a post from a Map changes three identities at once: the new post,

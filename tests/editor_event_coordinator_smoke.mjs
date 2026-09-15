@@ -35,6 +35,11 @@ events.emit("tree:changed", { source: "property" });
 assert.deepEqual(calls, ["draft:autosave", "preview:schedule", "workspace:stats"]);
 
 calls.length = 0;
+events.emit("tree:changed", { source: "property", affectsTelegram: false });
+assert.deepEqual(calls, ["draft:autosave", "workspace:stats"],
+  "AI-only metadata changes must autosave without scheduling Telegram live preview");
+
+calls.length = 0;
 events.emit("tree:changed", { source: "insert" });
 assert.deepEqual(calls, ["draft:autosave", "preview:schedule", "workspace:render"]);
 

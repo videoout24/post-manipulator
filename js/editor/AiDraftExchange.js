@@ -1,5 +1,5 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.9.1";
+import { t } from "../i18n/index.js?v=1.9.5";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
 export const AI_DRAFT_SCHEMA_VERSION = 1;
@@ -16,6 +16,7 @@ export class AiDraftExchange {
     copyButton,
     downloadButton,
     sendButton,
+    openBotButton,
     importButton,
     fileInput,
     tree,
@@ -24,6 +25,7 @@ export class AiDraftExchange {
     drafts,
     documents,
     client,
+    navigation,
     ownerBinding,
     db = null,
     events = null,
@@ -32,8 +34,8 @@ export class AiDraftExchange {
   } = {}) {
     Object.assign(this, {
       dialog, input, openButton, closeButton, copyButton, downloadButton,
-      sendButton, importButton, fileInput, tree, draftSession, projectSession,
-      drafts, documents, client, ownerBinding, events, notifications, documentRoot
+      sendButton, openBotButton, importButton, fileInput, tree, draftSession, projectSession,
+      drafts, documents, client, navigation, ownerBinding, events, notifications, documentRoot
     });
     this.db = db;
     this.unsubscribers = [];
@@ -47,15 +49,16 @@ export class AiDraftExchange {
     this.#listen(this.copyButton, "click", () => this.copy());
     this.#listen(this.downloadButton, "click", () => this.download());
     this.#listen(this.sendButton, "click", () => this.sendToBot());
+    this.#listen(this.openBotButton, "click", () => this.openBot());
     this.#listen(this.importButton, "click", () => this.importText(this.input?.value));
     this.#listen(this.fileInput, "change", event => this.importFile(event.target?.files?.[0]));
     this.unsubscribers.push(
       this.events?.on?.("telegram:ai-draft-response", event => this.importText(event?.text, { viaTelegram: true, telegramSource: event?.source })),
       this.events?.on?.("ai:block-export-requested", event => this.open({ nodeId: event?.nodeId })),
-      this.events?.on?.("ai:document-send-requested", () => {
+      this.events?.on?.("ai:document-open-requested", () => {
         this.currentScope = null;
         this.preparedPayload = null;
-        return this.sendToBot();
+        return this.open();
       }),
       this.events?.on?.("telegram:ai-draft-document", event => this.#rememberIncomingDocument(event))
     );
@@ -93,9 +96,7 @@ export class AiDraftExchange {
         nodeId: String(node.id),
         ...(node.ai?.field ? { field: String(node.ai.field) } : {})
       };
-      if (!target.includeFullContext) {
-        messageAst = { id: "root", type: "document", props: {}, children: [structuredClone(node)] };
-      }
+      messageAst = { id: "root", type: "document", props: {}, children: [structuredClone(node)] };
     }
     const payload = buildAiDraftRequest({
       messageAst,
@@ -156,6 +157,17 @@ export class AiDraftExchange {
       this.#notify({ message: t("editor.aiDraftExchange.sentToBot"), type: "success" });
     } catch (error) {
       this.#error(error);
+    }
+  }
+
+  openBot() {
+    try {
+      const opened = this.navigation?.openBot?.();
+      if (!opened) throw new Error(t("editor.aiDraftExchange.botUsernameUnavailable"));
+      return true;
+    } catch (error) {
+      this.#error(error);
+      return false;
     }
   }
 

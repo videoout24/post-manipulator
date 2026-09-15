@@ -1,6 +1,6 @@
-import { t } from "../i18n/index.js?v=1.9.1";
-import { createDraftListView } from "./DraftListView.js?v=1.9.1";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.9.1";
+import { t } from "../i18n/index.js?v=1.9.5";
+import { createDraftListView } from "./DraftListView.js?v=1.9.5";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.9.5";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
 
 export class EditorRightPanel {
@@ -135,6 +135,7 @@ export class EditorRightPanel {
       onCancelSchedule: post => this.#cancelProjectPostSchedule(post),
       onApplyChanges: post => this.#applyProjectChanges(post),
       onAiContextChange: (post, includeFullContext) => this.#setPostAiContext(post, includeFullContext),
+      onOpenAi: post => this.#openProjectPostAi(post),
       onDelete: post => this.#deleteProjectPost(post)
     }));
   }
@@ -161,7 +162,7 @@ export class EditorRightPanel {
       onApplyChanges: draft => this.#applyDraftChanges(draft),
       onCancelPublicationEdit: draft => this.#cancelPublicationEdit(draft),
       onCloseDraft: draft => this.#closeOrdinaryDraft(draft),
-      onSendAi: draft => this.#sendDraftAi(draft),
+      onOpenAi: draft => this.#openDraftAi(draft),
       onAiContextChange: (draft, includeFullContext) => this.#setDraftAiContext(draft, includeFullContext),
       onSelectTarget: target => this.#selectLinkTarget(target),
       onOpenLinkedSource: target => this.#openLinkedSource(target),
@@ -306,7 +307,10 @@ export class EditorRightPanel {
   }
 
   async #setDraftAiContext(draft, includeFullContext) {
-    return this.#run(() => this.drafts.setAiSettings(draft.id, { includeFullContext }));
+    return this.#run(async () => {
+      if (this.draftSession?.activeDraftId === draft.id) await this.documents?.saveCurrentContext?.();
+      return this.drafts.setAiSettings(draft.id, { includeFullContext });
+    });
   }
 
   async #setPostAiContext(post, includeFullContext) {
@@ -323,10 +327,22 @@ export class EditorRightPanel {
     });
   }
 
-  async #sendDraftAi(draft) {
+  async #openDraftAi(draft) {
     return this.#run(async () => {
       if (this.draftSession?.activeDraftId !== draft.id) await this.documents?.openDraft?.(draft.id);
-      await this.events?.emitAsync?.("ai:document-send-requested", { kind: "draft", draftId: draft.id });
+      await this.events?.emitAsync?.("ai:document-open-requested", { kind: "draft", draftId: draft.id });
+      return true;
+    });
+  }
+
+  async #openProjectPostAi(post) {
+    return this.#run(async () => {
+      if (this.session?.activePostId !== post.id) await this.session?.openPost?.(post.id);
+      await this.events?.emitAsync?.("ai:document-open-requested", {
+        kind: "project-post",
+        projectId: this.session?.activeProjectId,
+        postId: post.id
+      });
       return true;
     });
   }

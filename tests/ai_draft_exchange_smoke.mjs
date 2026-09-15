@@ -106,6 +106,7 @@ const db = {
 };
 let storedAst = structuredClone(ast);
 let capturedFile = null;
+let botOpenCalls = 0;
 const deletedMessages = [];
 const missingRequest = Object.assign(new Error("message to delete not found"), { isMessageMissing: () => true });
 const activeDraft = { id: "draft-1", title: "Companies", messageAst: storedAst, updatedAt: 7, ai: { includeFullContext: true } };
@@ -132,12 +133,18 @@ const exchange = new AiDraftExchange({
       if (messageId === 101) throw missingRequest;
     }
   },
+  navigation: { openBot() { botOpenCalls += 1; return true; } },
   notifications: { show() {} }
 });
+assert.equal(exchange.openBot(), true);
+assert.equal(botOpenCalls, 1);
 await exchange.open({ nodeId: "heading-1" });
 await exchange.sendToBot();
 const sentPayload = JSON.parse(await capturedFile.text());
 assert.equal(sentPayload.request.scope.kind, "field");
+assert.equal(sentPayload.request.contextIncluded, "block");
+assert.equal(sentPayload.messageAst.children.length, 1,
+  "Block AI JSON must stay isolated even when the card's full-context checkbox is enabled");
 sentPayload.messageAst.children[0].props.text = "Imported title";
 const imported = await exchange.importText(JSON.stringify(sentPayload), {
   viaTelegram: true,

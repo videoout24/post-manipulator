@@ -4,6 +4,7 @@ import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
+import { astHasAiPrompt } from "./DraftListView.js?v=1.9.5";
 
 export function createProjectPostListView({
   project,
@@ -20,6 +21,7 @@ export function createProjectPostListView({
   onCancelSchedule = null,
   onApplyChanges = null,
   onAiContextChange = null,
+  onOpenAi = null,
   onDelete = null
 } = {}) {
   const fragment = document.createDocumentFragment();
@@ -74,6 +76,7 @@ export function createProjectPostListView({
       actions: cardActions
     });
     if (post.id === activePostId) {
+      const aiSettings = el("div", "project-post-ai-settings");
       const aiContext = el("label", "draft-ai-context-setting project-post-ai-context-setting");
       const input = document.createElement("input");
       input.type = "checkbox";
@@ -83,7 +86,13 @@ export function createProjectPostListView({
         onAiContextChange?.(post, input.checked);
       };
       aiContext.append(input, el("span", "", t("editor.projectPostListView.includeFullAiContext")));
-      card.append(aiContext);
+      aiSettings.append(aiContext);
+      if (post.ai?.includeFullContext === true && astHasAiPrompt(post.messageAst)) {
+        const openAi = button(t("editor.projectPostListView.openPostAiJson"), t("editor.projectPostListView.openPostAiJsonHint"), () => onOpenAi?.(post));
+        openAi.classList.add("project-post-ai-json");
+        aiSettings.append(openAi);
+      }
+      card.append(aiSettings);
     }
     list.append(card);
   });

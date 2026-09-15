@@ -338,7 +338,7 @@
 .block-ai-prompt-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; padding: 0 6px 6px; }
 .block-ai-prompt-controls select,
 .block-ai-prompt-controls button {
-  min-width: 0; height: 27px; padding: 3px 7px; font-size: 8px;
+  min-width: 0; height: 27px; padding: 3px 7px; font-family: inherit; font-size: 8px; line-height: 1.2;
 }
 .block-ai-prompt textarea {
   display: block; width: calc(100% - 12px); min-height: 62px; margin: 0 6px 6px; padding: 7px 8px;

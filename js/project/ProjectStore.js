@@ -165,17 +165,18 @@ export class ProjectStore {
 
   async savePostAst(projectId, postId, messageAst) {
     let graphRelevantChanged = false;
+    let telegramContentChanged = false;
     return this.updateProject(projectId, project => {
       const post = project.posts.find(item => item.id === postId);
       if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
       const nextAst = normalizeAst(messageAst);
-      const sourceChanged = astSignature(post.messageAst) !== astSignature(nextAst);
+      telegramContentChanged = telegramAstSignature(post.messageAst) !== telegramAstSignature(nextAst);
       graphRelevantChanged = projectGraphInputFingerprint(post.messageAst) !== projectGraphInputFingerprint(nextAst);
       post.messageAst = nextAst;
       syncPostTitleFromHeading(post);
-      if (sourceChanged) markPostProductionChanges(post);
+      if (telegramContentChanged) markPostProductionChanges(post);
       post.updatedAt = Date.now();
-    }, "post-saved", () => ({ postId, affectedPostIds: [postId], graphRelevantChanged }));
+    }, "post-saved", () => ({ postId, affectedPostIds: [postId], graphRelevantChanged, telegramContentChanged }));
   }
 
   async setPostDeployment(projectId, postId, deployment, record) {
@@ -728,8 +729,10 @@ function cleanTitle(value, fallback) {
   return title || fallback;
 }
 
-function astSignature(ast) {
-  try { return JSON.stringify(ast || null); }
+function telegramAstSignature(ast) {
+  try {
+    return JSON.stringify(ast || null, (key, value) => key === "ai" ? undefined : value);
+  }
   catch { return String(ast); }
 }
 

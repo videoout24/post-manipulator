@@ -941,6 +941,19 @@
   color: var(--theme-text-muted, #718399); font-size: 8px; cursor: pointer;
 }
 .draft-ai-context-setting input { width: auto; margin: 0; }
+.project-post-ai-settings {
+  display: flex; align-items: center; gap: 7px; padding: 0 9px 8px;
+}
+.project-post-ai-settings .project-post-ai-context-setting {
+  flex: 1 1 auto; min-width: 0; padding: 0;
+}
+.project-post-ai-settings .project-post-ai-json {
+  flex: 0 0 auto; min-height: 24px; padding: 3px 7px;
+  border-color: var(--theme-purple, #7257aa);
+  background: var(--theme-purple-subtle, #261d3b);
+  color: var(--theme-text, #dbcfff);
+  font-size: 8px;
+}
 .draft-card-lifecycle-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .draft-card-lifecycle-actions button:first-child {
   border-color: var(--theme-accent-border, #3f6fae);
@@ -960,7 +973,7 @@
   background: var(--theme-surface-raised, #26191c);
   color: var(--theme-danger, #d8a4aa);
 }
-.draft-card-lifecycle-actions .draft-ai-send {
+.draft-card-lifecycle-actions .draft-ai-json {
   border-color: var(--theme-purple, #7257aa);
   background: var(--theme-purple-subtle, #261d3b);
   color: var(--theme-text, #dbcfff);

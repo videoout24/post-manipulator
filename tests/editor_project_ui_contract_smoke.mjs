@@ -18,6 +18,14 @@ assert.match(postList, /t\("editor\.projectPostListView\.closeProject"\)/);
 assert.match(postList, /project-post-rename-editor/);
 assert.doesNotMatch(postList, /#createPost/);
 assert.match(postList, /showCardDeleteConfirmation/);
+assert.match(postList, /astHasAiPrompt\(post\.messageAst\)/,
+  "The active Project post card must detect block AI prompts");
+assert.match(postList, /post\.ai\?\.includeFullContext === true && astHasAiPrompt\(post\.messageAst\)/,
+  "Post AI JSON must require both extended context and at least one block prompt");
+assert.match(postList, /project-post-ai-json/,
+  "The active Project post card must expose Post AI JSON under the full-context condition");
+assert.match(rightPanel, /onOpenAi: post => this\.#openProjectPostAi\(post\)/,
+  "Project post AI JSON must be wired through the right panel");
 assert.match(postList, /t\("editor\.projectPostListView\.theStartingPostContainsAMapAnd"\)/);
 assert.match(rightPanel, /onDelete: post => this\.#deleteProjectPost\(post\)/);
 assert.doesNotMatch(rightPanel, /#createPost/);

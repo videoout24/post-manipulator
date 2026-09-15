@@ -54,13 +54,14 @@ export class EditorSessionHistory {
     const entry = this.#currentEntry();
     if (!entry?.[from]?.length) return false;
     const snapshot = entry[from].pop();
+    const affectsTelegram = telegramSnapshot(entry.current) !== telegramSnapshot(snapshot);
     entry[to].push(clone(entry.current));
     entry.current = clone(snapshot);
     entry.lastKind = "";
     entry.lastChangedAt = 0;
     this.tree.root = clone(snapshot);
     this.selection?.clear?.();
-    this.events?.emit?.("tree:changed", { source: "history" });
+    this.events?.emit?.("tree:changed", { source: "history", affectsTelegram });
     this.#notify();
     return true;
   }
@@ -195,3 +196,6 @@ function createEntry(key, snapshot) {
 function emptyDocument() { return { id: "root", type: "document", props: {}, children: [] }; }
 function clone(value) { return structuredClone(value); }
 function sameSnapshot(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+function telegramSnapshot(value) {
+  return JSON.stringify(value ?? null, (key, item) => key === "ai" ? undefined : item);
+}

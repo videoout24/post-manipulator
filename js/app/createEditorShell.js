@@ -1,13 +1,13 @@
-import { AppNavigation } from "./AppNavigation.js?v=1.9.1";
+import { AppNavigation } from "./AppNavigation.js?v=1.9.5";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
-import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.5.9";
-import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.9.1";
-import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.9.1";
-import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.5.9";
+import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.9.5";
+import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.9.5";
+import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.9.5";
+import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.9.5";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.8.6";
 import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.5.9";
 import { EditorToolController } from "../editor/EditorToolController.js?v=1.6.5";
-import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.1";
+import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.5";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.6.5";
 import { t } from "../i18n/index.js?v=1.8.6";
 
@@ -224,6 +224,7 @@ export function createEditorShell({
     copyButton: query("#aiDraftCopy"),
     downloadButton: query("#aiDraftDownload"),
     sendButton: query("#aiDraftSend"),
+    openBotButton: query("#aiDraftOpenBot"),
     importButton: query("#aiDraftImport"),
     fileInput: query("#aiDraftFile"),
     tree,
@@ -232,6 +233,7 @@ export function createEditorShell({
     drafts: draftStore,
     documents,
     client: telegramClient,
+    navigation: telegramNavigation,
     ownerBinding,
     db,
     events,
