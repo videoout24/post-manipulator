@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.9.0";
+import { t } from "../i18n/index.js?v=1.9.1";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 

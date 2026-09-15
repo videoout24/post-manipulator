@@ -327,7 +327,7 @@ export class TreeView {
       scope.append(option);
     }
     scope.value = String(node.ai?.field || "");
-    if (!scope.querySelector(`option[value="${cssEscape(scope.value)}"]`)) scope.value = "";
+    if (!Array.from(scope.options).some(option => option.value === scope.value)) scope.value = "";
     scope.onchange = () => this.controller.updateNodeAiField?.(node.id, scope.value);
 
     const exportBlock = document.createElement("button");

@@ -1,10 +1,10 @@
-import { t } from "../i18n/index.js?v=1.9.0";
+import { t } from "../i18n/index.js?v=1.9.1";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeploymentResolver.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "./ProjectPublicationEligibility.js?v=1.8.6";
 import { productionContentSnapshot } from "./ProjectPublicationState.js?v=1.5.9";
 import { isLinearProject } from "./ProjectStore.js?v=1.7.6";
-import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.9.0";
+import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.9.1";
 
 const MAX_TIMER_DELAY = 2_147_000_000;
 const SCHEDULE_RETRY_DELAY = 60_000;

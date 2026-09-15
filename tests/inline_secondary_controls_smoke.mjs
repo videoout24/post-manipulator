@@ -22,5 +22,9 @@ assert.match(treeView, /input, textarea, select, button, summary, \[contentedita
   "Collapsible property summaries must not trigger a Canvas re-render before their native toggle runs");
 assert.match(treeView, /focusNode\(nodeId\)[\s\S]*?expandedPath\.add\(String\(current\.id\)\)[\s\S]*?this\.collapsedNodes = new Set\(this\.#canvasNodeIds\(\)\.filter\(id => !expandedPath\.has\(id\)\)\)/,
   "Focusing a Canvas block must collapse all other branches while keeping its ancestor path open");
+assert.match(treeView, /Array\.from\(scope\.options\)\.some\(option => option\.value === scope\.value\)/,
+  "AI field scope validation must not call an undefined CSS selector helper while rendering Canvas blocks");
+assert.doesNotMatch(treeView, /cssEscape\(scope\.value\)/,
+  "Rendering an AI prompt must not depend on an unavailable cssEscape helper");
 
 console.log("inline_secondary_controls_smoke: OK");

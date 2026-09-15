@@ -238,7 +238,7 @@ Bot API позволяет боту получить через `getFile` пут
 После публикации GitHub Pages укажите в BotFather этот адрес Mini App:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.9.0
+https://videoout24.github.io/post-manipulator/?build=1.9.1
 ```
 
 Ваш bot token останется зашифрованным в Telegram CloudStorage, а данные приложения — в локальной IndexedDB выбранного бота. Страница не требует заранее заданного Bot ID.
@@ -315,7 +315,7 @@ git push
 
 GitHub Pages обновит сайт автоматически.
 
-GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.9.0`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
+GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.9.1`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
 
 ## Локальная проверка
 
