@@ -16,12 +16,18 @@ assert.match(inspector, /importControl\.className = "formula-import-control"/);
 assert.doesNotMatch(inspector, /formula-import-row/, "Formula import must not create a bottom row");
 assert.match(inspector, /textarea\.value = `\$\{value\.slice\(0, cursor\)\}\$\{template\.latex\}\$\{value\.slice\(cursor\)\}`/,
   "Formula templates must be inserted at the caret instead of replacing the expression");
-assert.match(treeView, /if \(this\.autoCollapseInactive && !additive && !isFormControl\) this\.focusNode\(node\.id\);/,
-  "A Canvas card click must focus its block");
+assert.match(treeView, /if \(!additive && !isFormControl\) \{[\s\S]*?if \(this\.autoCollapseInactive\) this\.focusNode\(node\.id\);[\s\S]*?else this\.scrollNodeNearCanvasTop\(node\.id\);[\s\S]*?\}/,
+  "A Canvas card click must position its active block in both auto-collapse and regular modes");
 assert.match(treeView, /input, textarea, select, button, summary, \[contenteditable='true'\], \[contenteditable='plaintext-only'\]/,
   "Collapsible property summaries must not trigger a Canvas re-render before their native toggle runs");
-assert.match(treeView, /focusNode\(nodeId\)[\s\S]*?expandedPath\.add\(String\(current\.id\)\)[\s\S]*?this\.collapsedNodes = new Set\(this\.#canvasNodeIds\(\)\.filter\(id => !expandedPath\.has\(id\)\)\)/,
+assert.match(treeView, /focusNode\(nodeId, \{ reposition = true \} = \{\}\)[\s\S]*?expandedPath\.add\(String\(current\.id\)\)[\s\S]*?this\.collapsedNodes = new Set\(this\.#canvasNodeIds\(\)\.filter\(id => !expandedPath\.has\(id\)\)\)/,
   "Focusing a Canvas block must collapse all other branches while keeping its ancestor path open");
+assert.match(treeView, /scrollNodeNearCanvasTop\(nodeId, offset = 100\)[\s\S]*?scroller\.scrollTop \+ targetRect\.top - scrollerRect\.top - offset[\s\S]*?behavior: reduceMotion \? "auto" : "smooth"/,
+  "The focused block must be positioned near the Canvas top with a 100px offset");
+assert.match(treeView, /if \(generation !== this\.renderGeneration\) return;/,
+  "A stale focus scroll must not override a newer Canvas selection");
+assert.match(treeView, /this\.focusNode\(selectedId, \{ reposition: false \}\)/,
+  "Enabling auto-collapse must not unexpectedly reposition the Canvas");
 assert.match(treeView, /Array\.from\(scope\.options\)\.some\(option => option\.value === scope\.value\)/,
   "AI field scope validation must not call an undefined CSS selector helper while rendering Canvas blocks");
 assert.doesNotMatch(treeView, /cssEscape\(scope\.value\)/,

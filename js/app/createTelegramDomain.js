@@ -5,7 +5,7 @@ import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingS
 import { TopicTransport } from "../telegram/TopicTransport.js?v=1.8.9";
 import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.8.8";
 import { TelegramCore } from "../telegram/TelegramCore.js?v=1.7.15";
-import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.9.5";
+import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.9.6";
 import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.8.9";
 import { PreviewController } from "../telegram/PreviewController.js?v=1.7.20";
 import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.9.5";

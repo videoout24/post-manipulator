@@ -5,6 +5,7 @@ const calls = [];
 const toasts = [];
 const created = [];
 const inserted = [];
+let collectorCleared = 0;
 const projectSession = {
   active: false,
   isProjectActive() { return this.active; },
@@ -36,7 +37,16 @@ const controller = new EditorCommandController({
     addBlock(...args) {
       inserted.push(args);
       return { id: "inserted" };
+    },
+    insertCopiedSubtrees(blocks, options) {
+      calls.push(["collector:insert", blocks, options]);
+      return { inserted: [{ id: "copy-1" }], rejected: [] };
     }
+  },
+  blockCollector: {
+    count: () => 1,
+    async resolveBlocks() { return [{ id: "source", type: "paragraph", props: { text: "Collected" }, children: [] }]; },
+    async clear() { collectorCleared += 1; }
   },
   selection: { clear: () => calls.push("selection:clear") },
   textareaSizing: { clear: () => calls.push("textarea:clear") },
@@ -78,5 +88,15 @@ assert.deepEqual(created[1].source, { kind: "draft" });
 assert.equal(inserted[0][0], "paragraph");
 assert.equal(inserted[0][3].props.text, "Первый блок");
 assert.equal(calls[0], "context:save");
+
+calls.length = 0;
+await controller.insertFromCollector();
+assert.equal(calls[0], "context:save");
+assert.equal(calls[1][0], "collector:insert");
+assert.deepEqual(calls[1][2], { parentId: "root", index: Infinity });
+assert.equal(toasts.at(-1).type, "success");
+
+await controller.clearCollector();
+assert.equal(collectorCleared, 1);
 
 console.log("editor_command_controller_smoke: OK");

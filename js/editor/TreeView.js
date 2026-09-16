@@ -1,10 +1,10 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.9.6";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
 export class TreeView {
-  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, onCollapseChange = null, autoCollapseInactive = false }) {
+  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, blockCollector = null, onCollapseChange = null, autoCollapseInactive = false }) {
     this.root = root;
     this.tree = tree;
     this.registry = registry;
@@ -14,6 +14,7 @@ export class TreeView {
     this.gallery = gallery;
     this.thumbnails = thumbnails;
     this.inlineInspector = inlineInspector;
+    this.blockCollector = blockCollector;
     this.onCollapseChange = onCollapseChange;
     this.autoCollapseInactive = Boolean(autoCollapseInactive);
     this.dragState = dragState || { nodeId: "", type: "", source: "", galleryAssetId: "", galleryType: "" };
@@ -107,7 +108,10 @@ export class TreeView {
         // browser toggles a detached <details> element and the section appears
         // unable to collapse.
         const isFormControl = e.target.closest("input, textarea, select, button, summary, [contenteditable='true'], [contenteditable='plaintext-only']");
-        if (this.autoCollapseInactive && !additive && !isFormControl) this.focusNode(node.id);
+        if (!additive && !isFormControl) {
+          if (this.autoCollapseInactive) this.focusNode(node.id);
+          else this.scrollNodeNearCanvasTop(node.id);
+        }
       };
       el.ondblclick = e => {
         if (e.target.closest("input, textarea, select, button, [contenteditable='true'], [contenteditable='plaintext-only']")) return;
@@ -161,6 +165,8 @@ export class TreeView {
 
       const actions = document.createElement("div");
       actions.className = "block-actions";
+      const collectorToggle = this.makeCollectorToggle(node);
+      if (collectorToggle) actions.append(collectorToggle);
       const spoiler = this.makeHeaderSpoiler(node);
       if (spoiler) actions.append(spoiler);
       const collapse = document.createElement("button");
@@ -293,6 +299,48 @@ export class TreeView {
     parentEl.append(this.makeDropZone(parentNode.id, children.length, true));
   }
 
+  makeCollectorToggle(node) {
+    if (!this.blockCollector?.isCollectible?.(node)) return null;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "block-collector-toggle";
+    button.dataset.collectorNodeId = String(node.id);
+    button.draggable = false;
+    this.syncCollectorButton(button, node.id);
+    button.onclick = async event => {
+      event.stopPropagation();
+      button.disabled = true;
+      try {
+        await this.blockCollector.toggleCurrent(node.id);
+      } catch (error) {
+        this.controller.reportError(error?.message || String(error));
+      } finally {
+        button.disabled = false;
+        this.syncCollectorButton(button, node.id);
+      }
+    };
+    return button;
+  }
+
+  updateCollectorState() {
+    for (const button of this.root.querySelectorAll(".block-collector-toggle[data-collector-node-id]")) {
+      this.syncCollectorButton(button, button.dataset.collectorNodeId);
+    }
+  }
+
+  syncCollectorButton(button, nodeId) {
+    const active = this.blockCollector?.hasCurrent?.(nodeId) === true;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute("aria-label", active
+      ? t("editor.treeView.removeFromBlockCollector")
+      : t("editor.treeView.addToBlockCollector"));
+    button.title = active
+      ? t("editor.treeView.removeFromBlockCollector")
+      : t("editor.treeView.addToBlockCollector");
+    button.textContent = active ? "◆" : "◇";
+  }
+
   makeAiPromptEditor(node) {
     const details = document.createElement("details");
     details.className = "block-ai-prompt";
@@ -420,7 +468,7 @@ export class TreeView {
     this.render();
   }
 
-  focusNode(nodeId) {
+  focusNode(nodeId, { reposition = true } = {}) {
     const expandedPath = new Set();
     let current = this.tree?.find?.(nodeId);
     while (current?.id && current.id !== "root") {
@@ -429,6 +477,30 @@ export class TreeView {
     }
     this.collapsedNodes = new Set(this.#canvasNodeIds().filter(id => !expandedPath.has(id)));
     this.render();
+    if (reposition) this.scrollNodeNearCanvasTop(nodeId);
+  }
+
+  scrollNodeNearCanvasTop(nodeId, offset = 100) {
+    const generation = this.renderGeneration;
+    const schedule = globalThis.requestAnimationFrame || (callback => globalThis.setTimeout(callback, 0));
+    schedule(() => {
+      // A newer render means that another block has already become active.
+      if (generation !== this.renderGeneration) return;
+      const scroller = this.root.closest?.(".canvas-scroll");
+      const target = Array.from(this.root.querySelectorAll(".block[data-node-id]"))
+        .find(element => String(element.dataset.nodeId) === String(nodeId));
+      if (!scroller || !target) return;
+
+      const scrollerRect = scroller.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const top = Math.max(0, scroller.scrollTop + targetRect.top - scrollerRect.top - offset);
+      const reduceMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
+      if (typeof scroller.scrollTo === "function") {
+        scroller.scrollTo({ top, left: scroller.scrollLeft, behavior: reduceMotion ? "auto" : "smooth" });
+      } else {
+        scroller.scrollTop = top;
+      }
+    });
   }
 
   setAutoCollapseInactive(enabled) {
@@ -436,7 +508,7 @@ export class TreeView {
     const changed = this.autoCollapseInactive !== next;
     this.autoCollapseInactive = next;
     const selectedId = this.controller?.selectedId ?? this.controller?.selection?.primary?.();
-    if (changed && next && selectedId) this.focusNode(selectedId);
+    if (changed && next && selectedId) this.focusNode(selectedId, { reposition: false });
   }
 
   collapseAll() {

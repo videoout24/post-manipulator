@@ -23,7 +23,8 @@ const coordinator = new EditorEventCoordinator({
   workspace: {
     render: () => calls.push("workspace:render"),
     renderStats: () => calls.push("workspace:stats"),
-    updateSelection: () => calls.push("workspace:selection")
+    updateSelection: () => calls.push("workspace:selection"),
+    updateCollectorState: () => calls.push("workspace:collector")
   },
   selection: { clear: () => calls.push("selection:clear") },
   textareaSizing: { clear: () => calls.push("textarea:clear") },
@@ -63,8 +64,11 @@ assert.deepEqual(calls, [["index:rebuild", "project_a"]]);
 calls.length = 0;
 events.emit("selection:changed", {});
 assert.deepEqual(calls, ["workspace:selection"]);
+calls.length = 0;
+events.emit("block-collector:changed", {});
+assert.deepEqual(calls, ["workspace:collector"]);
 coordinator.stop();
 events.emit("selection:changed", {});
-assert.deepEqual(calls, ["workspace:selection"]);
+assert.deepEqual(calls, ["workspace:collector"]);
 
 console.log("editor_event_coordinator_smoke: OK");

@@ -23,6 +23,7 @@ export class EditorEventCoordinator {
       this.events?.on?.("project:session-changed", payload => this.#projectSessionChanged(payload)),
       this.events?.on?.("draft:session-changed", () => this.#draftSessionChanged()),
       this.events?.on?.("project:changed", payload => this.#projectChanged(payload)),
+      this.events?.on?.("block-collector:changed", () => this.workspace?.updateCollectorState?.()),
       this.events?.on?.("selection:changed", () => this.workspace?.updateSelection?.())
     );
     return this;

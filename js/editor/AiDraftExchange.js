@@ -1,5 +1,6 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.9.5";
+import { t } from "../i18n/index.js?v=1.9.6";
+import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
 export const AI_DRAFT_SCHEMA_VERSION = 1;
@@ -30,6 +31,7 @@ export class AiDraftExchange {
     db = null,
     events = null,
     notifications = null,
+    conflictResolver = null,
     documentRoot = globalThis.document
   } = {}) {
     Object.assign(this, {
@@ -38,6 +40,7 @@ export class AiDraftExchange {
       drafts, documents, client, navigation, ownerBinding, events, notifications, documentRoot
     });
     this.db = db;
+    this.conflictResolver = conflictResolver;
     this.unsubscribers = [];
     this.currentScope = null;
     this.preparedPayload = null;
@@ -206,12 +209,12 @@ export class AiDraftExchange {
       const scope = payload.request?.scope || { kind: "message" };
       if (["block", "field"].includes(scope.kind) && target.kind === "draft" && target.draftId) {
         const result = await this.#importScopedDraft(payload, ast, { viaTelegram });
-        await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
+        if (result) await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
         return result;
       }
       if (["block", "field"].includes(scope.kind) && target.kind === "project-post" && target.projectId && target.postId) {
         const result = await this.#importScopedProjectPost(payload, ast, { viaTelegram });
-        await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
+        if (result) await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
         return result;
       }
       const title = t("editor.aiDraftExchange.importedDraftTitle", {
@@ -274,22 +277,9 @@ export class AiDraftExchange {
     const patchedAst = applyScopedAiResponse(current.messageAst, responseAst, scope);
     const sameVersion = Number(current.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
-      const fork = await this.drafts.create({
-        title: t("editor.aiDraftExchange.importedDraftTitle", { 0: current.title }),
-        messageAst: patchedAst,
-        source: {
-          kind: "ai-response",
-          requestId: String(payload.request?.id || ""),
-          target: structuredClone(target),
-          importedVia: viaTelegram ? "telegram-text" : "manual",
-          versionConflict: true
-        }
-      });
-      await this.documents?.openDraft?.(fork.id);
-      this.dialog?.close?.();
-      this.preparedPayload = null;
-      this.#notify({ message: t("editor.aiDraftExchange.versionConflictForked", { 0: fork.title }), type: "warning", duration: 9000 });
-      return fork;
+      const choice = await this.#resolveVersionConflict(current.title);
+      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, current.title, { viaTelegram });
+      if (choice !== "apply-current") return null;
     }
 
     const saved = await this.drafts.saveAst(current.id, patchedAst);
@@ -313,22 +303,9 @@ export class AiDraftExchange {
     const patchedAst = applyScopedAiResponse(post.messageAst, responseAst, scope);
     const sameVersion = Number(post.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
-      const fork = await this.drafts.create({
-        title: t("editor.aiDraftExchange.importedDraftTitle", { 0: post.title }),
-        messageAst: patchedAst,
-        source: {
-          kind: "ai-response",
-          requestId: String(payload.request?.id || ""),
-          target: structuredClone(target),
-          importedVia: viaTelegram ? "telegram-text" : "manual",
-          versionConflict: true
-        }
-      });
-      await this.documents?.openDraft?.(fork.id);
-      this.dialog?.close?.();
-      this.preparedPayload = null;
-      this.#notify({ message: t("editor.aiDraftExchange.versionConflictForked", { 0: fork.title }), type: "warning", duration: 9000 });
-      return fork;
+      const choice = await this.#resolveVersionConflict(post.title);
+      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, post.title, { viaTelegram });
+      if (choice !== "apply-current") return null;
     }
 
     await this.projectSession.store.savePostAst(target.projectId, target.postId, patchedAst);
@@ -337,6 +314,37 @@ export class AiDraftExchange {
     this.preparedPayload = null;
     this.#notify({ message: t("editor.aiDraftExchange.postPatched", { 0: post.title }), type: "success", duration: 7000 });
     return this.projectSession?.snapshot?.() || true;
+  }
+
+  async #resolveVersionConflict(title) {
+    const options = {
+      title: t("editor.aiDraftExchange.versionConflictTitle"),
+      message: t("editor.aiDraftExchange.versionConflictMessage", { 0: title }),
+      choices: [
+        { value: "apply-current", label: t("editor.aiDraftExchange.versionConflictApplyCurrent") },
+        { value: "new-draft", label: t("editor.aiDraftExchange.versionConflictCreateDraft"), className: "primary" }
+      ]
+    };
+    return this.conflictResolver ? this.conflictResolver(options) : chooseDarkDialog(options);
+  }
+
+  async #createConflictFork(payload, patchedAst, title, { viaTelegram = false } = {}) {
+    const fork = await this.drafts.create({
+      title: t("editor.aiDraftExchange.importedDraftTitle", { 0: title }),
+      messageAst: patchedAst,
+      source: {
+        kind: "ai-response",
+        requestId: String(payload.request?.id || ""),
+        target: structuredClone(payload.request?.target || {}),
+        importedVia: viaTelegram ? "telegram-text" : "manual",
+        versionConflict: true
+      }
+    });
+    await this.documents?.openDraft?.(fork.id);
+    this.dialog?.close?.();
+    this.preparedPayload = null;
+    this.#notify({ message: t("editor.aiDraftExchange.versionConflictForked", { 0: fork.title }), type: "warning", duration: 9000 });
+    return fork;
   }
 
   async #originalAst(target = {}) {
@@ -460,6 +468,7 @@ export function buildAiDraftRequest({
   if (!normalizedRequestId) throw new Error(t("editor.aiDraftExchange.requestIdRequired"));
   const ast = validateAiAst(sanitizeAiValue(messageAst));
   const normalizedScope = normalizeScope(scope);
+  const schemaRules = aiResponseSchemaRules(ast);
   return {
     format: AI_DRAFT_FORMAT,
     schemaVersion: AI_DRAFT_SCHEMA_VERSION,
@@ -475,6 +484,7 @@ export function buildAiDraftRequest({
       responseContract: [
         "Return the complete JSON object only.",
         "Preserve format, schemaVersion, request, block id/type/children, and every ai.prompt.",
+        ...schemaRules,
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"
@@ -536,7 +546,7 @@ export function validateAiAst(input) {
     const copy = {
       id,
       type,
-      props: structuredClone(node.props || {}),
+      props: normalizeAiBlockProps(type, node.props || {}),
       children: []
     };
     if (node.ai?.prompt != null) {
@@ -651,6 +661,32 @@ function taskInstruction(scope) {
     return `Use messageAst as context. Apply block ${scope.nodeId}'s ai.prompt only to that block while preserving its identity and child structure.`;
   }
   return "Use the full message AST as context. For each block containing ai.prompt, apply that instruction to the editable values in its props.";
+}
+
+function aiResponseSchemaRules(ast) {
+  let hasList = false;
+  walkAst(ast, node => {
+    if (node?.type === "list") hasList = true;
+  });
+  return hasList ? [
+    "For list blocks, props.items must be an array of item objects. Put visible text in item.blocks, for example {\"blocks\":[{\"type\":\"paragraph\",\"text\":\"Example\"}]}; never return string items or {\"text\":...} items."
+  ] : [];
+}
+
+function normalizeAiBlockProps(type, props) {
+  const copy = structuredClone(props || {});
+  if (type !== "list" || !Array.isArray(copy.items)) return copy;
+  copy.items = copy.items.map(item => {
+    if (typeof item === "string" || typeof item === "number") {
+      return { blocks: [{ type: "paragraph", text: String(item) }] };
+    }
+    if (!item || typeof item !== "object" || Array.isArray(item) || Array.isArray(item.blocks)) return item;
+    if (!Object.prototype.hasOwnProperty.call(item, "text")) return item;
+    const normalized = { ...item, blocks: [{ type: "paragraph", text: structuredClone(item.text) }] };
+    delete normalized.text;
+    return normalized;
+  });
+  return copy;
 }
 
 function findAstNode(root, nodeId) {

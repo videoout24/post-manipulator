@@ -794,6 +794,12 @@
 .canvas-editor-bar #newDoc { border-color: var(--theme-success-border, #3c5e49); color: var(--theme-success, #a8d7b7); background: var(--theme-surface, #14251a); }
 .canvas-editor-bar #openDrafts { border-color: var(--theme-border, #4a4f78); color: var(--theme-purple, #b9bce8); background: var(--theme-surface, #1b1c31); }
 .canvas-editor-bar #openDrafts.active { border-color: var(--theme-accent-border, #6d75bb); color: var(--theme-purple, #e1e3ff); background: var(--theme-purple-subtle, #282b4f); box-shadow: inset 0 0 0 1px var(--theme-accent-ring, #6d75bb55); }
+.canvas-editor-bar #insertBlockCollector { border-color: var(--theme-accent-border, #365f84); color: var(--theme-accent, #9ccaff); background: var(--theme-surface, #102238); }
+.canvas-editor-bar #clearBlockCollector { color: var(--theme-text-muted, #8b98a8); }
+.block-collector-count {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; margin-left: 4px; padding: 0 4px;
+  border-radius: 999px; background: var(--theme-accent-subtle, #27486b); color: var(--theme-text, #d8ecff); font-size: 8px; font-weight: 700;
+}
 .canvas-command-spacer { flex: 1 1 auto; min-width: 10px; }
 .canvas-history-actions { display: flex; align-items: center; gap: 5px; }
 .canvas-history-actions button { min-width: 66px; }

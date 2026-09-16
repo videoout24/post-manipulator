@@ -1,8 +1,12 @@
-import { getLocale, t } from "../i18n/index.js?v=1.8.0";
+import { getLocale, t } from "../i18n/index.js?v=1.9.6";
 export class EditorCommandController {
   constructor({
     newButton = null,
     openDraftsButton = null,
+    insertCollectorButton = null,
+    clearCollectorButton = null,
+    collectorCount = null,
+    blockCollector = null,
     projectSession,
     draftSession,
     draftStore,
@@ -21,6 +25,10 @@ export class EditorCommandController {
   } = {}) {
     this.newButton = newButton;
     this.openDraftsButton = openDraftsButton;
+    this.insertCollectorButton = insertCollectorButton;
+    this.clearCollectorButton = clearCollectorButton;
+    this.collectorCount = collectorCount;
+    this.blockCollector = blockCollector;
     this.projectSession = projectSession;
     this.draftSession = draftSession;
     this.draftStore = draftStore;
@@ -46,6 +54,8 @@ export class EditorCommandController {
   start() {
     this.#listen(this.newButton, "click", () => this.runPrimaryDraftAction());
     this.#listen(this.openDraftsButton, "click", () => this.rightPanel?.toggleDrafts?.());
+    this.#listen(this.insertCollectorButton, "click", () => this.insertFromCollector());
+    this.#listen(this.clearCollectorButton, "click", () => this.clearCollector());
     this.unsubscribers.push(
       this.events?.on?.("project:session-changed", () => this.updateDocumentControls()),
       this.events?.on?.("draft:session-changed", () => {
@@ -53,11 +63,13 @@ export class EditorCommandController {
         this.workspace?.renderLeftPanel?.();
       }),
       this.events?.on?.("tree:changed", () => this.updateDocumentControls()),
+      this.events?.on?.("block-collector:changed", () => this.updateCollectorControls()),
       this.events?.on?.("editor:draft-create-requested", request => this.requestDraftForBlock(request)),
       this.events?.on?.("editor:right-panel-mode", ({ mode }) => this.updateDraftsButton(mode))
     );
     this.updateDocumentControls();
     this.updateDraftsButton();
+    this.updateCollectorControls();
     return this;
   }
 
@@ -76,6 +88,47 @@ export class EditorCommandController {
         : t("editor.editorCommandController.createANewDraftWithAutomaticSaving");
       this.newButton.dataset.action = saveProjectCopy ? "save-as-draft" : "new-draft";
     }
+    this.updateCollectorControls();
+  }
+
+  updateCollectorControls() {
+    const count = Number(this.blockCollector?.count?.() || 0);
+    const hasDocument = this.#hasDocumentContext();
+    if (this.collectorCount) this.collectorCount.textContent = String(count);
+    if (this.insertCollectorButton) {
+      this.insertCollectorButton.disabled = !hasDocument || count === 0;
+      this.insertCollectorButton.setAttribute("aria-label", t("editor.editorCommandController.insertCollectedBlocks", { 0: count }));
+    }
+    if (this.clearCollectorButton) this.clearCollectorButton.disabled = count === 0;
+  }
+
+  async insertFromCollector() {
+    return this.#run(async () => {
+      if (!this.#hasDocumentContext()) throw new Error(t("editor.editorCommandController.openOrCreateADraft"));
+      await this.documents?.saveCurrentContext?.();
+      const blocks = await this.blockCollector?.resolveBlocks?.() || [];
+      if (!blocks.length) throw new Error(t("editor.editorCommandController.blockCollectorEmpty"));
+      const result = this.controller?.insertCopiedSubtrees?.(blocks, { parentId: "root", index: Infinity }) || { inserted: [], rejected: [] };
+      if (!result.inserted.length) {
+        throw new Error(result.rejected[0]?.error || t("editor.editorCommandController.collectedBlocksNotInserted"));
+      }
+      const rejected = result.rejected.length;
+      this.#toast({
+        message: rejected
+          ? t("editor.editorCommandController.collectedBlocksInsertedPartially", { 0: result.inserted.length, 1: rejected })
+          : t("editor.editorCommandController.collectedBlocksInserted", { 0: result.inserted.length }),
+        type: rejected ? "warning" : "success"
+      });
+      return result;
+    }, t("editor.editorCommandController.blockCollector"));
+  }
+
+  async clearCollector() {
+    return this.#run(async () => {
+      await this.blockCollector?.clear?.();
+      this.#toast({ message: t("editor.editorCommandController.blockCollectorCleared"), type: "success" });
+      return true;
+    }, t("editor.editorCommandController.blockCollector"));
   }
 
   runPrimaryDraftAction() {

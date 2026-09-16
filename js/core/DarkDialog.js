@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.9.6";
 /** Browser-native prompt, alert and confirm windows ignore the app theme.
  * These helpers keep short interactions inside the same dark dialog system. */
 export function requestTextDialog({ title, label = t("core.darkDialog.value"), value = "", placeholder = "", submitLabel = t("core.darkDialog.save") } = {}) {
@@ -67,6 +67,30 @@ export function showDarkMessage({ title = t("core.darkDialog.message"), message,
     dialog.append(body);
     dialog.addEventListener("close", () => resolve(), { once: true });
     show(dialog, close);
+  });
+}
+
+export function chooseDarkDialog({ title = t("core.darkDialog.confirmAction"), message, choices = [] } = {}) {
+  return new Promise(resolve => {
+    const dialog = createDialog(title, resolve);
+    const body = document.createElement("div");
+    body.className = "app-modal-dialog-body";
+    const copy = document.createElement("p");
+    copy.className = "app-modal-dialog-copy";
+    copy.textContent = message || t("core.darkDialog.continue");
+    const actions = document.createElement("div");
+    actions.className = "app-modal-dialog-actions";
+    const cancel = button(t("core.cardDeleteConfirmation.cancel"), "", () => dialog.close(""));
+    actions.append(cancel);
+    for (const choice of choices) {
+      const value = String(choice?.value || "");
+      if (!value) continue;
+      actions.append(button(String(choice?.label || value), choice?.className || "", () => dialog.close(value)));
+    }
+    body.append(copy, actions);
+    dialog.append(body);
+    dialog.addEventListener("close", () => resolve(dialog.returnValue || null), { once: true });
+    show(dialog, cancel);
   });
 }
 

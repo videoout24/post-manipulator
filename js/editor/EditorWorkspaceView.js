@@ -108,6 +108,10 @@ export class EditorWorkspaceView {
     this.treeView?.updateValidation?.();
   }
 
+  updateCollectorState() {
+    this.treeView?.updateCollectorState?.();
+  }
+
   toggleAllBlocks() {
     const state = this.treeView?.collapseState?.() || { total: 0, allCollapsed: false };
     if (!state.total) return;

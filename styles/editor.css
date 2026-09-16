@@ -120,6 +120,13 @@
 }
 .block-remove-button { color: var(--theme-danger, #d98894); }
 .block-remove-button:hover { color: var(--theme-danger, #ff9aa8); border-color: var(--theme-danger-border, #7a3c48); }
+.block-collector-toggle { color: var(--theme-text-muted, #7f91a7); }
+.block-collector-toggle.active {
+  color: var(--theme-accent, #79b7ff);
+  border-color: var(--theme-accent-border, #4c78aa);
+  background: var(--theme-accent-subtle, #17304d);
+  box-shadow: inset 0 0 0 1px var(--theme-accent-ring, #5b9de833);
+}
 
 /* v1.3.0 — ergonomic inline editors, autosize textareas and unified scrollbars */
 :root { --scroll-thumb: var(--theme-scroll-thumb, #4f8ed8); }

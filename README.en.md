@@ -89,9 +89,10 @@ bot chat and then passed to any AI model. Returned JSON can be pasted into the
 dialog or selected as a local file. A short response sent by the owner as text
 in the private bot chat is imported automatically. A large JSON document must
 be downloaded once and selected manually because the Telegram file endpoint
-does not allow a static Mini App to read it through CORS. A future AI API
-integration can use the same package and importer without changing the draft
-format.
+does not allow a static Mini App to read it through CORS. Documents named like
+`…-ai-response.json`, `answer.json`, and `response.json` are recognized as AI
+responses and are not routed to Gallery. A future AI API integration can use
+the same package and importer without changing the draft format.
 
 When a package is sent through the bot, the application stores the association
 between its `request.id` and `message_id`. After a successful import it attempts
@@ -100,9 +101,29 @@ is optional: if the request was already deleted manually, a valid response is
 still imported and the missing message is not treated as an error.
 
 An isolated response is applied only to the permitted block or field. If the
-source version changed after export, the application does not overwrite the new
-content and instead creates a separate draft containing the AI result. A
-response for the entire message is also imported as a separate draft.
+source version changed after export, the application shows a conflict dialog
+instead of changing data automatically. The owner can apply the response to the
+current version, create a separate draft, or cancel without changing anything.
+A response for the entire message is still imported as a separate draft.
+
+## Internal block collector
+
+Every author-controlled block has a diamond toggle in the right side of its
+Canvas header. Enabling it stores a persistent internal reference to the source
+draft or Project post and the block ID. Blocks can be collected while browsing
+different posts and drafts.
+
+Next to **Drafts**, **Insert buffer** appends independent copies of all collected
+blocks to the current Canvas. Copies receive new internal IDs and keep their
+nested content; inserting does not clear the collector. **Clear buffer** removes
+all references and resets the active block toggles. Project-managed Map and Back
+to Map blocks are excluded because their identities and relations are maintained
+by the Project structure.
+
+The collector validates its references whenever the current tree, a draft, a
+post, or a project changes. Deleting an original block, its post, its draft, or
+its project automatically removes stale references. A full validation also runs
+immediately before insertion.
 
 For media, AI can return a direct HTTPS URL that Telegram loads when sending the
 message. The URL must point directly to a file with the correct MIME type and
@@ -221,7 +242,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.9.5
+https://videoout24.github.io/post-manipulator/?build=1.9.6
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -298,7 +319,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.9.5`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.9.6`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

@@ -322,7 +322,9 @@ export function isOwnerAiDraftDocument(message) {
   if (!document) return false;
   const name = String(document.file_name || "");
   const caption = String(message.caption || "");
-  return /-ai(?:-[A-Za-z0-9_-]{8,64}|-response)?\.json$/i.test(name) || caption.includes("rich-current-ai-draft");
+  return /-ai(?:-[A-Za-z0-9_-]{8,64}|-response)?\.json$/i.test(name)
+    || /^(?:answer|response)(?:[-_ (].*)?\.json$/i.test(name)
+    || caption.includes("rich-current-ai-draft");
 }
 
 function choosePhotoThumbnail(sizes) {

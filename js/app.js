@@ -1,4 +1,4 @@
-import { getLocale, t } from "./i18n/index.js?v=1.9.5";
+import { getLocale, t } from "./i18n/index.js?v=1.9.6";
 import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.8.6";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.22";
@@ -12,16 +12,17 @@ import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { OperationFeedback } from "./app/OperationFeedback.js?v=1.8.6";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.8.6";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.9.5";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.9.6";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.7.15";
-import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.9.5";
-import { createEditorDomain } from "./app/createEditorDomain.js?v=1.9.5";
-import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.9.5";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.9.5";
+import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.9.6";
+import { createEditorDomain } from "./app/createEditorDomain.js?v=1.9.6";
+import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.9.6";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.9.6";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
 import { PublicationView } from "./publications/PublicationView.js?v=1.9.5";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
 import { AutomaticPublicationBackup } from "./storage/AutomaticPublicationBackup.js?v=1.9.5";
+import { BlockCollector } from "./editor/BlockCollector.js?v=1.9.6";
 import { LinkingController } from "./links/LinkingController.js?v=1.8.6";
 import { LinkRelationNavigator } from "./links/LinkRelationNavigator.js?v=1.8.6";
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
@@ -90,6 +91,18 @@ const editorDocuments = new EditorDocumentCoordinator({
   tree,
   storage
 });
+const blockCollector = new BlockCollector({
+  db: appDb,
+  events,
+  tree,
+  drafts: draftStore,
+  projects: projectStore,
+  draftSession,
+  projectSession,
+  registry
+});
+await blockCollector.initialize();
+blockCollector.start();
 const telegram = createTelegramDomain({
   db: appDb,
   events,
@@ -232,6 +245,7 @@ const editorWorkspaceComposition = createEditorWorkspace({
   gallery: galleryCore,
   thumbnails: thumbnailCache,
   notifications,
+  blockCollector,
   editorCanvasPreferences,
   emojiPreferences
 });
@@ -293,6 +307,7 @@ const editorShell = createEditorShell({
   gallery,
   workspace: editorWorkspaceComposition,
   documents: editorDocuments,
+  blockCollector,
   projectPreviewSync,
   onPublishDraft: draft => publicationView.requestDraftPublication(draft),
   onScheduleDraft: draft => publicationView.requestDraftSchedule(draft),
@@ -393,7 +408,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.9.5",
+  build: "1.9.6",
   notifications,
   layoutPreferences,
   telegramNavigation,
@@ -414,7 +429,7 @@ const lifecycle = new AppLifecycle({
   telegramClient,
   telegramCore,
   editorPreviewStatus,
-  stoppables: [operationFeedback, notifications, telegramSettings, publicationView, linkingController, linkRelationNavigator, automaticPublicationBackups, publicationService, projectPublicationService, ...editorShellStoppables, projectGraphReconciler]
+  stoppables: [operationFeedback, notifications, telegramSettings, publicationView, linkingController, linkRelationNavigator, blockCollector, automaticPublicationBackups, publicationService, projectPublicationService, ...editorShellStoppables, projectGraphReconciler]
 });
 let started = false;
 const handle = Object.freeze({

@@ -158,6 +158,37 @@ export class EditorController {
     this.events.emit("tree:changed");
   }
 
+  insertCopiedSubtrees(nodes = [], { parentId = "root", index = Infinity } = {}) {
+    const sources = Array.isArray(nodes) ? nodes.filter(node => node && typeof node === "object") : [];
+    const inserted = [];
+    const rejected = [];
+    let nextIndex = Number.isFinite(index) ? Math.max(0, Math.trunc(index)) : Infinity;
+
+    for (const source of sources) {
+      const guarded = this.mutationError("add", { type: source.type, parentId, node: source, copied: true });
+      const error = guarded || this.subtreeAcceptError(parentId, source, { copy: true });
+      if (error) {
+        rejected.push({ nodeId: String(source.id || ""), type: String(source.type || ""), error });
+        continue;
+      }
+      const copy = this.registry.cloneSubtree(source);
+      if (!copy) {
+        rejected.push({ nodeId: String(source.id || ""), type: String(source.type || ""), error: "Block could not be copied" });
+        continue;
+      }
+      this.#normalizeCopiedAnchorNames(copy);
+      this.tree.insert(copy, parentId, nextIndex);
+      if (Number.isFinite(nextIndex)) nextIndex += 1;
+      inserted.push(copy);
+    }
+
+    if (inserted.length) {
+      this.select(inserted.at(-1).id);
+      this.events.emit("tree:changed", { source: "collector", insertedIds: inserted.map(node => node.id) });
+    }
+    return { inserted, rejected };
+  }
+
   updateProperty(key, value) {
     this.updateNodeProperty(this.selectedId, key, value, { inspectorSource: true });
   }
@@ -415,6 +446,30 @@ export class EditorController {
     let index = 1;
     while (used.has(`anchor-${index}`)) index += 1;
     return `anchor-${index}`;
+  }
+
+  #normalizeCopiedAnchorNames(root) {
+    const used = new Set();
+    this.tree.walk(node => {
+      if (node.type === "anchor") used.add(String(node.props?.name || ""));
+    });
+    const nextName = () => {
+      let index = 1;
+      while (used.has(`anchor-${index}`)) index += 1;
+      return `anchor-${index}`;
+    };
+    const visit = node => {
+      if (node?.type === "anchor") {
+        const name = String(node.props?.name || "");
+        if (!name || used.has(name)) {
+          node.props ||= {};
+          node.props.name = nextName();
+        }
+        used.add(String(node.props?.name || ""));
+      }
+      for (const child of node?.children || []) visit(child);
+    };
+    visit(root);
   }
 
   reportError(message) {

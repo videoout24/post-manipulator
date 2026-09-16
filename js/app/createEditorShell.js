@@ -1,14 +1,14 @@
 import { AppNavigation } from "./AppNavigation.js?v=1.9.5";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
-import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.9.5";
+import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.9.6";
 import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.9.5";
 import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.9.5";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.9.5";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.8.6";
-import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.5.9";
+import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.9.6";
 import { EditorToolController } from "../editor/EditorToolController.js?v=1.6.5";
-import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.5";
-import { showDarkMessage } from "../core/DarkDialog.js?v=1.6.5";
+import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.6";
+import { showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 import { t } from "../i18n/index.js?v=1.8.6";
 
 export function createEditorShell({
@@ -22,6 +22,7 @@ export function createEditorShell({
   gallery,
   workspace: workspaceComposition,
   documents,
+  blockCollector = null,
   projectPreviewSync,
   onPublishDraft = null,
   onScheduleDraft = null,
@@ -172,6 +173,10 @@ export function createEditorShell({
   const commands = new EditorCommandController({
     newButton: query("#newDoc"),
     openDraftsButton: query("#openDrafts"),
+    insertCollectorButton: query("#insertBlockCollector"),
+    clearCollectorButton: query("#clearBlockCollector"),
+    collectorCount: query("#blockCollectorCount"),
+    blockCollector,
     projectSession,
     draftSession,
     draftStore,
