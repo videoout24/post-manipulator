@@ -16,7 +16,7 @@ const databaseStores = fs.readFileSync(new URL('../js/storage/IndexedDbAppDataba
 
 assert.doesNotMatch(html, /id="editorActions"/);
 assert.match(html, /class="canvas-editor-bar"/);
-for (const id of ['newDoc','exportJson','saveMeta','previewTelegram','openDrafts','editorUndo','editorRedo']) {
+for (const id of ['newDoc','exportJson','saveMeta','previewTelegram','openDrafts','editorCanvasScrollSpeed','editorUndo','editorRedo']) {
   assert.match(html, new RegExp(`id="${id}"`));
 }
 assert.doesNotMatch(html, /id="saveDoc"/);
@@ -51,6 +51,13 @@ await new Promise(resolve => setTimeout(resolve, 2));
 const two = await store.create({ title: 'B', messageAst: { id:'root', type:'document', props:{}, children:[] }, source:{ kind:'project', postId:'post_2' } });
 assert.equal((await store.list()).length, 2);
 assert.equal((await store.list())[0].id, two.id);
+await store.setAiSettings(two.id, { includeFullContext: true, documentPrompt: 'Coordinate the whole draft.' });
+assert.equal((await store.get(two.id)).ai.documentPrompt, 'Coordinate the whole draft.');
+await store.setAiSettings(two.id, { includeFullContext: false });
+assert.equal((await store.get(two.id)).ai.documentPrompt, 'Coordinate the whole draft.',
+  'updating the legacy context flag must preserve the document prompt');
+assert.match(session, /post\.ai\.documentPrompt = String\(patch\.documentPrompt \|\| ""\)\.trim\(\)/,
+  'Project posts must persist their whole-post prompt');
 await store.delete(one.id);
 assert.equal((await store.list()).length, 1);
 const storage = { saved:null, save(value){ this.saved = structuredClone(value); }, load(){ return this.saved; } };

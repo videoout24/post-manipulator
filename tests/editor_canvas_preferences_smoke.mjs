@@ -15,7 +15,12 @@ const preferences = new EditorCanvasPreferences({
 
 await preferences.initialize();
 assert.equal(preferences.autoCollapseInactive, false);
+assert.equal(preferences.scrollSpeed, 2, "scrolling defaults to half the former speed");
 await preferences.setAutoCollapseInactive(true);
-assert.deepEqual(writes, [["settings", "editor.canvas.preferences", { autoCollapseInactive: true }]]);
+await preferences.setScrollSpeed(0);
+assert.deepEqual(writes, [
+  ["settings", "editor.canvas.preferences", { autoCollapseInactive: true, scrollSpeed: 2 }],
+  ["settings", "editor.canvas.preferences", { autoCollapseInactive: true, scrollSpeed: 0 }]
+]);
 
 console.log("editor_canvas_preferences_smoke: OK");

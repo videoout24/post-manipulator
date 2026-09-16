@@ -19,10 +19,16 @@ const autoCollapseInactiveCheckbox = {
   checked: true,
   addEventListener(_name, handler) { this.change = handler; }
 };
+const canvasScrollSpeedSelect = {
+  value: "3",
+  addEventListener(_name, handler) { this.change = handler; }
+};
 const preferenceUpdates = [];
 const editorCanvasPreferences = {
   autoCollapseInactive: false,
-  async setAutoCollapseInactive(value) { preferenceUpdates.push(value); }
+  scrollSpeed: 2,
+  async setAutoCollapseInactive(value) { preferenceUpdates.push(["collapse", value]); },
+  async setScrollSpeed(value) { preferenceUpdates.push(["scroll", value]); }
 };
 let allCollapsed = false;
 const statsRoot = {
@@ -40,6 +46,7 @@ const workspace = new EditorWorkspaceView({
     render: () => calls.push("tree:render"),
     updateSelection: () => calls.push("tree:selection"),
     setAutoCollapseInactive: value => calls.push(["tree:auto-collapse", value]),
+    setScrollSpeed: value => calls.push(["tree:scroll-speed", Number(value)]),
     collapseState: () => ({ total: 2, collapsed: allCollapsed ? 2 : 0, allCollapsed }),
     collapseAll: () => { allCollapsed = true; calls.push("tree:collapse-all"); },
     expandAll: () => { allCollapsed = false; calls.push("tree:expand-all"); }
@@ -52,6 +59,7 @@ const workspace = new EditorWorkspaceView({
   openAssetPickerButton,
   toggleAllBlocksButton,
   autoCollapseInactiveCheckbox,
+  canvasScrollSpeedSelect,
   editorCanvasPreferences,
   statsRoot,
   documentRoot
@@ -66,11 +74,18 @@ assert.equal(statsRoot.children[1].className, "canvas-stat invalid");
 assert.equal(toggleAllBlocksButton.textContent, t("editor.editorWorkspaceView.collapseAll"));
 assert.equal(autoCollapseInactiveCheckbox.checked, false, "Global editor preference must restore the checkbox state");
 assert(calls.some(call => Array.isArray(call) && call[0] === "tree:auto-collapse" && call[1] === false));
+assert.equal(canvasScrollSpeedSelect.value, "2");
+assert(calls.some(call => Array.isArray(call) && call[0] === "tree:scroll-speed" && call[1] === 2));
 autoCollapseInactiveCheckbox.checked = true;
 autoCollapseInactiveCheckbox.change();
 await Promise.resolve();
-assert.deepEqual(preferenceUpdates, [true]);
+assert.deepEqual(preferenceUpdates, [["collapse", true]]);
 assert(calls.some(call => Array.isArray(call) && call[0] === "tree:auto-collapse" && call[1] === true));
+canvasScrollSpeedSelect.value = "0";
+canvasScrollSpeedSelect.change();
+await Promise.resolve();
+assert.deepEqual(preferenceUpdates.at(-1), ["scroll", 0]);
+assert.deepEqual(calls.at(-1), ["tree:scroll-speed", 0]);
 toggleAllBlocksButton.click();
 assert(calls.includes("tree:collapse-all"));
 assert.equal(toggleAllBlocksButton.textContent, t("editor.editorWorkspaceView.expandAll"));

@@ -1,10 +1,10 @@
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.9.8";
 import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.8.6";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
-import { astHasAiPrompt } from "./DraftListView.js?v=1.9.5";
+import { astHasAiPrompt } from "./DraftListView.js?v=1.9.8";
 
 export function createProjectPostListView({
   project,
@@ -20,7 +20,7 @@ export function createProjectPostListView({
   onSchedule = null,
   onCancelSchedule = null,
   onApplyChanges = null,
-  onAiContextChange = null,
+  onAiPromptChange = null,
   onOpenAi = null,
   onDelete = null
 } = {}) {
@@ -76,23 +76,26 @@ export function createProjectPostListView({
       actions: cardActions
     });
     if (post.id === activePostId) {
-      const aiSettings = el("div", "project-post-ai-settings");
-      const aiContext = el("label", "draft-ai-context-setting project-post-ai-context-setting");
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.checked = post.ai?.includeFullContext === true;
-      input.onchange = event => {
-        event.stopPropagation();
-        onAiContextChange?.(post, input.checked);
-      };
-      aiContext.append(input, el("span", "", t("editor.projectPostListView.includeFullAiContext")));
-      aiSettings.append(aiContext);
-      if (post.ai?.includeFullContext === true && astHasAiPrompt(post.messageAst)) {
-        const openAi = button(t("editor.projectPostListView.openPostAiJson"), t("editor.projectPostListView.openPostAiJsonHint"), () => onOpenAi?.(post));
+      if (astHasAiPrompt(post.messageAst)) {
+        let documentPrompt = String(post.ai?.documentPrompt || "");
+        const aiSettings = el("div", "project-post-ai-settings");
+        const promptLabel = el("label", "draft-document-ai-label", t("editor.projectPostListView.documentAiPrompt"));
+        const prompt = document.createElement("textarea");
+        prompt.className = "draft-document-ai-prompt";
+        prompt.maxLength = 8000;
+        prompt.rows = 3;
+        prompt.value = documentPrompt;
+        prompt.placeholder = t("editor.projectPostListView.documentAiPromptPlaceholder");
+        prompt.setAttribute("aria-label", t("editor.projectPostListView.documentAiPrompt"));
+        prompt.oninput = () => { documentPrompt = prompt.value; };
+        const openAi = button(t("editor.projectPostListView.openPostAiJson"), t("editor.projectPostListView.openPostAiJsonHint"), () => onOpenAi?.(post, documentPrompt));
         openAi.classList.add("project-post-ai-json");
-        aiSettings.append(openAi);
+        prompt.onblur = event => {
+          if (event.relatedTarget !== openAi) onAiPromptChange?.(post, documentPrompt);
+        };
+        aiSettings.append(promptLabel, prompt, openAi);
+        card.append(aiSettings);
       }
-      card.append(aiSettings);
     }
     list.append(card);
   });

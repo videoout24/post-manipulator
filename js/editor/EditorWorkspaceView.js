@@ -15,6 +15,7 @@ export class EditorWorkspaceView {
     openAssetPickerButton = null,
     toggleAllBlocksButton = null,
     autoCollapseInactiveCheckbox = null,
+    canvasScrollSpeedSelect = null,
     editorCanvasPreferences = null,
     statsRoot = null,
     onError = null,
@@ -34,6 +35,7 @@ export class EditorWorkspaceView {
     this.openAssetPickerButton = openAssetPickerButton;
     this.toggleAllBlocksButton = toggleAllBlocksButton;
     this.autoCollapseInactiveCheckbox = autoCollapseInactiveCheckbox;
+    this.canvasScrollSpeedSelect = canvasScrollSpeedSelect;
     this.editorCanvasPreferences = editorCanvasPreferences;
     this.statsRoot = statsRoot;
     this.onError = onError;
@@ -44,6 +46,11 @@ export class EditorWorkspaceView {
       this.autoCollapseInactiveCheckbox.checked = this.editorCanvasPreferences?.autoCollapseInactive ?? this.autoCollapseInactiveCheckbox.checked;
       this.treeView?.setAutoCollapseInactive?.(this.autoCollapseInactiveCheckbox.checked);
       this.autoCollapseInactiveCheckbox.addEventListener?.("change", () => this.setAutoCollapseInactive(this.autoCollapseInactiveCheckbox.checked));
+    }
+    if (this.canvasScrollSpeedSelect) {
+      this.canvasScrollSpeedSelect.value = String(this.editorCanvasPreferences?.scrollSpeed ?? this.canvasScrollSpeedSelect.value ?? 2);
+      this.treeView?.setScrollSpeed?.(this.canvasScrollSpeedSelect.value);
+      this.canvasScrollSpeedSelect.addEventListener?.("change", () => this.setScrollSpeed(this.canvasScrollSpeedSelect.value));
     }
   }
 
@@ -124,6 +131,13 @@ export class EditorWorkspaceView {
     const next = Boolean(enabled);
     this.treeView?.setAutoCollapseInactive?.(next);
     this.editorCanvasPreferences?.setAutoCollapseInactive?.(next)
+      ?.catch?.(error => this.onError?.(error));
+  }
+
+  setScrollSpeed(value) {
+    const next = Math.max(0, Math.min(3, Number(value) || 0));
+    this.treeView?.setScrollSpeed?.(next);
+    this.editorCanvasPreferences?.setScrollSpeed?.(next)
       ?.catch?.(error => this.onError?.(error));
   }
 

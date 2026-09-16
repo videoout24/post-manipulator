@@ -1,9 +1,9 @@
 import { BlockPalette } from "../editor/BlockPalette.js?v=1.5.9";
 import { BlockInspector } from "../editor/BlockInspector.js?v=1.9.5";
-import { TreeView } from "../editor/TreeView.js?v=1.9.7";
+import { TreeView } from "../editor/TreeView.js?v=1.9.8";
 import { MediaAssetBinder } from "../editor/MediaAssetBinder.js?v=1.5.9";
 import { EditorAssetPicker } from "../editor/EditorAssetPicker.js?v=1.5.9";
-import { EditorWorkspaceView } from "../editor/EditorWorkspaceView.js?v=1.9.6";
+import { EditorWorkspaceView } from "../editor/EditorWorkspaceView.js?v=1.9.8";
 
 export function createEditorWorkspace({
   documentRoot = document,
@@ -47,8 +47,12 @@ export function createEditorWorkspace({
   });
   const mediaBinder = new MediaAssetBinder({ tree, registry, controller, gallery, events });
   const autoCollapseInactiveCheckbox = documentRoot.querySelector("#editorAutoCollapseInactive");
+  const canvasScrollSpeedSelect = documentRoot.querySelector("#editorCanvasScrollSpeed");
   if (autoCollapseInactiveCheckbox && editorCanvasPreferences) {
     autoCollapseInactiveCheckbox.checked = editorCanvasPreferences.autoCollapseInactive;
+  }
+  if (canvasScrollSpeedSelect && editorCanvasPreferences) {
+    canvasScrollSpeedSelect.value = String(editorCanvasPreferences.scrollSpeed);
   }
   const treeView = new TreeView({
     root: documentRoot.querySelector("#canvas"),
@@ -62,7 +66,8 @@ export function createEditorWorkspace({
     thumbnails,
     inlineInspector: inlineProperties,
     blockCollector,
-    autoCollapseInactive: autoCollapseInactiveCheckbox?.checked === true
+    autoCollapseInactive: autoCollapseInactiveCheckbox?.checked === true,
+    scrollSpeed: Number(canvasScrollSpeedSelect?.value ?? editorCanvasPreferences?.scrollSpeed ?? 2)
   });
 
   const blockPaletteMode = documentRoot.querySelector("#blockPaletteMode");
@@ -97,6 +102,7 @@ export function createEditorWorkspace({
     openAssetPickerButton,
     toggleAllBlocksButton,
     autoCollapseInactiveCheckbox,
+    canvasScrollSpeedSelect,
     editorCanvasPreferences,
     statsRoot: documentRoot.querySelector("#canvasStats"),
     onError: error => notifications?.show?.({

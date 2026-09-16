@@ -1,5 +1,5 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.9.7";
+import { t } from "../i18n/index.js?v=1.9.8";
 import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
@@ -49,20 +49,41 @@ export class AiDraftExchange {
     this.unsubscribers = [];
     this.currentScope = null;
     this.preparedPayload = null;
+    this.awaitingClipboardPaste = false;
   }
 
   start() {
     this.#listen(this.openButton, "click", () => this.open());
-    this.#listen(this.closeButton, "click", () => this.dialog?.close?.());
+    this.#listen(this.closeButton, "click", () => {
+      this.awaitingClipboardPaste = false;
+      this.dialog?.close?.();
+    });
     this.#listen(this.copyButton, "click", () => this.copy());
     this.#listen(this.downloadButton, "click", () => this.download());
     this.#listen(this.sendButton, "click", () => this.sendToBot());
     this.#listen(this.openBotButton, "click", () => this.openBot());
     this.#listen(this.pasteButton, "click", () => this.pasteAndImport());
+    this.#listen(this.input, "paste", event => this.#handleClipboardPaste(event));
     this.#listen(this.importButton, "click", () => this.importText(this.input?.value));
     this.#listen(this.fileInput, "change", event => this.importFile(event.target?.files?.[0]));
     this.unsubscribers.push(
       this.events?.on?.("telegram:ai-draft-response", event => this.importText(event?.text, { viaTelegram: true, telegramSource: event?.source })),
+      this.events?.on?.("telegram:ai-draft-text-part", event => {
+        if (event?.complete) return;
+        this.#notify({
+          message: t("editor.aiDraftExchange.telegramTextPartReceived", {
+            0: Number(event?.received || 0),
+            1: Number(event?.total || 0)
+          }),
+          type: "info",
+          duration: 5000
+        });
+      }),
+      this.events?.on?.("telegram:ai-draft-text-part-error", () => this.#notify({
+        message: t("editor.aiDraftExchange.fileTooLarge"),
+        type: "error",
+        duration: 9000
+      })),
       this.events?.on?.("ai:block-export-requested", event => this.open({ nodeId: event?.nodeId })),
       this.events?.on?.("ai:document-open-requested", () => {
         this.currentScope = null;
@@ -80,6 +101,7 @@ export class AiDraftExchange {
 
   async open(scope = null) {
     try {
+      this.awaitingClipboardPaste = false;
       this.currentScope = scope?.nodeId ? { nodeId: String(scope.nodeId) } : null;
       const payload = await this.buildRequest();
       this.preparedPayload = structuredClone(payload);
@@ -107,10 +129,14 @@ export class AiDraftExchange {
       };
       messageAst = { id: "root", type: "document", props: {}, children: [structuredClone(node)] };
     }
+    const documentPrompt = scope.kind === "message" && target.includeFullContext
+      ? String(target.documentPrompt || "").trim()
+      : "";
     const payload = buildAiDraftRequest({
       messageAst,
       target,
       scope,
+      documentPrompt,
       contextIncluded: messageAst === fullAst ? "message" : "block"
     });
     await this.#rememberRequestDefinition(payload);
@@ -201,15 +227,36 @@ export class AiDraftExchange {
   async pasteAndImport() {
     try {
       if (typeof this.clipboard?.readText !== "function") {
-        throw new Error(t("editor.aiDraftExchange.clipboardUnavailable"));
+        return this.#armClipboardPasteFallback();
       }
       const text = await this.clipboard.readText();
       if (this.input) this.input.value = String(text || "");
       return this.importText(text, { viaClipboard: true, showInvalidDialog: true });
     } catch (error) {
-      this.#error(error);
-      return null;
+      return this.#armClipboardPasteFallback(error);
     }
+  }
+
+  #armClipboardPasteFallback() {
+    this.awaitingClipboardPaste = true;
+    this.input?.focus?.();
+    this.input?.select?.();
+    this.#notify({
+      message: t("editor.aiDraftExchange.clipboardPasteReady"),
+      type: "warning",
+      duration: 9000
+    });
+    return null;
+  }
+
+  #handleClipboardPaste(event) {
+    if (!this.awaitingClipboardPaste) return;
+    const text = String(event?.clipboardData?.getData?.("text/plain") || "");
+    if (!text) return;
+    event.preventDefault?.();
+    this.awaitingClipboardPaste = false;
+    if (this.input) this.input.value = text;
+    void this.importText(text, { viaClipboard: true, showInvalidDialog: true });
   }
 
   async importText(text, { viaTelegram = false, viaClipboard = false, showInvalidDialog = false, telegramSource = null } = {}) {
@@ -272,7 +319,8 @@ export class AiDraftExchange {
         draftId: String(draft.id || this.draftSession.activeDraftId || ""),
         title: String(draft.title || ""),
         version: Number(draft.updatedAt || 0),
-        includeFullContext: draft.ai?.includeFullContext === true
+        includeFullContext: draft.ai?.includeFullContext === true,
+        documentPrompt: String(draft.ai?.documentPrompt || "")
       };
     }
     if (this.projectSession?.isProjectActive?.()) {
@@ -284,7 +332,8 @@ export class AiDraftExchange {
         postId: String(snapshot.activePostId || ""),
         title: String(post?.title || snapshot.project?.title || ""),
         version: Number(post?.updatedAt || 0),
-        includeFullContext: post?.ai?.includeFullContext === true
+        includeFullContext: post?.ai?.includeFullContext === true,
+        documentPrompt: String(post?.ai?.documentPrompt || "")
       };
     }
     return { kind: "canvas", title: "" };
@@ -495,6 +544,7 @@ export function buildAiDraftRequest({
   messageAst,
   target = {},
   scope = { kind: "message" },
+  documentPrompt = "",
   contextIncluded = "message",
   requestId = randomUUID(),
   createdAt = Date.now()
@@ -503,6 +553,7 @@ export function buildAiDraftRequest({
   if (!normalizedRequestId) throw new Error(t("editor.aiDraftExchange.requestIdRequired"));
   const ast = validateAiAst(sanitizeAiValue(messageAst));
   const normalizedScope = normalizeScope(scope);
+  const normalizedDocumentPrompt = normalizedScope.kind === "message" ? String(documentPrompt || "").trim() : "";
   const schemaRules = aiResponseSchemaRules(ast);
   return {
     format: AI_DRAFT_FORMAT,
@@ -515,16 +566,19 @@ export function buildAiDraftRequest({
       contextIncluded: contextIncluded === "block" ? "block" : "message"
     },
     task: {
-      instruction: taskInstruction(normalizedScope),
+      instruction: taskInstruction(normalizedScope, normalizedDocumentPrompt),
+      ...(normalizedDocumentPrompt ? { documentPrompt: normalizedDocumentPrompt } : {}),
       responseContract: [
         "Return the complete JSON object only.",
-        "Preserve format, schemaVersion, request, block id/type/children, and every ai.prompt.",
+        "Preserve format, schemaVersion, request, task, block id/type/children, and every ai.prompt.",
         ...schemaRules,
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"
             ? `Change only the content of block ${normalizedScope.nodeId}; keep its identity and structure unchanged.`
-            : "Change props only where an ai.prompt requests a change; keep all other data unchanged."
+            : normalizedDocumentPrompt
+              ? "Change props only where task.documentPrompt or an ai.prompt requests a change. A documentPrompt may coordinate changes across multiple explicitly referenced blocks; keep all other data unchanged."
+              : "Change props only where an ai.prompt requests a change; keep all other data unchanged."
       ]
     },
     messageAst: ast
@@ -688,12 +742,15 @@ function sanitizeAiValue(value) {
   return copy;
 }
 
-function taskInstruction(scope) {
+function taskInstruction(scope, documentPrompt = "") {
   if (scope.kind === "field") {
     return `Use messageAst as context. Apply block ${scope.nodeId}'s ai.prompt only to its props.${scope.field} value.`;
   }
   if (scope.kind === "block") {
     return `Use messageAst as context. Apply block ${scope.nodeId}'s ai.prompt only to that block while preserving its identity and child structure.`;
+  }
+  if (documentPrompt) {
+    return "Use the full message AST as context. Apply task.documentPrompt across every block it explicitly addresses, including referenced following or preceding blocks. Also apply each block's ai.prompt to that block.";
   }
   return "Use the full message AST as context. For each block containing ai.prompt, apply that instruction to the editable values in its props.";
 }
@@ -704,7 +761,7 @@ function aiResponseSchemaRules(ast) {
     if (node?.type === "list") hasList = true;
   });
   return hasList ? [
-    "For list blocks, props.items must be an array of item objects. Put visible text in item.blocks, for example {\"blocks\":[{\"type\":\"paragraph\",\"text\":\"Example\"}]}; never return string items or {\"text\":...} items."
+    "For list blocks, props.items must be an array of item objects. Put visible text in each item's blocks array as paragraph objects with text fields; never return string items or a top-level text field on an item."
   ] : [];
 }
 
@@ -788,14 +845,19 @@ function aiRequestMessageKey(chatId, messageId) { return `ai.request-message:${N
 
 function uniqueTelegramMessages(items) {
   const seen = new Set();
-  return (items || []).filter(item => {
+  const result = [];
+  for (const item of items || []) {
     const chatId = Number(item?.chatId || 0);
-    const messageId = Number(item?.messageId || 0);
-    const key = `${chatId}:${messageId}`;
-    if (!chatId || !messageId || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+    const messageIds = [...(Array.isArray(item?.messageIds) ? item.messageIds : []), item?.messageId];
+    for (const value of messageIds) {
+      const messageId = Number(value || 0);
+      const key = `${chatId}:${messageId}`;
+      if (!chatId || !messageId || seen.has(key)) continue;
+      seen.add(key);
+      result.push({ chatId, messageId });
+    }
+  }
+  return result;
 }
 
 function makeJsonFile(text, name) {

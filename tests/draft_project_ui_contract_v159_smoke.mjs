@@ -22,6 +22,10 @@ assert(commands.includes('await this.documents.saveCurrentContext();'), 'New Dra
 assert(palette.includes('if (b.projectVirtual) return false;'), 'Project virtual blocks must stay unavailable in Palette');
 assert(projectView.includes('getProjectPostPublicationEligibility'), 'Editor Project cards must use shared publication eligibility');
 assert(library.includes('getProjectPostPublicationEligibility'), 'Project Library cards must use shared publication eligibility');
-assert(draftView.includes('draft.ai?.includeFullContext === true && astHasAiPrompt(draft.messageAst)'),
-  'Draft AI JSON must require both extended context and at least one block prompt');
+assert(draftView.includes('if (!publicationLinked && astHasAiPrompt(draft.messageAst))'),
+  'Draft document AI controls must activate after at least one Canvas block prompt');
+assert(draftView.includes('draft.ai?.documentPrompt'),
+  'Draft cards must expose their own whole-document prompt');
+assert(!draftView.includes('aiContextInput.type = "checkbox"'),
+  'The obsolete extended-context checkbox must be removed');
 console.log('draft_project_ui_contract_v159_smoke: OK');

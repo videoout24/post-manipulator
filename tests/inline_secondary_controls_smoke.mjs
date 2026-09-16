@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { canvasScrollDuration } from "../js/editor/TreeView.js";
 
 const inspector = fs.readFileSync(new URL("../js/editor/BlockInspector.js", import.meta.url), "utf8");
 const treeView = fs.readFileSync(new URL("../js/editor/TreeView.js", import.meta.url), "utf8");
@@ -22,12 +23,14 @@ assert.match(treeView, /input, textarea, select, button, summary, \[contentedita
   "Collapsible property summaries must not trigger a Canvas re-render before their native toggle runs");
 assert.match(treeView, /focusNode\(nodeId, \{ reposition = true \} = \{\}\)[\s\S]*?expandedPath\.add\(String\(current\.id\)\)[\s\S]*?this\.collapsedNodes = new Set\(this\.#canvasNodeIds\(\)\.filter\(id => !expandedPath\.has\(id\)\)\)/,
   "Focusing a Canvas block must collapse all other branches while keeping its ancestor path open");
-assert.match(treeView, /scrollNodeNearCanvasTop\(nodeId, offset = 100\)[\s\S]*?scroller\.scrollTop \+ targetRect\.top - scrollerRect\.top - offset[\s\S]*?behavior: reduceMotion \? "auto" : "smooth"/,
+assert.match(treeView, /scrollNodeNearCanvasTop\(nodeId, offset = 100\)[\s\S]*?if \(speed === 0\) return;[\s\S]*?scroller\.scrollTop \+ targetRect\.top - scrollerRect\.top - offset/,
   "The focused block must be positioned near the Canvas top with a 100px offset");
-assert.match(treeView, /if \(generation !== this\.renderGeneration\) return;/,
+assert.match(treeView, /if \(generation !== this\.renderGeneration \|\| animationRevision !== this\.scrollAnimationRevision\) return;/,
   "A stale focus scroll must not override a newer Canvas selection");
 assert.match(treeView, /this\.focusNode\(selectedId, \{ reposition: false \}\)/,
   "Enabling auto-collapse must not unexpectedly reposition the Canvas");
+assert.deepEqual([0, 1, 2, 3].map(canvasScrollDuration), [0, 900, 600, 300],
+  "scroll levels must map off/slow/half-speed/former-speed predictably");
 assert.match(treeView, /Array\.from\(scope\.options\)\.some\(option => option\.value === scope\.value\)/,
   "AI field scope validation must not call an undefined CSS selector helper while rendering Canvas blocks");
 assert.doesNotMatch(treeView, /cssEscape\(scope\.value\)/,

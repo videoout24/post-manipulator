@@ -76,10 +76,13 @@ export class DraftStore {
   async setAiSettings(id, patch = {}) {
     const current = await this.get(id);
     if (!current) throw new Error(`Draft not found: ${id}`);
-    current.ai = {
-      ...(current.ai || {}),
-      includeFullContext: Boolean(patch.includeFullContext)
-    };
+    current.ai = { ...(current.ai || {}) };
+    if (Object.prototype.hasOwnProperty.call(patch, "includeFullContext")) {
+      current.ai.includeFullContext = Boolean(patch.includeFullContext);
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, "documentPrompt")) {
+      current.ai.documentPrompt = String(patch.documentPrompt || "").trim();
+    }
     current.updatedAt = Date.now();
     await this.db?.put?.("drafts", id, current);
     this.events?.emit?.("draft:changed", { reason: "ai-settings", draft: structuredClone(current), draftId: id });
@@ -182,7 +185,8 @@ function normalizeDraft(value, fallbackId = "") {
     title: String(input.title || t("editor.draftListView.draft")),
     messageAst: normalizeAst(input.messageAst),
     ai: {
-      includeFullContext: input.ai?.includeFullContext === true
+      includeFullContext: input.ai?.includeFullContext === true,
+      documentPrompt: String(input.ai?.documentPrompt || "")
     },
     source: input.source && typeof input.source === "object" ? structuredClone(input.source) : null,
     createdAt: Number(input.createdAt || Date.now()),

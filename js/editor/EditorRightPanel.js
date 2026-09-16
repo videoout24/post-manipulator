@@ -1,6 +1,6 @@
-import { t } from "../i18n/index.js?v=1.9.5";
-import { createDraftListView } from "./DraftListView.js?v=1.9.5";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.9.5";
+import { t } from "../i18n/index.js?v=1.9.8";
+import { createDraftListView } from "./DraftListView.js?v=1.9.8";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.9.8";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
 
 export class EditorRightPanel {
@@ -134,8 +134,8 @@ export class EditorRightPanel {
       onSchedule: post => this.#scheduleProjectPost(post),
       onCancelSchedule: post => this.#cancelProjectPostSchedule(post),
       onApplyChanges: post => this.#applyProjectChanges(post),
-      onAiContextChange: (post, includeFullContext) => this.#setPostAiContext(post, includeFullContext),
-      onOpenAi: post => this.#openProjectPostAi(post),
+      onAiPromptChange: (post, documentPrompt) => this.#setPostAiPrompt(post, documentPrompt),
+      onOpenAi: (post, documentPrompt) => this.#openProjectPostAi(post, documentPrompt),
       onDelete: post => this.#deleteProjectPost(post)
     }));
   }
@@ -162,8 +162,8 @@ export class EditorRightPanel {
       onApplyChanges: draft => this.#applyDraftChanges(draft),
       onCancelPublicationEdit: draft => this.#cancelPublicationEdit(draft),
       onCloseDraft: draft => this.#closeOrdinaryDraft(draft),
-      onOpenAi: draft => this.#openDraftAi(draft),
-      onAiContextChange: (draft, includeFullContext) => this.#setDraftAiContext(draft, includeFullContext),
+      onOpenAi: (draft, documentPrompt) => this.#openDraftAi(draft, documentPrompt),
+      onAiPromptChange: (draft, documentPrompt) => this.#setDraftAiPrompt(draft, documentPrompt),
       onSelectTarget: target => this.#selectLinkTarget(target),
       onOpenLinkedSource: target => this.#openLinkedSource(target),
       linkTargetSlotKey: this.linkTargetSlotKey,
@@ -306,15 +306,15 @@ export class EditorRightPanel {
     return this.#run(() => this.drafts.rename(draft.id, title));
   }
 
-  async #setDraftAiContext(draft, includeFullContext) {
+  async #setDraftAiPrompt(draft, documentPrompt) {
     return this.#run(async () => {
       if (this.draftSession?.activeDraftId === draft.id) await this.documents?.saveCurrentContext?.();
-      return this.drafts.setAiSettings(draft.id, { includeFullContext });
+      return this.drafts.setAiSettings(draft.id, { documentPrompt });
     });
   }
 
-  async #setPostAiContext(post, includeFullContext) {
-    return this.#run(() => this.session.setPostAiSettings(post.id, { includeFullContext }));
+  async #setPostAiPrompt(post, documentPrompt) {
+    return this.#run(() => this.session.setPostAiSettings(post.id, { documentPrompt }));
   }
 
   async #closeOrdinaryDraft(draft) {
@@ -327,16 +327,18 @@ export class EditorRightPanel {
     });
   }
 
-  async #openDraftAi(draft) {
+  async #openDraftAi(draft, documentPrompt = "") {
     return this.#run(async () => {
+      await this.drafts.setAiSettings(draft.id, { includeFullContext: true, documentPrompt });
       if (this.draftSession?.activeDraftId !== draft.id) await this.documents?.openDraft?.(draft.id);
       await this.events?.emitAsync?.("ai:document-open-requested", { kind: "draft", draftId: draft.id });
       return true;
     });
   }
 
-  async #openProjectPostAi(post) {
+  async #openProjectPostAi(post, documentPrompt = "") {
     return this.#run(async () => {
+      await this.session.setPostAiSettings(post.id, { includeFullContext: true, documentPrompt });
       if (this.session?.activePostId !== post.id) await this.session?.openPost?.(post.id);
       await this.events?.emitAsync?.("ai:document-open-requested", {
         kind: "project-post",

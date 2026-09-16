@@ -806,6 +806,12 @@
   display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; margin-left: 4px; padding: 0 4px;
   border-radius: 999px; background: var(--theme-accent-subtle, #27486b); color: var(--theme-text, #d8ecff); font-size: 8px; font-weight: 700;
 }
+.canvas-scroll-speed {
+  display: inline-flex; align-items: center; gap: 4px; color: var(--theme-text-muted, #7f90a4); font-size: 8px; white-space: nowrap;
+}
+.canvas-editor-bar .canvas-scroll-speed select {
+  width: 40px; min-width: 40px; height: 24px; min-height: 24px; padding: 2px 17px 2px 6px !important; font-size: 9px;
+}
 .canvas-command-spacer { flex: 1 1 auto; min-width: 10px; }
 .canvas-history-actions { display: flex; align-items: center; gap: 5px; }
 .canvas-history-actions button { min-width: 66px; }
@@ -948,23 +954,29 @@
   color: var(--theme-text-secondary, #91a3b7);
 }
 .draft-card-tools .danger-soft { color: var(--theme-danger, #d8a4aa); border-color: var(--theme-danger-border, #55353a); background: var(--theme-surface-raised, #26191c); }
-.draft-ai-context-setting {
-  display: flex; align-items: center; gap: 6px; padding: 0 9px 8px;
-  color: var(--theme-text-muted, #718399); font-size: 8px; cursor: pointer;
-}
-.draft-ai-context-setting input { width: auto; margin: 0; }
+.draft-document-ai-settings,
 .project-post-ai-settings {
-  display: flex; align-items: center; gap: 7px; padding: 0 9px 8px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 7px; padding: 0 9px 8px;
 }
-.project-post-ai-settings .project-post-ai-context-setting {
-  flex: 1 1 auto; min-width: 0; padding: 0;
+.draft-document-ai-label {
+  grid-column: 1 / -1; color: var(--theme-text-muted, #718399); font-size: 8px;
 }
+.draft-document-ai-prompt {
+  grid-column: 1; width: 100%; min-width: 0; min-height: 56px; padding: 6px 7px; resize: vertical;
+  border: 1px solid var(--theme-field-border, #34465a); border-radius: 6px;
+  background: var(--theme-field-bg, #0b1118); color: var(--theme-text, #dce8f4); font-size: 9px; line-height: 1.4;
+}
+.draft-document-ai-settings .draft-ai-json,
 .project-post-ai-settings .project-post-ai-json {
-  flex: 0 0 auto; min-height: 24px; padding: 3px 7px;
+  grid-column: 2; grid-row: 2; align-self: stretch; min-width: 74px; min-height: 24px; padding: 3px 7px;
   border-color: var(--theme-purple, #7257aa);
   background: var(--theme-purple-subtle, #261d3b);
   color: var(--theme-text, #dbcfff);
   font-size: 8px;
+}
+.draft-document-ai-settings .draft-document-ai-prompt,
+.project-post-ai-settings .draft-document-ai-prompt {
+  grid-row: 2;
 }
 .draft-card-lifecycle-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .draft-card-lifecycle-actions button:first-child {

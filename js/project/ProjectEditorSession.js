@@ -278,10 +278,13 @@ export class ProjectEditorSession {
     this.project = await this.store.updateProject(this.activeProjectId, project => {
       const post = project.posts?.find(item => String(item.id) === String(postId));
       if (!post) throw new Error(t("project.common.projectPostNotFound", { 0: postId }));
-      post.ai = {
-        ...(post.ai || {}),
-        includeFullContext: Boolean(patch.includeFullContext)
-      };
+      post.ai = { ...(post.ai || {}) };
+      if (Object.prototype.hasOwnProperty.call(patch, "includeFullContext")) {
+        post.ai.includeFullContext = Boolean(patch.includeFullContext);
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "documentPrompt")) {
+        post.ai.documentPrompt = String(patch.documentPrompt || "").trim();
+      }
       post.updatedAt = Date.now();
     }, "post-ai-settings", { postId, affectedPostIds: [postId] });
     this.#emit("post-ai-settings");

@@ -4,7 +4,7 @@ import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
 export class TreeView {
-  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, blockCollector = null, onCollapseChange = null, autoCollapseInactive = false }) {
+  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, blockCollector = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
     this.root = root;
     this.tree = tree;
     this.registry = registry;
@@ -17,6 +17,8 @@ export class TreeView {
     this.blockCollector = blockCollector;
     this.onCollapseChange = onCollapseChange;
     this.autoCollapseInactive = Boolean(autoCollapseInactive);
+    this.scrollSpeed = normalizeScrollSpeed(scrollSpeed);
+    this.scrollAnimationRevision = 0;
     this.dragState = dragState || { nodeId: "", type: "", source: "", galleryAssetId: "", galleryType: "" };
     this.renderGeneration = 0;
     // Canvas-only collapse state. It is deliberately not stored in the Rich Message AST.
@@ -481,11 +483,14 @@ export class TreeView {
   }
 
   scrollNodeNearCanvasTop(nodeId, offset = 100) {
+    const speed = this.scrollSpeed;
+    const animationRevision = ++this.scrollAnimationRevision;
+    if (speed === 0) return;
     const generation = this.renderGeneration;
     const schedule = globalThis.requestAnimationFrame || (callback => globalThis.setTimeout(callback, 0));
-    schedule(() => {
+    schedule(timestamp => {
       // A newer render means that another block has already become active.
-      if (generation !== this.renderGeneration) return;
+      if (generation !== this.renderGeneration || animationRevision !== this.scrollAnimationRevision) return;
       const scroller = this.root.closest?.(".canvas-scroll");
       const target = Array.from(this.root.querySelectorAll(".block[data-node-id]"))
         .find(element => String(element.dataset.nodeId) === String(nodeId));
@@ -495,12 +500,29 @@ export class TreeView {
       const targetRect = target.getBoundingClientRect();
       const top = Math.max(0, scroller.scrollTop + targetRect.top - scrollerRect.top - offset);
       const reduceMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
-      if (typeof scroller.scrollTo === "function") {
-        scroller.scrollTo({ top, left: scroller.scrollLeft, behavior: reduceMotion ? "auto" : "smooth" });
-      } else {
+      const startTop = Number(scroller.scrollTop || 0);
+      const distance = top - startTop;
+      const animate = globalThis.requestAnimationFrame;
+      if (reduceMotion || typeof animate !== "function" || Math.abs(distance) < 1) {
         scroller.scrollTop = top;
+        return;
       }
+      const startedAt = Number.isFinite(timestamp) ? timestamp : globalThis.performance?.now?.() || Date.now();
+      const duration = canvasScrollDuration(speed);
+      const step = now => {
+        if (generation !== this.renderGeneration || animationRevision !== this.scrollAnimationRevision) return;
+        const progress = Math.min(1, Math.max(0, (now - startedAt) / duration));
+        const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - ((-2 * progress + 2) ** 3) / 2;
+        scroller.scrollTop = startTop + distance * eased;
+        if (progress < 1) animate(step);
+      };
+      animate(step);
     });
+  }
+
+  setScrollSpeed(value) {
+    this.scrollSpeed = normalizeScrollSpeed(value);
+    this.scrollAnimationRevision += 1;
   }
 
   setAutoCollapseInactive(enabled) {
@@ -959,6 +981,15 @@ export class TreeView {
       el.classList.remove("dragging", "drag-inside", "drag-before", "drag-after", "drag-media", "active", "drag-root")
     );
   }
+}
+
+export function canvasScrollDuration(speed) {
+  return ({ 1: 900, 2: 600, 3: 300 })[normalizeScrollSpeed(speed)] || 0;
+}
+
+function normalizeScrollSpeed(value) {
+  const numeric = Number(value);
+  return Number.isInteger(numeric) && numeric >= 0 && numeric <= 3 ? numeric : 2;
 }
 
 function countSubtree(node) {

@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.9.5";
+import { getLocale, t } from "../i18n/index.js?v=1.9.8";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -16,7 +16,7 @@ export function createDraftListView({
   onCancelPublicationEdit = null,
   onCloseDraft = null,
   onOpenAi = null,
-  onAiContextChange = null,
+  onAiPromptChange = null,
   onSelectTarget = null,
   onOpenLinkedSource = null,
   linkTargetSlotKey = "",
@@ -60,7 +60,7 @@ export function createDraftListView({
         onCancelPublicationEdit,
         onCloseDraft,
         onOpenAi,
-        onAiContextChange,
+        onAiPromptChange,
         onSelectTarget,
         onOpenLinkedSource,
         linkTargetSlotKey,
@@ -75,7 +75,7 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiContextChange, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
+  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
   const publicationCopy = publicationLinked && !draft.source.retained;
@@ -135,11 +135,6 @@ function createDraftCard({
       actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
       actions.append(button(t("editor.draftListView.postpone"), t("editor.draftListView.scheduleDraftPublication"), () => onSchedule?.(draft)));
     }
-    if (draft.ai?.includeFullContext === true && astHasAiPrompt(draft.messageAst)) {
-      const openAi = button(t("editor.draftListView.openDraftAiJson"), t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft));
-      openAi.classList.add("draft-ai-json");
-      actions.append(openAi);
-    }
     if (selected) {
       const closeDraft = button(t("editor.draftListView.closeDraft"), t("editor.draftListView.closeDraftHint"), () => onCloseDraft?.(draft));
       closeDraft.classList.add("draft-close");
@@ -149,13 +144,26 @@ function createDraftCard({
   if (actions.childElementCount) card.append(actions);
   else card.classList.add("no-footer-actions");
 
-  const aiContext = el("label", "draft-ai-context-setting");
-  const aiContextInput = document.createElement("input");
-  aiContextInput.type = "checkbox";
-  aiContextInput.checked = draft.ai?.includeFullContext === true;
-  aiContextInput.onchange = () => onAiContextChange?.(draft, aiContextInput.checked);
-  aiContext.append(aiContextInput, el("span", "", t("editor.draftListView.includeFullAiContext")));
-  card.append(aiContext);
+  if (!publicationLinked && astHasAiPrompt(draft.messageAst)) {
+    let documentPrompt = String(draft.ai?.documentPrompt || "");
+    const aiSettings = el("div", "draft-document-ai-settings");
+    const promptLabel = el("label", "draft-document-ai-label", t("editor.draftListView.documentAiPrompt"));
+    const prompt = document.createElement("textarea");
+    prompt.className = "draft-document-ai-prompt";
+    prompt.maxLength = 8000;
+    prompt.rows = 3;
+    prompt.value = documentPrompt;
+    prompt.placeholder = t("editor.draftListView.documentAiPromptPlaceholder");
+    prompt.setAttribute("aria-label", t("editor.draftListView.documentAiPrompt"));
+    prompt.oninput = () => { documentPrompt = prompt.value; };
+    const openAi = button(t("editor.draftListView.openDraftAiJson"), t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft, documentPrompt));
+    openAi.classList.add("draft-ai-json");
+    prompt.onblur = event => {
+      if (event.relatedTarget !== openAi) onAiPromptChange?.(draft, documentPrompt);
+    };
+    aiSettings.append(promptLabel, prompt, openAi);
+    card.append(aiSettings);
+  }
 
   const open = () => onOpen?.(draft);
   card.onclick = event => {
