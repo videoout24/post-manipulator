@@ -1,6 +1,6 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.9.6";
-import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
+import { t } from "../i18n/index.js?v=1.9.7";
+import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
 export const AI_DRAFT_SCHEMA_VERSION = 1;
@@ -18,6 +18,7 @@ export class AiDraftExchange {
     downloadButton,
     sendButton,
     openBotButton,
+    pasteButton,
     importButton,
     fileInput,
     tree,
@@ -32,15 +33,19 @@ export class AiDraftExchange {
     events = null,
     notifications = null,
     conflictResolver = null,
+    invalidResponseReporter = null,
+    clipboard = globalThis.navigator?.clipboard,
     documentRoot = globalThis.document
   } = {}) {
     Object.assign(this, {
       dialog, input, openButton, closeButton, copyButton, downloadButton,
-      sendButton, openBotButton, importButton, fileInput, tree, draftSession, projectSession,
+      sendButton, openBotButton, pasteButton, importButton, fileInput, tree, draftSession, projectSession,
       drafts, documents, client, navigation, ownerBinding, events, notifications, documentRoot
     });
     this.db = db;
     this.conflictResolver = conflictResolver;
+    this.invalidResponseReporter = invalidResponseReporter;
+    this.clipboard = clipboard;
     this.unsubscribers = [];
     this.currentScope = null;
     this.preparedPayload = null;
@@ -53,6 +58,7 @@ export class AiDraftExchange {
     this.#listen(this.downloadButton, "click", () => this.download());
     this.#listen(this.sendButton, "click", () => this.sendToBot());
     this.#listen(this.openBotButton, "click", () => this.openBot());
+    this.#listen(this.pasteButton, "click", () => this.pasteAndImport());
     this.#listen(this.importButton, "click", () => this.importText(this.input?.value));
     this.#listen(this.fileInput, "change", event => this.importFile(event.target?.files?.[0]));
     this.unsubscribers.push(
@@ -192,7 +198,21 @@ export class AiDraftExchange {
     }
   }
 
-  async importText(text, { viaTelegram = false, telegramSource = null } = {}) {
+  async pasteAndImport() {
+    try {
+      if (typeof this.clipboard?.readText !== "function") {
+        throw new Error(t("editor.aiDraftExchange.clipboardUnavailable"));
+      }
+      const text = await this.clipboard.readText();
+      if (this.input) this.input.value = String(text || "");
+      return this.importText(text, { viaClipboard: true, showInvalidDialog: true });
+    } catch (error) {
+      this.#error(error);
+      return null;
+    }
+  }
+
+  async importText(text, { viaTelegram = false, viaClipboard = false, showInvalidDialog = false, telegramSource = null } = {}) {
     try {
       await this.documents?.saveCurrentContext?.();
       const payload = parseAiDraftResponse(text);
@@ -208,12 +228,12 @@ export class AiDraftExchange {
       const target = payload.request?.target || {};
       const scope = payload.request?.scope || { kind: "message" };
       if (["block", "field"].includes(scope.kind) && target.kind === "draft" && target.draftId) {
-        const result = await this.#importScopedDraft(payload, ast, { viaTelegram });
+        const result = await this.#importScopedDraft(payload, ast, { viaTelegram, viaClipboard });
         if (result) await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
         return result;
       }
       if (["block", "field"].includes(scope.kind) && target.kind === "project-post" && target.projectId && target.postId) {
-        const result = await this.#importScopedProjectPost(payload, ast, { viaTelegram });
+        const result = await this.#importScopedProjectPost(payload, ast, { viaTelegram, viaClipboard });
         if (result) await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
         return result;
       }
@@ -227,7 +247,7 @@ export class AiDraftExchange {
           kind: "ai-response",
           requestId: String(payload.request?.id || ""),
           target: structuredClone(target),
-          importedVia: viaTelegram ? "telegram-text" : "manual"
+          importedVia: importSource({ viaTelegram, viaClipboard })
         }
       });
       await this.documents?.openDraft?.(draft.id);
@@ -237,7 +257,8 @@ export class AiDraftExchange {
       await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
       return draft;
     } catch (error) {
-      this.#error(error);
+      if (showInvalidDialog) await this.#reportInvalidResponse(error);
+      else this.#error(error);
       return null;
     }
   }
@@ -269,7 +290,7 @@ export class AiDraftExchange {
     return { kind: "canvas", title: "" };
   }
 
-  async #importScopedDraft(payload, responseAst, { viaTelegram = false } = {}) {
+  async #importScopedDraft(payload, responseAst, { viaTelegram = false, viaClipboard = false } = {}) {
     const target = payload.request.target;
     const scope = payload.request.scope;
     const current = await this.drafts?.get?.(target.draftId);
@@ -278,7 +299,7 @@ export class AiDraftExchange {
     const sameVersion = Number(current.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
       const choice = await this.#resolveVersionConflict(current.title);
-      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, current.title, { viaTelegram });
+      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, current.title, { viaTelegram, viaClipboard });
       if (choice !== "apply-current") return null;
     }
 
@@ -295,7 +316,7 @@ export class AiDraftExchange {
     return saved;
   }
 
-  async #importScopedProjectPost(payload, responseAst, { viaTelegram = false } = {}) {
+  async #importScopedProjectPost(payload, responseAst, { viaTelegram = false, viaClipboard = false } = {}) {
     const target = payload.request.target;
     const scope = payload.request.scope;
     const post = await this.projectSession?.store?.getPost?.(target.projectId, target.postId);
@@ -304,7 +325,7 @@ export class AiDraftExchange {
     const sameVersion = Number(post.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
       const choice = await this.#resolveVersionConflict(post.title);
-      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, post.title, { viaTelegram });
+      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, post.title, { viaTelegram, viaClipboard });
       if (choice !== "apply-current") return null;
     }
 
@@ -328,7 +349,7 @@ export class AiDraftExchange {
     return this.conflictResolver ? this.conflictResolver(options) : chooseDarkDialog(options);
   }
 
-  async #createConflictFork(payload, patchedAst, title, { viaTelegram = false } = {}) {
+  async #createConflictFork(payload, patchedAst, title, { viaTelegram = false, viaClipboard = false } = {}) {
     const fork = await this.drafts.create({
       title: t("editor.aiDraftExchange.importedDraftTitle", { 0: title }),
       messageAst: patchedAst,
@@ -336,7 +357,7 @@ export class AiDraftExchange {
         kind: "ai-response",
         requestId: String(payload.request?.id || ""),
         target: structuredClone(payload.request?.target || {}),
-        importedVia: viaTelegram ? "telegram-text" : "manual",
+        importedVia: importSource({ viaTelegram, viaClipboard }),
         versionConflict: true
       }
     });
@@ -451,9 +472,23 @@ export class AiDraftExchange {
   }
 
   #notify(payload) { this.notifications?.show?.(payload); }
+  #reportInvalidResponse(error) {
+    const options = {
+      title: t("editor.aiDraftExchange.invalidClipboardTitle"),
+      message: t("editor.aiDraftExchange.invalidClipboardMessage", { 0: error?.message || error })
+    };
+    return this.invalidResponseReporter
+      ? this.invalidResponseReporter(options)
+      : showDarkMessage(options);
+  }
   #error(error) {
     this.#notify({ message: t("editor.aiDraftExchange.error", { 0: error?.message || error }), type: "error", duration: 9000 });
   }
+}
+
+function importSource({ viaTelegram = false, viaClipboard = false } = {}) {
+  if (viaTelegram) return "telegram-text";
+  return viaClipboard ? "clipboard" : "manual";
 }
 
 export function buildAiDraftRequest({

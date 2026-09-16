@@ -6,6 +6,17 @@ const toasts = [];
 const created = [];
 const inserted = [];
 let collectorCleared = 0;
+const makeButton = () => {
+  const classes = new Set();
+  return {
+    classes,
+    classList: { toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); } },
+    setAttribute(name, value) { this[name] = value; }
+  };
+};
+const insertCollectorButton = makeButton();
+const clearCollectorButton = makeButton();
+const collectorCount = {};
 const projectSession = {
   active: false,
   isProjectActive() { return this.active; },
@@ -48,6 +59,9 @@ const controller = new EditorCommandController({
     async resolveBlocks() { return [{ id: "source", type: "paragraph", props: { text: "Collected" }, children: [] }]; },
     async clear() { collectorCleared += 1; }
   },
+  insertCollectorButton,
+  clearCollectorButton,
+  collectorCount,
   selection: { clear: () => calls.push("selection:clear") },
   textareaSizing: { clear: () => calls.push("textarea:clear") },
   rightPanel: { showDrafts: () => calls.push("panel:drafts"), getMode: () => "drafts" },
@@ -56,6 +70,11 @@ const controller = new EditorCommandController({
   promptFn: () => "New Draft",
   now: () => new Date("2026-08-20T12:00:00Z")
 });
+
+controller.updateCollectorControls();
+assert.equal(collectorCount.textContent, "1");
+assert.equal(insertCollectorButton.classes.has("collector-populated"), true);
+assert.equal(clearCollectorButton.classes.has("collector-populated"), true);
 
 const draft = await controller.createDraft();
 assert.equal(draft.title, "New Draft");

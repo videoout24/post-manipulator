@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   AI_DRAFT_FORMAT,
   AiDraftExchange,
@@ -129,6 +130,9 @@ const db = {
 let storedAst = structuredClone(ast);
 let capturedFile = null;
 let botOpenCalls = 0;
+let clipboardText = "";
+const clipboardInput = { value: "" };
+const invalidClipboardReports = [];
 const deletedMessages = [];
 const conflictPrompts = [];
 const createdDrafts = [];
@@ -151,6 +155,9 @@ const drafts = {
 };
 const exchange = new AiDraftExchange({
   db,
+  input: clipboardInput,
+  clipboard: { async readText() { return clipboardText; } },
+  invalidResponseReporter(options) { invalidClipboardReports.push(options); },
   tree: { root: storedAst, toJSON: () => structuredClone(storedAst) },
   draftSession,
   drafts,
@@ -169,6 +176,21 @@ const exchange = new AiDraftExchange({
 });
 assert.equal(exchange.openBot(), true);
 assert.equal(botOpenCalls, 1);
+await exchange.open({ nodeId: "heading-1" });
+const clipboardPayload = JSON.parse(clipboardInput.value);
+clipboardPayload.messageAst.children[0].props.text = "Clipboard title";
+clipboardText = "{invalid clipboard json";
+assert.equal(await exchange.pasteAndImport(), null);
+assert.equal(invalidClipboardReports.length, 1);
+assert.match(invalidClipboardReports[0].message, /некорректный JSON|invalid JSON/i);
+assert.equal(clipboardInput.value, clipboardText, "invalid clipboard contents remain visible for inspection");
+
+clipboardText = JSON.stringify(clipboardPayload);
+const clipboardImported = await exchange.pasteAndImport();
+assert.ok(clipboardImported);
+assert.equal(storedAst.children[0].props.text, "Clipboard title");
+assert.equal(clipboardInput.value, clipboardText);
+
 await exchange.open({ nodeId: "heading-1" });
 await exchange.sendToBot();
 const sentPayload = JSON.parse(await capturedFile.text());
@@ -196,7 +218,8 @@ runtimeRows.set(sentRequestKey, {
   createdAt: Date.now()
 });
 conflictChoice = null;
-const cancelledConflict = await exchange.importText(JSON.stringify(sentPayload));
+clipboardText = JSON.stringify(sentPayload);
+const cancelledConflict = await exchange.pasteAndImport();
 assert.equal(cancelledConflict, null);
 assert.equal(storedAst.children[0].props.text, "Imported title", "closing the conflict dialog changes nothing");
 assert.equal(createdDrafts.length, 0, "a version conflict must not create a draft without an explicit choice");
@@ -205,14 +228,30 @@ assert.equal(runtimeRows.has(sentRequestKey), true,
   "cancelling keeps the pending exchange available for another import attempt");
 
 conflictChoice = "apply-current";
-await exchange.importText(JSON.stringify(sentPayload));
+await exchange.pasteAndImport();
 assert.equal(storedAst.children[0].props.text, "Conflicting title", "the current block changes only after confirmation");
 assert.equal(runtimeRows.has(sentRequestKey), false, "a completed conflict choice cleans up the exchange");
 
 conflictChoice = "new-draft";
 sentPayload.messageAst.children[0].props.text = "Forked title";
-await exchange.importText(JSON.stringify(sentPayload));
+clipboardText = JSON.stringify(sentPayload);
+await exchange.pasteAndImport();
 assert.equal(createdDrafts.length, 1, "a conflict fork is created only after that explicit choice");
 assert.equal(createdDrafts[0].messageAst.children[0].props.text, "Forked title");
+assert.equal(createdDrafts[0].source.importedVia, "clipboard");
+
+const [html, editorCss, shellSource] = await Promise.all([
+  readFile(new URL("../index.html", import.meta.url), "utf8"),
+  readFile(new URL("../styles/editor.css", import.meta.url), "utf8"),
+  readFile(new URL("../js/app/createEditorShell.js", import.meta.url), "utf8")
+]);
+assert.match(html, /id="aiDraftPaste"/);
+assert.match(html, /id="aiDraftImport"[\s\S]*?id="aiDraftSend"[\s\S]*?id="aiDraftOpenBot"/,
+  "bot actions must form the final right-side group");
+assert.match(editorCss, /\.button-like \{[\s\S]*?font-size: 9px;/,
+  "the response file label must use the same compact font size as dialog buttons");
+assert.match(editorCss, /#aiDraftSend \{ margin-left: auto; \}/,
+  "the Send to bot button must push both bot actions to the right");
+assert.match(shellSource, /pasteButton: query\("#aiDraftPaste"\)/);
 
 console.log("ai draft exchange smoke: ok");

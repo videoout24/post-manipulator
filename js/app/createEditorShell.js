@@ -5,9 +5,9 @@ import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.
 import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.9.5";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.9.5";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.8.6";
-import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.9.6";
+import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.9.7";
 import { EditorToolController } from "../editor/EditorToolController.js?v=1.6.5";
-import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.6";
+import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.9.7";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 import { t } from "../i18n/index.js?v=1.8.6";
 
@@ -230,6 +230,7 @@ export function createEditorShell({
     downloadButton: query("#aiDraftDownload"),
     sendButton: query("#aiDraftSend"),
     openBotButton: query("#aiDraftOpenBot"),
+    pasteButton: query("#aiDraftPaste"),
     importButton: query("#aiDraftImport"),
     fileInput: query("#aiDraftFile"),
     tree,

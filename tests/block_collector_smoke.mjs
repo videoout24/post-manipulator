@@ -110,5 +110,9 @@ const treeViewSource = await readFile(new URL("../js/editor/TreeView.js", import
 assert.match(html, /id="insertBlockCollector"/);
 assert.match(html, /id="clearBlockCollector"/);
 assert.match(treeViewSource, /block-collector-toggle/);
+assert.match(treeViewSource, /if \(collectorToggle\) titleWrap\.append\(collectorToggle\);[\s\S]*?titleWrap\.append\(name\);/,
+  "the collector toggle must appear immediately before the block title");
+assert.doesNotMatch(treeViewSource, /if \(collectorToggle\) actions\.append\(collectorToggle\);/,
+  "the collector toggle must not remain in the right-side block actions");
 
 console.log("block collector smoke: OK");

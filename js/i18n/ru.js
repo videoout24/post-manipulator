@@ -1470,6 +1470,9 @@ export const ru = Object.freeze({
   "editor.aiDraftExchange.sentToBot": "AI-запрос отправлен в личный чат с ботом",
   "editor.aiDraftExchange.botUsernameUnavailable": "Не удалось открыть бота: username недоступен",
   "editor.aiDraftExchange.fileTooLarge": "AI JSON превышает допустимые 2 МБ",
+  "editor.aiDraftExchange.clipboardUnavailable": "Буфер обмена недоступен. Разрешите приложению читать его или вставьте ответ в поле вручную.",
+  "editor.aiDraftExchange.invalidClipboardTitle": "Ответ не прошёл проверку",
+  "editor.aiDraftExchange.invalidClipboardMessage": "Содержимое буфера обмена нельзя применить как AI-ответ: {0}",
   "editor.aiDraftExchange.telegramDocumentNeedsLocalImport": "Получен AI JSON-документ. Telegram не разрешает Mini App прочитать его через CORS: скачайте файл и выберите его в окне AI JSON.",
   "editor.aiDraftExchange.importedDraftTitle": "AI · {0}",
   "editor.aiDraftExchange.imported": "Импортирован новый черновик «{0}»",
@@ -1526,6 +1529,7 @@ export const ru = Object.freeze({
   "html.downloadJson": "Скачать JSON",
   "html.sendToBot": "Отправить в бота",
   "html.selectResponseFile": "Выбрать ответ",
+  "html.pasteResponseClipboard": "Вставить из буфера",
   "html.importAsDraft": "Импортировать как черновик",
   "html.aiDraftTelegramLimit": "Короткий JSON, отправленный владельцем текстом в личный чат бота, импортируется автоматически. Для JSON-документа без бэкенда нужен один ручной шаг: скачать файл и выбрать его здесь.",
   "html.openBot": "Открыть бота"

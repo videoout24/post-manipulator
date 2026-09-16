@@ -1470,6 +1470,9 @@ export const en = Object.freeze({
   "editor.aiDraftExchange.sentToBot": "AI request sent to the private bot chat",
   "editor.aiDraftExchange.botUsernameUnavailable": "Failed to open the bot: username unavailable",
   "editor.aiDraftExchange.fileTooLarge": "AI JSON exceeds the 2 MB limit",
+  "editor.aiDraftExchange.clipboardUnavailable": "The clipboard is unavailable. Allow the app to read it or paste the response into the field manually.",
+  "editor.aiDraftExchange.invalidClipboardTitle": "Response failed validation",
+  "editor.aiDraftExchange.invalidClipboardMessage": "The clipboard contents cannot be applied as an AI response: {0}",
   "editor.aiDraftExchange.telegramDocumentNeedsLocalImport": "An AI JSON document was received. Telegram CORS prevents the Mini App from reading it: download the file and select it in the AI JSON dialog.",
   "editor.aiDraftExchange.importedDraftTitle": "AI · {0}",
   "editor.aiDraftExchange.imported": "Imported a new draft “{0}”",
@@ -1526,6 +1529,7 @@ export const en = Object.freeze({
   "html.downloadJson": "Download JSON",
   "html.sendToBot": "Send to bot",
   "html.selectResponseFile": "Select response",
+  "html.pasteResponseClipboard": "Paste from clipboard",
   "html.importAsDraft": "Import as draft",
   "html.aiDraftTelegramLimit": "Short JSON sent by the owner as text in the private bot chat is imported automatically. Without a backend, a JSON document needs one manual step: download it and select it here.",
   "html.openBot": "Open bot"

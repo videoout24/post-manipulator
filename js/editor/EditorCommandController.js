@@ -93,13 +93,18 @@ export class EditorCommandController {
 
   updateCollectorControls() {
     const count = Number(this.blockCollector?.count?.() || 0);
+    const hasItems = count > 0;
     const hasDocument = this.#hasDocumentContext();
     if (this.collectorCount) this.collectorCount.textContent = String(count);
     if (this.insertCollectorButton) {
-      this.insertCollectorButton.disabled = !hasDocument || count === 0;
+      this.insertCollectorButton.disabled = !hasDocument || !hasItems;
+      this.insertCollectorButton.classList.toggle("collector-populated", hasItems);
       this.insertCollectorButton.setAttribute("aria-label", t("editor.editorCommandController.insertCollectedBlocks", { 0: count }));
     }
-    if (this.clearCollectorButton) this.clearCollectorButton.disabled = count === 0;
+    if (this.clearCollectorButton) {
+      this.clearCollectorButton.disabled = !hasItems;
+      this.clearCollectorButton.classList.toggle("collector-populated", hasItems);
+    }
   }
 
   async insertFromCollector() {

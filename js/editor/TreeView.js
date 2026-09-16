@@ -146,6 +146,8 @@ export class TreeView {
       const titleWrap = document.createElement("span");
       titleWrap.className = "block-title";
 
+      const collectorToggle = this.makeCollectorToggle(node);
+      if (collectorToggle) titleWrap.append(collectorToggle);
       const name = document.createElement("span");
       const def = this.registry.get(node.type);
       name.textContent = ["block_quotation", "expandable_block_quotation", "pull_quotation"].includes(node.type)
@@ -165,8 +167,6 @@ export class TreeView {
 
       const actions = document.createElement("div");
       actions.className = "block-actions";
-      const collectorToggle = this.makeCollectorToggle(node);
-      if (collectorToggle) actions.append(collectorToggle);
       const spoiler = this.makeHeaderSpoiler(node);
       if (spoiler) actions.append(spoiler);
       const collapse = document.createElement("button");
