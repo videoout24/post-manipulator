@@ -4,7 +4,6 @@ import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
-import { astHasAiPrompt } from "./DraftListView.js?v=1.10.2";
 
 export function createProjectPostListView({
   project,
@@ -40,14 +39,14 @@ export function createProjectPostListView({
     const eligibility = getProjectPostPublicationEligibility(project, post.id, index);
     const scheduling = getProjectPostScheduleEligibility(project, post.id, index);
     const target = linkTargetForProjectPost(project, post);
-    const hasDocumentAi = post.id === activePostId && astHasAiPrompt(post.messageAst);
     let documentPrompt = String(post.ai?.documentPrompt || "");
+    const showDocumentAi = post.id === activePostId;
     let openAi = null;
     let card = null;
     const cardActions = [
       createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource })
     ];
-    if (hasDocumentAi) {
+    if (showDocumentAi) {
       openAi = button("{}", t("editor.projectPostListView.openPostAiJsonHint"), () => onOpenAi?.(post, documentPrompt));
       openAi.classList.add("project-post-ai-json");
       openAi.setAttribute("aria-label", t("editor.projectPostListView.openPostAiJson"));
@@ -85,7 +84,7 @@ export function createProjectPostListView({
       onSelect: selectedPost => onSelect?.(selectedPost),
       actions: cardActions
     });
-    if (hasDocumentAi) {
+    if (showDocumentAi) {
       const aiSettings = el("div", "project-post-ai-settings");
       const promptLabel = el("label", "draft-document-ai-label", t("editor.projectPostListView.documentAiPrompt"));
       const prompt = document.createElement("textarea");
@@ -99,7 +98,8 @@ export function createProjectPostListView({
       textareaSizing?.attach?.(prompt, {
         key: `project-post:${project.id}:${post.id}:ai.documentPrompt`,
         defaultRows: 1,
-        minRows: 1
+        minRows: 1,
+        fitPlaceholder: true
       });
       prompt.onblur = event => {
         if (event.relatedTarget !== openAi) onAiPromptChange?.(post, documentPrompt);

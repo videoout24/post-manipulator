@@ -18,10 +18,10 @@ assert.match(postList, /t\("editor\.projectPostListView\.closeProject"\)/);
 assert.match(postList, /project-post-rename-editor/);
 assert.doesNotMatch(postList, /#createPost/);
 assert.match(postList, /showCardDeleteConfirmation/);
-assert.match(postList, /astHasAiPrompt\(post\.messageAst\)/,
-  "The active Project post card must detect block AI prompts");
-assert.match(postList, /const hasDocumentAi = post\.id === activePostId && astHasAiPrompt\(post\.messageAst\)/,
-  "Post document AI controls must activate after at least one Canvas block prompt");
+assert.match(postList, /const showDocumentAi = post\.id === activePostId/,
+  "Whole-post prompt controls must always be visible on the active Project post card");
+assert.doesNotMatch(postList, /astHasAiPrompt/,
+  "Whole-post prompt visibility must not depend on prompts in Canvas blocks");
 assert.match(postList, /post\.ai\?\.documentPrompt/,
   "The active post card must expose its own whole-post prompt");
 assert.doesNotMatch(postList, /input\.type = "checkbox"/,

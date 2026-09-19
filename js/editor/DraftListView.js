@@ -87,8 +87,8 @@ function createDraftCard({
   card.setAttribute("role", "button");
   card.setAttribute("aria-pressed", String(selected));
 
-  const hasDocumentAi = !publicationLinked && astHasAiPrompt(draft.messageAst);
   let documentPrompt = String(draft.ai?.documentPrompt || "");
+  const showDocumentAi = !publicationLinked;
   let openAi = null;
 
   const head = el("div", "draft-card-head");
@@ -99,7 +99,7 @@ function createDraftCard({
   const tools = el("div", "draft-card-tools");
   const target = linkTargetForDraft(draft);
   tools.append(createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }));
-  if (hasDocumentAi) {
+  if (showDocumentAi) {
     openAi = button("{}", t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft, documentPrompt));
     openAi.classList.add("draft-ai-json");
     openAi.setAttribute("aria-label", t("editor.draftListView.openDraftAiJson"));
@@ -156,7 +156,7 @@ function createDraftCard({
   if (actions.childElementCount) card.append(actions);
   else card.classList.add("no-footer-actions");
 
-  if (hasDocumentAi) {
+  if (showDocumentAi) {
     const aiSettings = el("div", "draft-document-ai-settings");
     const promptLabel = el("label", "draft-document-ai-label", t("editor.draftListView.documentAiPrompt"));
     const prompt = document.createElement("textarea");
@@ -170,7 +170,8 @@ function createDraftCard({
     textareaSizing?.attach?.(prompt, {
       key: `draft:${draft.id}:ai.documentPrompt`,
       defaultRows: 1,
-      minRows: 1
+      minRows: 1,
+      fitPlaceholder: true
     });
     prompt.onblur = event => {
       if (event.relatedTarget !== openAi) onAiPromptChange?.(draft, documentPrompt);

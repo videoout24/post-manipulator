@@ -80,7 +80,8 @@ assert.equal(root.children[1].children.length, 1, "one stored Draft must produce
 assert.equal(root.children[1].children[0].dataset.draftId, row.id);
 
 const draftCard = root.children[1].children[0];
-const renameButton = draftCard.children[0].children[1].children[1];
+const draftTools = draftCard.children[0].children[1];
+const renameButton = draftTools.children.find(item => item.textContent === "✎");
 renameButton.onclick({ stopPropagation() {} });
 const renameOverlay = draftCard.children.at(-1);
 const renameInput = renameOverlay.children[0];
@@ -105,7 +106,7 @@ assert.equal(publishedTools.children.length, 3, "the published source keeps its 
 assert.equal(publishedTools.children[2].disabled, true, "deleting a published source is disabled");
 const publishedActions = publishedCard.children[1];
 assert.equal(publishedActions.children[0].disabled, true, "moving a published source is disabled");
-publishedTools.children[1].onclick({ stopPropagation() {} });
+publishedTools.children.find(item => item.textContent === "✎").onclick({ stopPropagation() {} });
 const publishedRename = publishedCard.children.at(-1);
 publishedRename.children[0].value = "Renamed published source";
 await publishedRename.children[1].children[1].onclick({ stopPropagation() {} });
@@ -130,7 +131,8 @@ const releasedRender = panel.render();
 pending.at(-1)([{ ...publishedRow, source: null, messageAst: { children: [{ type: "paragraph" }] } }]);
 await releasedRender;
 const releasedCard = root.children[1].children[0];
-assert.equal(releasedCard.children[0].children[1].children[2].disabled, false, "unlinking a publication enables draft deletion");
+const releasedTools = releasedCard.children[0].children[1];
+assert.equal(releasedTools.children.find(item => item.textContent === "🗑").disabled, false, "unlinking a publication enables draft deletion");
 assert.notEqual(releasedCard.children[1].children[0].disabled, true, "unlinking a publication enables transfer to a project");
 
 const projectEvents = new EventBus();

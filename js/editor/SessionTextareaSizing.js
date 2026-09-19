@@ -4,7 +4,7 @@ export class SessionTextareaSizing {
     this.preferredRows = new Map();
   }
 
-  attach(textarea, { key = "", defaultRows = 1, minRows = 1, autoShrink = false } = {}) {
+  attach(textarea, { key = "", defaultRows = 1, minRows = 1, autoShrink = false, fitPlaceholder = false } = {}) {
     if (!(textarea instanceof HTMLTextAreaElement)) return textarea;
     const storageKey = String(key || textarea.name || textarea.id || "anonymous");
     const minimum = Math.max(1, Number(minRows || 1));
@@ -19,12 +19,12 @@ export class SessionTextareaSizing {
       textarea.title = [textarea.title, t("editor.sessionTextareaSizing.altDownOneLineAltUpOne")].filter(Boolean).join(" · ");
     }
 
-    const refresh = () => this.refresh(textarea, { key: storageKey, defaultRows: initial, minRows: minimum, autoShrink });
+    const refresh = () => this.refresh(textarea, { key: storageKey, defaultRows: initial, minRows: minimum, autoShrink, fitPlaceholder });
     const rememberManualHeight = () => {
       const metrics = textareaMetrics(textarea);
       if (!metrics.lineHeight) return refresh();
       const visible = Math.max(minimum, Math.round((textarea.getBoundingClientRect().height - metrics.chrome) / metrics.lineHeight));
-      const contentRows = this.contentRows(textarea, metrics);
+      const contentRows = this.measuredRows(textarea, metrics, { fitPlaceholder });
       this.preferredRows.set(storageKey, Math.max(contentRows, visible));
       refresh();
     };
@@ -38,7 +38,7 @@ export class SessionTextareaSizing {
         if (!event.altKey || !["ArrowUp", "ArrowDown"].includes(event.key)) return;
         event.preventDefault();
         const metrics = textareaMetrics(textarea);
-        const contentRows = this.contentRows(textarea, metrics);
+        const contentRows = this.measuredRows(textarea, metrics, { fitPlaceholder });
         const current = Math.max(minimum, Number(this.preferredRows.get(storageKey) || initial));
         const next = event.key === "ArrowDown" ? current + 1 : Math.max(contentRows, minimum, current - 1);
         this.preferredRows.set(storageKey, next);
@@ -50,14 +50,29 @@ export class SessionTextareaSizing {
     return textarea;
   }
 
-  refresh(textarea, { key = "", defaultRows = 1, minRows = 1, autoShrink = false } = {}) {
+  refresh(textarea, { key = "", defaultRows = 1, minRows = 1, autoShrink = false, fitPlaceholder = false } = {}) {
     if (!(textarea instanceof HTMLTextAreaElement) || !textarea.isConnected) return;
     const metrics = textareaMetrics(textarea);
-    const contentRows = this.contentRows(textarea, metrics);
+    const contentRows = this.measuredRows(textarea, metrics, { fitPlaceholder });
     const preferred = Math.max(minRows, Number(this.preferredRows.get(key) || defaultRows || minRows));
     const rows = autoShrink ? Math.max(contentRows, minRows) : Math.max(contentRows, preferred, minRows);
     textarea.style.height = `${Math.ceil(rows * metrics.lineHeight + metrics.chrome)}px`;
     textarea.dataset.rows = String(rows);
+  }
+
+  measuredRows(textarea, metrics, { fitPlaceholder = false } = {}) {
+    if (!fitPlaceholder || textarea.value || !textarea.placeholder) {
+      return this.contentRows(textarea, metrics);
+    }
+    const placeholder = textarea.placeholder;
+    try {
+      textarea.placeholder = "";
+      textarea.value = placeholder;
+      return this.contentRows(textarea, metrics);
+    } finally {
+      textarea.value = "";
+      textarea.placeholder = placeholder;
+    }
   }
 
   contentRows(textarea, metrics = textareaMetrics(textarea)) {

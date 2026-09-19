@@ -82,12 +82,14 @@ draft/project/post IDs, and AST block IDs. It does not include `chat_id`,
 `message_id`, a channel ID, or the ID of an edited Telegram publication.
 
 The `Block AI JSON` button always creates an isolated package containing only
-the target block and its nested content and uses only that block's prompt. As
-soon as at least one Canvas block has an AI prompt, the draft or active post card
-automatically shows a **Whole-draft prompt** or **Whole-post prompt** section that
-uses the full width of the card. The field shares the editor's common height
-sizing behavior: it grows with its content and remembers a manually selected
-height for the current session. The compact `{}` button that opens the document
+the target block and its nested content and uses only that block's prompt. Every
+regular draft card and the active Project post card always show a
+**Whole-draft prompt** or **Whole-post prompt** section, regardless of whether
+Canvas blocks have their own AI prompts. The field uses the full width of the
+card and shares the editor's common height
+sizing behavior: by default it fits the hint's line count, then grows with its
+content and remembers a manually selected height for the current session. The
+compact `{}` button that opens the document
 AI JSON lives in the card's shared action group. This separate prompt receives
 the complete AST and can describe relationships between blocks, such as filling
 a list and the paragraphs that follow it. When the document prompt is empty,

@@ -16,18 +16,24 @@ assert.match(sizing, /attach\(textarea, \{ key = "", defaultRows = 1, minRows = 
   "shared textarea sizing must start at one row");
 assert.match(sizing, /refresh\(textarea, \{ key = "", defaultRows = 1, minRows = 1/,
   "shared refresh must use the same one-row default");
+assert.match(sizing, /measuredRows\(textarea, metrics, \{ fitPlaceholder = false \}/,
+  "shared sizing must support measuring an empty field by its placeholder");
 assert.doesNotMatch(inspector, /defaultRows:\s*3|return 3/,
   "block property editors must not retain three-row defaults");
 assert.match(treeView, /key: `\$\{node\.id\}:ai\.prompt`/,
   "block AI prompts must use shared session autosizing");
 assert.match(drafts, /key: `draft:\$\{draft\.id\}:ai\.documentPrompt`/,
   "whole-draft prompts must use shared session autosizing");
+assert.match(drafts, /key: `draft:\$\{draft\.id\}:ai\.documentPrompt`[\s\S]{0,120}fitPlaceholder: true/,
+  "an empty whole-draft prompt must fit its visible hint");
 assert.match(drafts, /tools\.append\(openAi\)/,
   "whole-draft JSON action must live in the card's shared tool group");
 assert.doesNotMatch(drafts, /aiSettings\.append\(promptLabel, prompt, openAi\)/,
   "whole-draft JSON action must not share the prompt row");
 assert.match(posts, /key: `project-post:\$\{project\.id\}:\$\{post\.id\}:ai\.documentPrompt`/,
   "whole-post prompts must use shared session autosizing");
+assert.match(posts, /key: `project-post:\$\{project\.id\}:\$\{post\.id\}:ai\.documentPrompt`[\s\S]{0,120}fitPlaceholder: true/,
+  "an empty whole-post prompt must fit its visible hint");
 assert.doesNotMatch(posts, /aiSettings\.append\(promptLabel, prompt, openAi\)/,
   "whole-post JSON action must not share the prompt row");
 assert.match(gallery, /key: "gallery:upload-caption"/,
