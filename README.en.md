@@ -2,51 +2,43 @@
 
 **English** · [Русский](README.md)
 
-Post Manipulator is a Telegram Mini App for composing Rich Messages, managing projects, and publishing through your own Telegram bot. Application data is stored locally in an IndexedDB database dedicated to the selected bot, while the Bot API token is encrypted with a password and stored only in Telegram CloudStorage.
-
-The application runs only inside **Telegram Desktop**. Opening it as a regular browser page is intentionally blocked.
-
-Choose Light, Dark, or `Telegram (auto)` in Settings → General → Appearance.
-Dark is the default. Changes apply immediately without reloading, and the choice
-is saved locally for the next launch, including the password screen. Auto follows
-Telegram's light or dark theme, falling back to the system color scheme when
-Telegram's value is unavailable. Switching themes preserves the open document,
-selection, and editing history.
-
-Every gallery topic has a trash button. For topics with indexed files, deletion
-from the bot and from the editor can be selected independently. Local-only
-topics remove only the folder and indexes; indexes used in posts or drafts are
-protected. Links to deleted local publications and posts are cleaned up while
-preserving their text.
-
-Network actions show an activity panel, including inside dialogs. Uploads show
-the current filename and processed file count; project publication shows its
-current phase. Queue waits and retries remain part of the operation. Background
-long polling does not activate this panel.
-
-The project is a practical MVP for composing, publishing, and managing interconnected posts. It is built around Telegram capabilities and requires neither an application backend nor paid hosting.
+Post Manipulator is a practical MVP for composing, publishing, and managing
+interconnected posts. It is built around Telegram capabilities and requires
+neither a deployed backend nor paid hosting.
 
 ## Features
 
-Published drafts are kept as source documents. They can be renamed and edited;
-Apply changes updates the linked publication. Deleting a draft or moving it to
-a project becomes available after its publication and local link are removed.
-A successful move creates the project post and removes the source from Drafts.
-Missing source drafts from earlier versions are restored from local publication copies.
-
 - compose and edit Rich Messages;
 - manage projects, drafts, publications, and media;
-- schedule regular drafts and Project posts, edit them before delivery, and cancel scheduled publications;
+- schedule regular drafts and Projects (an internal abstraction of linked posts) and edit them after publication;
 - receive media from the linked owner through the bot;
 - display a live preview in a separate private channel;
-- link the preview channel automatically when its only members are the owner and the administrator bot;
 - delete accessible Bot API service messages from the owner's private chat and preview channel;
-- create and restore IndexedDB backups through Telegram;
-- import `.csv` and `.md` tables into native Rich Message blocks;
-- import LaTeX formula templates from prepared `.json` files into formula blocks;
-- switch the interface between Russian and English; automatic mode reads the language from `Telegram.WebApp.initDataUnsafe.user.language_code`.
+- create and restore IndexedDB backups through Telegram.
+- import `.csv` and `.md` tables into native Rich Message blocks.
+- import LaTeX formula templates from prepared `.json` files into formula blocks.
 
-Localization applies only to the interface, hints, and system errors. Project and draft names, post text, and all other author-provided content are never passed through translation and remain exactly as written. The manual language selector is available under **Settings → General** and is stored locally; selecting `Telegram (auto)` restores the Telegram profile language.
+## Project import and test set
+
+The **Import** button in the Projects section adds a project from a `.json` file
+to the current IndexedDB database. Multiple files can be selected at once: one
+file normally contains one project, while a `rich-current-projects` bundle can
+contain several. Import does not clear the database; an ID collision produces a
+new ID and creates a project copy. Publication state, scheduling, and Telegram
+`chat_id` / `message_id` values are always reset so an imported project cannot
+control messages from its source environment.
+
+A ready-made load-test set is available in
+[`data/test-projects`](data/test-projects): 20 separate projects with 10 posts
+each, at least 5 content blocks in every post, a map in the starting post, and
+10 images from [`assets/test-projects`](assets/test-projects). All projects can
+be loaded at once from
+[`data/test-projects-bundle.json`](data/test-projects-bundle.json). Rebuild the
+deterministic set with:
+
+```bash
+node scripts/generate-test-projects.mjs
+```
 
 ## Intentionally out of scope
 
@@ -255,7 +247,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.10.1
+https://videoout24.github.io/post-manipulator/?build=1.10.3
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -332,7 +324,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.1`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.3`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 
