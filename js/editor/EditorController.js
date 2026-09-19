@@ -1,4 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.0";
+import { normalizeMediaSourcePatch } from "../core/MediaSource.js?v=1.10.4";
 import { defaultDateTimeLocal } from "../core/SemanticRichText.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import {
@@ -196,17 +197,22 @@ export class EditorController {
   updateNodeProperty(nodeId, key, value, { inspectorSource = false } = {}) {
     const node = this.tree.find(nodeId);
     if (!node) return;
-    const guarded = this.mutationError("property", { nodeId, node, key, value });
-    if (guarded) {
-      this.reportError(guarded);
-      return;
+    const patch = normalizeMediaSourcePatch(node, { [key]: value });
+    for (const [patchKey, patchValue] of Object.entries(patch)) {
+      const guarded = this.mutationError("property", { nodeId, node, key: patchKey, value: patchValue });
+      if (guarded) {
+        this.reportError(guarded);
+        return;
+      }
     }
-    node.props ||= {};
-    node.props[key] = value;
 
+    node.props ||= {};
     const def = this.registry.get(node.type);
-    if (def?.kind === "meta") this.applyMetaBindings(node, def, key);
-    this.syncPropertyBackToMeta(node, key, value);
+    for (const [patchKey, patchValue] of Object.entries(patch)) {
+      node.props[patchKey] = patchValue;
+      if (def?.kind === "meta") this.applyMetaBindings(node, def, patchKey);
+      this.syncPropertyBackToMeta(node, patchKey, patchValue);
+    }
 
     this.events.emit("tree:changed", inspectorSource ? { source: "property" } : undefined);
   }
@@ -214,7 +220,8 @@ export class EditorController {
   updateNodeProperties(nodeId, patch = {}, { inspectorSource = false } = {}) {
     const node = this.tree.find(nodeId);
     if (!node || !patch || typeof patch !== "object") return;
-    for (const [key, value] of Object.entries(patch)) {
+    const normalizedPatch = normalizeMediaSourcePatch(node, patch);
+    for (const [key, value] of Object.entries(normalizedPatch)) {
       const guarded = this.mutationError("property", { nodeId, node, key, value });
       if (guarded) {
         this.reportError(guarded);
@@ -223,7 +230,7 @@ export class EditorController {
     }
     node.props ||= {};
     const def = this.registry.get(node.type);
-    for (const [key, value] of Object.entries(patch)) {
+    for (const [key, value] of Object.entries(normalizedPatch)) {
       node.props[key] = structuredClone(value);
       if (def?.kind === "meta") this.applyMetaBindings(node, def, key);
       this.syncPropertyBackToMeta(node, key, value);

@@ -1,4 +1,5 @@
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
+import { normalizeStoredMediaSource } from "./MediaSource.js?v=1.10.4";
 
 export function migrateDocumentTree(tree) {
   migrateLegacyMediaProps(tree);
@@ -7,11 +8,8 @@ export function migrateDocumentTree(tree) {
 }
 
 export function migrateLegacyMediaProps(tree) {
-  const mediaTypes = new Set(["photo", "video", "audio", "voice_note"]);
   tree?.walk?.(node => {
-    if (!mediaTypes.has(node.type)) return;
-    node.props ||= {};
-    if (!node.props.fileId && node.props.url) node.props.fileId = node.props.url;
+    normalizeStoredMediaSource(node);
   });
 }
 

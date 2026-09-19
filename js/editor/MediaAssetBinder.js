@@ -91,8 +91,7 @@ function makeAssetPatch(asset, fileId) {
   const patch = {
     galleryId: asset.id,
     fileId,
-    // Compatibility with pre-Gallery documents/renderers/extensions.
-    url: fileId
+    url: ""
   };
   if (String(asset.caption || "").trim()) patch.caption = asset.caption;
   return patch;

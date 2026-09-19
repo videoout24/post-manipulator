@@ -1,5 +1,6 @@
 import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.7.17";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
+import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.10.4";
 
 export class Validator {
   constructor(registry) { this.registry = registry; }
@@ -32,8 +33,11 @@ export class Validator {
     if (node.type === "list") {
       errors.push(...validateListMode(node.props?.items));
     }
-    if (isMediaBlock(node.type) && node.props?.url && !isTelegramMediaSource(node.props.url, node.props.fileId)) {
+    if (supportsExternalMediaUrl(node.type) && node.props?.url && !isTelegramMediaSource(node.props.url, node.props.fileId)) {
       errors.push(`${node.type}.url must be an HTTPS URL or Telegram file_id`);
+    }
+    if (hasMediaSourceConflict(node)) {
+      errors.push(`${node.type} cannot use both an external URL and Gallery/file_id`);
     }
 
     if (parent && parent.id !== "root" && def.constraints?.allowedParents &&
@@ -169,10 +173,6 @@ function validateListMode(items) {
     return ["list items must be either all ordered or all unordered"];
   }
   return [];
-}
-
-function isMediaBlock(type) {
-  return ["animation", "audio", "document", "photo", "video", "voice_note"].includes(type);
 }
 
 function isTelegramMediaSource(value, fileId = "") {

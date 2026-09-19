@@ -130,11 +130,16 @@ positioning: `0` disables scrolling, `1` is slow, `2` is approximately half the
 former speed and is the default, and `3` is the former speed. The preference is
 stored locally for the entire editor.
 
-For media, AI can return a direct HTTPS URL that Telegram loads when sending the
-message. The URL must point directly to a file with the correct MIME type and
-may be temporary. For durable publications, it is better to send the file to
-the bot and use the Telegram `file_id` stored in Gallery. URL upload constraints
-are documented in the [Telegram Bot API](https://core.telegram.org/bots/api#sending-files).
+For Animation, Audio, Document, Photo, Video, and Voice note blocks, AI can
+return a direct public HTTPS URL that Telegram loads when sending the message.
+In blocks backed by Gallery, the external URL and internal resource are mutually
+exclusive: entering a URL clears `galleryId` and the Telegram `file_id`, while
+selecting a Gallery resource clears the URL. The link must point directly to a
+file with the correct MIME type and may be temporary, so Gallery is preferable
+for durable publications. Under the general Bot API rules, URL uploads are
+limited to 5 MB for photos and 20 MB for other files; documents are guaranteed
+for PDF and ZIP, and voice messages for OGG up to 1 MB. See the
+[Telegram Bot API](https://core.telegram.org/bots/api#sending-files) for details.
 
 ### Why there is no backend
 
@@ -247,7 +252,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.10.3
+https://videoout24.github.io/post-manipulator/?build=1.10.4
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -324,7 +329,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.3`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.4`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

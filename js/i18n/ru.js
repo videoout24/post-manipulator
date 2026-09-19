@@ -1398,7 +1398,7 @@ export const ru = Object.freeze({
   "core.propertyRegistry.galleryId": "ID галереи",
   "core.propertyRegistry.telegramFileId": "Telegram file_id",
   "core.propertyRegistry.externalMediaUrl": "Внешний HTTPS URL",
-  "core.propertyRegistry.externalMediaUrlHint": "Прямая постоянная ссылка на файл. Для надёжной публикации предпочтительнее ресурс Gallery с Telegram file_id.",
+  "core.propertyRegistry.externalMediaUrlHint": "Прямая публичная HTTPS-ссылка на файл. Её ввод очищает ресурс Gallery и Telegram file_id; выбор ресурса Gallery очищает эту ссылку.",
   "core.propertyRegistry.projectMap": "Карта проекта",
   "core.propertyRegistry.backToMap": "Назад к карте",
   "core.propertyRegistry.thinkingText": "Текст размышления",

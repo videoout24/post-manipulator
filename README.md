@@ -100,11 +100,15 @@ API позже сможет использовать тот же пакет и �
 текущей версии, создать отдельный черновик или отменить импорт без изменений.
 Ответ на запрос ко всему сообщению по-прежнему импортируется отдельным черновиком.
 
-Для медиа AI может вернуть прямой HTTPS URL: Telegram умеет загрузить такой файл
-при отправке. URL должен вести непосредственно на файл с корректным MIME и может
-оказаться временным. Для долговечных публикаций предпочтительнее отправить файл
-боту и использовать сохранённый в Gallery Telegram `file_id`. Ограничения
-загрузки по URL описаны в [Telegram Bot API](https://core.telegram.org/bots/api#sending-files).
+Для блоков Animation, Audio, Document, Photo, Video и Voice note AI может вернуть
+прямой публичный HTTPS URL: Telegram умеет загрузить такой файл при отправке.
+В блоках с поддержкой Gallery внешний URL и внутренний ресурс взаимоисключаются:
+ввод URL очищает `galleryId` и Telegram `file_id`, а выбор ресурса Gallery очищает
+URL. Ссылка должна вести непосредственно на файл с корректным MIME и может
+оказаться временной, поэтому для долговечных публикаций предпочтительнее Gallery.
+По общим правилам Bot API загрузка по URL ограничена 5 МБ для фото и 20 МБ для
+остальных файлов; для документов гарантированы PDF и ZIP, а для голосовых — OGG
+до 1 МБ. Подробности приведены в [Telegram Bot API](https://core.telegram.org/bots/api#sending-files).
 
 ## Внутренний сборщик блоков
 
@@ -240,7 +244,7 @@ Bot API позволяет боту получить через `getFile` пут
 После публикации GitHub Pages укажите в BotFather этот адрес Mini App:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.10.3
+https://videoout24.github.io/post-manipulator/?build=1.10.4
 ```
 
 Ваш bot token останется зашифрованным в Telegram CloudStorage, а данные приложения — в локальной IndexedDB выбранного бота. Страница не требует заранее заданного Bot ID.
@@ -317,7 +321,7 @@ git push
 
 GitHub Pages обновит сайт автоматически.
 
-GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.10.3`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
+GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.10.4`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
 
 ## Локальная проверка
 
