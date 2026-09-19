@@ -1,10 +1,10 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.10.0";
 export class SessionTextareaSizing {
   constructor() {
     this.preferredRows = new Map();
   }
 
-  attach(textarea, { key = "", defaultRows = 3, minRows = 1, autoShrink = false } = {}) {
+  attach(textarea, { key = "", defaultRows = 1, minRows = 1, autoShrink = false } = {}) {
     if (!(textarea instanceof HTMLTextAreaElement)) return textarea;
     const storageKey = String(key || textarea.name || textarea.id || "anonymous");
     const minimum = Math.max(1, Number(minRows || 1));
@@ -50,7 +50,7 @@ export class SessionTextareaSizing {
     return textarea;
   }
 
-  refresh(textarea, { key = "", defaultRows = 3, minRows = 1, autoShrink = false } = {}) {
+  refresh(textarea, { key = "", defaultRows = 1, minRows = 1, autoShrink = false } = {}) {
     if (!(textarea instanceof HTMLTextAreaElement) || !textarea.isConnected) return;
     const metrics = textareaMetrics(textarea);
     const contentRows = this.contentRows(textarea, metrics);

@@ -9,13 +9,14 @@ import {
   parseAiDraftResponse
 } from "../js/editor/AiDraftExchange.js";
 import { astHasAiPrompt } from "../js/editor/DraftListView.js";
-import {
-  assembleOwnerAiDraftTextParts,
-  extractOwnerAiDraftResponseText,
-  extractOwnerAiDraftTextPart,
-  isOwnerAiDraftDocument,
-  TelegramRuntime
-} from "../js/telegram/TelegramRuntime.js";
+import { isJsonDocument } from "../js/telegram/TelegramRuntime.js";
+import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js";
+import { createTelegramFormattingRegistry } from "../js/core/FormattingRegistry.js";
+import { BlockRegistry } from "../js/core/BlockRegistry.js";
+import { registerTelegramCore } from "../js/blocks/registerCoreBlocks.js";
+
+const registry = new BlockRegistry(createDefaultPropertyRegistry(createTelegramFormattingRegistry()));
+registerTelegramCore(registry);
 
 const ast = {
   id: "root",
@@ -43,6 +44,7 @@ const request = buildAiDraftRequest({
   target: { kind: "draft", draftId: "draft-1", version: 7 },
   scope: { kind: "field", nodeId: "heading-1", field: "text" },
   contextIncluded: "message",
+  registry,
   requestId: "request-1",
   createdAt: 0
 });
@@ -60,17 +62,49 @@ const emptyListRequest = buildAiDraftRequest({
     ]
   },
   target: { kind: "draft", draftId: "draft-list", version: 1 },
-  scope: { kind: "block", nodeId: "list-empty" }
+  scope: { kind: "block", nodeId: "list-empty" },
+  registry
 });
-assert.match(emptyListRequest.task.responseContract.join("\n"), /item's blocks array/,
-  "an empty list request must explain the otherwise invisible list-item schema");
-assert.doesNotMatch(emptyListRequest.task.responseContract.join("\n"), /\{\"blocks\"/,
-  "schema guidance must not embed quote-sensitive JSON inside a JSON string");
+assert.equal(emptyListRequest.task.blockSchemas.list.props.items.type, "array");
+assert.equal(emptyListRequest.task.blockSchemas.list.props.items.items.props.blocks.type, "array");
+assert.deepEqual(emptyListRequest.task.blockSchemas.list.props.items.items.props.blocks.items.example,
+  { type: "paragraph", text: "Visible text" },
+  "the registry must expose the otherwise invisible list-item block shape as structured JSON");
+
+const repeatedTypesRequest = buildAiDraftRequest({
+  messageAst: {
+    id: "root", type: "document", props: {}, children: [
+      ...Array.from({ length: 3 }, (_, index) => ({ id: `list-${index}`, type: "list", props: { items: [] }, children: [] })),
+      ...Array.from({ length: 2 }, (_, index) => ({ id: `table-${index}`, type: "table", props: { cells: [] }, children: [] }))
+    ]
+  },
+  registry
+});
+assert.deepEqual(Object.keys(repeatedTypesRequest.task.blockSchemas), ["list", "table"],
+  "three lists and two tables must produce only two shared registry schemas");
+assert.equal(repeatedTypesRequest.task.blockSchemas.table.props.cells.items.items.props.text.type, "rich-text");
+assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /task\.blockSchemas\[block\.type\]/);
+
+const nestedBlockRequest = buildAiDraftRequest({
+  messageAst: {
+    id: "root", type: "document", props: {}, children: [
+      {
+        id: "details-1", type: "details", props: { summary: "More", open: false }, children: [
+          { id: "paragraph-1", type: "paragraph", props: { text: "Nested" }, children: [] }
+        ]
+      }
+    ]
+  },
+  registry
+});
+assert.equal(nestedBlockRequest.task.blockSchemas.details.children.items.schemaRef,
+  "task.blockSchemas[item.type]", "nested children must refer to the same unique type registry");
 
 const documentPromptRequest = buildAiDraftRequest({
   messageAst: ast,
   target: { kind: "draft", draftId: "draft-1", version: 7, includeFullContext: true },
   scope: { kind: "message" },
+  registry,
   documentPrompt: "Fill the list and use its five items in the following five paragraphs."
 });
 assert.equal(documentPromptRequest.task.documentPrompt,
@@ -81,6 +115,7 @@ assert.match(documentPromptRequest.task.responseContract.at(-1), /coordinate cha
 const isolatedBlockRequest = buildAiDraftRequest({
   messageAst: ast,
   scope: { kind: "block", nodeId: "heading-1" },
+  registry,
   documentPrompt: "This must not leak into a block request."
 });
 assert.equal(isolatedBlockRequest.task.documentPrompt, undefined,
@@ -99,7 +134,8 @@ const privateIdsRequest = buildAiDraftRequest({
     ...ast,
     props: { chatId: -100123, channel_id: -100456, message_id: 55, harmless: "kept" }
   },
-  target: { kind: "draft", draftId: "draft-1", version: 7, chatId: -100123, channelId: -100456, messageId: 55 }
+  target: { kind: "draft", draftId: "draft-1", version: 7, chatId: -100123, channelId: -100456, messageId: 55 },
+  registry
 });
 assert.equal(privateIdsRequest.request.target.chatId, undefined);
 assert.equal(privateIdsRequest.request.target.channelId, undefined);
@@ -137,100 +173,10 @@ delete missingPrompt.children[0].ai;
 const restored = mergeMissingAiPrompts(missingPrompt, ast);
 assert.deepEqual(restored.children[0].ai, ast.children[0].ai, "prompt and selected field survive a model omission");
 
-const telegramText = JSON.stringify(request);
-assert.equal(extractOwnerAiDraftResponseText({ text: telegramText }), telegramText);
-const fencedTelegramText = `\`\`\`json\n${telegramText}\n\`\`\``;
-assert.equal(extractOwnerAiDraftResponseText({ text: fencedTelegramText }), fencedTelegramText);
-assert.equal(extractOwnerAiDraftResponseText({ text: "ordinary message" }), "");
-assert.deepEqual(extractOwnerAiDraftTextPart({ text: "AI JSON 1/2\n```json\n{\"format\":" }), {
-  batchId: "default",
-  index: 1,
-  total: 2,
-  text: "```json\n{\"format\":"
-});
-assert.deepEqual(extractOwnerAiDraftTextPart({ text: "AI JSON post42 2/3\nsecond part" }), {
-  batchId: "post42",
-  index: 2,
-  total: 3,
-  text: "second part"
-});
-assert.equal(extractOwnerAiDraftTextPart({ text: "AI JSON 4/3\ninvalid" }), null);
-const telegramSplitAt = Math.floor(fencedTelegramText.length / 2);
-assert.equal(assembleOwnerAiDraftTextParts([
-  fencedTelegramText.slice(0, telegramSplitAt),
-  fencedTelegramText.slice(telegramSplitAt)
-]), fencedTelegramText, "a code block may span multiple Telegram text messages");
-const rawTelegramSplitAt = Math.floor(telegramText.length / 2);
-assert.equal(assembleOwnerAiDraftTextParts([
-  `\`\`\`json\n${telegramText.slice(0, rawTelegramSplitAt)}\n\`\`\``,
-  `\`\`\`json\n${telegramText.slice(rawTelegramSplitAt)}\n\`\`\``
-]), telegramText, "individually fenced chunks are accepted too");
-
-const multipartRuntimeRows = new Map();
-const multipartEvents = [];
-let multipartPoll = 0;
-const multipartRuntime = new TelegramRuntime({
-  db: {
-    async get(store, key, fallback = null) {
-      return multipartRuntimeRows.has(`${store}:${key}`) ? multipartRuntimeRows.get(`${store}:${key}`) : fallback;
-    },
-    async put(store, key, value) { multipartRuntimeRows.set(`${store}:${key}`, structuredClone(value)); },
-    async delete(store, key) { multipartRuntimeRows.delete(`${store}:${key}`); }
-  },
-  events: {
-    emit() {},
-    async emitAsync(name, payload) { multipartEvents.push({ name, payload }); }
-  },
-  client: {
-    async getMe() { return { id: 7, username: "test_bot" }; },
-    async getWebhookInfo() { return {}; },
-    async getUpdates(_params, { signal }) {
-      if (multipartPoll++ === 0) {
-        return [
-          {
-            update_id: 1,
-            message: {
-              message_id: 201,
-              from: { id: 42 },
-              chat: { id: 42, type: "private" },
-              text: `AI JSON sample 1/2\n${fencedTelegramText.slice(0, telegramSplitAt)}`
-            }
-          },
-          {
-            update_id: 2,
-            message: {
-              message_id: 202,
-              from: { id: 42 },
-              chat: { id: 42, type: "private" },
-              reply_to_message: { message_id: 101 },
-              text: `AI JSON sample 2/2\n${fencedTelegramText.slice(telegramSplitAt)}`
-            }
-          }
-        ];
-      }
-      return new Promise((resolve, reject) => signal.addEventListener("abort", () => {
-        reject(new DOMException("Aborted", "AbortError"));
-      }, { once: true }));
-    }
-  },
-  ownerBinding: { async getOwner() { return { userId: 42, chatId: 42 }; } },
-  previewChannelBinding: {}
-});
-await multipartRuntime.start();
-for (let attempt = 0; attempt < 20 && !multipartEvents.some(event => event.name === "telegram:ai-draft-response"); attempt += 1) {
-  await new Promise(resolve => setImmediate(resolve));
-}
-await multipartRuntime.stop();
-const multipartResponse = multipartEvents.find(event => event.name === "telegram:ai-draft-response")?.payload;
-assert.equal(multipartResponse?.text, fencedTelegramText, "Telegram runtime assembles a persisted multipart text response");
-assert.deepEqual(multipartResponse?.source?.messageIds, [201, 202]);
-assert.equal(multipartResponse?.source?.replyToMessageId, 101);
-assert.equal([...multipartRuntimeRows.keys()].some(key => key.includes("ai.text-parts")), false,
-  "the completed multipart buffer is removed from local runtime storage");
-assert.equal(isOwnerAiDraftDocument({ document: { file_name: "draft-ai-response.json" } }), true);
-assert.equal(isOwnerAiDraftDocument({ document: { file_name: "answer.json" } }), true,
-  "a typical downloaded model answer must not be routed to Gallery as a generic document");
-assert.equal(isOwnerAiDraftDocument({ document: { file_name: "notes.json" } }), false);
+assert.equal(isJsonDocument({ document: { file_name: "answer.json" } }), true);
+assert.equal(isJsonDocument({ document: { file_name: "payload.bin", mime_type: "application/json" } }), true);
+assert.equal(isJsonDocument({ document: { file_name: "notes.pdf", mime_type: "application/pdf" } }), false,
+  "only JSON documents must be excluded from Gallery ingestion");
 
 const runtimeRows = new Map();
 const db = {
@@ -239,33 +185,12 @@ const db = {
   async delete(store, key) { runtimeRows.delete(`${store}:${key}`); }
 };
 let storedAst = structuredClone(ast);
-let capturedFile = null;
 let botOpenCalls = 0;
-let clipboardText = "";
-const clipboardListeners = new Map();
-const clipboardInput = {
-  value: "",
-  focused: false,
-  selected: false,
-  addEventListener(name, handler) { clipboardListeners.set(name, handler); },
-  removeEventListener(name) { clipboardListeners.delete(name); },
-  focus() { this.focused = true; },
-  select() { this.selected = true; },
-  paste(text) {
-    clipboardListeners.get("paste")?.({
-      clipboardData: { getData: type => type === "text/plain" ? text : "" },
-      preventDefault() {}
-    });
-  }
-};
-const clipboardApi = { async readText() { return clipboardText; } };
-const invalidClipboardReports = [];
-const exchangeNotices = [];
-const deletedMessages = [];
+const responseInput = { value: "" };
+const invalidResponseReports = [];
 const conflictPrompts = [];
 const createdDrafts = [];
 let conflictChoice = null;
-const missingRequest = Object.assign(new Error("message to delete not found"), { isMessageMissing: () => true });
 const activeDraft = {
   id: "draft-1",
   title: "Companies",
@@ -289,90 +214,54 @@ const drafts = {
 };
 const exchange = new AiDraftExchange({
   db,
-  input: clipboardInput,
-  clipboard: clipboardApi,
-  invalidResponseReporter(options) { invalidClipboardReports.push(options); },
+  input: responseInput,
+  registry,
+  invalidResponseReporter(options) { invalidResponseReports.push(options); },
   tree: { root: storedAst, toJSON: () => structuredClone(storedAst) },
   draftSession,
   drafts,
   documents: { async saveCurrentContext() {} },
-  ownerBinding: { async getOwner() { return { chatId: 42 }; } },
-  client: {
-    async uploadDocument({ file }) { capturedFile = file; return { message_id: 101 }; },
-    async deleteMessage(chatId, messageId) {
-      deletedMessages.push([chatId, messageId]);
-      if (messageId === 101) throw missingRequest;
-    }
-  },
   navigation: { openBot() { botOpenCalls += 1; return true; } },
   conflictResolver(options) { conflictPrompts.push(options); return conflictChoice; },
-  notifications: { show(payload) { exchangeNotices.push(payload); } }
+  notifications: { show() {} }
 });
 exchange.start();
-exchange.clipboard = { async readText() { throw new DOMException("Denied", "NotAllowedError"); } };
-assert.equal(await exchange.pasteAndImport(), null);
-assert.equal(clipboardInput.focused, true);
-assert.equal(clipboardInput.selected, true);
-assert.equal(exchangeNotices.at(-1).type, "warning");
-clipboardInput.paste("{invalid fallback json");
-await new Promise(resolve => setImmediate(resolve));
-assert.equal(invalidClipboardReports.length, 1,
-  "a user-initiated paste event must reach the same validator after Clipboard API denial");
-exchange.clipboard = clipboardApi;
 assert.equal(exchange.openBot(), true);
 assert.equal(botOpenCalls, 1);
 await exchange.open();
-const wholeDraftPayload = JSON.parse(clipboardInput.value);
+const wholeDraftPayload = JSON.parse(responseInput.value);
 assert.equal(wholeDraftPayload.task.documentPrompt, "Coordinate every prompted block.");
 assert.equal(wholeDraftPayload.messageAst.children.length, 2,
   "right-panel document AI includes the entire draft context");
 await exchange.open({ nodeId: "heading-1" });
-const clipboardPayload = JSON.parse(clipboardInput.value);
-assert.equal(clipboardPayload.task.documentPrompt, undefined,
+const manualPayload = JSON.parse(responseInput.value);
+assert.equal(manualPayload.task.documentPrompt, undefined,
   "opening AI JSON from a Canvas block must ignore the right-panel document prompt");
-clipboardPayload.messageAst.children[0].props.text = "Clipboard title";
-clipboardText = "{invalid clipboard json";
-assert.equal(await exchange.pasteAndImport(), null);
-assert.equal(invalidClipboardReports.length, 2);
-assert.match(invalidClipboardReports.at(-1).message, /некорректный JSON|invalid JSON/i);
-assert.equal(clipboardInput.value, clipboardText, "invalid clipboard contents remain visible for inspection");
+assert.equal(await exchange.importText("{invalid response", { showInvalidDialog: true }), null);
+assert.equal(invalidResponseReports.length, 1);
+assert.match(invalidResponseReports.at(-1).message, /некорректный JSON|invalid JSON/i);
 
-clipboardText = JSON.stringify(clipboardPayload);
-const clipboardImported = await exchange.pasteAndImport();
-assert.ok(clipboardImported);
-assert.equal(storedAst.children[0].props.text, "Clipboard title");
-assert.equal(clipboardInput.value, clipboardText);
-
-await exchange.open({ nodeId: "heading-1" });
-await exchange.sendToBot();
-const sentPayload = JSON.parse(await capturedFile.text());
-assert.equal(sentPayload.request.scope.kind, "field");
-assert.equal(sentPayload.request.contextIncluded, "block");
-assert.equal(sentPayload.messageAst.children.length, 1,
+assert.equal(manualPayload.request.scope.kind, "field");
+assert.equal(manualPayload.request.contextIncluded, "block");
+assert.equal(manualPayload.messageAst.children.length, 1,
   "Block AI JSON must stay isolated even when the card's full-context checkbox is enabled");
-sentPayload.messageAst.children[0].props.text = "Imported title";
-const imported = await exchange.importText(JSON.stringify(sentPayload), {
-  viaTelegram: true,
-  telegramSource: { chatId: 42, messageId: 104, messageIds: [102, 103, 104], replyToMessageId: 101 }
-});
-assert.ok(imported, "a missing request message must not fail a valid import");
+manualPayload.messageAst.children[0].props.text = "Imported title";
+const imported = await exchange.importText(JSON.stringify(manualPayload));
+assert.ok(imported);
 assert.equal(storedAst.children[0].props.text, "Imported title");
-assert.deepEqual(deletedMessages, [[42, 102], [42, 103], [42, 104], [42, 101]],
-  "every multipart response message and the request are cleaned up after import");
 
 activeDraft.updatedAt = 9;
-sentPayload.messageAst.children[0].props.text = "Conflicting title";
-const sentRequestKey = `runtime:ai.request:${sentPayload.request.id}`;
+manualPayload.messageAst.children[0].props.text = "Conflicting title";
+const sentRequestKey = `runtime:ai.request:${manualPayload.request.id}`;
 runtimeRows.set(sentRequestKey, {
-  requestId: sentPayload.request.id,
-  target: structuredClone(sentPayload.request.target),
-  scope: structuredClone(sentPayload.request.scope),
+  requestId: manualPayload.request.id,
+  target: structuredClone(manualPayload.request.target),
+  scope: structuredClone(manualPayload.request.scope),
   contextIncluded: "block",
   createdAt: Date.now()
 });
 conflictChoice = null;
-clipboardText = JSON.stringify(sentPayload);
-const cancelledConflict = await exchange.pasteAndImport();
+const cancelledConflict = await exchange.importText(JSON.stringify(manualPayload));
 assert.equal(cancelledConflict, null);
 assert.equal(storedAst.children[0].props.text, "Imported title", "closing the conflict dialog changes nothing");
 assert.equal(createdDrafts.length, 0, "a version conflict must not create a draft without an explicit choice");
@@ -381,30 +270,30 @@ assert.equal(runtimeRows.has(sentRequestKey), true,
   "cancelling keeps the pending exchange available for another import attempt");
 
 conflictChoice = "apply-current";
-await exchange.pasteAndImport();
+await exchange.importText(JSON.stringify(manualPayload));
 assert.equal(storedAst.children[0].props.text, "Conflicting title", "the current block changes only after confirmation");
 assert.equal(runtimeRows.has(sentRequestKey), false, "a completed conflict choice cleans up the exchange");
 
 conflictChoice = "new-draft";
-sentPayload.messageAst.children[0].props.text = "Forked title";
-clipboardText = JSON.stringify(sentPayload);
-await exchange.pasteAndImport();
+manualPayload.messageAst.children[0].props.text = "Forked title";
+await exchange.importText(JSON.stringify(manualPayload));
 assert.equal(createdDrafts.length, 1, "a conflict fork is created only after that explicit choice");
 assert.equal(createdDrafts[0].messageAst.children[0].props.text, "Forked title");
-assert.equal(createdDrafts[0].source.importedVia, "clipboard");
+assert.equal(createdDrafts[0].source.importedVia, "manual");
 
 const [html, editorCss, shellSource] = await Promise.all([
   readFile(new URL("../index.html", import.meta.url), "utf8"),
   readFile(new URL("../styles/editor.css", import.meta.url), "utf8"),
   readFile(new URL("../js/app/createEditorShell.js", import.meta.url), "utf8")
 ]);
-assert.match(html, /id="aiDraftPaste"/);
-assert.match(html, /id="aiDraftImport"[\s\S]*?id="aiDraftSend"[\s\S]*?id="aiDraftOpenBot"/,
-  "bot actions must form the final right-side group");
+assert.doesNotMatch(html, /id="aiDraftPaste"|id="aiDraftSend"/,
+  "CORS-dependent clipboard and bot transport actions must not be exposed");
+assert.match(html, /id="aiDraftImport"[\s\S]*?id="aiDraftOpenBot"/,
+  "manual import stays on the left while Open bot remains the final action");
 assert.match(editorCss, /\.button-like \{[\s\S]*?font-size: 9px;/,
   "the response file label must use the same compact font size as dialog buttons");
-assert.match(editorCss, /#aiDraftSend \{ margin-left: auto; \}/,
-  "the Send to bot button must push both bot actions to the right");
-assert.match(shellSource, /pasteButton: query\("#aiDraftPaste"\)/);
+assert.match(editorCss, /#aiDraftOpenBot \{ margin-left: auto; \}/,
+  "Open bot must remain separated on the right");
+assert.doesNotMatch(shellSource, /aiDraftPaste|aiDraftSend|pasteButton|sendButton/);
 
 console.log("ai draft exchange smoke: ok");

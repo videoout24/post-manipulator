@@ -373,7 +373,7 @@
 }
 .button-like:hover { background: var(--theme-surface-hover, #202b39); }
 .button-like input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-#aiDraftSend { margin-left: auto; }
+#aiDraftOpenBot { margin-left: auto; }
 
 /* v1.2.1 — semantic palette elements + compact Unicode emoji picker */
 .basic-emoji-picker {

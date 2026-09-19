@@ -1,12 +1,12 @@
-import { t } from "../i18n/index.js?v=1.9.8";
-import { createDraftListView } from "./DraftListView.js?v=1.9.8";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.9.8";
+import { t } from "../i18n/index.js?v=1.10.0";
+import { createDraftListView } from "./DraftListView.js?v=1.10.0";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.10.0";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
 
 export class EditorRightPanel {
   constructor({
     root, layout, session, draftSession = null, drafts, projects = null,
-    documents = null, events, onError = null, onToast = null, onPublishDraft = null, onScheduleDraft = null, onApplyDraftChanges = null,
+    documents = null, events, textareaSizing = null, onError = null, onToast = null, onPublishDraft = null, onScheduleDraft = null, onApplyDraftChanges = null,
     onPublishProjectPost = null, onScheduleProjectPost = null, onCancelProjectPostSchedule = null, onApplyProjectChanges = null
   } = {}) {
     this.root = root;
@@ -17,6 +17,7 @@ export class EditorRightPanel {
     this.projects = projects;
     this.documents = documents;
     this.events = events;
+    this.textareaSizing = textareaSizing;
     this.onError = onError;
     this.onToast = onToast;
     this.onPublishDraft = onPublishDraft;
@@ -136,6 +137,7 @@ export class EditorRightPanel {
       onApplyChanges: post => this.#applyProjectChanges(post),
       onAiPromptChange: (post, documentPrompt) => this.#setPostAiPrompt(post, documentPrompt),
       onOpenAi: (post, documentPrompt) => this.#openProjectPostAi(post, documentPrompt),
+      textareaSizing: this.textareaSizing,
       onDelete: post => this.#deleteProjectPost(post)
     }));
   }
@@ -166,6 +168,7 @@ export class EditorRightPanel {
       onAiPromptChange: (draft, documentPrompt) => this.#setDraftAiPrompt(draft, documentPrompt),
       onSelectTarget: target => this.#selectLinkTarget(target),
       onOpenLinkedSource: target => this.#openLinkedSource(target),
+      textareaSizing: this.textareaSizing,
       linkTargetSlotKey: this.linkTargetSlotKey,
       linkedTargets: this.linkedTargets
     });

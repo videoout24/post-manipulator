@@ -67,12 +67,15 @@ The `AI JSON` button creates a portable `rich-current-ai-draft` package containi
 - the ID and version of the source draft or Project post;
 - either the complete structured AST or the target block's local context;
 - the exact permitted change scope (`message`, `block`, or `field`);
-- block instructions and a contract requiring the complete JSON to be returned without structural changes.
+- block instructions and a contract requiring the complete JSON to be returned without structural changes;
+- `task.blockSchemas`, the expected `props` and `children` shapes derived from
+  the block and property registries. Each encountered block type is described
+  once: for example, three lists share `task.blockSchemas.list`, while two tables
+  share `task.blockSchemas.table`.
 
 The package contains only internal application identifiers: `request.id`, the
 draft/project/post IDs, and AST block IDs. It does not include `chat_id`,
-`message_id`, a channel ID, or the ID of an edited Telegram publication. Bot
-message associations are stored separately and only on the local device.
+`message_id`, a channel ID, or the ID of an edited Telegram publication.
 
 The `Block AI JSON` button always creates an isolated package containing only
 the target block and its nested content and uses only that block's prompt. As
@@ -84,34 +87,16 @@ paragraphs that follow it. When the document prompt is empty, only the local
 block prompts apply. For a selected regular draft, **Close** saves it and clears
 the Canvas.
 
-The package can be copied, downloaded, or sent as a JSON document to the private
-bot chat and then passed to any AI model. **Paste from clipboard** reads the
-returned JSON from the system clipboard, validates it completely, and immediately
-starts applying it. An invalid response opens a dialog with the reason and remains
-visible in the field for inspection. If Telegram WebView blocks direct clipboard
-access, the application selects the field and asks for `Ctrl+V` or the system
-Paste command; that permitted user paste event automatically starts the same
-validation and import. A response can also be pasted manually or selected as a
-local file. A response sent by the owner as text in the private bot chat is
-imported automatically; complete JSON may be wrapped in one ` ```json … ``` `
-block. If it does not fit in one message, send it in parts whose first lines are
-`AI JSON 1/3`, `AI JSON 2/3`, and `AI JSON 3/3`. One code block can span those
-messages: keep the opening backticks in the first part and the closing backticks
-in the last. To assemble concurrent responses independently, add a label after
-`AI JSON`, for example `AI JSON post42 1/3`. Parts are stored locally for up to
-24 hours, validated only after the complete set arrives, and then use the normal
-version-conflict dialog. A large JSON document must
-be downloaded once and selected manually because the Telegram file endpoint
-does not allow a static Mini App to read it through CORS. Documents named like
-`…-ai-response.json`, `answer.json`, and `response.json` are recognized as AI
-responses and are not routed to Gallery. A future AI API integration can use
-the same package and importer without changing the draft format.
-
-When a package is sent through the bot, the application stores the association
-between its `request.id` and `message_id`. After a successful import it attempts
-to delete both the JSON request and response from the private chat. This cleanup
-is optional: if the request was already deleted manually, a valid response is
-still imported and the missing message is not treated as an error.
+The package can be copied or downloaded and then passed to any AI model. Paste
+the response manually into the AI JSON field with the operating system's normal
+Paste command, or select a local `.json` file. **Apply response** validates the
+complete package; an invalid response opens a dialog with the reason while the
+original text remains available for correction. Because of CORS constraints,
+the application does not send JSON through the bot, read responses from chat, or
+provide a separate clipboard-reading button. Any JSON document received by the
+bot is ignored and is not added to Gallery. **Open bot** remains available as a
+separate navigation action. A future AI API integration can use the same package
+and importer without changing the draft format.
 
 An isolated response is applied only to the permitted block or field. If the
 source version changed after export, the application shows a conflict dialog
@@ -261,7 +246,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.9.8
+https://videoout24.github.io/post-manipulator/?build=1.10.0
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -338,7 +323,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.9.8`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

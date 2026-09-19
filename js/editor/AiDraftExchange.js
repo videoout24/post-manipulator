@@ -1,6 +1,7 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.9.8";
+import { t } from "../i18n/index.js?v=1.10.0";
 import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
+import { resolveAiBlockSchemas } from "./AiBlockSchemaResolver.js?v=1.10.0";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
 export const AI_DRAFT_SCHEMA_VERSION = 1;
@@ -16,81 +17,49 @@ export class AiDraftExchange {
     closeButton,
     copyButton,
     downloadButton,
-    sendButton,
     openBotButton,
-    pasteButton,
     importButton,
     fileInput,
     tree,
+    registry,
     draftSession,
     projectSession,
     drafts,
     documents,
-    client,
     navigation,
-    ownerBinding,
     db = null,
     events = null,
     notifications = null,
     conflictResolver = null,
     invalidResponseReporter = null,
-    clipboard = globalThis.navigator?.clipboard,
     documentRoot = globalThis.document
   } = {}) {
     Object.assign(this, {
       dialog, input, openButton, closeButton, copyButton, downloadButton,
-      sendButton, openBotButton, pasteButton, importButton, fileInput, tree, draftSession, projectSession,
-      drafts, documents, client, navigation, ownerBinding, events, notifications, documentRoot
+      openBotButton, importButton, fileInput, tree, registry, draftSession, projectSession,
+      drafts, documents, navigation, events, notifications, documentRoot
     });
     this.db = db;
     this.conflictResolver = conflictResolver;
     this.invalidResponseReporter = invalidResponseReporter;
-    this.clipboard = clipboard;
     this.unsubscribers = [];
     this.currentScope = null;
-    this.preparedPayload = null;
-    this.awaitingClipboardPaste = false;
   }
 
   start() {
     this.#listen(this.openButton, "click", () => this.open());
-    this.#listen(this.closeButton, "click", () => {
-      this.awaitingClipboardPaste = false;
-      this.dialog?.close?.();
-    });
+    this.#listen(this.closeButton, "click", () => this.dialog?.close?.());
     this.#listen(this.copyButton, "click", () => this.copy());
     this.#listen(this.downloadButton, "click", () => this.download());
-    this.#listen(this.sendButton, "click", () => this.sendToBot());
     this.#listen(this.openBotButton, "click", () => this.openBot());
-    this.#listen(this.pasteButton, "click", () => this.pasteAndImport());
-    this.#listen(this.input, "paste", event => this.#handleClipboardPaste(event));
-    this.#listen(this.importButton, "click", () => this.importText(this.input?.value));
+    this.#listen(this.importButton, "click", () => this.importText(this.input?.value, { showInvalidDialog: true }));
     this.#listen(this.fileInput, "change", event => this.importFile(event.target?.files?.[0]));
     this.unsubscribers.push(
-      this.events?.on?.("telegram:ai-draft-response", event => this.importText(event?.text, { viaTelegram: true, telegramSource: event?.source })),
-      this.events?.on?.("telegram:ai-draft-text-part", event => {
-        if (event?.complete) return;
-        this.#notify({
-          message: t("editor.aiDraftExchange.telegramTextPartReceived", {
-            0: Number(event?.received || 0),
-            1: Number(event?.total || 0)
-          }),
-          type: "info",
-          duration: 5000
-        });
-      }),
-      this.events?.on?.("telegram:ai-draft-text-part-error", () => this.#notify({
-        message: t("editor.aiDraftExchange.fileTooLarge"),
-        type: "error",
-        duration: 9000
-      })),
       this.events?.on?.("ai:block-export-requested", event => this.open({ nodeId: event?.nodeId })),
       this.events?.on?.("ai:document-open-requested", () => {
         this.currentScope = null;
-        this.preparedPayload = null;
         return this.open();
-      }),
-      this.events?.on?.("telegram:ai-draft-document", event => this.#rememberIncomingDocument(event))
+      })
     );
     return this;
   }
@@ -101,10 +70,8 @@ export class AiDraftExchange {
 
   async open(scope = null) {
     try {
-      this.awaitingClipboardPaste = false;
       this.currentScope = scope?.nodeId ? { nodeId: String(scope.nodeId) } : null;
       const payload = await this.buildRequest();
-      this.preparedPayload = structuredClone(payload);
       if (this.input) this.input.value = JSON.stringify(payload, null, 2);
       this.dialog?.showModal?.();
     } catch (error) {
@@ -137,6 +104,7 @@ export class AiDraftExchange {
       target,
       scope,
       documentPrompt,
+      registry: this.registry,
       contextIncluded: messageAst === fullAst ? "message" : "block"
     });
     await this.#rememberRequestDefinition(payload);
@@ -171,30 +139,6 @@ export class AiDraftExchange {
     }
   }
 
-  async sendToBot() {
-    try {
-      const payload = this.preparedPayload || await this.buildRequest();
-      this.preparedPayload = structuredClone(payload);
-      const text = JSON.stringify(payload, null, 2);
-      if (this.input) this.input.value = text;
-      const owner = await this.ownerBinding?.getOwner?.();
-      if (!owner?.chatId) throw new Error(t("editor.aiDraftExchange.ownerNotBound"));
-      const file = makeJsonFile(text, aiFileName(payload));
-      const sent = await this.client?.uploadDocument?.({
-        chatId: owner.chatId,
-        file,
-        caption: t("editor.aiDraftExchange.telegramCaption", { 0: payload.request.id })
-      });
-      await this.#rememberSentRequest(payload, {
-        chatId: Number(owner.chatId),
-        messageId: Number(sent?.message_id || 0)
-      });
-      this.#notify({ message: t("editor.aiDraftExchange.sentToBot"), type: "success" });
-    } catch (error) {
-      this.#error(error);
-    }
-  }
-
   openBot() {
     try {
       const opened = this.navigation?.openBot?.();
@@ -211,12 +155,7 @@ export class AiDraftExchange {
     try {
       if (Number(file.size || 0) > MAX_IMPORT_BYTES) throw new Error(t("editor.aiDraftExchange.fileTooLarge"));
       const text = await file.text();
-      let telegramSource = null;
-      try {
-        const requestId = parseAiDraftResponse(text)?.request?.id;
-        telegramSource = await this.db?.get?.("runtime", aiResponseKey(requestId), null);
-      } catch { /* importText reports malformed response consistently */ }
-      await this.importText(text, { telegramSource });
+      await this.importText(text, { showInvalidDialog: true });
     } catch (error) {
       this.#error(error);
     } finally {
@@ -224,42 +163,7 @@ export class AiDraftExchange {
     }
   }
 
-  async pasteAndImport() {
-    try {
-      if (typeof this.clipboard?.readText !== "function") {
-        return this.#armClipboardPasteFallback();
-      }
-      const text = await this.clipboard.readText();
-      if (this.input) this.input.value = String(text || "");
-      return this.importText(text, { viaClipboard: true, showInvalidDialog: true });
-    } catch (error) {
-      return this.#armClipboardPasteFallback(error);
-    }
-  }
-
-  #armClipboardPasteFallback() {
-    this.awaitingClipboardPaste = true;
-    this.input?.focus?.();
-    this.input?.select?.();
-    this.#notify({
-      message: t("editor.aiDraftExchange.clipboardPasteReady"),
-      type: "warning",
-      duration: 9000
-    });
-    return null;
-  }
-
-  #handleClipboardPaste(event) {
-    if (!this.awaitingClipboardPaste) return;
-    const text = String(event?.clipboardData?.getData?.("text/plain") || "");
-    if (!text) return;
-    event.preventDefault?.();
-    this.awaitingClipboardPaste = false;
-    if (this.input) this.input.value = text;
-    void this.importText(text, { viaClipboard: true, showInvalidDialog: true });
-  }
-
-  async importText(text, { viaTelegram = false, viaClipboard = false, showInvalidDialog = false, telegramSource = null } = {}) {
+  async importText(text, { showInvalidDialog = false } = {}) {
     try {
       await this.documents?.saveCurrentContext?.();
       const payload = parseAiDraftResponse(text);
@@ -275,13 +179,13 @@ export class AiDraftExchange {
       const target = payload.request?.target || {};
       const scope = payload.request?.scope || { kind: "message" };
       if (["block", "field"].includes(scope.kind) && target.kind === "draft" && target.draftId) {
-        const result = await this.#importScopedDraft(payload, ast, { viaTelegram, viaClipboard });
-        if (result) await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
+        const result = await this.#importScopedDraft(payload, ast);
+        if (result) await this.#completeRequest(payload.request?.id);
         return result;
       }
       if (["block", "field"].includes(scope.kind) && target.kind === "project-post" && target.projectId && target.postId) {
-        const result = await this.#importScopedProjectPost(payload, ast, { viaTelegram, viaClipboard });
-        if (result) await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
+        const result = await this.#importScopedProjectPost(payload, ast);
+        if (result) await this.#completeRequest(payload.request?.id);
         return result;
       }
       const title = t("editor.aiDraftExchange.importedDraftTitle", {
@@ -294,14 +198,13 @@ export class AiDraftExchange {
           kind: "ai-response",
           requestId: String(payload.request?.id || ""),
           target: structuredClone(target),
-          importedVia: importSource({ viaTelegram, viaClipboard })
+          importedVia: "manual"
         }
       });
       await this.documents?.openDraft?.(draft.id);
       this.dialog?.close?.();
-      this.preparedPayload = null;
       this.#notify({ message: t("editor.aiDraftExchange.imported", { 0: draft.title }), type: "success", duration: 7000 });
-      await this.#cleanupTelegramExchange(payload.request?.id, telegramSource);
+      await this.#completeRequest(payload.request?.id);
       return draft;
     } catch (error) {
       if (showInvalidDialog) await this.#reportInvalidResponse(error);
@@ -339,7 +242,7 @@ export class AiDraftExchange {
     return { kind: "canvas", title: "" };
   }
 
-  async #importScopedDraft(payload, responseAst, { viaTelegram = false, viaClipboard = false } = {}) {
+  async #importScopedDraft(payload, responseAst) {
     const target = payload.request.target;
     const scope = payload.request.scope;
     const current = await this.drafts?.get?.(target.draftId);
@@ -348,7 +251,7 @@ export class AiDraftExchange {
     const sameVersion = Number(current.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
       const choice = await this.#resolveVersionConflict(current.title);
-      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, current.title, { viaTelegram, viaClipboard });
+      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, current.title);
       if (choice !== "apply-current") return null;
     }
 
@@ -360,12 +263,11 @@ export class AiDraftExchange {
       await this.documents?.openDraft?.(saved.id);
     }
     this.dialog?.close?.();
-    this.preparedPayload = null;
     this.#notify({ message: t("editor.aiDraftExchange.patched", { 0: current.title }), type: "success", duration: 7000 });
     return saved;
   }
 
-  async #importScopedProjectPost(payload, responseAst, { viaTelegram = false, viaClipboard = false } = {}) {
+  async #importScopedProjectPost(payload, responseAst) {
     const target = payload.request.target;
     const scope = payload.request.scope;
     const post = await this.projectSession?.store?.getPost?.(target.projectId, target.postId);
@@ -374,14 +276,13 @@ export class AiDraftExchange {
     const sameVersion = Number(post.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
       const choice = await this.#resolveVersionConflict(post.title);
-      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, post.title, { viaTelegram, viaClipboard });
+      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, post.title);
       if (choice !== "apply-current") return null;
     }
 
     await this.projectSession.store.savePostAst(target.projectId, target.postId, patchedAst);
     await this.documents?.openProjectPost?.(target.projectId, target.postId);
     this.dialog?.close?.();
-    this.preparedPayload = null;
     this.#notify({ message: t("editor.aiDraftExchange.postPatched", { 0: post.title }), type: "success", duration: 7000 });
     return this.projectSession?.snapshot?.() || true;
   }
@@ -398,7 +299,7 @@ export class AiDraftExchange {
     return this.conflictResolver ? this.conflictResolver(options) : chooseDarkDialog(options);
   }
 
-  async #createConflictFork(payload, patchedAst, title, { viaTelegram = false, viaClipboard = false } = {}) {
+  async #createConflictFork(payload, patchedAst, title) {
     const fork = await this.drafts.create({
       title: t("editor.aiDraftExchange.importedDraftTitle", { 0: title }),
       messageAst: patchedAst,
@@ -406,13 +307,12 @@ export class AiDraftExchange {
         kind: "ai-response",
         requestId: String(payload.request?.id || ""),
         target: structuredClone(payload.request?.target || {}),
-        importedVia: importSource({ viaTelegram, viaClipboard }),
+        importedVia: "manual",
         versionConflict: true
       }
     });
     await this.documents?.openDraft?.(fork.id);
     this.dialog?.close?.();
-    this.preparedPayload = null;
     this.#notify({ message: t("editor.aiDraftExchange.versionConflictForked", { 0: fork.title }), type: "warning", duration: 9000 });
     return fork;
   }
@@ -427,24 +327,6 @@ export class AiDraftExchange {
       return snapshot.project?.posts?.find(item => String(item.id) === String(target.postId))?.messageAst || null;
     }
     return null;
-  }
-
-  async #rememberSentRequest(payload, source) {
-    const requestId = String(payload?.request?.id || "");
-    if (!requestId || !source?.chatId || !source?.messageId || !this.db?.put) return;
-    const previous = await this.db.get("runtime", aiRequestKey(requestId), null);
-    const record = {
-      ...(previous || {}),
-      requestId,
-      chatId: Number(source.chatId),
-      requestMessageId: Number(source.messageId),
-      target: structuredClone(payload.request.target || {}),
-      scope: structuredClone(payload.request.scope || { kind: "message" }),
-      contextIncluded: payload.request.contextIncluded === "block" ? "block" : "message",
-      createdAt: Date.now()
-    };
-    await this.db.put("runtime", aiRequestKey(requestId), record);
-    await this.db.put("runtime", aiRequestMessageKey(record.chatId, record.requestMessageId), requestId);
   }
 
   async #rememberRequestDefinition(payload) {
@@ -464,54 +346,9 @@ export class AiDraftExchange {
     return id && this.db?.get ? this.db.get("runtime", aiRequestKey(id), null) : null;
   }
 
-  async #rememberIncomingDocument(event = {}) {
-    try {
-      const source = event.source || {};
-      let requestId = requestIdFromFileName(event.fileName);
-      if (!requestId && source.replyToMessageId && this.db?.get) {
-        requestId = await this.db.get("runtime", aiRequestMessageKey(source.chatId, source.replyToMessageId), "");
-      }
-      if (requestId && this.db?.put) {
-        await this.db.put("runtime", aiResponseKey(requestId), {
-          chatId: Number(source.chatId || 0),
-          messageId: Number(source.messageId || 0),
-          replyToMessageId: Number(source.replyToMessageId || 0)
-        });
-      }
-    } finally {
-      this.#notify({
-        message: t("editor.aiDraftExchange.telegramDocumentNeedsLocalImport"),
-        type: "warning",
-        duration: 9000
-      });
-    }
-  }
-
-  async #cleanupTelegramExchange(requestId, responseSource = null) {
+  async #completeRequest(requestId) {
     const id = String(requestId || "");
-    const request = id && this.db?.get ? await this.db.get("runtime", aiRequestKey(id), null) : null;
-    const response = responseSource || (id && this.db?.get ? await this.db.get("runtime", aiResponseKey(id), null) : null);
-    let retryNeeded = false;
-    for (const source of uniqueTelegramMessages([response, request && {
-      chatId: request.chatId,
-      messageId: request.requestMessageId
-    }])) {
-      try {
-        await this.client?.deleteMessage?.(source.chatId, source.messageId);
-      } catch (error) {
-        if (!error?.isMessageMissing?.()) {
-          retryNeeded = true;
-          this.#notify({ message: t("editor.aiDraftExchange.cleanupWarning", { 0: error?.message || error }), type: "warning", duration: 7000 });
-        }
-      }
-    }
-    if (!retryNeeded && id && this.db?.delete) {
-      await this.db.delete("runtime", aiRequestKey(id));
-      await this.db.delete("runtime", aiResponseKey(id));
-      if (request?.chatId && request?.requestMessageId) {
-        await this.db.delete("runtime", aiRequestMessageKey(request.chatId, request.requestMessageId));
-      }
-    }
+    if (id && this.db?.delete) await this.db.delete("runtime", aiRequestKey(id));
   }
 
   #listen(target, name, handler) {
@@ -523,8 +360,8 @@ export class AiDraftExchange {
   #notify(payload) { this.notifications?.show?.(payload); }
   #reportInvalidResponse(error) {
     const options = {
-      title: t("editor.aiDraftExchange.invalidClipboardTitle"),
-      message: t("editor.aiDraftExchange.invalidClipboardMessage", { 0: error?.message || error })
+      title: t("editor.aiDraftExchange.invalidResponseTitle"),
+      message: t("editor.aiDraftExchange.invalidResponseMessage", { 0: error?.message || error })
     };
     return this.invalidResponseReporter
       ? this.invalidResponseReporter(options)
@@ -535,16 +372,12 @@ export class AiDraftExchange {
   }
 }
 
-function importSource({ viaTelegram = false, viaClipboard = false } = {}) {
-  if (viaTelegram) return "telegram-text";
-  return viaClipboard ? "clipboard" : "manual";
-}
-
 export function buildAiDraftRequest({
   messageAst,
   target = {},
   scope = { kind: "message" },
   documentPrompt = "",
+  registry = null,
   contextIncluded = "message",
   requestId = randomUUID(),
   createdAt = Date.now()
@@ -554,7 +387,7 @@ export function buildAiDraftRequest({
   const ast = validateAiAst(sanitizeAiValue(messageAst));
   const normalizedScope = normalizeScope(scope);
   const normalizedDocumentPrompt = normalizedScope.kind === "message" ? String(documentPrompt || "").trim() : "";
-  const schemaRules = aiResponseSchemaRules(ast);
+  const blockSchemas = resolveAiBlockSchemas(ast, registry);
   return {
     format: AI_DRAFT_FORMAT,
     schemaVersion: AI_DRAFT_SCHEMA_VERSION,
@@ -568,10 +401,11 @@ export function buildAiDraftRequest({
     task: {
       instruction: taskInstruction(normalizedScope, normalizedDocumentPrompt),
       ...(normalizedDocumentPrompt ? { documentPrompt: normalizedDocumentPrompt } : {}),
+      blockSchemas,
       responseContract: [
         "Return the complete JSON object only.",
         "Preserve format, schemaVersion, request, task, block id/type/children, and every ai.prompt.",
-        ...schemaRules,
+        "For every block, use task.blockSchemas[block.type] as the canonical props and children shape. Each block type is defined once and shared by all blocks of that type.",
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"
@@ -755,16 +589,6 @@ function taskInstruction(scope, documentPrompt = "") {
   return "Use the full message AST as context. For each block containing ai.prompt, apply that instruction to the editable values in its props.";
 }
 
-function aiResponseSchemaRules(ast) {
-  let hasList = false;
-  walkAst(ast, node => {
-    if (node?.type === "list") hasList = true;
-  });
-  return hasList ? [
-    "For list blocks, props.items must be an array of item objects. Put visible text in each item's blocks array as paragraph objects with text fields; never return string items or a top-level text field on an item."
-  ] : [];
-}
-
 function normalizeAiBlockProps(type, props) {
   const copy = structuredClone(props || {});
   if (type !== "list" || !Array.isArray(copy.items)) return copy;
@@ -835,34 +659,4 @@ function aiFileName(payload) {
   return `${title}-ai${requestId ? `-${requestId}` : ""}.json`;
 }
 
-function requestIdFromFileName(fileName) {
-  return String(fileName || "").match(/-ai-([A-Za-z0-9_-]{8,64})\.json$/i)?.[1] || "";
-}
-
 function aiRequestKey(requestId) { return `ai.request:${String(requestId || "")}`; }
-function aiResponseKey(requestId) { return `ai.response:${String(requestId || "")}`; }
-function aiRequestMessageKey(chatId, messageId) { return `ai.request-message:${Number(chatId || 0)}:${Number(messageId || 0)}`; }
-
-function uniqueTelegramMessages(items) {
-  const seen = new Set();
-  const result = [];
-  for (const item of items || []) {
-    const chatId = Number(item?.chatId || 0);
-    const messageIds = [...(Array.isArray(item?.messageIds) ? item.messageIds : []), item?.messageId];
-    for (const value of messageIds) {
-      const messageId = Number(value || 0);
-      const key = `${chatId}:${messageId}`;
-      if (!chatId || !messageId || seen.has(key)) continue;
-      seen.add(key);
-      result.push({ chatId, messageId });
-    }
-  }
-  return result;
-}
-
-function makeJsonFile(text, name) {
-  if (typeof File === "function") return new File([text], name, { type: "application/json" });
-  const blob = new Blob([text], { type: "application/json" });
-  Object.defineProperty(blob, "name", { value: name });
-  return blob;
-}

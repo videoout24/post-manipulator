@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.9.8";
+import { getLocale, t } from "../i18n/index.js?v=1.10.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -19,6 +19,7 @@ export function createDraftListView({
   onAiPromptChange = null,
   onSelectTarget = null,
   onOpenLinkedSource = null,
+  textareaSizing = null,
   linkTargetSlotKey = "",
   linkedTargets = {}
 } = {}) {
@@ -63,6 +64,7 @@ export function createDraftListView({
         onAiPromptChange,
         onSelectTarget,
         onOpenLinkedSource,
+        textareaSizing,
         linkTargetSlotKey,
         linkedTargets
       }));
@@ -75,7 +77,7 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, onSelectTarget, onOpenLinkedSource, linkTargetSlotKey, linkedTargets
+  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, onSelectTarget, onOpenLinkedSource, textareaSizing, linkTargetSlotKey, linkedTargets
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
   const publicationCopy = publicationLinked && !draft.source.retained;
@@ -151,11 +153,16 @@ function createDraftCard({
     const prompt = document.createElement("textarea");
     prompt.className = "draft-document-ai-prompt";
     prompt.maxLength = 8000;
-    prompt.rows = 3;
+    prompt.rows = 1;
     prompt.value = documentPrompt;
     prompt.placeholder = t("editor.draftListView.documentAiPromptPlaceholder");
     prompt.setAttribute("aria-label", t("editor.draftListView.documentAiPrompt"));
     prompt.oninput = () => { documentPrompt = prompt.value; };
+    textareaSizing?.attach?.(prompt, {
+      key: `draft:${draft.id}:ai.documentPrompt`,
+      defaultRows: 1,
+      minRows: 1
+    });
     const openAi = button(t("editor.draftListView.openDraftAiJson"), t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft, documentPrompt));
     openAi.classList.add("draft-ai-json");
     prompt.onblur = event => {

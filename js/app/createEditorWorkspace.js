@@ -1,6 +1,6 @@
 import { BlockPalette } from "../editor/BlockPalette.js?v=1.5.9";
-import { BlockInspector } from "../editor/BlockInspector.js?v=1.9.5";
-import { TreeView } from "../editor/TreeView.js?v=1.9.8";
+import { BlockInspector } from "../editor/BlockInspector.js?v=1.10.0";
+import { TreeView } from "../editor/TreeView.js?v=1.10.0";
 import { MediaAssetBinder } from "../editor/MediaAssetBinder.js?v=1.5.9";
 import { EditorAssetPicker } from "../editor/EditorAssetPicker.js?v=1.5.9";
 import { EditorWorkspaceView } from "../editor/EditorWorkspaceView.js?v=1.9.8";
@@ -65,6 +65,7 @@ export function createEditorWorkspace({
     gallery,
     thumbnails,
     inlineInspector: inlineProperties,
+    textareaSizing: inlineProperties.textareaSizing,
     blockCollector,
     autoCollapseInactive: autoCollapseInactiveCheckbox?.checked === true,
     scrollSpeed: Number(canvasScrollSpeedSelect?.value ?? editorCanvasPreferences?.scrollSpeed ?? 2)

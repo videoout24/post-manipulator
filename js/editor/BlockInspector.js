@@ -20,7 +20,7 @@ import {
   listAnchors,
   unixTimeToDateTimeLocal
 } from "../core/SemanticRichText.js?v=1.5.9";
-import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.5.9";
+import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.10.0";
 import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
@@ -323,6 +323,14 @@ export class BlockInspector {
     const fieldPanels = [];
     const activate = (state, binding, panel) => {
       if (!state) return;
+      // Mouse selection can deliver a delayed `select` event after the toolbar
+      // button has already opened and focused a parameter editor. Rebuilding the
+      // shared toolbar at that point removes the URL input immediately before a
+      // paste. Keep the active config mounted while one of its controls owns focus.
+      if (activeState === state && configHost.contains(globalThis.document?.activeElement)) {
+        this.refreshRichTextToolbarState(state);
+        return;
+      }
       activeState = state;
       for (const item of fieldPanels) item.classList.toggle("active", item === panel);
       activeLabel.textContent = binding.label || binding.key;
@@ -931,7 +939,7 @@ export class BlockInspector {
     textarea.addEventListener("change", commit);
     textarea.disabled = !!schema.readOnly;
     if (!schema.readOnly) this.textareaSizing.attach(textarea, {
-      key: `${node?.id || "global"}:${schema.key || schema.property || "json"}`, defaultRows: 3, minRows: 1
+      key: `${node?.id || "global"}:${schema.key || schema.property || "json"}`, defaultRows: 1, minRows: 1
     });
     wrap.append(textarea, status);
     return wrap;
@@ -966,7 +974,7 @@ export class BlockInspector {
     });
     textarea.disabled = !!schema.readOnly;
     if (!schema.readOnly) this.textareaSizing.attach(textarea, {
-      key: `${node?.id || "global"}:${schema.key || schema.property || "block-array"}`, defaultRows: 3, minRows: 1
+      key: `${node?.id || "global"}:${schema.key || schema.property || "block-array"}`, defaultRows: 1, minRows: 1
     });
     wrap.append(textarea, status);
     return wrap;
@@ -980,7 +988,7 @@ export class BlockInspector {
     textarea.value = value ?? schema.default ?? "";
     textarea.spellcheck = false;
     textarea.addEventListener("input", () => onChange?.(textarea.value));
-    this.textareaSizing.attach(textarea, { key: `${node?.id || "formula"}:expression`, defaultRows: 3, minRows: 1 });
+    this.textareaSizing.attach(textarea, { key: `${node?.id || "formula"}:expression`, defaultRows: 1, minRows: 1 });
 
     const categoryStrip = chipStrip(t("editor.blockInspector.categories"));
     const subcategoryStrip = chipStrip(t("editor.blockInspector.subcategories"));
@@ -1018,7 +1026,7 @@ export class BlockInspector {
           textarea.focus();
           textarea.setSelectionRange(nextCursor, nextCursor);
           onChange?.(textarea.value);
-          this.textareaSizing.refresh(textarea, { key: `${node?.id || "formula"}:expression`, defaultRows: 3, minRows: 1 });
+          this.textareaSizing.refresh(textarea, { key: `${node?.id || "formula"}:expression`, defaultRows: 1, minRows: 1 });
         };
         templateStrip.body.append(button);
       }
@@ -1863,7 +1871,7 @@ export class BlockInspector {
       requestAnimationFrame(() => {
         this.textareaSizing.refresh(textarea, {
           key: `${node?.id || "list"}:items-lines`,
-          defaultRows: 3,
+          defaultRows: 1,
           minRows: 1
         });
         requestAnimationFrame(syncMarkerRailGeometry);
@@ -2027,7 +2035,7 @@ export class BlockInspector {
     syncTextareaFromItems();
     renderMarkerRail();
     updateControls();
-    this.textareaSizing.attach(textarea, { key: `${node?.id || "list"}:items-lines`, defaultRows: 3, minRows: 1 });
+    this.textareaSizing.attach(textarea, { key: `${node?.id || "list"}:items-lines`, defaultRows: 1, minRows: 1 });
 
     if (typeof ResizeObserver === "function") {
       textareaResizeObserver = new ResizeObserver(() => {
@@ -2453,10 +2461,7 @@ function sameRichTextSource(source = {}, state = {}) {
 }
 
 function defaultRowsFor(schema = {}) {
-  const secondary = new Set(["content.credit", "content.caption", "content.captionCredit", "details.summary", "table.cell.text"]);
-  if (secondary.has(schema.property)) return 1;
-  if (["content.text", "thinking.text", "math.expression"].includes(schema.property)) return 3;
-  return schema.editor === "textarea" ? 3 : 1;
+  return 1;
 }
 
 function compactCheckbox(label, checked = false) {

@@ -4,7 +4,7 @@ import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
 export class TreeView {
-  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, blockCollector = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
+  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
     this.root = root;
     this.tree = tree;
     this.registry = registry;
@@ -14,6 +14,7 @@ export class TreeView {
     this.gallery = gallery;
     this.thumbnails = thumbnails;
     this.inlineInspector = inlineInspector;
+    this.textareaSizing = textareaSizing;
     this.blockCollector = blockCollector;
     this.onCollapseChange = onCollapseChange;
     this.autoCollapseInactive = Boolean(autoCollapseInactive);
@@ -395,13 +396,18 @@ export class TreeView {
 
     const textarea = document.createElement("textarea");
     textarea.value = String(node.ai?.prompt || "");
-    textarea.rows = 3;
+    textarea.rows = 1;
     textarea.placeholder = t("editor.treeView.aiPromptPlaceholder");
     textarea.setAttribute("aria-label", t("editor.treeView.aiPrompt"));
     textarea.oninput = () => {
       this.controller.updateNodeAiPrompt?.(node.id, textarea.value);
       syncState();
     };
+    this.textareaSizing?.attach?.(textarea, {
+      key: `${node.id}:ai.prompt`,
+      defaultRows: 1,
+      minRows: 1
+    });
     details.ontoggle = () => {
       if (details.open) this.openAiPromptNodes.add(node.id);
       else this.openAiPromptNodes.delete(node.id);

@@ -1,7 +1,8 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.10.0";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
+import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.10.0";
 
 const TYPE_META = Object.freeze({
   photo: { label: t("app.appNotifications.photo"), icon: "▧" },
@@ -26,6 +27,7 @@ export class GalleryView {
     this.renderQueued = false;
     this.renderGeneration = 0;
     this.topicDeletePending = false;
+    this.textareaSizing = new SessionTextareaSizing();
     this.#listen();
   }
 
@@ -275,7 +277,7 @@ export class GalleryView {
           </select>
         </label>
         <label class="gallery-upload-field" data-upload-new-topic ${topics.length ? "hidden" : ""}><span>${t("gallery.galleryView.newTopicTitle")}</span><input data-upload-topic-name maxlength="128" placeholder="${t("gallery.galleryView.mediaUploads")}"></label>
-        <label class="gallery-upload-field"><span>${t("gallery.galleryView.captionForEachFile")}</span><textarea data-upload-caption maxlength="1024" rows="3" placeholder="${t("gallery.galleryView.theSameCaptionWillBeAddedTo")}"></textarea></label>
+        <label class="gallery-upload-field"><span>${t("gallery.galleryView.captionForEachFile")}</span><textarea data-upload-caption maxlength="1024" rows="1" placeholder="${t("gallery.galleryView.theSameCaptionWillBeAddedTo")}"></textarea></label>
         <div class="gallery-upload-status" data-upload-status>${t("gallery.galleryView.firstSelectTopicAndCaptionThenFiles")}</div>
         <input data-upload-files type="file" multiple hidden>
         <div class="gallery-upload-actions"><button type="button" data-upload-cancel>${t("gallery.galleryView.cancel")}</button><button class="primary" type="button" data-upload-choose>${t("gallery.galleryView.selectFiles")}</button></div>
@@ -291,6 +293,11 @@ export class GalleryView {
     const choose = dialog.querySelector("[data-upload-choose]");
     const cancel = dialog.querySelector("[data-upload-cancel]");
     const status = dialog.querySelector("[data-upload-status]");
+    this.textareaSizing.attach(caption, {
+      key: "gallery:upload-caption",
+      defaultRows: 1,
+      minRows: 1
+    });
     if (!topics.length) topicSelect.value = "__new__";
     const syncTopicMode = () => { newTopicField.hidden = topicSelect.value !== "__new__"; };
     topicSelect.addEventListener("change", syncTopicMode);

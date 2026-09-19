@@ -136,6 +136,39 @@ try {
   apply();
   check(!richTextRangeHasFormat(value, 7, 11, dateTime), "Remove must unwrap date/time formatting");
 
+  // Canvas uses a shared toolbar above its rich-text fields. A delayed `select`
+  // event from the source textarea must not remove a focused URL editor before
+  // the browser delivers a paste into it.
+  const sharedNode = { id: "shared-paragraph", type: "paragraph", props: { text: "Paste link here" }, children: [] };
+  const sharedController = {
+    tree: { parentOf: () => null },
+    updateNodeProperty(nodeId, key, next) {
+      check(nodeId === sharedNode.id, "Shared editor must update its own node");
+      sharedNode.props[key] = next;
+    }
+  };
+  const sharedInspector = new BlockInspector({ registry, controller: sharedController });
+  const sharedEditor = sharedInspector.renderInline(sharedNode);
+  fixture.append(sharedEditor);
+  const sharedTextarea = sharedEditor.querySelector("textarea");
+  sharedTextarea.focus();
+  sharedTextarea.setSelectionRange(6, 10);
+  sharedTextarea.dispatchEvent(new Event("select"));
+  await settle();
+  sharedEditor.querySelector('[data-format-id="url"]').click();
+  const sharedUrlInput = sharedEditor.querySelector('input[type="url"]');
+  check(document.activeElement === sharedUrlInput, "Shared URL input must receive focus");
+  sharedTextarea.dispatchEvent(new Event("select"));
+  await settle();
+  check(sharedUrlInput.isConnected && document.activeElement === sharedUrlInput,
+    "A delayed source selection event must not steal URL paste focus");
+  sharedUrlInput.value = "example.com/pasted";
+  sharedUrlInput.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertFromPaste", data: null }));
+  check(document.activeElement === sharedUrlInput, "Pasting must keep focus in the shared URL field");
+  sharedEditor.querySelector(".format-config-actions button:last-child").click();
+  equal(richTextFormatMetadataAtPosition(sharedNode.props.text, 7, url), { url: "https://example.com/pasted" },
+    "The pasted URL must wrap the originally selected text");
+
   document.querySelector("#result").textContent = "text_link_toolbar_browser_smoke: OK";
   document.body.dataset.result = "passed";
 } catch (error) {

@@ -1,13 +1,9 @@
-import { t } from "../i18n/index.js?v=1.9.8";
+import { t } from "../i18n/index.js?v=1.10.0";
 import { TelegramApiError } from "./TelegramClient.js?v=1.8.8";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
 const OFFSET_KEY = "telegramOffset";
 const MEDIA_SETTINGS_KEY = "acceptedOwnerMedia";
-const AI_TEXT_PART_KEY_PREFIX = "ai.text-parts:";
-const MAX_AI_TEXT_PARTS = 512;
-const MAX_AI_TEXT_BYTES = 2 * 1024 * 1024;
-const AI_TEXT_PART_MAX_AGE = 24 * 60 * 60 * 1000;
 const DEFAULT_MEDIA_SETTINGS = Object.freeze({
   photo: true,
   video: true,
@@ -193,35 +189,7 @@ export class TelegramRuntime {
       const topicEvent = extractOwnerTopicEvent(message);
       if (topicEvent) await this.events?.emitAsync("telegram:owner-topic-event", topicEvent);
 
-      const aiDraftText = extractOwnerAiDraftResponseText(message);
-      if (aiDraftText) {
-        await this.events?.emitAsync("telegram:ai-draft-response", {
-          text: aiDraftText,
-          source: {
-            chatId: Number(message.chat.id),
-            messageId: Number(message.message_id),
-            replyToMessageId: Number(message.reply_to_message?.message_id || 0)
-          }
-        });
-        return;
-      }
-      const aiDraftTextPart = extractOwnerAiDraftTextPart(message);
-      if (aiDraftTextPart) {
-        await this.#collectAiDraftTextPart(message, aiDraftTextPart);
-        return;
-      }
-      if (isOwnerAiDraftDocument(message)) {
-        await this.events?.emitAsync("telegram:ai-draft-document", {
-          fileId: message.document.file_id,
-          fileName: message.document.file_name || "",
-          source: {
-            chatId: Number(message.chat.id),
-            messageId: Number(message.message_id),
-            replyToMessageId: Number(message.reply_to_message?.message_id || 0)
-          }
-        });
-        return;
-      }
+      if (isJsonDocument(message)) return;
 
       const media = extractOwnerMedia(message);
       if (!media) return; // text, video_note, stickers and everything else are intentionally ignored.
@@ -244,60 +212,6 @@ export class TelegramRuntime {
       // observed the update (for example, forum-topic metadata is retained).
       await this.serviceMessages?.handleUpdate?.(update);
     }
-  }
-
-  async #collectAiDraftTextPart(message, part) {
-    const chatId = Number(message.chat?.id || 0);
-    const messageId = Number(message.message_id || 0);
-    const replyToMessageId = Number(message.reply_to_message?.message_id || 0);
-    const key = `${AI_TEXT_PART_KEY_PREFIX}${chatId}:${part.batchId}`;
-    const saved = await this.db.get("runtime", key, null);
-    const reusable = saved
-      && Number(saved.total) === part.total
-      && Date.now() - Number(saved.updatedAt || 0) < AI_TEXT_PART_MAX_AGE;
-    const batch = reusable ? saved : {
-      batchId: part.batchId,
-      total: part.total,
-      parts: {},
-      messageIds: [],
-      replyToMessageId: 0,
-      updatedAt: 0
-    };
-    batch.parts[String(part.index)] = part.text;
-    batch.messageIds = [...new Set([...(batch.messageIds || []), messageId].filter(Boolean))];
-    if (replyToMessageId) batch.replyToMessageId = replyToMessageId;
-    batch.updatedAt = Date.now();
-
-    const byteCount = Object.values(batch.parts).reduce((sum, value) => sum + textByteLength(value), 0);
-    if (byteCount > MAX_AI_TEXT_BYTES) {
-      await this.db.delete("runtime", key);
-      await this.events?.emitAsync("telegram:ai-draft-text-part-error", { batchId: part.batchId, reason: "too-large" });
-      return;
-    }
-
-    const received = Object.keys(batch.parts).length;
-    await this.db.put("runtime", key, batch);
-    await this.events?.emitAsync("telegram:ai-draft-text-part", {
-      batchId: part.batchId,
-      received,
-      total: part.total,
-      complete: received === part.total
-    });
-    if (received !== part.total) return;
-
-    const text = assembleOwnerAiDraftTextParts(
-      Array.from({ length: part.total }, (_, index) => batch.parts[String(index + 1)] || "")
-    );
-    await this.db.delete("runtime", key);
-    await this.events?.emitAsync("telegram:ai-draft-response", {
-      text,
-      source: {
-        chatId,
-        messageId,
-        messageIds: batch.messageIds,
-        replyToMessageId: Number(batch.replyToMessageId || 0)
-      }
-    });
   }
 
   #setStatus(state, message, extra = {}) {
@@ -368,50 +282,11 @@ export function extractOwnerMedia(message) {
   return null;
 }
 
-export function extractOwnerAiDraftResponseText(message) {
-  const text = String(message?.text || message?.caption || "").trim();
-  if (!text || !text.includes("rich-current-ai-draft")) return "";
-  const fenced = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)?.[1] || text;
-  try {
-    const value = JSON.parse(fenced);
-    return value?.format === "rich-current-ai-draft" ? text : "";
-  } catch {
-    return "";
-  }
-}
-
-export function extractOwnerAiDraftTextPart(message) {
-  const text = String(message?.text || message?.caption || "");
-  if (!text.trim()) return null;
-  const match = text.match(/^AI\s*JSON(?:\s+([A-Za-z0-9_-]{1,64}))?\s+(\d{1,3})\/(\d{1,3})[^\S\r\n]*\r?\n([\s\S]+)$/i);
-  if (!match) return null;
-  const index = Number(match[2]);
-  const total = Number(match[3]);
-  if (!index || !total || index > total || total > MAX_AI_TEXT_PARTS) return null;
-  return {
-    batchId: match[1] || "default",
-    index,
-    total,
-    text: match[4]
-  };
-}
-
-export function assembleOwnerAiDraftTextParts(parts) {
-  const values = (parts || []).map(value => String(value || ""));
-  const raw = values.join("");
-  if (extractOwnerAiDraftResponseText({ text: raw })) return raw;
-  const individuallyUnfenced = values.map(stripTelegramCodeFence).join("");
-  return extractOwnerAiDraftResponseText({ text: individuallyUnfenced }) ? individuallyUnfenced : raw;
-}
-
-export function isOwnerAiDraftDocument(message) {
+export function isJsonDocument(message) {
   const document = message?.document;
   if (!document) return false;
-  const name = String(document.file_name || "");
-  const caption = String(message.caption || "");
-  return /-ai(?:-[A-Za-z0-9_-]{8,64}|-response)?\.json$/i.test(name)
-    || /^(?:answer|response)(?:[-_ (].*)?\.json$/i.test(name)
-    || caption.includes("rich-current-ai-draft");
+  return /\.json$/i.test(String(document.file_name || "").trim())
+    || /^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(String(document.mime_type || "").trim());
 }
 
 function choosePhotoThumbnail(sizes) {
@@ -438,14 +313,6 @@ function mediaFromObject(type, object) {
     thumbnailFileId: object.thumbnail?.file_id || choosePhotoThumbnail(Array.isArray(object.cover) ? object.cover : [])?.file_id || null,
     telegramObject: object
   };
-}
-
-function stripTelegramCodeFence(value) {
-  return String(value).match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)?.[1] || String(value);
-}
-
-function textByteLength(value) {
-  return typeof TextEncoder === "function" ? new TextEncoder().encode(String(value)).length : String(value).length;
 }
 
 function sleep(ms, signal) {
