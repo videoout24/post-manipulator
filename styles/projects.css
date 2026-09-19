@@ -956,27 +956,22 @@
 .draft-card-tools .danger-soft { color: var(--theme-danger, #d8a4aa); border-color: var(--theme-danger-border, #55353a); background: var(--theme-surface-raised, #26191c); }
 .draft-document-ai-settings,
 .project-post-ai-settings {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 7px; padding: 0 9px 8px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 0 9px 8px;
 }
 .draft-document-ai-label {
-  grid-column: 1 / -1; color: var(--theme-text-muted, #718399); font-size: 8px;
+  color: var(--theme-text-muted, #718399); font-size: 8px;
 }
 .draft-document-ai-prompt {
-  grid-column: 1; width: 100%; min-width: 0; min-height: 56px; padding: 6px 7px; resize: vertical;
+  width: 100%; min-width: 0; padding: 6px 7px;
   border: 1px solid var(--theme-field-border, #34465a); border-radius: 6px;
   background: var(--theme-field-bg, #0b1118); color: var(--theme-text, #dce8f4); font-size: 9px; line-height: 1.4;
 }
-.draft-document-ai-settings .draft-ai-json,
-.project-post-ai-settings .project-post-ai-json {
-  grid-column: 2; grid-row: 2; align-self: stretch; min-width: 74px; min-height: 24px; padding: 3px 7px;
+.draft-card-tools .draft-ai-json,
+.project-post-card-actions .project-post-ai-json {
   border-color: var(--theme-purple, #7257aa);
   background: var(--theme-purple-subtle, #261d3b);
   color: var(--theme-text, #dbcfff);
   font-size: 8px;
-}
-.draft-document-ai-settings .draft-document-ai-prompt,
-.project-post-ai-settings .draft-document-ai-prompt {
-  grid-row: 2;
 }
 .draft-card-lifecycle-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .draft-card-lifecycle-actions button:first-child {
@@ -996,11 +991,6 @@
   border-color: var(--theme-danger-border, #55353a);
   background: var(--theme-surface-raised, #26191c);
   color: var(--theme-danger, #d8a4aa);
-}
-.draft-card-lifecycle-actions .draft-ai-json {
-  border-color: var(--theme-purple, #7257aa);
-  background: var(--theme-purple-subtle, #261d3b);
-  color: var(--theme-text, #dbcfff);
 }
 .draft-card-lifecycle-actions .draft-close { color: var(--theme-text-secondary, #9cabbc); }
 

@@ -17,7 +17,7 @@ import { createProjectDomain } from "./app/createProjectDomain.js?v=1.9.8";
 import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.10.0";
 import { createEditorDomain } from "./app/createEditorDomain.js?v=1.9.8";
 import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.10.0";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.10.1";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.10.2";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
 import { PublicationView } from "./publications/PublicationView.js?v=1.9.5";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
@@ -408,7 +408,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.10.1",
+  build: "1.10.2",
   notifications,
   layoutPreferences,
   telegramNavigation,

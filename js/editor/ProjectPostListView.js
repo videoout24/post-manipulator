@@ -4,7 +4,7 @@ import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
-import { astHasAiPrompt } from "./DraftListView.js?v=1.10.0";
+import { astHasAiPrompt } from "./DraftListView.js?v=1.10.2";
 
 export function createProjectPostListView({
   project,
@@ -40,11 +40,20 @@ export function createProjectPostListView({
     const eligibility = getProjectPostPublicationEligibility(project, post.id, index);
     const scheduling = getProjectPostScheduleEligibility(project, post.id, index);
     const target = linkTargetForProjectPost(project, post);
+    const hasDocumentAi = post.id === activePostId && astHasAiPrompt(post.messageAst);
+    let documentPrompt = String(post.ai?.documentPrompt || "");
+    let openAi = null;
     let card = null;
     const cardActions = [
-      createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }),
-      button("✎", t("editor.projectPostListView.rename"), () => showRenameEditor(card, post, onRename))
+      createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource })
     ];
+    if (hasDocumentAi) {
+      openAi = button("{}", t("editor.projectPostListView.openPostAiJsonHint"), () => onOpenAi?.(post, documentPrompt));
+      openAi.classList.add("project-post-ai-json");
+      openAi.setAttribute("aria-label", t("editor.projectPostListView.openPostAiJson"));
+      cardActions.push(openAi);
+    }
+    cardActions.push(button("✎", t("editor.projectPostListView.rename"), () => showRenameEditor(card, post, onRename)));
     const remove = button("🗑", t("editor.projectPostListView.deletePost"), () => showCardDeleteConfirmation(card, {
       message: t("editor.projectPostListView.deleteFromProject", { 0: post.title || t("editor.blockInspector.post") }),
       onConfirm: () => onDelete?.(post)
@@ -76,32 +85,27 @@ export function createProjectPostListView({
       onSelect: selectedPost => onSelect?.(selectedPost),
       actions: cardActions
     });
-    if (post.id === activePostId) {
-      if (astHasAiPrompt(post.messageAst)) {
-        let documentPrompt = String(post.ai?.documentPrompt || "");
-        const aiSettings = el("div", "project-post-ai-settings");
-        const promptLabel = el("label", "draft-document-ai-label", t("editor.projectPostListView.documentAiPrompt"));
-        const prompt = document.createElement("textarea");
-        prompt.className = "draft-document-ai-prompt";
-        prompt.maxLength = 8000;
-        prompt.rows = 1;
-        prompt.value = documentPrompt;
-        prompt.placeholder = t("editor.projectPostListView.documentAiPromptPlaceholder");
-        prompt.setAttribute("aria-label", t("editor.projectPostListView.documentAiPrompt"));
-        prompt.oninput = () => { documentPrompt = prompt.value; };
-        textareaSizing?.attach?.(prompt, {
-          key: `project-post:${project.id}:${post.id}:ai.documentPrompt`,
-          defaultRows: 1,
-          minRows: 1
-        });
-        const openAi = button(t("editor.projectPostListView.openPostAiJson"), t("editor.projectPostListView.openPostAiJsonHint"), () => onOpenAi?.(post, documentPrompt));
-        openAi.classList.add("project-post-ai-json");
-        prompt.onblur = event => {
-          if (event.relatedTarget !== openAi) onAiPromptChange?.(post, documentPrompt);
-        };
-        aiSettings.append(promptLabel, prompt, openAi);
-        card.append(aiSettings);
-      }
+    if (hasDocumentAi) {
+      const aiSettings = el("div", "project-post-ai-settings");
+      const promptLabel = el("label", "draft-document-ai-label", t("editor.projectPostListView.documentAiPrompt"));
+      const prompt = document.createElement("textarea");
+      prompt.className = "draft-document-ai-prompt";
+      prompt.maxLength = 8000;
+      prompt.rows = 1;
+      prompt.value = documentPrompt;
+      prompt.placeholder = t("editor.projectPostListView.documentAiPromptPlaceholder");
+      prompt.setAttribute("aria-label", t("editor.projectPostListView.documentAiPrompt"));
+      prompt.oninput = () => { documentPrompt = prompt.value; };
+      textareaSizing?.attach?.(prompt, {
+        key: `project-post:${project.id}:${post.id}:ai.documentPrompt`,
+        defaultRows: 1,
+        minRows: 1
+      });
+      prompt.onblur = event => {
+        if (event.relatedTarget !== openAi) onAiPromptChange?.(post, documentPrompt);
+      };
+      aiSettings.append(promptLabel, prompt);
+      card.append(aiSettings);
     }
     list.append(card);
   });

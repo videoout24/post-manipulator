@@ -10,6 +10,7 @@ const posts = read("../js/editor/ProjectPostListView.js");
 const gallery = read("../js/gallery/GalleryView.js");
 const workspace = read("../js/app/createEditorWorkspace.js");
 const shell = read("../js/app/createEditorShell.js");
+const projectsCss = read("../styles/projects.css");
 
 assert.match(sizing, /attach\(textarea, \{ key = "", defaultRows = 1, minRows = 1/,
   "shared textarea sizing must start at one row");
@@ -21,12 +22,22 @@ assert.match(treeView, /key: `\$\{node\.id\}:ai\.prompt`/,
   "block AI prompts must use shared session autosizing");
 assert.match(drafts, /key: `draft:\$\{draft\.id\}:ai\.documentPrompt`/,
   "whole-draft prompts must use shared session autosizing");
+assert.match(drafts, /tools\.append\(openAi\)/,
+  "whole-draft JSON action must live in the card's shared tool group");
+assert.doesNotMatch(drafts, /aiSettings\.append\(promptLabel, prompt, openAi\)/,
+  "whole-draft JSON action must not share the prompt row");
 assert.match(posts, /key: `project-post:\$\{project\.id\}:\$\{post\.id\}:ai\.documentPrompt`/,
   "whole-post prompts must use shared session autosizing");
+assert.doesNotMatch(posts, /aiSettings\.append\(promptLabel, prompt, openAi\)/,
+  "whole-post JSON action must not share the prompt row");
 assert.match(gallery, /key: "gallery:upload-caption"/,
   "the remaining free-form caption textarea must use the same sizing behavior");
 assert.match(workspace, /textareaSizing: inlineProperties\.textareaSizing/);
 assert.match(shell, /textareaSizing: inlineProperties\?\.textareaSizing/);
+assert.doesNotMatch(projectsCss, /\.draft-document-ai-prompt\s*\{[^}]*min-height:/s,
+  "whole-document prompts must not override the shared textarea height");
+assert.doesNotMatch(projectsCss, /\.draft-document-ai-prompt\s*\{[^}]*resize:/s,
+  "whole-document prompts must use the shared textarea resize behavior");
 
 for (const source of [treeView, drafts, posts, gallery]) {
   assert.doesNotMatch(source, /rows\s*=\s*3|rows="3"/,

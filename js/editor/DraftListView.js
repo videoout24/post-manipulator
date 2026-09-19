@@ -87,6 +87,10 @@ function createDraftCard({
   card.setAttribute("role", "button");
   card.setAttribute("aria-pressed", String(selected));
 
+  const hasDocumentAi = !publicationLinked && astHasAiPrompt(draft.messageAst);
+  let documentPrompt = String(draft.ai?.documentPrompt || "");
+  let openAi = null;
+
   const head = el("div", "draft-card-head");
   const body = el("div", "draft-card-body");
   body.append(el("strong", "", draft.title || t("editor.draftListView.draft")));
@@ -95,6 +99,12 @@ function createDraftCard({
   const tools = el("div", "draft-card-tools");
   const target = linkTargetForDraft(draft);
   tools.append(createLinkTargetButton(target, { linkTargetSlotKey, linkedTargets, onSelectTarget, onOpenLinkedSource }));
+  if (hasDocumentAi) {
+    openAi = button("{}", t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft, documentPrompt));
+    openAi.classList.add("draft-ai-json");
+    openAi.setAttribute("aria-label", t("editor.draftListView.openDraftAiJson"));
+    tools.append(openAi);
+  }
   if (!publicationCopy) {
     const remove = button("🗑", t("editor.draftListView.deleteDraft"), () => showCardDeleteConfirmation(card, { message: t("editor.blockPalette.delete", { 0: draft?.title || t("editor.draftListView.draft") }), onConfirm: () => onDelete?.(draft) }));
     remove.disabled = Boolean(publicationLinked);
@@ -146,8 +156,7 @@ function createDraftCard({
   if (actions.childElementCount) card.append(actions);
   else card.classList.add("no-footer-actions");
 
-  if (!publicationLinked && astHasAiPrompt(draft.messageAst)) {
-    let documentPrompt = String(draft.ai?.documentPrompt || "");
+  if (hasDocumentAi) {
     const aiSettings = el("div", "draft-document-ai-settings");
     const promptLabel = el("label", "draft-document-ai-label", t("editor.draftListView.documentAiPrompt"));
     const prompt = document.createElement("textarea");
@@ -163,12 +172,10 @@ function createDraftCard({
       defaultRows: 1,
       minRows: 1
     });
-    const openAi = button(t("editor.draftListView.openDraftAiJson"), t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft, documentPrompt));
-    openAi.classList.add("draft-ai-json");
     prompt.onblur = event => {
       if (event.relatedTarget !== openAi) onAiPromptChange?.(draft, documentPrompt);
     };
-    aiSettings.append(promptLabel, prompt, openAi);
+    aiSettings.append(promptLabel, prompt);
     card.append(aiSettings);
   }
 

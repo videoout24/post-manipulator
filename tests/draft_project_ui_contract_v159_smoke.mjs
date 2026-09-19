@@ -22,8 +22,10 @@ assert(commands.includes('await this.documents.saveCurrentContext();'), 'New Dra
 assert(palette.includes('if (b.projectVirtual) return false;'), 'Project virtual blocks must stay unavailable in Palette');
 assert(projectView.includes('getProjectPostPublicationEligibility'), 'Editor Project cards must use shared publication eligibility');
 assert(library.includes('getProjectPostPublicationEligibility'), 'Project Library cards must use shared publication eligibility');
-assert(draftView.includes('if (!publicationLinked && astHasAiPrompt(draft.messageAst))'),
+assert(draftView.includes('const hasDocumentAi = !publicationLinked && astHasAiPrompt(draft.messageAst)'),
   'Draft document AI controls must activate after at least one Canvas block prompt');
+assert(draftView.includes('tools.append(openAi)'),
+  'Draft AI JSON must live in the card shared tool group');
 assert(draftView.includes('draft.ai?.documentPrompt'),
   'Draft cards must expose their own whole-document prompt');
 assert(!draftView.includes('aiContextInput.type = "checkbox"'),

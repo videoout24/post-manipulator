@@ -1,6 +1,6 @@
 import { t } from "../i18n/index.js?v=1.10.0";
-import { createDraftListView } from "./DraftListView.js?v=1.10.0";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.10.0";
+import { createDraftListView } from "./DraftListView.js?v=1.10.2";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.10.2";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
 
 export class EditorRightPanel {

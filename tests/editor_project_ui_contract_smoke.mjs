@@ -20,7 +20,7 @@ assert.doesNotMatch(postList, /#createPost/);
 assert.match(postList, /showCardDeleteConfirmation/);
 assert.match(postList, /astHasAiPrompt\(post\.messageAst\)/,
   "The active Project post card must detect block AI prompts");
-assert.match(postList, /if \(astHasAiPrompt\(post\.messageAst\)\)/,
+assert.match(postList, /const hasDocumentAi = post\.id === activePostId && astHasAiPrompt\(post\.messageAst\)/,
   "Post document AI controls must activate after at least one Canvas block prompt");
 assert.match(postList, /post\.ai\?\.documentPrompt/,
   "The active post card must expose its own whole-post prompt");
@@ -28,6 +28,8 @@ assert.doesNotMatch(postList, /input\.type = "checkbox"/,
   "The obsolete extended-context checkbox must be removed from Project posts");
 assert.match(postList, /project-post-ai-json/,
   "The active Project post card must expose Post AI JSON under the full-context condition");
+assert.match(postList, /cardActions\.push\(openAi\)/,
+  "Post AI JSON must live in the card's shared action group");
 assert.match(rightPanel, /onOpenAi: \(post, documentPrompt\) => this\.#openProjectPostAi\(post, documentPrompt\)/,
   "Project post AI JSON must be wired through the right panel");
 assert.match(postList, /t\("editor\.projectPostListView\.theStartingPostContainsAMapAnd"\)/);
