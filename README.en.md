@@ -84,12 +84,15 @@ draft/project/post IDs, and AST block IDs. It does not include `chat_id`,
 The `Block AI JSON` button always creates an isolated package containing only
 the target block and its nested content and uses only that block's prompt. As
 soon as at least one Canvas block has an AI prompt, the draft or active post card
-automatically shows a **Whole-draft prompt** or **Whole-post prompt** section and
-its document AI JSON button. This separate prompt receives the complete AST and
-can describe relationships between blocks, such as filling a list and the
-paragraphs that follow it. When the document prompt is empty, only the local
-block prompts apply. For a selected regular draft, **Close** saves it and clears
-the Canvas.
+automatically shows a **Whole-draft prompt** or **Whole-post prompt** section that
+uses the full width of the card. The field shares the editor's common height
+sizing behavior: it grows with its content and remembers a manually selected
+height for the current session. The compact `{}` button that opens the document
+AI JSON lives in the card's shared action group. This separate prompt receives
+the complete AST and can describe relationships between blocks, such as filling
+a list and the paragraphs that follow it. When the document prompt is empty,
+only the local block prompts apply. For a selected regular draft, **Close** saves
+it and clears the Canvas.
 
 The package can be copied or downloaded and then passed to any AI model. Paste
 the response manually into the AI JSON field with the operating system's normal
