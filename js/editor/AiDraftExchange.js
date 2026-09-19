@@ -1,7 +1,7 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { t } from "../i18n/index.js?v=1.10.0";
 import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
-import { resolveAiBlockSchemas } from "./AiBlockSchemaResolver.js?v=1.10.0";
+import { resolveAiSchemaCatalog } from "./AiBlockSchemaResolver.js?v=1.10.1";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
 export const AI_DRAFT_SCHEMA_VERSION = 1;
@@ -387,7 +387,7 @@ export function buildAiDraftRequest({
   const ast = validateAiAst(sanitizeAiValue(messageAst));
   const normalizedScope = normalizeScope(scope);
   const normalizedDocumentPrompt = normalizedScope.kind === "message" ? String(documentPrompt || "").trim() : "";
-  const blockSchemas = resolveAiBlockSchemas(ast, registry);
+  const { blockSchemas, formatSets, richTextSchema } = resolveAiSchemaCatalog(ast, registry);
   return {
     format: AI_DRAFT_FORMAT,
     schemaVersion: AI_DRAFT_SCHEMA_VERSION,
@@ -401,11 +401,14 @@ export function buildAiDraftRequest({
     task: {
       instruction: taskInstruction(normalizedScope, normalizedDocumentPrompt),
       ...(normalizedDocumentPrompt ? { documentPrompt: normalizedDocumentPrompt } : {}),
+      ...(richTextSchema ? { richTextSchema } : {}),
+      ...(Object.keys(formatSets).length ? { formatSets } : {}),
       blockSchemas,
       responseContract: [
         "Return the complete JSON object only.",
         "Preserve format, schemaVersion, request, task, block id/type/children, and every ai.prompt.",
         "For every block, use task.blockSchemas[block.type] as the canonical props and children shape. Each block type is defined once and shared by all blocks of that type.",
+        "All rich-text values follow task.richTextSchema. Resolve a property's formatSet as task.formatSets[formatSet]; keep shared format sets referenced instead of copying them into each property.",
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"

@@ -1,5 +1,21 @@
-export function resolveAiBlockSchemas(messageAst, registry) {
-  const schemas = {};
+export function resolveAiSchemaCatalog(messageAst, registry) {
+  const blockSchemas = {};
+  const formatSets = {};
+  const formatSetIds = new Map();
+  let usesRichText = false;
+  const formats = {
+    reference(values = []) {
+      usesRichText = true;
+      if (!Array.isArray(values) || !values.length) return "";
+      const signature = JSON.stringify(values);
+      if (!formatSetIds.has(signature)) {
+        const id = `f${formatSetIds.size + 1}`;
+        formatSetIds.set(signature, id);
+        formatSets[id] = [...values];
+      }
+      return formatSetIds.get(signature);
+    }
+  };
   const seen = new Set();
   walk(messageAst, node => {
     const type = String(node?.type || "").trim();
@@ -7,17 +23,23 @@ export function resolveAiBlockSchemas(messageAst, registry) {
     seen.add(type);
     const definition = registry?.get?.(type);
     if (!definition) return;
-    schemas[type] = describeBlock(definition, registry);
+    blockSchemas[type] = describeBlock(definition, registry, formats);
   });
-  return schemas;
+  return {
+    blockSchemas,
+    formatSets,
+    richTextSchema: usesRichText
+      ? { accepts: ["string", "rich-text object", "rich-text array"] }
+      : null
+  };
 }
 
-function describeBlock(definition, registry) {
+function describeBlock(definition, registry, formats) {
   const props = {};
   for (const binding of registry?.propertyBindings?.(definition) || definition?.propertyBindings || []) {
     const key = String(binding?.key || "").trim();
     if (!key) continue;
-    props[key] = describeProperty(binding, registry?.properties);
+    props[key] = describeProperty(binding, registry?.properties, formats);
   }
   const children = definition?.children || { allowed: false };
   return {
@@ -34,7 +56,7 @@ function describeBlock(definition, registry) {
   };
 }
 
-function describeProperty(schema = {}, propertyRegistry = null) {
+function describeProperty(schema = {}, propertyRegistry = null, formats = null) {
   const type = String(schema.type || "string");
   let result;
   if (type === "list-items") {
@@ -42,7 +64,7 @@ function describeProperty(schema = {}, propertyRegistry = null) {
       type: "array",
       items: {
         type: "object",
-        props: describeNestedFields(schema.item?.fields, propertyRegistry)
+        props: describeNestedFields(schema.item?.fields, propertyRegistry, formats)
       }
     };
   } else if (type === "table") {
@@ -52,7 +74,7 @@ function describeProperty(schema = {}, propertyRegistry = null) {
         type: "array",
         items: {
           type: "object",
-          props: describeNestedFields(schema.cell?.fields, propertyRegistry)
+          props: describeNestedFields(schema.cell?.fields, propertyRegistry, formats)
         }
       }
     };
@@ -66,10 +88,10 @@ function describeProperty(schema = {}, propertyRegistry = null) {
       }
     };
   } else if (type === "rich-text") {
+    const formatSet = formats?.reference?.(schema.formats);
     result = {
       type: "rich-text",
-      accepts: ["string", "rich-text object", "rich-text array"],
-      ...(Array.isArray(schema.formats) && schema.formats.length ? { formats: [...schema.formats] } : {})
+      ...(formatSet ? { formatSet } : {})
     };
   } else if (type === "location") {
     result = {
@@ -106,13 +128,13 @@ function describeProperty(schema = {}, propertyRegistry = null) {
   return result;
 }
 
-function describeNestedFields(fields = [], propertyRegistry = null) {
+function describeNestedFields(fields = [], propertyRegistry = null, formats = null) {
   const props = {};
   for (const raw of fields || []) {
     const resolved = propertyRegistry?.resolve?.(raw) || raw;
     const key = String(resolved?.key || raw?.key || "").trim();
     if (!key) continue;
-    props[key] = describeProperty(resolved, propertyRegistry);
+    props[key] = describeProperty(resolved, propertyRegistry, formats);
   }
   return props;
 }

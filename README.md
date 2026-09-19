@@ -92,7 +92,11 @@ AST после ответа и не попадает в Telegram Rich Message п
 - `task.blockSchemas` — ожидаемую форму `props` и `children`, полученную из
   реестра блоков и свойств. Схема каждого встреченного типа добавляется один раз:
   например, три списка используют одну `task.blockSchemas.list`, а две таблицы —
-  одну `task.blockSchemas.table`.
+  одну `task.blockSchemas.table`;
+- `task.richTextSchema` — единое описание допустимых представлений Rich Text;
+- `task.formatSets` — уникальные наборы Rich Text-форматов. Текстовые свойства
+  используют короткий `formatSet: "f1"`, поэтому одинаковые представления и
+  списки форматов не повторяются в схемах заголовков, таблиц и подписей.
 
 Пакет содержит только внутренние идентификаторы приложения (`request.id`, ID
 черновика/проекта/поста и блоков AST). `chat_id`, `message_id`, ID канала и ID
@@ -265,7 +269,7 @@ Bot API позволяет боту получить через `getFile` пут
 После публикации GitHub Pages укажите в BotFather этот адрес Mini App:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.10.0
+https://videoout24.github.io/post-manipulator/?build=1.10.1
 ```
 
 Ваш bot token останется зашифрованным в Telegram CloudStorage, а данные приложения — в локальной IndexedDB выбранного бота. Страница не требует заранее заданного Bot ID.
@@ -342,7 +346,7 @@ git push
 
 GitHub Pages обновит сайт автоматически.
 
-GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.10.0`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
+GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.10.1`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
 
 ## Локальная проверка
 

@@ -54,6 +54,13 @@ assert.equal(request.request.scope.kind, "field");
 assert.equal(request.request.contextIncluded, "message");
 assert.equal(request.messageAst.children.length, 2, "extended context keeps the entire draft");
 assert.match(request.task.responseContract.at(-1), /props\.text/);
+assert.deepEqual(request.task.formatSets.f1, registry.propertyBindings("heading").find(item => item.key === "text").formats);
+assert.deepEqual(request.task.richTextSchema.accepts, ["string", "rich-text object", "rich-text array"]);
+assert.equal(request.task.blockSchemas.heading.props.text.formatSet, "f1");
+assert.equal(request.task.blockSchemas.heading.props.text.formats, undefined,
+  "rich-text schemas must reference shared formats instead of repeating their arrays");
+assert.equal(request.task.blockSchemas.heading.props.text.accepts, undefined,
+  "rich-text value variants must be declared once in task.richTextSchema");
 
 const emptyListRequest = buildAiDraftRequest({
   messageAst: {
@@ -70,6 +77,10 @@ assert.equal(emptyListRequest.task.blockSchemas.list.props.items.items.props.blo
 assert.deepEqual(emptyListRequest.task.blockSchemas.list.props.items.items.props.blocks.items.example,
   { type: "paragraph", text: "Visible text" },
   "the registry must expose the otherwise invisible list-item block shape as structured JSON");
+assert.equal(emptyListRequest.task.richTextSchema, undefined,
+  "requests without rich-text properties must not carry an unused shared schema");
+assert.equal(emptyListRequest.task.formatSets, undefined,
+  "requests without formatter sets must not carry an empty catalog");
 
 const repeatedTypesRequest = buildAiDraftRequest({
   messageAst: {
@@ -83,7 +94,27 @@ const repeatedTypesRequest = buildAiDraftRequest({
 assert.deepEqual(Object.keys(repeatedTypesRequest.task.blockSchemas), ["list", "table"],
   "three lists and two tables must produce only two shared registry schemas");
 assert.equal(repeatedTypesRequest.task.blockSchemas.table.props.cells.items.items.props.text.type, "rich-text");
+assert.equal(repeatedTypesRequest.task.blockSchemas.table.props.cells.items.items.props.text.formatSet, "f1");
+assert.equal(repeatedTypesRequest.task.blockSchemas.table.props.caption.formatSet, "f1");
+assert.equal(Object.keys(repeatedTypesRequest.task.formatSets).length, 1,
+  "all repeated full rich-text format arrays must be stored only once");
 assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /task\.blockSchemas\[block\.type\]/);
+assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /formatSet.*task\.formatSets\[formatSet\]/);
+
+const distinctFormatSetsRequest = buildAiDraftRequest({
+  messageAst: {
+    id: "root", type: "document", props: {}, children: [
+      { id: "heading-formats", type: "heading", props: { text: "Title", level: 2 }, children: [] },
+      { id: "code-formats", type: "preformatted", props: { text: "const x = 1;", language: "js" }, children: [] }
+    ]
+  },
+  registry
+});
+assert.deepEqual(Object.keys(distinctFormatSetsRequest.task.formatSets), ["f1", "f2"]);
+assert.equal(distinctFormatSetsRequest.task.blockSchemas.heading.props.text.formatSet, "f1");
+assert.equal(distinctFormatSetsRequest.task.blockSchemas.preformatted.props.text.formatSet, "f2");
+assert.deepEqual(distinctFormatSetsRequest.task.formatSets.f2, ["code"],
+  "genuinely different formatter sets must remain independently addressable");
 
 const nestedBlockRequest = buildAiDraftRequest({
   messageAst: {

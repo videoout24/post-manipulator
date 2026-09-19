@@ -71,7 +71,11 @@ The `AI JSON` button creates a portable `rich-current-ai-draft` package containi
 - `task.blockSchemas`, the expected `props` and `children` shapes derived from
   the block and property registries. Each encountered block type is described
   once: for example, three lists share `task.blockSchemas.list`, while two tables
-  share `task.blockSchemas.table`.
+  share `task.blockSchemas.table`;
+- `task.richTextSchema`, the single description of accepted Rich Text value shapes;
+- `task.formatSets`, the unique Rich Text format sets. Text properties use a
+  short `formatSet: "f1"`, so neither value representations nor format lists are
+  repeated across heading, table, and caption schemas.
 
 The package contains only internal application identifiers: `request.id`, the
 draft/project/post IDs, and AST block IDs. It does not include `chat_id`,
@@ -246,7 +250,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.10.0
+https://videoout24.github.io/post-manipulator/?build=1.10.1
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -323,7 +327,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.1`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 
