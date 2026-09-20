@@ -9,14 +9,20 @@ neither a deployed backend nor paid hosting.
 ## Features
 
 - compose and edit Rich Messages;
+- save groups of blocks as reusable custom templates;
+- quickly change the order and nesting of blocks in a message;
 - manage projects, drafts, publications, and media;
-- schedule regular drafts and Projects (an internal abstraction of linked posts) and edit them after publication;
+- schedule regular drafts and Projects (the internal abstraction for linked
+  posts), and edit them after publication;
 - receive media from the linked owner through the bot;
 - display a live preview in a separate private channel;
 - delete accessible Bot API service messages from the owner's private chat and preview channel;
-- create and restore IndexedDB backups through Telegram.
-- import `.csv` and `.md` tables into native Rich Message blocks.
-- import LaTeX formula templates from prepared `.json` files into formula blocks.
+- create and restore IndexedDB backups through Telegram;
+- import `.csv` and `.md` tables into native Rich Message blocks;
+- import LaTeX formula templates from prepared `.json` files;
+- use any AI model to generate a post through the `handleCopyPaste` protocol:
+  export structured AI JSON, pass it to the model, and apply the response
+  through copy/paste or a local `.json` file.
 
 ## Project import and test set
 
@@ -42,11 +48,13 @@ node scripts/generate-test-projects.mjs
 
 ## Intentionally out of scope
 
-AI is intentionally not integrated: the tool is primarily designed for working with author-written content. If needed, AI can be connected at the individual-block or whole-project level while controlling the request context and required response format. The codebase can be adapted to a specific integration.
+Direct AI API integration is intentionally absent: the tool is primarily
+designed for working with author-written text. The editor could be extended with
+a connector to a specific AI provider's API, but that would effectively defeat
+the whole idea—the enjoyment of expressing your own thoughts instead of
+generating everything.
 
 ## AI JSON: requests without requiring an AI API
-
-Well, haha, since AI wrote the code, here is what came about "unintentionally":
 
 Every block on the Canvas has a collapsible **AI prompt** field directly below
 its title and buttons. A request can allow changes to the entire block or to only
@@ -105,6 +113,29 @@ instead of changing data automatically. The owner can apply the response to the
 current version, create a separate draft, or cancel without changing anything.
 A response for the entire message is still imported as a separate draft.
 
+For Animation, Audio, Document, Photo, Video, and Voice note blocks, AI can
+return a direct public HTTPS URL that Telegram loads when sending the message.
+In blocks backed by Gallery, the external URL and internal resource are mutually
+exclusive: entering a URL clears `galleryId` and the Telegram `file_id`, while
+selecting a Gallery resource clears the URL. The link must point directly to a
+file with the correct MIME type and may be temporary, so Gallery is preferable
+for durable publications. Under the general Bot API rules, URL uploads are
+limited to 5 MB for photos and 20 MB for other files; documents are guaranteed
+for PDF and ZIP, and voice messages for OGG up to 1 MB. See the
+[Telegram Bot API](https://core.telegram.org/bots/api#sending-files) for details.
+
+## Map block
+
+The Map block accepts a full Google Maps, Telegram/`geo:`, Yandex Maps, Apple Maps,
+or 2GIS link when the link contains coordinates. The editor detects the provider
+and extracts latitude, longitude, and an available zoom value. Short links are
+intentionally unsupported: the static application cannot inspect their
+cross-origin redirects, so open the short link first and copy its full address.
+Zoom is limited to `1–20`. Pixel dimensions are not edited directly; the
+**Landscape 2:1** and **Portrait 1:2** buttons are converted into
+[Telegram InputRichBlockMap](https://core.telegram.org/bots/api#inputrichblockmap)
+compatible `width` and `height` values. Location accuracy is not used.
+
 ## Internal block collector
 
 Every author-controlled block has a diamond toggle immediately before its title
@@ -130,18 +161,7 @@ positioning: `0` disables scrolling, `1` is slow, `2` is approximately half the
 former speed and is the default, and `3` is the former speed. The preference is
 stored locally for the entire editor.
 
-For Animation, Audio, Document, Photo, Video, and Voice note blocks, AI can
-return a direct public HTTPS URL that Telegram loads when sending the message.
-In blocks backed by Gallery, the external URL and internal resource are mutually
-exclusive: entering a URL clears `galleryId` and the Telegram `file_id`, while
-selecting a Gallery resource clears the URL. The link must point directly to a
-file with the correct MIME type and may be temporary, so Gallery is preferable
-for durable publications. Under the general Bot API rules, URL uploads are
-limited to 5 MB for photos and 20 MB for other files; documents are guaranteed
-for PDF and ZIP, and voice messages for OGG up to 1 MB. See the
-[Telegram Bot API](https://core.telegram.org/bots/api#sending-files) for details.
-
-### Why there is no backend
+## Why there is no backend
 
 The MVP does not need a backend. It is intended for one owner working with their own bot, while Telegram already provides the required capabilities: Mini Apps, CloudStorage, the Bot API, and a private bot chat for backups. This allows free static hosting and avoids creating a separate server-side database containing the token.
 
@@ -154,7 +174,7 @@ This design has several limitations:
 
 A future backend is planned as an independent optional service rather than a mandatory centralized component. Its purpose would be to remove client-only limitations while keeping deployment and operating costs low.
 
-### Scheduled publication limitations
+## Scheduled publication limitations
 
 Project posts are scheduled in order: every predecessor must be published or
 scheduled, and the next time cannot be earlier than its predecessors. Equal
@@ -252,7 +272,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.10.4
+https://videoout24.github.io/post-manipulator/?build=1.11.0
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -329,7 +349,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.10.4`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.11.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

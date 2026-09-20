@@ -374,9 +374,21 @@ body.drag-delete-active::before {
 
 .structured-editor textarea { min-height: 150px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; }
 .structured-editor textarea.invalid { border-color: var(--theme-danger-border, #a94b59); outline-color: var(--theme-danger-border, #a94b59); }
-.location-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.location-editor { display: grid; gap: 6px; }
+.map-link-input { width: 100%; }
+.map-link-status {
+  min-height: 14px; color: var(--theme-success, #87d6ad); font-size: 9px; line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.map-link-status.invalid { color: var(--theme-danger, #ff9ba7); }
+.map-settings-row { display: grid; grid-template-columns: minmax(72px, .65fr) 1fr 1fr; gap: 6px; align-items: end; }
 .location-field { display: flex !important; flex-direction: column; gap: 3px; margin: 0 !important; color: var(--theme-text-muted, #8492a5) !important; font-size: 10px !important; }
-.location-field:last-child { grid-column: 1 / -1; }
+.map-zoom-field input { min-width: 0; width: 100%; height: 28px; }
+.map-orientation-button { min-width: 0; height: 28px; padding: 3px 6px; font-size: 9px; white-space: nowrap; }
+.map-orientation-button[aria-pressed="true"] {
+  border-color: var(--theme-accent-border, #5c8dff); background: var(--theme-accent-subtle, #243a5b);
+  box-shadow: inset 0 0 0 1px var(--theme-accent-ring, #5c8dff55); color: var(--theme-text, #dbe9ff);
+}
 
 /* v0.7 — universal registry-driven property editors */
 .boolean-editor {

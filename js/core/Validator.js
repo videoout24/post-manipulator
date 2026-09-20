@@ -1,6 +1,7 @@
 import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.7.17";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
-import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.10.4";
+import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.11.0";
+import { MapLinkError, resolveMapLink } from "./MapLinkResolver.js?v=1.11.0";
 
 export class Validator {
   constructor(registry) { this.registry = registry; }
@@ -38,6 +39,15 @@ export class Validator {
     }
     if (hasMediaSourceConflict(node)) {
       errors.push(`${node.type} cannot use both an external URL and Gallery/file_id`);
+    }
+    if (node.type === "map" && String(node.props?.mapUrl || "").trim()) {
+      try {
+        resolveMapLink(node.props?.mapUrl);
+      } catch (error) {
+        errors.push(error instanceof MapLinkError && error.code === "short"
+          ? "map.mapUrl must be a full map link; short links are unsupported"
+          : "map.mapUrl must contain supported coordinates");
+      }
     }
 
     if (parent && parent.id !== "root" && def.constraints?.allowedParents &&

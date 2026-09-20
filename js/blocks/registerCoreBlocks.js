@@ -164,9 +164,9 @@ export function registerTelegramCore(registry) {
       type:"map", name:t("blocks.registerCoreBlocks.map"), category:t("blocks.category.media"),
       accepts:{properties:[
         prop("map.location", "location"),
+        prop("map.sourceUrl", "mapUrl"),
         prop("map.zoom", "zoom"),
-        prop("map.width", "width"),
-        prop("map.height", "height"),
+        prop("map.orientation", "orientation"),
         rich("content.caption", "caption", FORMAT_GROUPS.full),
         rich("content.captionCredit", "captionCredit", FORMAT_GROUPS.full)
       ]},

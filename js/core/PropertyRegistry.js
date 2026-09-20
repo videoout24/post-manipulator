@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.10.4";
+import { t } from "../i18n/index.js?v=1.11.0";
 export class PropertyRegistry {
   constructor(formattingRegistry = null) {
     this.properties = new Map();
@@ -279,8 +279,12 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
 
   // ---------- Map ----------
   add("map.location", {
-    label: t("core.propertyRegistry.location"), group: t("core.propertyRegistry.map"), type: "location", editor: "location", default: { latitude: 0, longitude: 0 },
+    label: t("core.propertyRegistry.mapLink"), group: t("core.propertyRegistry.map"), type: "location", editor: "location", default: { latitude: 0, longitude: 0 },
     telegramField: "location"
+  });
+  add("map.sourceUrl", {
+    label: t("core.propertyRegistry.mapLink"), group: t("core.propertyRegistry.map"), type: "url", editor: "url", default: "", scope: "editor",
+    hint: t("core.propertyRegistry.mapLinkHint")
   });
   add("map.latitude", {
     label: t("core.propertyRegistry.latitudeLegacy"), group: t("core.propertyRegistry.legacy"), type: "number", editor: "number", min: -90, max: 90, default: 0,
@@ -291,13 +295,23 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
     scope: "editor", deprecated: true, groupCollapsed: true
   });
   add("map.zoom", {
-    label: t("core.propertyRegistry.zoom"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 0, max: 24, default: 12
+    label: t("core.propertyRegistry.zoom"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 1, max: 20, default: 12
+  });
+  add("map.orientation", {
+    label: t("core.propertyRegistry.orientation"), group: t("core.propertyRegistry.map"), type: "enum", editor: "select", default: "landscape", scope: "editor",
+    values: ["landscape", "portrait"],
+    options: [
+      { value: "landscape", label: t("core.propertyRegistry.landscape") },
+      { value: "portrait", label: t("core.propertyRegistry.portrait") }
+    ]
   });
   add("map.width", {
-    label: t("core.propertyRegistry.width"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 0, max: 10000, default: 640
+    label: t("core.propertyRegistry.width"), group: t("core.propertyRegistry.legacy"), type: "integer", editor: "number", min: 0, max: 10000, default: 640,
+    scope: "editor", deprecated: true, groupCollapsed: true
   });
   add("map.height", {
-    label: t("core.propertyRegistry.height"), group: t("core.propertyRegistry.map"), type: "integer", editor: "number", min: 0, max: 10000, default: 360
+    label: t("core.propertyRegistry.height"), group: t("core.propertyRegistry.legacy"), type: "integer", editor: "number", min: 0, max: 10000, default: 320,
+    scope: "editor", deprecated: true, groupCollapsed: true
   });
 
   // ---------- Media ----------

@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.11.0";
 import {
   applyRichTextFormat,
   insertRichText,
@@ -20,13 +20,20 @@ import {
   listAnchors,
   unixTimeToDateTimeLocal
 } from "../core/SemanticRichText.js?v=1.5.9";
-import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.10.4";
+import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.0";
 import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
 import { findLinkRelationAtRange, findLinkRelationById } from "../links/LinkRelationAst.js?v=1.5.9";
 import { AVAILABLE_EMOJIS } from "./EmojiCatalog.js?v=1.7.6";
 import { projectMapEntryText } from "../project/ProjectMapText.js?v=1.7.11";
+import {
+  MapLinkError,
+  mapDimensions,
+  mapOrientation,
+  normalizeMapZoom,
+  resolveMapLink
+} from "../core/MapLinkResolver.js?v=1.11.0";
 
 export class BlockInspector {
   constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, emojiPreferences = null, events = null }) {
@@ -105,6 +112,11 @@ export class BlockInspector {
       hidden.add("table.isBordered");
       hidden.add("table.isStriped");
       hidden.add("table.isCompact");
+    }
+    if (node.type === "map") {
+      hidden.add("map.sourceUrl");
+      hidden.add("map.zoom");
+      hidden.add("map.orientation");
     }
     if (["collage", "slideshow"].includes(parent?.type) && ["photo", "video"].includes(node.type)) {
       hidden.add("content.caption");
@@ -1061,26 +1073,105 @@ export class BlockInspector {
     return wrap;
   }
 
-  makeLocationEditor({ schema, value, onChange }) {
-    const current = value && typeof value === "object" ? value : schema.default || {};
+  makeLocationEditor({ schema, value, node }) {
     const wrap = document.createElement("div");
     wrap.className = "location-editor";
-    const lat = numericField(t("editor.blockInspector.latitude"), current.latitude ?? 0, -90, 90);
-    const lon = numericField(t("editor.blockInspector.longitude"), current.longitude ?? 0, -180, 180);
-    const accuracy = numericField(t("editor.blockInspector.accuracyM"), current.horizontal_accuracy ?? "", 0, 1500);
-    const commit = () => {
-      const next = {
-        latitude: Number(lat.input.value || 0),
-        longitude: Number(lon.input.value || 0)
-      };
-      if (accuracy.input.value !== "") next.horizontal_accuracy = Number(accuracy.input.value);
-      onChange?.(next);
+
+    const link = document.createElement("input");
+    link.className = "map-link-input";
+    link.type = "url";
+    link.value = String(node?.props?.mapUrl || "");
+    link.placeholder = t("editor.blockInspector.mapLinkPlaceholder");
+    link.disabled = !!schema.readOnly;
+
+    const status = document.createElement("div");
+    status.className = "map-link-status";
+    const showStatus = () => {
+      status.classList.remove("invalid");
+      const source = String(link.value || "").trim();
+      if (!source) {
+        status.textContent = t("editor.blockInspector.mapLinkRequired");
+        return;
+      }
+      try {
+        const resolved = resolveMapLink(source);
+        status.textContent = t("editor.blockInspector.mapLinkResolved", {
+          0: resolved.provider,
+          1: formatCoordinate(resolved.location.latitude),
+          2: formatCoordinate(resolved.location.longitude)
+        });
+      } catch (error) {
+        status.classList.add("invalid");
+        status.textContent = mapLinkErrorText(error);
+      }
     };
-    for (const field of [lat, lon, accuracy]) {
-      field.input.addEventListener("change", commit);
-      field.input.disabled = !!schema.readOnly;
+
+    const applyLink = () => {
+      const source = String(link.value || "").trim();
+      if (!source) {
+        this.controller.updateNodeProperties(node.id, {
+          mapUrl: "",
+          location: { latitude: 0, longitude: 0 }
+        }, { inspectorSource: true });
+        return;
+      }
+      try {
+        const resolved = resolveMapLink(source);
+        const orientation = mapOrientation(node.props);
+        this.controller.updateNodeProperties(node.id, {
+          mapUrl: source,
+          location: resolved.location,
+          zoom: resolved.zoom ?? normalizeMapZoom(node.props?.zoom),
+          orientation,
+          ...mapDimensions(orientation)
+        }, { inspectorSource: true });
+      } catch (error) {
+        this.controller.updateNodeProperties(node.id, {
+          mapUrl: source,
+          location: { latitude: 0, longitude: 0 }
+        }, { inspectorSource: true });
+      }
+    };
+    link.addEventListener("change", applyLink);
+    link.addEventListener("paste", () => setTimeout(applyLink, 0));
+    link.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      applyLink();
+    });
+
+    const settings = document.createElement("div");
+    settings.className = "map-settings-row";
+    const zoom = numericField(t("core.propertyRegistry.zoom"), normalizeMapZoom(node?.props?.zoom), 1, 20);
+    zoom.wrap.classList.add("map-zoom-field");
+    zoom.input.disabled = !!schema.readOnly;
+    zoom.input.addEventListener("change", () => {
+      const next = normalizeMapZoom(zoom.input.value);
+      zoom.input.value = String(next);
+      this.controller.updateNodeProperty(node.id, "zoom", next, { inspectorSource: true });
+    });
+
+    const currentOrientation = mapOrientation(node?.props);
+    for (const orientation of ["landscape", "portrait"]) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "map-orientation-button";
+      button.dataset.orientation = orientation;
+      button.textContent = orientation === "landscape"
+        ? t("editor.blockInspector.mapLandscape")
+        : t("editor.blockInspector.mapPortrait");
+      button.setAttribute("aria-pressed", String(currentOrientation === orientation));
+      button.disabled = !!schema.readOnly;
+      button.onclick = () => this.controller.updateNodeProperties(node.id, {
+        orientation,
+        ...mapDimensions(orientation)
+      }, { inspectorSource: true });
+      settings.append(button);
     }
-    wrap.append(lat.wrap, lon.wrap, accuracy.wrap);
+
+    settings.prepend(zoom.wrap);
+    wrap.append(link, status, settings);
+    showStatus();
     return wrap;
   }
 
@@ -2826,6 +2917,19 @@ function numericField(label, value, min, max) {
   if (max != null) input.max = max;
   wrap.append(caption, input);
   return { wrap, input };
+}
+
+function mapLinkErrorText(error) {
+  if (!(error instanceof MapLinkError)) return t("editor.blockInspector.mapLinkCoordinatesMissing");
+  if (error.code === "short") return t("editor.blockInspector.mapLinkShortUnsupported");
+  if (error.code === "unsupported") return t("editor.blockInspector.mapLinkProviderUnsupported");
+  if (error.code === "empty") return t("editor.blockInspector.mapLinkRequired");
+  return t("editor.blockInspector.mapLinkCoordinatesMissing");
+}
+
+function formatCoordinate(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? String(Number(number.toFixed(6))) : "0";
 }
 
 function stringifyStructured(value) {

@@ -1,12 +1,12 @@
 {
   "engine": "schema-driven-block-editor",
-  "version": "1.7.22",
+  "version": "1.11.0",
   "limits": {
     "maxBlocks": 500,
     "maxDepth": 16
   },
   "registries": {
-    "propertyCatalogCount": 89,
+    "propertyCatalogCount": 91,
     "propertyCount": 64,
     "formattingCommandCount": 25,
     "formattingMetadataCount": 18,
@@ -41,9 +41,11 @@
       "details.summary",
       "details.isOpen",
       "map.location",
+      "map.sourceUrl",
       "map.latitude",
       "map.longitude",
       "map.zoom",
+      "map.orientation",
       "map.width",
       "map.height",
       "media.source",
@@ -562,9 +564,9 @@
       "type": "map",
       "properties": [
         "map.location",
+        "map.sourceUrl",
         "map.zoom",
-        "map.width",
-        "map.height",
+        "map.orientation",
         "content.caption",
         "content.captionCredit"
       ],
@@ -1302,9 +1304,9 @@
       "type": "map",
       "properties": [
         "map.location",
+        "map.sourceUrl",
         "map.zoom",
-        "map.width",
-        "map.height",
+        "map.orientation",
         "content.caption",
         "content.captionCredit"
       ],

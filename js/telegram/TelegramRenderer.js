@@ -1,6 +1,7 @@
 import { t } from "../i18n/index.js?v=1.8.0";
 import { buildSemanticRichText, makeUrlButton } from "../core/SemanticRichText.js?v=1.5.9";
 import { renderableRichText } from "../links/LinkRelationAst.js?v=1.5.9";
+import { mapDimensions, mapOrientation, normalizeMapZoom, resolveMapLink } from "../core/MapLinkResolver.js?v=1.11.0";
 
 /*
   Telegram wire adapter.
@@ -109,15 +110,17 @@ export class TelegramRenderer {
         });
       case "details":
         return compactObject({ type: "details", summary: richText(p.summary), blocks: blocks(), is_open: truthyOnly(p.open) });
-      case "map":
+      case "map": {
+        const dimensions = mapDimensions(mapOrientation(p));
         return compactObject({
           type: "map",
           location: renderLocation(p),
-          zoom: integer(p.zoom, 12),
-          width: integer(p.width, 640),
-          height: integer(p.height, 360),
+          zoom: normalizeMapZoom(p.zoom),
+          width: dimensions.width,
+          height: dimensions.height,
           caption: caption()
         });
+      }
       case "animation":
         return compactObject({ type: "animation", animation: makeInputMedia("animation", mediaSource(p), p.hasSpoiler), caption: caption() });
       case "audio":
@@ -222,10 +225,13 @@ function renderTableCells(value) {
 }
 
 function renderLocation(props) {
+  if (String(props.mapUrl || "").trim()) {
+    try { return resolveMapLink(props.mapUrl).location; } catch { /* Validator reports the invalid source. */ }
+  }
   const location = props.location && typeof props.location === "object" ? structuredClone(props.location) : {};
   const latitude = finite(location.latitude) ? Number(location.latitude) : Number(props.latitude || 0);
   const longitude = finite(location.longitude) ? Number(location.longitude) : Number(props.longitude || 0);
-  return { ...location, latitude, longitude };
+  return { latitude, longitude };
 }
 
 function integer(value, fallback) {

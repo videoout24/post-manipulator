@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.8.0";
-import { normalizeMediaSourcePatch } from "../core/MediaSource.js?v=1.10.4";
+import { normalizeMediaSourcePatch } from "../core/MediaSource.js?v=1.11.0";
 import { defaultDateTimeLocal } from "../core/SemanticRichText.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import {

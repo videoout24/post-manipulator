@@ -9,6 +9,17 @@ const tree = new BlockTree({
   children: [
     { id: "photo", type: "photo", props: { url: "telegram-file" }, children: [] },
     {
+      id: "map",
+      type: "map",
+      props: {
+        location: { latitude: 55.755814, longitude: 37.617635, horizontal_accuracy: 25 },
+        zoom: 24,
+        width: 320,
+        height: 640
+      },
+      children: []
+    },
+    {
       id: "list",
       type: "list",
       props: { ordered: true },
@@ -31,6 +42,14 @@ const tree = new BlockTree({
 
 assert.equal(migrateDocumentTree(tree), tree, "migration must preserve the BlockTree identity");
 assert.equal(tree.find("photo").props.fileId, "telegram-file");
+assert.deepEqual(tree.find("map").props, {
+  location: { latitude: 55.755814, longitude: 37.617635 },
+  zoom: 20,
+  width: 320,
+  height: 640,
+  orientation: "portrait",
+  mapUrl: "geo:55.755814,37.617635?z=20"
+});
 
 const list = tree.find("list");
 assert.deepEqual(list.children, []);
