@@ -54,8 +54,22 @@ assert.equal(request.request.scope.kind, "field");
 assert.equal(request.request.contextIncluded, "message");
 assert.equal(request.messageAst.children.length, 2, "extended context keeps the entire draft");
 assert.match(request.task.responseContract.at(-1), /props\.text/);
-assert.deepEqual(request.task.formatSets.f1, registry.propertyBindings("heading").find(item => item.key === "text").formats);
-assert.deepEqual(request.task.richTextSchema.accepts, ["string", "rich-text object", "rich-text array"]);
+assert.deepEqual(request.task.formatSets.f1.simpleFormats,
+  ["bold", "italic", "underline", "strikethrough", "spoiler", "subscript", "superscript", "marked", "code"]);
+assert.deepEqual(request.task.formatSets.f1.simpleTemplate,
+  { type: "<one simpleFormats value>", text: "string" });
+assert.deepEqual(request.task.formatSets.f1.specialFormats.url,
+  { type: "url", text: "string", url: "string" }, "URL formatting must expose its three-key object shape");
+assert.deepEqual(request.task.formatSets.f1.specialFormats.date_time, {
+  type: "date_time", text: "string", unix_time: "integer", date_time_format: "string"
+});
+assert.equal(request.task.richTextSchema.appliesTo, "changed rich-text properties");
+assert.equal(request.task.richTextSchema.whenFormatNotRequested, "string");
+assert.match(request.task.richTextSchema.whenFormatRequested, /one object/);
+assert.equal(request.task.richTextSchema.maxFormatsPerProperty, 1);
+assert.equal(request.task.richTextSchema.arraysAllowed, false);
+assert.equal(request.task.richTextSchema.nestedFormatsAllowed, false);
+assert.equal(request.task.richTextSchema.unchangedExistingValues, "preserve verbatim");
 assert.equal(request.task.blockSchemas.heading.props.text.formatSet, "f1");
 assert.equal(request.task.blockSchemas.heading.props.text.formats, undefined,
   "rich-text schemas must reference shared formats instead of repeating their arrays");
@@ -99,7 +113,8 @@ assert.equal(repeatedTypesRequest.task.blockSchemas.table.props.caption.formatSe
 assert.equal(Object.keys(repeatedTypesRequest.task.formatSets).length, 1,
   "all repeated full rich-text format arrays must be stored only once");
 assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /task\.blockSchemas\[block\.type\]/);
-assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /formatSet.*task\.formatSets\[formatSet\]/);
+assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /exactly one non-nested object.*task\.formatSets\[formatSet\]/);
+assert.match(repeatedTypesRequest.task.responseContract.join("\n"), /Preserve unchanged existing rich-text values verbatim/);
 
 const distinctFormatSetsRequest = buildAiDraftRequest({
   messageAst: {
@@ -113,7 +128,10 @@ const distinctFormatSetsRequest = buildAiDraftRequest({
 assert.deepEqual(Object.keys(distinctFormatSetsRequest.task.formatSets), ["f1", "f2"]);
 assert.equal(distinctFormatSetsRequest.task.blockSchemas.heading.props.text.formatSet, "f1");
 assert.equal(distinctFormatSetsRequest.task.blockSchemas.preformatted.props.text.formatSet, "f2");
-assert.deepEqual(distinctFormatSetsRequest.task.formatSets.f2, ["code"],
+assert.deepEqual(distinctFormatSetsRequest.task.formatSets.f2, {
+  simpleFormats: ["code"],
+  simpleTemplate: { type: "<one simpleFormats value>", text: "string" }
+},
   "genuinely different formatter sets must remain independently addressable");
 
 const nestedBlockRequest = buildAiDraftRequest({

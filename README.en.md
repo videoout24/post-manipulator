@@ -76,10 +76,14 @@ The `AI JSON` button creates a portable `rich-current-ai-draft` package containi
   the block and property registries. Each encountered block type is described
   once: for example, three lists share `task.blockSchemas.list`, while two tables
   share `task.blockSchemas.table`;
-- `task.richTextSchema`, the single description of accepted Rich Text value shapes;
-- `task.formatSets`, the unique Rich Text format sets. Text properties use a
-  short `formatSet: "f1"`, so neither value representations nor format lists are
-  repeated across heading, table, and caption schemas.
+- `task.richTextSchema`, the shared rule for changed text fields: return a string
+  unless formatting is explicitly requested, then return one format object
+  without arrays or nested formats. Existing unchanged Rich Text values are
+  preserved verbatim;
+- `task.formatSets`, the unique Rich Text format sets. Common formats share one
+  compact `{type, text}` template, while formats with extra fields, such as URL
+  `{type, text, url}`, are described separately. Text properties reference the
+  set with a short `formatSet: "f1"`.
 
 The package contains only internal application identifiers: `request.id`, the
 draft/project/post IDs, and AST block IDs. It does not include `chat_id`,

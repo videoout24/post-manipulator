@@ -2,6 +2,7 @@ export function resolveAiSchemaCatalog(messageAst, registry) {
   const blockSchemas = {};
   const formatSets = {};
   const formatSetIds = new Map();
+  const formattingRegistry = registry?.properties?.formatting;
   let usesRichText = false;
   const formats = {
     reference(values = []) {
@@ -11,7 +12,7 @@ export function resolveAiSchemaCatalog(messageAst, registry) {
       if (!formatSetIds.has(signature)) {
         const id = `f${formatSetIds.size + 1}`;
         formatSetIds.set(signature, id);
-        formatSets[id] = [...values];
+        formatSets[id] = describeFormatSet(values, formattingRegistry);
       }
       return formatSetIds.get(signature);
     }
@@ -29,9 +30,48 @@ export function resolveAiSchemaCatalog(messageAst, registry) {
     blockSchemas,
     formatSets,
     richTextSchema: usesRichText
-      ? { accepts: ["string", "rich-text object", "rich-text array"] }
+      ? {
+          appliesTo: "changed rich-text properties",
+          whenFormatNotRequested: "string",
+          whenFormatRequested: "one object matching task.formatSets[property.formatSet]",
+          maxFormatsPerProperty: 1,
+          arraysAllowed: false,
+          nestedFormatsAllowed: false,
+          unchangedExistingValues: "preserve verbatim"
+        }
       : null
   };
+}
+
+function describeFormatSet(values = [], formattingRegistry = null) {
+  const simpleFormats = [];
+  const specialFormats = {};
+  for (const id of values) {
+    const format = formattingRegistry?.get?.(id) || { id, telegramType: id };
+    const type = String(format.telegramType || format.id || id);
+    const fields = Array.isArray(format.fields) ? format.fields : [];
+    if (!fields.length) {
+      simpleFormats.push(type);
+      continue;
+    }
+    specialFormats[id] = {
+      type,
+      text: "string",
+      ...Object.fromEntries(fields.map(field => [field.key, formatFieldType(field.editor)]))
+    };
+  }
+  return {
+    ...(simpleFormats.length ? {
+      simpleFormats,
+      simpleTemplate: { type: "<one simpleFormats value>", text: "string" }
+    } : {}),
+    ...(Object.keys(specialFormats).length ? { specialFormats } : {})
+  };
+}
+
+function formatFieldType(editor) {
+  if (editor === "integer" || editor === "number" || editor === "boolean" || editor === "json") return editor;
+  return "string";
 }
 
 function describeBlock(definition, registry, formats) {

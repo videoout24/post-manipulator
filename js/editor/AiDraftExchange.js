@@ -408,7 +408,7 @@ export function buildAiDraftRequest({
         "Return the complete JSON object only.",
         "Preserve format, schemaVersion, request, task, block id/type/children, and every ai.prompt.",
         "For every block, use task.blockSchemas[block.type] as the canonical props and children shape. Each block type is defined once and shared by all blocks of that type.",
-        "All rich-text values follow task.richTextSchema. Resolve a property's formatSet as task.formatSets[formatSet]; keep shared format sets referenced instead of copying them into each property.",
+        "When changing a rich-text property, return a string unless its prompt explicitly requests formatting. If requested, return exactly one non-nested object matching task.formatSets[formatSet]; new rich-text arrays and nested formats are forbidden. Preserve unchanged existing rich-text values verbatim.",
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"
