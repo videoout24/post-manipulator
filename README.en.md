@@ -144,6 +144,19 @@ Zoom is limited to `1–20`. Pixel dimensions are not edited directly; the
 [Telegram InputRichBlockMap](https://core.telegram.org/bots/api#inputrichblockmap)
 compatible `width` and `height` values. Location accuracy is not used.
 
+## Visibility group
+
+The built-in Visibility group accepts any Canvas blocks and can temporarily
+exclude its entire nested branch from preview and publication. Its children are
+not deleted: they remain on Canvas with their order, settings, and nesting
+preserved, and are shown dimmed. The group can be collapsed on Canvas
+independently or returned to publication with the eye button in its header.
+
+An included group is transparent to Telegram Rich Message: its children are
+published in place, while the group itself adds neither a block nor a nesting
+level. Multiple and nested groups are supported; hiding an outer group excludes
+its whole branch regardless of the inner groups' states.
+
 ## Internal block collector
 
 Every author-controlled block has a diamond toggle immediately before its title

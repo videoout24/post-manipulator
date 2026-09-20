@@ -6,8 +6,8 @@
     "maxDepth": 16
   },
   "registries": {
-    "propertyCatalogCount": 91,
-    "propertyCount": 64,
+    "propertyCatalogCount": 93,
+    "propertyCount": 66,
     "formattingCommandCount": 25,
     "formattingMetadataCount": 18,
     "formattingCount": 25,
@@ -40,6 +40,8 @@
       "table.columns",
       "details.summary",
       "details.isOpen",
+      "visibility.title",
+      "visibility.included",
       "map.location",
       "map.sourceUrl",
       "map.latitude",
@@ -558,6 +560,16 @@
           "anchor_link",
           "reference_link"
         ]
+      }
+    },
+    {
+      "type": "visibility_group",
+      "properties": [
+        "visibility.title",
+        "visibility.included"
+      ],
+      "children": {
+        "allowed": true
       }
     },
     {
@@ -1301,6 +1313,16 @@
       }
     },
     {
+      "type": "visibility_group",
+      "properties": [
+        "visibility.title",
+        "visibility.included"
+      ],
+      "children": {
+        "allowed": true
+      }
+    },
+    {
       "type": "map",
       "properties": [
         "map.location",
@@ -1581,6 +1603,8 @@
     "live-block-count",
     "live-nesting-depth",
     "telegram-limit-validation",
+    "visibility-group-preview-and-publication-filter",
+    "visibility-group-nested-canvas-preservation",
     "precise-canvas-drag-and-drop",
     "drag-outside-canvas-to-delete",
     "details-richmessage-open-property-independent-from-canvas-collapse",

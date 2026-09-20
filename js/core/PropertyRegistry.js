@@ -277,6 +277,16 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
     telegramField: "is_open"
   });
 
+  // ---------- Visibility group ----------
+  add("visibility.title", {
+    label: t("core.propertyRegistry.groupName"), group: t("core.propertyRegistry.visibilityGroup"), type: "string", editor: "text",
+    default: ""
+  });
+  add("visibility.included", {
+    label: t("core.propertyRegistry.includeInPublication"), group: t("core.propertyRegistry.visibilityGroup"), type: "boolean", editor: "checkbox",
+    default: true, scope: "editor"
+  });
+
   // ---------- Map ----------
   add("map.location", {
     label: t("core.propertyRegistry.mapLink"), group: t("core.propertyRegistry.map"), type: "location", editor: "location", default: { latitude: 0, longitude: 0 },

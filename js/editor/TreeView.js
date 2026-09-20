@@ -98,7 +98,8 @@ export class TreeView {
       const el = document.createElement("div");
       el.className = "block"
         + (this.controller.selection.has(node.id) ? " selected" : "")
-        + (this.invalidNodeIds.has(String(node.id)) ? " validation-invalid" : "");
+        + (this.invalidNodeIds.has(String(node.id)) ? " validation-invalid" : "")
+        + (node.type === "visibility_group" && node.props?.included === false ? " visibility-group-hidden" : "");
       el.dataset.nodeId = node.id;
       el.onclick = e => {
         e.stopPropagation();
@@ -153,7 +154,10 @@ export class TreeView {
       if (collectorToggle) titleWrap.append(collectorToggle);
       const name = document.createElement("span");
       const def = this.registry.get(node.type);
-      name.textContent = ["block_quotation", "expandable_block_quotation", "pull_quotation"].includes(node.type)
+      const visibilityGroupTitle = String(node.props?.title || "").trim();
+      name.textContent = node.type === "visibility_group" && visibilityGroupTitle && visibilityGroupTitle !== def?.name
+        ? `${def?.name || node.type} · ${visibilityGroupTitle}`
+        : ["block_quotation", "expandable_block_quotation", "pull_quotation"].includes(node.type)
         ? "Quotation"
         : ["collage", "slideshow"].includes(node.type)
           ? "Collage / Slideshow"
@@ -167,9 +171,18 @@ export class TreeView {
         badge.textContent = "META";
         titleWrap.append(badge);
       }
+      if (node.type === "visibility_group") {
+        const badge = document.createElement("span");
+        const included = node.props?.included !== false;
+        badge.className = `visibility-group-badge${included ? " included" : " hidden"}`;
+        badge.textContent = included ? t("editor.treeView.includedInPublication") : t("editor.treeView.hiddenFromPublication");
+        titleWrap.append(badge);
+      }
 
       const actions = document.createElement("div");
       actions.className = "block-actions";
+      const visibility = this.makeVisibilityGroupToggle(node);
+      if (visibility) actions.append(visibility);
       const spoiler = this.makeHeaderSpoiler(node);
       if (spoiler) actions.append(spoiler);
       const collapse = document.createElement("button");
@@ -695,6 +708,25 @@ export class TreeView {
     return label;
   }
 
+  makeVisibilityGroupToggle(node) {
+    if (node.type !== "visibility_group") return null;
+    const included = node.props?.included !== false;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `visibility-group-toggle${included ? " included" : " hidden"}`;
+    button.textContent = included ? "👁" : "⊘";
+    button.title = included
+      ? t("editor.treeView.excludeFromPreviewAndPublication")
+      : t("editor.treeView.includeInPreviewAndPublication");
+    button.setAttribute("aria-pressed", String(included));
+    button.draggable = false;
+    button.onclick = event => {
+      event.stopPropagation();
+      this.controller.updateNodeProperty(node.id, "included", !included);
+    };
+    return button;
+  }
+
   makeInfoPopover(node) {
     const pop = document.createElement("div");
     pop.className = "block-info-popover";
@@ -817,6 +849,7 @@ export class TreeView {
 
   preview(node) {
     const p = node.props || {};
+    if (node.type === "visibility_group") return String(p.title || t("blocks.registerCoreBlocks.visibilityGroup"));
     if (node.type === "details") return richTextToPlain(p.summary) || t("blocks.registerCoreBlocks.details");
     if (node.type === "anchor") {
       let links = 0;
@@ -919,6 +952,7 @@ export class TreeView {
       slideshow: "▣",
       table: "▤",
       details: "▸",
+      visibility_group: "◫",
       map: "⌖",
       animation: "▶",
       audio: "♪",

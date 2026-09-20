@@ -107,6 +107,7 @@ export class BlockInspector {
     if (node.type === "heading") hidden.add("heading.size");
     if (node.type === "preformatted") hidden.add("preformatted.language");
     if (node.type === "details") hidden.add("details.isOpen");
+    if (node.type === "visibility_group") hidden.add("visibility.included");
     if (["photo", "video", "animation"].includes(node.type)) hidden.add("media.hasSpoiler");
     if (node.type === "table") {
       hidden.add("table.isBordered");

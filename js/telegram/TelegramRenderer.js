@@ -35,6 +35,9 @@ export class TelegramRenderer {
 
   #renderNode(node, options) {
     const definition = this.registry.get(node.type);
+    if (node.type === "visibility_group") {
+      return node.props?.included === false ? [] : this.#renderChildren(node.children || [], options);
+    }
     if (definition?.kind === "meta") return this.#renderChildren(node.children || [], options);
     if (node.type === "button_row") {
       const buttons = (node.children || [])

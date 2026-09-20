@@ -115,16 +115,18 @@ export class Validator {
 
   validate(tree) {
     const errors = [];
-    if (!(tree.root.children || []).length) {
+    const entries = publicationEntries(tree);
+    const stats = publicationStats(tree, this.registry);
+    if (stats.blockCount === 0) {
       errors.push("Rich Message requires at least 1 block");
     }
-    for (const child of tree.root.children || []) {
-      tree.walk((node, parent) => errors.push(...this.validateNode(node, parent)), child, tree.root);
+    for (const { node, parent } of entries) {
+      errors.push(...this.validateNode(node, parent));
     }
 
     const anchors = new Map();
-    tree.walk(node => {
-      if (node.id === "root") return;
+    const includedIds = new Set(entries.map(({ node }) => String(node.id)));
+    for (const { node } of entries) {
       if (node.type === "anchor") {
         const name = String(node.props?.name || "").trim();
         if (name) {
@@ -136,16 +138,17 @@ export class Validator {
         const target = String(node.props?.targetAnchorId || "");
         if (target) {
           const anchor = tree.find(target);
-          if (!anchor || anchor.type !== "anchor") errors.push(`anchor_link target is missing: ${target}`);
+          if (!anchor || anchor.type !== "anchor" || !includedIds.has(String(anchor.id))) {
+            errors.push(`anchor_link target is missing: ${target}`);
+          }
         }
       }
       if (node.type === "date_time") {
         const date = new Date(String(node.props?.dateTime || ""));
         if (!Number.isFinite(date.getTime())) errors.push("date_time.dateTime is invalid");
       }
-    });
+    }
 
-    const stats = this.stats(tree);
     if (stats.blockCount > TELEGRAM_LIMITS.maxBlocks) {
       errors.push(`Block count ${stats.blockCount} / ${TELEGRAM_LIMITS.maxBlocks} exceeds Telegram Rich Message limit`);
     }
@@ -154,6 +157,42 @@ export class Validator {
     }
     return errors;
   }
+}
+
+function publicationEntries(tree) {
+  const entries = [];
+  const visit = (node, parent) => {
+    entries.push({ node, parent });
+    if (node.type === "visibility_group" && node.props?.included === false) return;
+    for (const child of node.children || []) visit(child, node);
+  };
+  for (const child of tree.root?.children || []) visit(child, tree.root);
+  return entries;
+}
+
+function publicationStats(tree, registry) {
+  let blockCount = 0;
+  let maxDepth = 0;
+
+  const visit = (node, depth) => {
+    if (node.type === "visibility_group") {
+      if (node.props?.included === false) return;
+      for (const child of node.children || []) visit(child, depth);
+      return;
+    }
+    if (registry.get(node.type)?.kind === "meta") {
+      for (const child of node.children || []) visit(child, depth);
+      return;
+    }
+
+    blockCount++;
+    maxDepth = Math.max(maxDepth, depth);
+    if (node.type === "button_row") return;
+    for (const child of node.children || []) visit(child, depth + 1);
+  };
+
+  for (const child of tree.root?.children || []) visit(child, 1);
+  return { blockCount, maxDepth };
 }
 
 function isMissingRequiredValue(value, schema = {}) {

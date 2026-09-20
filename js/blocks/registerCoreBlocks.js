@@ -161,6 +161,14 @@ export function registerTelegramCore(registry) {
       children:{allowed:true}
     },
     {
+      type:"visibility_group", name:t("blocks.registerCoreBlocks.visibilityGroup"), category:t("blocks.category.structure"),
+      accepts:{properties:[
+        prop("visibility.title", "title"),
+        prop("visibility.included", "included")
+      ]},
+      children:{allowed:true}
+    },
+    {
       type:"map", name:t("blocks.registerCoreBlocks.map"), category:t("blocks.category.media"),
       accepts:{properties:[
         prop("map.location", "location"),
