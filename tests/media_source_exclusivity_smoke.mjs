@@ -1,18 +1,32 @@
 import assert from "node:assert/strict";
 import { BlockTree } from "../js/core/BlockTree.js?v=1.5.9";
-import { migrateLegacyMediaProps } from "../js/core/DocumentMigrations.js?v=1.11.1";
+import { migrateLegacyMediaProps } from "../js/core/DocumentMigrations.js?v=1.11.2";
 import {
   hasSeparateInternalMediaSource,
   normalizeMediaSourcePatch,
   supportsExternalMediaUrl
-} from "../js/core/MediaSource.js?v=1.11.1";
-import { EditorController } from "../js/editor/EditorController.js?v=1.11.1";
-import { MediaAssetBinder } from "../js/editor/MediaAssetBinder.js?v=1.11.1";
+} from "../js/core/MediaSource.js?v=1.11.2";
+import { EditorController } from "../js/editor/EditorController.js?v=1.11.2";
+import { MediaAssetBinder } from "../js/editor/MediaAssetBinder.js?v=1.11.2";
+import { isGalleryMediaSourceGroupLocked } from "../js/editor/BlockInspector.js?v=1.11.2";
 
 const mediaTypes = ["animation", "audio", "document", "photo", "video", "voice_note"];
 assert(mediaTypes.every(supportsExternalMediaUrl));
 assert.equal(hasSeparateInternalMediaSource("animation"), false);
 assert(mediaTypes.slice(1).every(hasSeparateInternalMediaSource));
+
+const sourceBindings = [
+  { property: "media.galleryId" },
+  { property: "media.fileId" },
+  { property: "media.remoteUrl" }
+];
+assert.equal(isGalleryMediaSourceGroupLocked({ props: { galleryId: "gallery-file" } }, sourceBindings), true);
+assert.equal(isGalleryMediaSourceGroupLocked({ props: { galleryId: "" } }, sourceBindings), false);
+assert.equal(
+  isGalleryMediaSourceGroupLocked({ props: { galleryId: "gallery-file" } }, [{ property: "content.caption" }]),
+  false,
+  "a Gallery file only locks the group that exposes the external source"
+);
 
 const photo = {
   id: "photo",

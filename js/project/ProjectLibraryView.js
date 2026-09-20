@@ -1,5 +1,5 @@
 import { getLocale, t } from "../i18n/index.js?v=1.8.6";
-import { createProjectPostCard } from "./ProjectPostCard.js?v=1.8.6";
+import { createProjectPostCard } from "./ProjectPostCard.js?v=1.11.2";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { ProjectIndex } from "./ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "./ProjectPublicationEligibility.js?v=1.8.6";

@@ -3,6 +3,7 @@ import {
   richTextToPlain,
   richTextRangeHasFormat,
   richTextFormatAtPosition,
+  richTextFormatRangeAtPosition,
   richTextFormatMetadataAtPosition,
   applyRichTextFormat,
   removeRichTextFormat,
@@ -21,6 +22,8 @@ assert.equal(richTextToPlain(original), "abcde");
 assert.equal(richTextRangeHasFormat(original, 1, 4, bold), true);
 assert.equal(richTextRangeHasFormat(original, 0, 4, bold), false);
 assert.equal(richTextFormatAtPosition(original, 3, bold), true);
+assert.deepEqual(richTextFormatRangeAtPosition(original, 3, bold), { start: 1, end: 4 });
+assert.equal(richTextFormatRangeAtPosition(original, 1, bold), null, "the caret follows the same left-character rule as the active toolbar state");
 
 const unbolded = toggleRichTextFormat(original, 1, 4, bold);
 assert.equal(richTextToPlain(unbolded), "abcde");
@@ -101,5 +104,40 @@ const typingState = { typingSession: {
 inspector.deactivateExclusiveTypingFormats(typingState, code);
 assert.deepEqual([...typingState.typingSession.formats], [], "monospace inheritance must disable link and date/time inheritance");
 assert.deepEqual([...typingState.typingSession.metadata], []);
+
+let caretValue = original;
+let caretSelection = null;
+let caretStatus = "";
+const caretState = {
+  schema: { formats: ["bold"] },
+  textarea: {
+    value: richTextToPlain(caretValue),
+    selectionStart: 3,
+    selectionEnd: 3,
+    dataset: {},
+    focus() {},
+    setSelectionRange(start, end) { caretSelection = [start, end]; }
+  },
+  getCurrent: () => caretValue,
+  onChange: next => { caretValue = next; },
+  configHost: { innerHTML: "" },
+  typingSession: { enabled: false, formats: new Set(), metadata: new Map() },
+  setStatusMessage: message => { caretStatus = message; }
+};
+inspector.applyRichTextFormatToState(caretState, bold);
+assert.equal(richTextRangeHasFormat(caretValue, 1, 4, bold), false,
+  "clicking an active format at a caret must remove its whole contiguous run");
+assert.equal(richTextRangeHasFormat(caretValue, 3, 4, italic), true,
+  "caret removal must preserve nested unrelated formatting");
+assert.deepEqual(caretSelection, [3, 3], "caret removal must restore the original caret position");
+
+caretValue = "plain";
+caretState.textarea.value = "plain";
+caretState.textarea.selectionStart = 2;
+caretState.textarea.selectionEnd = 2;
+caretStatus = "";
+inspector.applyRichTextFormatToState(caretState, bold);
+assert.equal(caretValue, "plain", "an inactive format must not be added without selecting text");
+assert.notEqual(caretStatus, "", "the editor must continue asking for a selection before adding formatting");
 
 console.log("rich_text_format_toggle_smoke: OK");

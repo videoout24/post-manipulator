@@ -12,7 +12,7 @@ const library=fs.readFileSync(new URL('../js/project/ProjectLibraryView.js', imp
 assert(!panel.includes('draft-card-open'), 'Draft card must not have separate Open button');
 for (const key of ['toProject','publish','postpone']) assert(draftView.includes(`editor.draftListView.${key}`), `${key} action missing on Draft card`);
 assert(!draftView.includes('draft-panel-note'), 'obsolete Draft information card must be removed');
-assert(draftView.includes('event.target.closest("button, a, input, textarea, select")'), 'Draft card click must be the open action');
+assert(draftView.includes('event.target.closest("button, a, input, textarea, select, summary")'), 'Draft card click must be the open action without intercepting prompt disclosure controls');
 assert(documents.includes('this.draftSession?.isActive?.()') && documents.includes('reason: "project-opened"'), 'Moving any Draft into Project must relinquish any active Draft session after it is flushed');
 assert(commands.includes('editor.editorCommandController.newDraftTitle'), 'New command must create a named Draft');
 assert(commands.includes('await this.documents.saveCurrentContext();'), 'New Draft must save previous context first');

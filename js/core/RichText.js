@@ -109,6 +109,19 @@ export function richTextFormatAtPosition(value, position, formatDefinition) {
   return formatAtCharacter(value, index, type, false);
 }
 
+export function richTextFormatRangeAtPosition(value, position, formatDefinition) {
+  const type = formatDefinition?.telegramType || formatDefinition?.id || formatDefinition;
+  if (!type) return null;
+  const total = richTextLength(value);
+  if (!total) return null;
+  const pos = Math.max(0, Math.min(Number(position) || 0, total));
+  const index = pos > 0 ? pos - 1 : 0;
+  const ranges = [];
+  collectFormatRanges(value, type, false, 0, ranges);
+  const range = ranges.find(item => index >= item.start && index < item.end);
+  return range ? { start: range.start, end: range.end } : null;
+}
+
 export function richTextFormatMetadataAtPosition(value, position, formatDefinition) {
   const type = formatDefinition?.telegramType || formatDefinition?.id || formatDefinition;
   if (!type) return null;
@@ -187,6 +200,32 @@ function formatAtCharacter(value, index, type, inherited) {
   const active = inherited || value.type === type;
   if ("text" in value) return formatAtCharacter(value.text, index, type, active);
   return index >= 0 && index < richTextLength(value) ? active : false;
+}
+
+function collectFormatRanges(value, type, inherited, cursor, ranges) {
+  if (value == null) return cursor;
+  if (typeof value === "string" || typeof value === "number") {
+    const end = cursor + String(value).length;
+    if (inherited && end > cursor) appendFormatRange(ranges, cursor, end);
+    return end;
+  }
+  if (Array.isArray(value)) {
+    let next = cursor;
+    for (const child of value) next = collectFormatRanges(child, type, inherited, next, ranges);
+    return next;
+  }
+  if (typeof value !== "object") return cursor;
+  const active = inherited || value.type === type;
+  if ("text" in value) return collectFormatRanges(value.text, type, active, cursor, ranges);
+  const end = cursor + richTextLength(value);
+  if (active && end > cursor) appendFormatRange(ranges, cursor, end);
+  return end;
+}
+
+function appendFormatRange(ranges, start, end) {
+  const previous = ranges.at(-1);
+  if (previous?.end === start) previous.end = end;
+  else ranges.push({ start, end });
 }
 
 function formatMetadataAtCharacter(value, index, type) {

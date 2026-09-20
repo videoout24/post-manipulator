@@ -25,7 +25,15 @@ assert.ok(html.indexOf('id="exportJson"') < html.indexOf('id="canvasStats"'));
 assert.ok(html.indexOf('id="previewTelegram"') < html.indexOf('id="canvasStats"'));
 assert.match(html, /data-i18n="html\.cancel"[^>]*type="submit" value="cancel"/);
 assert.ok(html.indexOf('id="canvasEditorBar"') < html.indexOf('id="canvasContextBar"'));
+assert.ok(html.indexOf('id="canvasEditorBar"') < html.indexOf('id="canvasCollectorBar"'));
+assert.ok(html.indexOf('id="canvasCollectorBar"') < html.indexOf('id="canvasContextBar"'));
+for (const id of ['insertBlockCollector', 'clearBlockCollector', 'editorCanvasScrollSpeed']) {
+  const position = html.indexOf(`id="${id}"`);
+  assert.ok(position > html.indexOf('id="canvasCollectorBar"') && position < html.indexOf('id="canvasContextBar"'),
+    `${id} must live on the dedicated third Canvas toolbar row`);
+}
 assert.match(css, /\.canvas-editor-bar/);
+assert.match(css, /\.canvas-collector-bar/);
 assert.match(css, /#openDrafts\.active/);
 assert.match(css, /\.canvas-history-actions/);
 assert.match(database, /new IndexedDbAppDatabase/);

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { DraftStore } from "../js/editor/DraftStore.js";
+import { DraftStore, hasUnappliedDraftPublicationChanges } from "../js/editor/DraftStore.js";
 import { PublicationService, isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../js/telegram/PublicationService.js?v=1.5.9";
 import { t } from "../js/i18n/index.js?v=1.8.0";
 
@@ -42,6 +42,8 @@ assert.equal(sent.length, 1);
 assert.deepEqual((await drafts.get("d1")).messageAst, draft.messageAst, "publishing preserves the original source");
 assert.equal((await drafts.get("d1")).source.publicationId, record.id);
 assert.equal((await drafts.get("d1")).source.retained, true);
+assert.equal(hasUnappliedDraftPublicationChanges(await drafts.get("d1"), record), false,
+  "opening a just-published source must not enable Apply changes");
 assert.deepEqual(cleared, ["d1"], "publishing removes the active source draft from Canvas");
 await assert.rejects(drafts.delete("d1"), error => error.message === t("editor.draftListView.deletePublishedDraftBlocked"));
 await assert.rejects(drafts.assertCanMoveToProject("d1"), error => error.message === t("editor.draftListView.movePublishedDraftBlocked"));
@@ -180,10 +182,14 @@ assert.equal(editDraft.source.publicationId, record.id);
 client.editRichMessage = async payload => { sent.push({ edit: payload }); return { message_id: 42 }; };
 editDraft.messageAst.children[0].props.text = "Updated";
 await drafts.saveAst(editDraft.id, editDraft.messageAst);
+assert.equal(hasUnappliedDraftPublicationChanges(await drafts.get(editDraft.id), record), true,
+  "editing the retained source must enable Apply changes");
 const updated = await service.applyDraftChanges(editDraft.id);
 assert.equal(updated.messageAst.children[0].props.text, "Updated");
 assert.equal(updated.source.title, "Renamed source");
 assert.equal((await drafts.get("d1")).messageAst.children[0].props.text, "Updated");
+assert.equal(hasUnappliedDraftPublicationChanges(await drafts.get("d1"), updated), false,
+  "applying changes must advance the baseline and disable Apply again");
 assert.equal(sent.at(-1).edit.messageId, 42);
 
 const deletablePublishedAt = Date.now();

@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import { BlockRegistry } from "../js/core/BlockRegistry.js?v=1.5.9";
 import { BlockTree } from "../js/core/BlockTree.js?v=1.5.9";
 import { createTelegramFormattingRegistry } from "../js/core/FormattingRegistry.js?v=1.5.9";
-import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js?v=1.11.1";
-import { Validator } from "../js/core/Validator.js?v=1.11.1";
-import { registerTelegramCore } from "../js/blocks/registerCoreBlocks.js?v=1.11.1";
-import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js?v=1.11.1";
+import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js?v=1.11.2";
+import { Validator } from "../js/core/Validator.js?v=1.11.2";
+import { registerTelegramCore } from "../js/blocks/registerCoreBlocks.js?v=1.11.2";
+import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js?v=1.11.2";
 
 const registry = new BlockRegistry(createDefaultPropertyRegistry(createTelegramFormattingRegistry()));
 registerTelegramCore(registry);

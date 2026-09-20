@@ -15,7 +15,7 @@ assert(!draftView.includes('draft-panel-note'), 'obsolete Draft information card
 assert(!draftView.includes('draft-card-summary'), 'Draft cards must not render AST/content previews in the right panel');
 assert(documents.includes('await this.projectSession.openStandaloneAst(draft.messageAst'), 'Draft card selection must load its AST into Canvas/Editor');
 assert(documents.includes('this.draftSession?.activate?.(draft'), 'Draft card selection must activate that Draft as the live editor document');
-assert(draftView.includes('event.target.closest("button, a, input, textarea, select")'), 'Draft card click must be the open action');
+assert(draftView.includes('event.target.closest("button, a, input, textarea, select, summary")'), 'Draft card click must be the open action without intercepting prompt disclosure controls');
 assert(documents.includes('this.draftSession?.isActive?.()') && documents.includes('reason: "project-opened"'), 'Moving any Draft into Project must relinquish any active Draft session after it is flushed');
 assert(commands.includes('editor.editorCommandController.newDraftTitle'), 'New command must create a named Draft');
 assert(commands.includes('await this.documents.saveCurrentContext();'), 'New Draft must save previous context first');

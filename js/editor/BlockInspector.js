@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.11.1";
+import { t } from "../i18n/index.js?v=1.11.2";
 import {
   applyRichTextFormat,
   insertRichText,
@@ -6,13 +6,14 @@ import {
   sliceRichText,
   richTextLength,
   richTextToPlain,
+  richTextFormatRangeAtPosition,
   richTextRangeHasFormat,
   richTextFormatAtPosition,
   richTextFormatMetadataAtPosition,
   removeRichTextFormat,
   toggleRichTextFormat,
   wrapRichTextWithFormats
-} from "../core/RichText.js?v=1.5.9";
+} from "../core/RichText.js?v=1.11.2";
 import {
   DATE_TIME_FORMAT_OPTIONS,
   dateTimeFormatMetadata,
@@ -20,7 +21,7 @@ import {
   listAnchors,
   unixTimeToDateTimeLocal
 } from "../core/SemanticRichText.js?v=1.5.9";
-import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.1";
+import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.2";
 import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
@@ -33,7 +34,7 @@ import {
   mapOrientation,
   normalizeMapZoom,
   resolveMapLink
-} from "../core/MapLinkResolver.js?v=1.11.1";
+} from "../core/MapLinkResolver.js?v=1.11.2";
 
 export class BlockInspector {
   constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, emojiPreferences = null, events = null }) {
@@ -211,12 +212,13 @@ export class BlockInspector {
   renderPropertyGroup(node, groupName, bindings, { inline = false } = {}) {
     const groupCollapsed = bindings.some(binding => binding.groupCollapsed === true);
     const collapsible = inline || groupCollapsed;
+    const galleryLocked = isGalleryMediaSourceGroupLocked(node, bindings);
     const richBindings = bindings.filter(binding => this.isRichTextSchema(binding));
     const regularBindings = bindings.filter(binding => !this.isRichTextSchema(binding));
 
     const section = document.createElement(collapsible ? "details" : "section");
-    section.className = "property-group" + (collapsible ? " property-group-collapsible" : "") + (inline ? " property-group-inline" : "");
-    if (collapsible) section.open = inline ? !groupCollapsed : false;
+    section.className = "property-group" + (collapsible ? " property-group-collapsible" : "") + (inline ? " property-group-inline" : "") + (galleryLocked ? " property-group-gallery-locked" : "");
+    if (collapsible) section.open = galleryLocked ? false : (inline ? !groupCollapsed : false);
 
     if (collapsible) {
       const summary = document.createElement("summary");
@@ -225,8 +227,17 @@ export class BlockInspector {
       title.textContent = groupName;
       const state = document.createElement("span");
       state.className = "property-group-state";
-      state.textContent = this.groupCompactState(node, bindings);
+      state.textContent = galleryLocked ? "Gallery" : this.groupCompactState(node, bindings);
       summary.append(title, state);
+      if (galleryLocked) {
+        summary.setAttribute("aria-disabled", "true");
+        summary.tabIndex = -1;
+        summary.title = t("editor.blockInspector.externalSourceLockedByGallery");
+        summary.addEventListener("click", event => event.preventDefault());
+        section.addEventListener("toggle", () => {
+          if (section.open) section.open = false;
+        });
+      }
       section.append(summary);
     } else {
       const header = document.createElement("div");
@@ -1580,11 +1591,11 @@ export class BlockInspector {
     const end = textarea.selectionEnd ?? start;
     const applyBatch = state.applyFormatBatch && state.shouldApplyFormatBatch?.() !== false;
 
-    const applyRange = (metadata, { remove = false } = {}) => {
+    const applyRange = (metadata, { remove = false, targetStart = start, targetEnd = end } = {}) => {
       const current = state.getCurrent?.() ?? textarea.value;
       const next = remove
-        ? this.removeRichTextFormatValue(current, start, end, format)
-        : this.applyRichTextFormatValue(current, start, end, format, metadata);
+        ? this.removeRichTextFormatValue(current, targetStart, targetEnd, format)
+        : this.applyRichTextFormatValue(current, targetStart, targetEnd, format, metadata);
       state.onChange?.(next);
       textarea.value = richTextToPlain(next);
       state.lastPlain = textarea.value;
@@ -1596,6 +1607,22 @@ export class BlockInspector {
       this.refreshRichTextToolbarState(state, next);
       state.setStatusMessage?.("");
     };
+
+    // A collapsed caret may remove the format run it visibly activates. It must
+    // never create formatting: applying a new style still requires a selection
+    // (or the explicit style-inheritance mode used for subsequent typing).
+    if (!applyBatch && start === end) {
+      const current = state.getCurrent?.() ?? textarea.value;
+      const activeRange = richTextFormatRangeAtPosition(current, start, format);
+      if (activeRange) {
+        applyRange(null, {
+          remove: true,
+          targetStart: activeRange.start,
+          targetEnd: activeRange.end
+        });
+        return;
+      }
+    }
 
     if (format.inheritMetadata && format.fields?.length) {
       const renderConfig = format.metadataEditor === "date-time"
@@ -2550,6 +2577,11 @@ export class BlockInspector {
     }
     return wrap;
   }
+}
+
+export function isGalleryMediaSourceGroupLocked(node, bindings = []) {
+  return Boolean(String(node?.props?.galleryId || "").trim())
+    && bindings.some(binding => binding?.property === "media.remoteUrl");
 }
 
 function richTextStateKey(nodeId, property) {

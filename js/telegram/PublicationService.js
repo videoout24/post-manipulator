@@ -53,6 +53,47 @@ export class PublicationService {
       .sort((a, b) => Number(b.publishedAt || b.scheduledAt || 0) - Number(a.publishedAt || a.scheduledAt || 0));
   }
 
+  async inspectDraftPublication(draftId) {
+    const draft = await this.drafts.get(draftId);
+    const publicationId = draft?.source?.kind === "publication" ? draft.source.publicationId : null;
+    if (!draft || !publicationId) return { state: "unlinked", draft, record: null };
+    const record = await this.db.get("publications", publicationId, null);
+    if (!record) return { state: "missing", draft, record: null };
+    if (record.scheduledAt && !record.messageId) return { state: "scheduled", draft, record };
+    if (!record.chatId || !record.messageId || !record.messageAst) return { state: "missing", draft, record };
+
+    const envelope = this.renderer.renderEnvelope(astTree(record.messageAst));
+    try {
+      await this.client.editRichMessage({
+        chatId: record.chatId,
+        messageId: record.messageId,
+        richMessage: envelope.richMessage,
+        replyMarkup: envelope.replyMarkup
+      });
+    } catch (error) {
+      if (error?.isNotModified?.()) return { state: "present", draft, record };
+      if (error?.isMessageMissing?.()) return { state: "missing", draft, record };
+      throw error;
+    }
+    return { state: "present", draft, record };
+  }
+
+  async resolveMissingDraftPublication(draftId, { deleteDraft = false } = {}) {
+    const draft = await this.drafts.get(draftId);
+    const publicationId = draft?.source?.kind === "publication" ? draft.source.publicationId : null;
+    if (!draft || !publicationId) return false;
+    const record = await this.db.get("publications", publicationId, null);
+    if (record) await this.discardLocal(publicationId);
+    else await this.drafts.releasePublication(publicationId);
+    if (!deleteDraft) return this.drafts.get(draftId);
+
+    if (this.draftSession?.activeDraftId === draftId && this.documents?.discardDraft) {
+      return this.documents.discardDraft(draftId, { reason: "missing-publication-deleted" });
+    }
+    await this.drafts.delete(draftId);
+    return true;
+  }
+
   async scheduleDraft(draftId, targetChatId, { scheduledAt, commentsEnabled = true } = {}) {
     const publishAt = Number(scheduledAt || 0);
     if (!Number.isFinite(publishAt) || publishAt <= Date.now()) {
@@ -458,7 +499,8 @@ export class PublicationService {
         chatId: record.chatId,
         messageId: record.messageId,
         targetTitle: record.target?.title || "",
-        scheduledAt: Number(record.scheduledAt || 0) || null
+        scheduledAt: Number(record.scheduledAt || 0) || null,
+        publicationAst: structuredClone(record.messageAst)
       }
     });
   }
@@ -491,6 +533,7 @@ export class PublicationService {
       if (draft.source.retained && record.source?.draftId === draft.id) record.source.title = draft.title;
       record.editedAt = Date.now();
       await this.db.put("publications", record.id, record);
+      await this.drafts.updatePublicationBaseline?.(draft.id, record.id, draft.messageAst);
       this.events?.emit("telegram:publication-updated", structuredClone(record));
       this.events?.emit("telegram:publications-changed", await this.list());
       return structuredClone(record);

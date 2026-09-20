@@ -5,6 +5,7 @@ const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const library = await readFile(new URL('../js/project/ProjectLibraryView.js', import.meta.url), 'utf8');
 const telegramControls = await readFile(new URL('../js/editor/EditorTelegramControls.js', import.meta.url), 'utf8');
 const rightPanel = await readFile(new URL('../js/editor/EditorRightPanel.js', import.meta.url), 'utf8');
+const draftList = await readFile(new URL('../js/editor/DraftListView.js', import.meta.url), 'utf8');
 const postList = await readFile(new URL('../js/editor/ProjectPostListView.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../js/app.js', import.meta.url), 'utf8');
 
@@ -28,6 +29,16 @@ assert.doesNotMatch(postList, /input\.type = "checkbox"/,
   "The obsolete extended-context checkbox must be removed from Project posts");
 assert.match(postList, /project-post-ai-json/,
   "The active Project post card must expose Post AI JSON under the full-context condition");
+assert.match(postList, /el\("details", "project-post-ai-settings document-ai-prompt-disclosure"\)/,
+  "the whole-post AI prompt must be collapsible");
+assert.match(draftList, /el\("details", "draft-document-ai-settings document-ai-prompt-disclosure"\)/,
+  "the whole-draft AI prompt must be collapsible");
+for (const source of [draftList, postList]) {
+  assert.match(source, /openAi\.disabled = !documentPrompt\.trim\(\)/,
+    "the whole-document AI JSON action must start disabled for an empty prompt");
+  assert.match(source, /openAi\.disabled = !filled/,
+    "the whole-document AI JSON action must track prompt input");
+}
 assert.match(postList, /cardActions\.push\(openAi\)/,
   "Post AI JSON must live in the card's shared action group");
 assert.match(rightPanel, /onOpenAi: \(post, documentPrompt\) => this\.#openProjectPostAi\(post, documentPrompt\)/,

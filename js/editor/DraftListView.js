@@ -13,10 +13,13 @@ export function createDraftListView({
   onPublish = null,
   onSchedule = null,
   onApplyChanges = null,
+  hasPublicationChanges = null,
   onCancelPublicationEdit = null,
   onCloseDraft = null,
   onOpenAi = null,
   onAiPromptChange = null,
+  isAiPromptOpen = null,
+  onAiPromptToggle = null,
   onSelectTarget = null,
   onOpenLinkedSource = null,
   textareaSizing = null,
@@ -58,10 +61,13 @@ export function createDraftListView({
         onPublish,
         onSchedule,
         onApplyChanges,
+        hasPublicationChanges,
         onCancelPublicationEdit,
         onCloseDraft,
         onOpenAi,
         onAiPromptChange,
+        isAiPromptOpen,
+        onAiPromptToggle,
         onSelectTarget,
         onOpenLinkedSource,
         textareaSizing,
@@ -77,7 +83,8 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onSchedule, onApplyChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, onSelectTarget, onOpenLinkedSource, textareaSizing, linkTargetSlotKey, linkedTargets
+  onSchedule, onApplyChanges, hasPublicationChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, isAiPromptOpen, onAiPromptToggle,
+  onSelectTarget, onOpenLinkedSource, textareaSizing, linkTargetSlotKey, linkedTargets
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
   const publicationCopy = publicationLinked && !draft.source.retained;
@@ -103,6 +110,7 @@ function createDraftCard({
     openAi = button("{}", t("editor.draftListView.openDraftAiJsonHint"), () => onOpenAi?.(draft, documentPrompt));
     openAi.classList.add("draft-ai-json");
     openAi.setAttribute("aria-label", t("editor.draftListView.openDraftAiJson"));
+    openAi.disabled = !documentPrompt.trim();
     tools.append(openAi);
   }
   if (!publicationCopy) {
@@ -128,24 +136,20 @@ function createDraftCard({
       () => onApplyChanges?.(draft)
     );
     apply.classList.add("publication-edit-apply");
+    apply.disabled = !hasPublicationChanges?.(draft);
     const cancel = button(
       publicationCopy ? t("core.cardDeleteConfirmation.cancel") : t("editor.draftListView.closePublicationDraft"),
       publicationCopy ? t("editor.draftListView.cancelEditingAndDeleteWorkingCopy") : t("editor.draftListView.closePublicationDraftHint"),
       () => onCancelPublicationEdit?.(draft)
     );
     if (publicationCopy) cancel.classList.add("publication-edit-cancel");
-    if (!publicationCopy) {
-      cancel.disabled = !selected;
-      const move = button(t("editor.draftListView.toProject"), t("editor.draftListView.movePublishedDraftBlocked"), () => {});
-      move.disabled = true;
-      actions.append(move);
-    }
+    if (!publicationCopy) cancel.disabled = !selected;
     actions.append(apply, cancel);
   } else {
     if (draftHasBlocks(draft)) {
       actions.append(button(t("editor.draftListView.toProject"), t("editor.draftListView.moveDraftToProject"), () => onMoveToProject?.(draft)));
-      actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
       actions.append(button(t("editor.draftListView.postpone"), t("editor.draftListView.scheduleDraftPublication"), () => onSchedule?.(draft)));
+      actions.append(button(t("editor.draftListView.publish"), t("editor.draftListView.publishDraft"), () => onPublish?.(draft)));
     }
     if (selected) {
       const closeDraft = button(t("editor.draftListView.closeDraft"), t("editor.draftListView.closeDraftHint"), () => onCloseDraft?.(draft));
@@ -157,8 +161,13 @@ function createDraftCard({
   else card.classList.add("no-footer-actions");
 
   if (showDocumentAi) {
-    const aiSettings = el("div", "draft-document-ai-settings");
-    const promptLabel = el("label", "draft-document-ai-label", t("editor.draftListView.documentAiPrompt"));
+    const aiSettings = el("details", "draft-document-ai-settings document-ai-prompt-disclosure");
+    aiSettings.open = Boolean(isAiPromptOpen?.(draft));
+    aiSettings.ontoggle = () => onAiPromptToggle?.(draft, aiSettings.open);
+    const summary = el("summary", "document-ai-prompt-summary");
+    const promptLabel = el("span", "draft-document-ai-label", t("editor.draftListView.documentAiPrompt"));
+    const promptState = el("span", "document-ai-prompt-state");
+    summary.append(promptLabel, promptState);
     const prompt = document.createElement("textarea");
     prompt.className = "draft-document-ai-prompt";
     prompt.maxLength = 8000;
@@ -166,7 +175,16 @@ function createDraftCard({
     prompt.value = documentPrompt;
     prompt.placeholder = t("editor.draftListView.documentAiPromptPlaceholder");
     prompt.setAttribute("aria-label", t("editor.draftListView.documentAiPrompt"));
-    prompt.oninput = () => { documentPrompt = prompt.value; };
+    const syncPromptState = () => {
+      const filled = Boolean(documentPrompt.trim());
+      aiSettings.classList.toggle("has-prompt", filled);
+      promptState.textContent = filled ? t("editor.treeView.aiPromptSet") : t("editor.treeView.aiPromptEmpty");
+      openAi.disabled = !filled;
+    };
+    prompt.oninput = () => {
+      documentPrompt = prompt.value;
+      syncPromptState();
+    };
     textareaSizing?.attach?.(prompt, {
       key: `draft:${draft.id}:ai.documentPrompt`,
       defaultRows: 1,
@@ -176,17 +194,18 @@ function createDraftCard({
     prompt.onblur = event => {
       if (event.relatedTarget !== openAi) onAiPromptChange?.(draft, documentPrompt);
     };
-    aiSettings.append(promptLabel, prompt);
+    syncPromptState();
+    aiSettings.append(summary, prompt);
     card.append(aiSettings);
   }
 
   const open = () => onOpen?.(draft);
   card.onclick = event => {
-    if (event.target.closest("button, a, input, textarea, select")) return;
+    if (event.target.closest("button, a, input, textarea, select, summary")) return;
     open();
   };
   card.onkeydown = event => {
-    if (!["Enter", " "].includes(event.key) || event.target.closest("button, a, input, textarea, select")) return;
+    if (!["Enter", " "].includes(event.key) || event.target.closest("button, a, input, textarea, select, summary")) return;
     event.preventDefault();
     open();
   };

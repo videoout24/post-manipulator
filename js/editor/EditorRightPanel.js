@@ -1,13 +1,16 @@
 import { t } from "../i18n/index.js?v=1.10.0";
-import { createDraftListView } from "./DraftListView.js?v=1.11.1";
-import { createProjectPostListView } from "./ProjectPostListView.js?v=1.11.1";
+import { createDraftListView } from "./DraftListView.js?v=1.11.2";
+import { createProjectPostListView } from "./ProjectPostListView.js?v=1.11.2";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
+import { hasUnappliedDraftPublicationChanges } from "./DraftStore.js?v=1.11.2";
+import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
 
 export class EditorRightPanel {
   constructor({
-    root, layout, session, draftSession = null, drafts, projects = null,
+    root, layout, session, draftSession = null, drafts, projects = null, publications = null,
     documents = null, events, textareaSizing = null, onError = null, onToast = null, onPublishDraft = null, onScheduleDraft = null, onApplyDraftChanges = null,
-    onPublishProjectPost = null, onScheduleProjectPost = null, onCancelProjectPostSchedule = null, onApplyProjectChanges = null
+    onPublishProjectPost = null, onScheduleProjectPost = null, onCancelProjectPostSchedule = null, onApplyProjectChanges = null,
+    missingPublicationPrompt = chooseDarkDialog
   } = {}) {
     this.root = root;
     this.layout = layout;
@@ -15,6 +18,7 @@ export class EditorRightPanel {
     this.draftSession = draftSession;
     this.drafts = drafts;
     this.projects = projects;
+    this.publications = publications;
     this.documents = documents;
     this.events = events;
     this.textareaSizing = textareaSizing;
@@ -27,11 +31,13 @@ export class EditorRightPanel {
     this.onScheduleProjectPost = onScheduleProjectPost;
     this.onCancelProjectPostSchedule = onCancelProjectPostSchedule;
     this.onApplyProjectChanges = onApplyProjectChanges;
+    this.missingPublicationPrompt = missingPublicationPrompt;
     // Outside a Project the editor lives in the Drafts context, even before a
     // particular Draft is selected on Canvas.
     this.mode = session?.isProjectActive?.() ? "project" : "drafts";
     this.linkTargetSlotKey = "";
     this.linkedTargets = {};
+    this.openDocumentAiPrompts = new Set();
     this.unsubscribers = [];
     this.renderRevision = 0;
   }
@@ -137,13 +143,20 @@ export class EditorRightPanel {
       onApplyChanges: post => this.#applyProjectChanges(post),
       onAiPromptChange: (post, documentPrompt) => this.#setPostAiPrompt(post, documentPrompt),
       onOpenAi: (post, documentPrompt) => this.#openProjectPostAi(post, documentPrompt),
+      isAiPromptOpen: post => this.openDocumentAiPrompts.has(`project:${project.id}:${post.id}`),
+      onAiPromptToggle: (post, open) => this.#rememberAiPromptState(`project:${project.id}:${post.id}`, open),
       textareaSizing: this.textareaSizing,
       onDelete: post => this.#deleteProjectPost(post)
     }));
   }
 
   async #renderDrafts(revision) {
-    let rows = await this.drafts?.list?.() || [];
+    const [draftRows, publicationRows] = await Promise.all([
+      this.drafts?.list?.() || [],
+      this.publications?.list?.() || []
+    ]);
+    let rows = draftRows;
+    const publicationById = new Map(publicationRows.map(record => [String(record.id), record]));
     const activeDraft = rows.find(draft => draft.id === this.draftSession?.activeDraftId);
     if (activeDraft?.source?.kind === "publication" && !activeDraft.source.retained) rows = [activeDraft];
     // Events may request another render while persistent storage is resolving this
@@ -162,10 +175,16 @@ export class EditorRightPanel {
       onPublish: draft => this.#requestDraftPublication(draft),
       onSchedule: draft => this.#requestDraftSchedule(draft),
       onApplyChanges: draft => this.#applyDraftChanges(draft),
+      hasPublicationChanges: draft => hasUnappliedDraftPublicationChanges(
+        draft,
+        publicationById.get(String(draft.source?.publicationId || "")) || null
+      ),
       onCancelPublicationEdit: draft => this.#cancelPublicationEdit(draft),
       onCloseDraft: draft => this.#closeOrdinaryDraft(draft),
       onOpenAi: (draft, documentPrompt) => this.#openDraftAi(draft, documentPrompt),
       onAiPromptChange: (draft, documentPrompt) => this.#setDraftAiPrompt(draft, documentPrompt),
+      isAiPromptOpen: draft => this.openDocumentAiPrompts.has(`draft:${draft.id}`),
+      onAiPromptToggle: (draft, open) => this.#rememberAiPromptState(`draft:${draft.id}`, open),
       onSelectTarget: target => this.#selectLinkTarget(target),
       onOpenLinkedSource: target => this.#openLinkedSource(target),
       textareaSizing: this.textareaSizing,
@@ -176,7 +195,33 @@ export class EditorRightPanel {
   }
 
   async #loadDraft(draft) {
-    const fresh = await this.documents.openDraft(draft.id);
+    let fresh = await this.drafts?.get?.(draft.id) || draft;
+    if (fresh?.source?.kind === "publication" && fresh.source.publicationId && this.publications?.inspectDraftPublication) {
+      const status = await this.publications.inspectDraftPublication(fresh.id);
+      if (status?.state === "missing") {
+        const decision = await this.missingPublicationPrompt?.({
+          title: t("editor.editorRightPanel.publicationMissingTitle"),
+          message: t("editor.editorRightPanel.publicationMissingMessage", {
+            0: fresh.title,
+            1: status.record?.target?.title || fresh.source.targetTitle || "Telegram"
+          }),
+          choices: [
+            { value: "delete", label: t("editor.editorRightPanel.deleteMissingPublicationDraft"), className: "danger" },
+            { value: "keep", label: t("editor.editorRightPanel.keepAsUnpublishedDraft"), className: "primary" }
+          ]
+        });
+        if (!decision) return null;
+        const resolved = await this.publications.resolveMissingDraftPublication(fresh.id, { deleteDraft: decision === "delete" });
+        if (decision === "delete") {
+          this.onToast?.({ message: t("editor.editorRightPanel.missingPublicationDraftDeleted", { 0: fresh.title }), type: "info" });
+          await this.render();
+          return null;
+        }
+        fresh = resolved || await this.drafts?.get?.(fresh.id);
+        this.onToast?.({ message: t("editor.editorRightPanel.missingPublicationLinkCleared", { 0: fresh?.title || draft.title }), type: "info" });
+      }
+    }
+    fresh = await this.documents.openDraft(fresh.id);
     this.mode = "drafts";
     this.events?.emit?.("editor:right-panel-mode", { mode: this.mode });
     this.onToast?.({ message: t("editor.editorRightPanel.draftOpened", { 0: fresh.title }), type: "success" });
@@ -188,6 +233,11 @@ export class EditorRightPanel {
 
   #openLinkedSource(target) {
     this.events?.emit?.("links:open-linked-source-requested", target);
+  }
+
+  #rememberAiPromptState(key, open) {
+    if (open) this.openDocumentAiPrompts.add(key);
+    else this.openDocumentAiPrompts.delete(key);
   }
 
   async #requestDraftPublication(draft) {
@@ -266,15 +316,10 @@ export class EditorRightPanel {
 
   async #cancelPublicationEdit(draft) {
     return this.#run(async () => {
-      if (draft.source?.retained) {
-        await this.documents?.saveCurrentContext?.();
-        const record = await this.onApplyDraftChanges?.(draft.id);
-        if (!record) throw new Error(t("editor.editorRightPanel.publicationUpdatedButFailedToClearEditor"));
-      }
       const discarded = await this.#finishPublicationEdit(draft, "publication-edit-cancelled");
       if (!discarded) throw new Error(t("editor.editorRightPanel.failedToClosePostEditing"));
       this.onToast?.({ message: draft.source?.retained
-        ? t("editor.editorRightPanel.publicationUpdated", { 0: draft.title })
+        ? t("editor.editorRightPanel.draftClosed", { 0: draft.title })
         : t("editor.editorRightPanel.postEditingCanceled"), type: "info" });
       return true;
     });

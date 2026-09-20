@@ -120,12 +120,12 @@ export function createProjectPostCard({
     card.setAttribute("role", "button");
     card.setAttribute("aria-pressed", String(Boolean(selected)));
     card.onclick = event => {
-      if (event.target.closest("button, a, input, textarea, select")) return;
+      if (event.target.closest("button, a, input, textarea, select, summary")) return;
       onSelect(post);
     };
     card.onkeydown = event => {
       if (!["Enter", " "].includes(event.key)) return;
-      if (event.target.closest("button, a, input, textarea, select")) return;
+      if (event.target.closest("button, a, input, textarea, select, summary")) return;
       event.preventDefault();
       onSelect(post);
     };

@@ -33,6 +33,8 @@ export class TelegramCore {
       setPinned: (recordId, pinned) => publications.setPinned(recordId, pinned),
       createEditDraft: recordId => publications.createEditDraft(recordId),
       applyDraftChanges: draftId => publications.applyDraftChanges(draftId),
+      inspectDraftPublication: draftId => publications.inspectDraftPublication(draftId),
+      resolveMissingDraftPublication: (draftId, options) => publications.resolveMissingDraftPublication(draftId, options),
       delete: recordId => publications.delete(recordId),
       checkExpiredDeletion: recordId => publications.checkExpiredDeletion(recordId),
       discardLocal: recordId => publications.discardLocal(recordId),

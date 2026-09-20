@@ -81,6 +81,15 @@ assert.equal(root.children[1].children[0].dataset.draftId, row.id);
 
 const draftCard = root.children[1].children[0];
 const draftTools = draftCard.children[0].children[1];
+const draftAiButton = draftTools.children.find(item => item.textContent === "{}");
+const draftAiDisclosure = draftCard.children.at(-1);
+assert.equal(draftAiDisclosure.tagName, "DETAILS", "the whole-draft prompt must use a disclosure panel");
+assert.equal(draftAiDisclosure.open, false, "the whole-draft prompt starts collapsed");
+assert.equal(draftAiButton.disabled, true, "AI JSON must be unavailable while the whole-draft prompt is empty");
+const draftAiPrompt = draftAiDisclosure.children[1];
+draftAiPrompt.value = "Rewrite the whole draft";
+draftAiPrompt.oninput();
+assert.equal(draftAiButton.disabled, false, "entering a whole-draft prompt enables AI JSON");
 const renameButton = draftTools.children.find(item => item.textContent === "✎");
 renameButton.onclick({ stopPropagation() {} });
 const renameOverlay = draftCard.children.at(-1);
@@ -93,7 +102,11 @@ assert.deepEqual(renamed, [[row.id, "Renamed Draft"]], "the inline editor must p
 
 const publishedRow = {
   ...row, title: "Published source",
-  source: { kind: "publication", publicationId: "publication_one", retained: true }
+  messageAst: { id: "root", type: "document", props: {}, children: [{ id: "p", type: "paragraph", props: { text: "Published" }, children: [] }] },
+  source: {
+    kind: "publication", publicationId: "publication_one", retained: true,
+    publicationAst: { id: "root", type: "document", props: {}, children: [{ id: "p", type: "paragraph", props: { text: "Published" }, children: [] }] }
+  }
 };
 panel.draftSession.activeDraftId = publishedRow.id;
 const publishedRender = panel.render();
@@ -105,7 +118,8 @@ const publishedTools = publishedCard.children[0].children[1];
 assert.equal(publishedTools.children.length, 3, "the published source keeps its rename and delete controls");
 assert.equal(publishedTools.children[2].disabled, true, "deleting a published source is disabled");
 const publishedActions = publishedCard.children[1];
-assert.equal(publishedActions.children[0].disabled, true, "moving a published source is disabled");
+assert.equal(publishedActions.children.length, 2, "a published source must only show Apply and Close");
+assert.equal(publishedActions.children[0].disabled, true, "Apply stays disabled when opening has not changed the publication");
 publishedTools.children.find(item => item.textContent === "✎").onclick({ stopPropagation() {} });
 const publishedRename = publishedCard.children.at(-1);
 publishedRename.children[0].value = "Renamed published source";
@@ -119,9 +133,16 @@ panel.documents = {
   async discardDraft() { discarded = true; return true; },
   async closeDraft() { closed = true; return true; }
 };
-await publishedActions.children[1].onclick({ stopPropagation() {} });
+const changedPublishedRow = structuredClone(publishedRow);
+changedPublishedRow.messageAst.children[0].props.text = "Changed on Canvas";
+const changedRender = panel.render();
+pending.at(-1)([changedPublishedRow]);
+await changedRender;
+const changedPublishedActions = root.children[1].children[0].children[1];
+assert.equal(changedPublishedActions.children[0].disabled, false, "Apply becomes active after a real content change");
+await changedPublishedActions.children[0].onclick({ stopPropagation() {} });
 assert.equal(discarded, false, "applying publication edits must keep the retained source");
-const closing = publishedActions.children[2].onclick({ stopPropagation() {} });
+const closing = changedPublishedActions.children[1].onclick({ stopPropagation() {} });
 await new Promise(resolve => setImmediate(resolve));
 pending.at(-1)([publishedRow]);
 await closing;
@@ -152,9 +173,28 @@ const projectSession = {
 };
 const projectPanel = new EditorRightPanel({ root: projectRoot, layout: projectLayout, session: projectSession, events: projectEvents });
 projectPanel.start();
-const postList = projectRoot.children[1];
+let postList = projectRoot.children[1];
 assert.equal(postList.children.length, 1, "the Project list contains the canonical post cards");
-postList.children[0].onclick({ target: { closest: () => null } });
+let projectPostCard = postList.children[0];
+let projectPostTools = projectPostCard.children[0].children[1];
+let projectAiButton = projectPostTools.children.find(item => item.textContent === "{}");
+let projectAiDisclosure = projectPostCard.children.at(-1);
+assert.equal(projectAiDisclosure.tagName, "DETAILS", "the whole-post prompt must use a disclosure panel");
+assert.equal(projectAiButton.disabled, true, "AI JSON must be unavailable while the whole-post prompt is empty");
+projectAiDisclosure.open = true;
+projectAiDisclosure.ontoggle();
+await projectPanel.render();
+postList = projectRoot.children[1];
+projectPostCard = postList.children[0];
+projectPostTools = projectPostCard.children[0].children[1];
+projectAiButton = projectPostTools.children.find(item => item.textContent === "{}");
+projectAiDisclosure = projectPostCard.children.at(-1);
+assert.equal(projectAiDisclosure.open, true, "the right panel must preserve the expanded prompt across rerenders");
+const projectAiPrompt = projectAiDisclosure.children[1];
+projectAiPrompt.value = "Rewrite the whole post";
+projectAiPrompt.oninput();
+assert.equal(projectAiButton.disabled, false, "entering a whole-post prompt enables AI JSON");
+projectPostCard.onclick({ target: { closest: () => null } });
 await new Promise(resolve => queueMicrotask(resolve));
 assert.equal(projectSession.activePostId, "post_1", "navigation handlers must remain active after the post list rerenders");
 projectPanel.stop();

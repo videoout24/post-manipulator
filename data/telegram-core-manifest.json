@@ -1,6 +1,6 @@
 {
   "engine": "schema-driven-block-editor",
-  "version": "1.11.1",
+  "version": "1.11.2",
   "limits": {
     "maxBlocks": 500,
     "maxDepth": 16

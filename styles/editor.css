@@ -11,6 +11,12 @@
 }
 .property-group-collapsible[open] > .property-group-summary::before { content: "▾"; }
 .property-group-collapsible[open] > .property-group-summary { border-bottom: 1px solid var(--theme-border, #273243); }
+.property-group-collapsible.property-group-gallery-locked > .property-group-summary {
+  cursor: default; color: var(--theme-text-muted, #77889c);
+}
+.property-group-collapsible.property-group-gallery-locked > .property-group-summary::before {
+  content: ""; width: 5px;
+}
 .property-group-collapsible > .prop,
 .property-group-collapsible > .shared-rich-group { margin: 10px; }
 .property-group-state { margin-left: auto; color: var(--theme-text-muted, #6f8094); font-size: 9px; font-weight: 500; }

@@ -12,8 +12,11 @@ const project = {
 assert.deepEqual(unappliedPublishedPostIds(project), ["changed"]);
 
 const panel = fs.readFileSync(new URL("../js/editor/EditorRightPanel.js", import.meta.url), "utf8");
-assert.match(panel, /if \(draft\.source\?\.retained\)[\s\S]*?onApplyDraftChanges\?\.\(draft\.id\)[\s\S]*?#finishPublicationEdit/,
-  "closing a retained published draft must apply it before closing");
+const closeDraftMethod = panel.match(/async #cancelPublicationEdit\(draft\) \{[\s\S]*?\n  \}/)?.[0] || "";
+assert.match(closeDraftMethod, /#finishPublicationEdit\(draft, "publication-edit-cancelled"\)/,
+  "closing a retained published draft must save and close it");
+assert.doesNotMatch(closeDraftMethod, /onApplyDraftChanges/,
+  "closing a retained published draft must not silently apply it to Telegram");
 assert.match(panel, /for \(const postId of changedPostIds\)[\s\S]*?onApplyProjectChanges\?\.\(current\.id, post\.id\)[\s\S]*?closeProject/,
   "closing a project must apply every changed published post first");
 

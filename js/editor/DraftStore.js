@@ -124,7 +124,13 @@ export class DraftStore {
     }
     if (draft.source?.kind === "publication" && draft.source.publicationId !== record.id
       && await this.db.get("publications", draft.source.publicationId, null)) return null;
-    if (draft.source?.retained && draft.source.publicationId === record.id) return draft;
+    if (draft.source?.retained && draft.source.publicationId === record.id) {
+      if (draft.source.publicationAst) return draft;
+      return this.#saveSource(draft, {
+        ...draft.source,
+        publicationAst: normalizeAst(record.messageAst)
+      }, "publication-baseline-restored");
+    }
     const originalSource = draft.source?.kind === "publication" ? draft.source.originalSource || null : draft.source;
     return this.#saveSource(draft, {
       kind: "publication",
@@ -133,8 +139,18 @@ export class DraftStore {
       originalSource,
       chatId: record.chatId,
       messageId: record.messageId,
-      targetTitle: record.target?.title || ""
+      targetTitle: record.target?.title || "",
+      publicationAst: normalizeAst(draft.messageAst)
     }, "publication-linked");
+  }
+
+  async updatePublicationBaseline(draftId, recordId, messageAst) {
+    const draft = await this.get(draftId);
+    if (!draft || draft.source?.kind !== "publication" || draft.source.publicationId !== recordId) return null;
+    return this.#saveSource(draft, {
+      ...draft.source,
+      publicationAst: normalizeAst(messageAst)
+    }, "publication-baseline-updated");
   }
 
   async releasePublication(recordId) {
@@ -201,6 +217,29 @@ function normalizeAst(ast) {
   value.props ||= {};
   value.children = stripProjectNodes(Array.isArray(value.children) ? value.children : []);
   return value;
+}
+
+export function hasUnappliedDraftPublicationChanges(draft, record = null) {
+  if (draft?.source?.kind !== "publication" || !draft.source.publicationId) return false;
+  const baseline = draft.source.publicationAst || record?.messageAst;
+  if (!baseline) return false;
+  return stableSnapshot(normalizeAst(draft.messageAst)) !== stableSnapshot(normalizeAst(baseline));
+}
+
+function stableSnapshot(value) {
+  return JSON.stringify(canonicalize(value));
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (!value || typeof value !== "object") return value;
+  const output = {};
+  for (const key of Object.keys(value).sort()) {
+    const item = value[key];
+    if (item === undefined || typeof item === "function" || typeof item === "symbol") continue;
+    output[key] = canonicalize(item);
+  }
+  return output;
 }
 
 function stripProjectNodes(nodes) {
