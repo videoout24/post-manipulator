@@ -15,7 +15,11 @@ export class MapLinkError extends Error {
 }
 
 export function resolveMapLink(value) {
-  return resolveMapLinkInternal(String(value || "").trim(), 0);
+  const source = String(value || "").trim();
+  if (!source) throw new MapLinkError("empty");
+  const location = parseCoordinateLocation(source);
+  if (!location) throw new MapLinkError("coordinates");
+  return { sourceUrl: source, location };
 }
 
 export function normalizeMapZoom(value, fallback = 12) {
@@ -35,159 +39,85 @@ export function mapDimensions(orientation) {
   return MAP_DIMENSIONS[orientation === "portrait" ? "portrait" : "landscape"];
 }
 
-export function isShortMapLink(value) {
-  const url = parseUrl(String(value || "").trim());
-  if (!url) return false;
-  const host = url.hostname.toLowerCase();
-  const path = url.pathname.toLowerCase();
-  return host === "maps.app.goo.gl"
-    || (host === "goo.gl" && path.startsWith("/maps"))
-    || (isYandexHost(host) && /^\/maps\/-\//.test(path))
-    || host === "go.2gis.com"
-    || host.endsWith(".maps.apple")
-    || host === "maps.apple";
-}
+function parseCoordinateLocation(source) {
+  const text = decodeRepeated(source).trim();
+  const labeledLatitude = labeledCoordinate(text, ["latitude", "lat"]);
+  const labeledLongitude = labeledCoordinate(text, ["longitude", "lng", "lon"]);
+  if (labeledLatitude != null || labeledLongitude != null) {
+    return validLocation(labeledLatitude, labeledLongitude);
+  }
 
-function resolveMapLinkInternal(source, depth) {
-  if (!source) throw new MapLinkError("empty");
-  if (depth > 2) throw new MapLinkError("coordinates");
-
-  const url = parseUrl(source);
-  if (!url) throw new MapLinkError("unsupported");
-
-  const nested = url.searchParams.get("url");
-  if (nested && nested !== source) {
-    try { return resolveMapLinkInternal(decodeRepeated(nested), depth + 1); } catch (error) {
-      if (!(error instanceof MapLinkError)) throw error;
+  const directional = [...text.matchAll(/([+-]?\d+(?:[.,]\d+)?)\s*°?\s*([NSEW])\b/giu)];
+  if (directional.length) {
+    let latitude = null;
+    let longitude = null;
+    for (const match of directional) {
+      const direction = match[2].toUpperCase();
+      const absolute = Math.abs(decimalCoordinate(match[1]));
+      if (direction === "N" || direction === "S") latitude = direction === "S" ? -absolute : absolute;
+      if (direction === "E" || direction === "W") longitude = direction === "W" ? -absolute : absolute;
     }
+    return validLocation(latitude, longitude);
   }
 
-  const provider = providerFor(url);
-  let result = null;
-  if (provider === "google") result = parseGoogle(url);
-  else if (provider === "yandex") result = parseYandex(url);
-  else if (provider === "apple") result = parseApple(url);
-  else if (provider === "2gis") result = parse2gis(url);
-  else if (provider === "telegram") result = parseTelegram(url);
-  if (!provider) throw new MapLinkError("unsupported");
-  if (!result && isShortMapLink(source)) throw new MapLinkError("short");
-  if (!result) throw new MapLinkError("coordinates");
+  const integerPair = /^\s*([+-]?\d{1,3})\s*,\s*([+-]?\d{1,3})\s*$/.exec(text);
+  if (integerPair) return orderedLocation(Number(integerPair[1]), Number(integerPair[2]));
 
-  return {
-    provider,
-    sourceUrl: source,
-    location: result.location,
-    ...(result.zoom == null ? {} : { zoom: normalizeMapZoom(result.zoom) })
-  };
+  const matches = [...text.matchAll(/[+-]?\d+(?:[.,]\d+)?/g)];
+  const decimalPairs = adjacentCoordinatePairs(matches).filter(([first, second]) =>
+    /[.,]/.test(first[0]) && /[.,]/.test(second[0])
+  );
+  const directlySeparated = decimalPairs.filter(([first, second]) => {
+    const gap = text.slice(first.index + first[0].length, second.index);
+    return gap.length <= 24 && !/[\p{L}\d]/u.test(gap);
+  });
+  return firstOrderedLocation(directlySeparated) || firstOrderedLocation(decimalPairs);
 }
 
-function parseGoogle(url) {
-  const text = decodeRepeated(`${url.pathname}${url.search}${url.hash}`);
-  const at = /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?:,(-?\d+(?:\.\d+)?)z)?/i.exec(text);
-  if (at) return resultFromPair([at[1], at[2]], at[3]);
-
-  const data = /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/i.exec(text);
-  if (data) return resultFromPair([data[1], data[2]], queryZoom(url));
-
-  for (const key of ["query", "q", "destination", "daddr", "center", "ll"]) {
-    const pair = coordinatePair(url.searchParams.get(key));
-    if (pair) return resultFromPair(pair, queryZoom(url));
+function adjacentCoordinatePairs(matches) {
+  const pairs = [];
+  for (let index = 0; index < matches.length - 1; index += 1) {
+    pairs.push([matches[index], matches[index + 1]]);
   }
-
-  const path = /\/(?:search|place|dir)\/(-?\d+(?:\.\d+)?)[,+\s]+(-?\d+(?:\.\d+)?)/i.exec(decodeRepeated(url.pathname));
-  return path ? resultFromPair([path[1], path[2]], queryZoom(url)) : null;
+  return pairs;
 }
 
-function parseYandex(url) {
-  for (const key of ["whatshere[point]", "pt", "ll"]) {
-    const pair = coordinatePair(url.searchParams.get(key));
-    if (pair) return resultFromPair([pair[1], pair[0]], url.searchParams.get("whatshere[zoom]") || queryZoom(url));
+function firstOrderedLocation(pairs) {
+  let ambiguous = null;
+  for (const [firstMatch, secondMatch] of pairs) {
+    const first = decimalCoordinate(firstMatch[0]);
+    const second = decimalCoordinate(secondMatch[0]);
+    const forward = validLocation(first, second);
+    const reverse = validLocation(second, first);
+    if (forward && !reverse) return forward;
+    if (reverse && !forward) return reverse;
+    ambiguous ||= forward || reverse;
   }
-  return null;
+  return ambiguous;
 }
 
-function parseApple(url) {
-  for (const key of ["coordinate", "center", "ll", "sll"]) {
-    const pair = coordinatePair(url.searchParams.get(key));
-    if (pair) return resultFromPair(pair, queryZoom(url));
-  }
-  return null;
+function orderedLocation(first, second) {
+  return validLocation(first, second) || validLocation(second, first);
 }
 
-function parse2gis(url) {
-  const map = decodeRepeated(url.searchParams.get("m") || "");
-  const mapMatch = /^\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)(?:\/(-?\d+(?:\.\d+)?))?/.exec(map);
-  if (mapMatch) return resultFromPair([mapMatch[2], mapMatch[1]], mapMatch[3]);
-
-  const center = coordinatePair(url.searchParams.get("center") || url.searchParams.get("c"));
-  if (center) return resultFromPair([center[1], center[0]], queryZoom(url));
-
-  const pathMatch = /\/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?:\/|$)/.exec(decodeRepeated(url.pathname));
-  return pathMatch ? resultFromPair([pathMatch[2], pathMatch[1]], queryZoom(url)) : null;
+function labeledCoordinate(text, labels) {
+  const alternatives = labels.join("|");
+  const number = "([+-]?\\d+(?:[.,]\\d+)?)";
+  const label = `(?:${alternatives})`;
+  const after = new RegExp(`(?:^|[^\\p{L}])${label}(?=$|[^\\p{L}])[^+\\-\\d]{0,16}${number}`, "iu").exec(text);
+  if (after) return decimalCoordinate(after[1]);
+  const before = new RegExp(`${number}[^\\p{L}\\d]{0,16}${label}(?=$|[^\\p{L}])`, "iu").exec(text);
+  return before ? decimalCoordinate(before[1]) : null;
 }
 
-function parseTelegram(url) {
-  if (url.protocol === "geo:") {
-    const queryPair = coordinatePair(url.searchParams.get("q"));
-    if (queryPair) return resultFromPair(queryPair, queryZoom(url));
-    const pair = coordinatePair(url.pathname);
-    if (pair) return resultFromPair(pair, queryZoom(url));
-  }
-
-  const latitude = url.searchParams.get("latitude") ?? url.searchParams.get("lat");
-  const longitude = url.searchParams.get("longitude") ?? url.searchParams.get("lon") ?? url.searchParams.get("lng");
-  if (latitude != null && longitude != null) return resultFromPair([latitude, longitude], queryZoom(url));
-  for (const key of ["q", "ll", "location", "coordinates"]) {
-    const pair = coordinatePair(url.searchParams.get(key));
-    if (pair) return resultFromPair(pair, queryZoom(url));
-  }
-  return null;
+function decimalCoordinate(value) {
+  return Number(String(value).replace(",", "."));
 }
 
-function resultFromPair(pair, zoom = null) {
-  const latitude = Number(pair?.[0]);
-  const longitude = Number(pair?.[1]);
+function validLocation(latitude, longitude) {
   if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) return null;
   if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) return null;
-  return {
-    location: { latitude, longitude },
-    ...(zoom !== null && zoom !== "" && Number.isFinite(Number(zoom)) ? { zoom: Number(zoom) } : {})
-  };
-}
-
-function coordinatePair(value) {
-  const match = /(-?\d+(?:\.\d+)?)\s*(?:,|\s|\+)\s*([+-]?\d+(?:\.\d+)?)/.exec(decodeRepeated(value || ""));
-  return match ? [match[1], match[2]] : null;
-}
-
-function queryZoom(url) {
-  return url.searchParams.get("zoom") ?? url.searchParams.get("z");
-}
-
-function providerFor(url) {
-  const host = url.hostname.toLowerCase();
-  if (url.protocol === "geo:" || url.protocol === "tg:" || isTelegramHost(host)) return "telegram";
-  if (host === "maps.app.goo.gl" || host === "goo.gl" || /(^|\.)google\.[a-z.]+$/.test(host)) return "google";
-  if (isYandexHost(host)) return "yandex";
-  if (host === "maps.apple.com" || host === "maps.apple" || host.endsWith(".maps.apple")) return "apple";
-  if (/(^|\.)2gis\.[a-z.]+$/.test(host)) return "2gis";
-  return "";
-}
-
-function isYandexHost(host) {
-  return /(^|\.)yandex\.[a-z.]+$/.test(host);
-}
-
-function isTelegramHost(host) {
-  return ["t.me", "telegram.me", "telegram.dog"].includes(host) || host.endsWith(".t.me");
-}
-
-function parseUrl(value) {
-  try {
-    if (/^geo:/i.test(value)) return new URL(value);
-    if (/^tg:/i.test(value)) return new URL(value);
-    return new URL(value);
-  } catch { return null; }
+  return { latitude, longitude };
 }
 
 function decodeRepeated(value) {

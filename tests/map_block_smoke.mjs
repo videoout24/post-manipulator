@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import { BlockRegistry } from "../js/core/BlockRegistry.js?v=1.5.9";
 import { BlockTree } from "../js/core/BlockTree.js?v=1.5.9";
 import { createTelegramFormattingRegistry } from "../js/core/FormattingRegistry.js?v=1.5.9";
-import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js?v=1.11.0";
-import { Validator } from "../js/core/Validator.js?v=1.11.0";
-import { registerTelegramCore } from "../js/blocks/registerCoreBlocks.js?v=1.11.0";
-import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js?v=1.11.0";
+import { createDefaultPropertyRegistry } from "../js/core/PropertyRegistry.js?v=1.11.1";
+import { Validator } from "../js/core/Validator.js?v=1.11.1";
+import { registerTelegramCore } from "../js/blocks/registerCoreBlocks.js?v=1.11.1";
+import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js?v=1.11.1";
 
 const registry = new BlockRegistry(createDefaultPropertyRegistry(createTelegramFormattingRegistry()));
 registerTelegramCore(registry);
@@ -48,6 +48,6 @@ assert.equal(landscape.width, 640);
 assert.equal(landscape.height, 320);
 
 map.props.mapUrl = "https://maps.app.goo.gl/example";
-assert.match(new Validator(registry).validate(tree).join("\n"), /full map link; short links are unsupported/);
+assert.match(new Validator(registry).validate(tree).join("\n"), /must contain latitude and longitude/);
 
 console.log("map_block_smoke: OK");

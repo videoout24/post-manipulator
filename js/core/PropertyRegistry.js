@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.11.0";
+import { t } from "../i18n/index.js?v=1.11.1";
 export class PropertyRegistry {
   constructor(formattingRegistry = null) {
     this.properties = new Map();

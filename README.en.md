@@ -130,11 +130,11 @@ for PDF and ZIP, and voice messages for OGG up to 1 MB. See the
 
 ## Map block
 
-The Map block accepts a full Google Maps, Telegram/`geo:`, Yandex Maps, Apple Maps,
-or 2GIS link when the link contains coordinates. The editor detects the provider
-and extracts latitude, longitude, and an available zoom value. Short links are
-intentionally unsupported: the static application cannot inspect their
-cross-origin redirects, so open the short link first and copy its full address.
+The Map block extracts latitude and longitude from any text or link without
+identifying a provider. Arbitrary surrounding text and separators are accepted;
+`lat`/`lon` or `latitude`/`longitude` labels allow the values to appear in either
+order. Inputs without coordinates, including short redirect links, are rejected
+because the static application cannot follow a redirect to its final address.
 Zoom is limited to `1–20`. Pixel dimensions are not edited directly; the
 **Landscape 2:1** and **Portrait 1:2** buttons are converted into
 [Telegram InputRichBlockMap](https://core.telegram.org/bots/api#inputrichblockmap)
@@ -276,7 +276,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.11.0
+https://videoout24.github.io/post-manipulator/?build=1.11.1
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -353,7 +353,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.11.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.11.1`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

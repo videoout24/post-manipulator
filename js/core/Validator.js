@@ -1,7 +1,7 @@
 import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.7.17";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
-import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.11.0";
-import { MapLinkError, resolveMapLink } from "./MapLinkResolver.js?v=1.11.0";
+import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.11.1";
+import { MapLinkError, resolveMapLink } from "./MapLinkResolver.js?v=1.11.1";
 
 export class Validator {
   constructor(registry) { this.registry = registry; }
@@ -44,9 +44,9 @@ export class Validator {
       try {
         resolveMapLink(node.props?.mapUrl);
       } catch (error) {
-        errors.push(error instanceof MapLinkError && error.code === "short"
-          ? "map.mapUrl must be a full map link; short links are unsupported"
-          : "map.mapUrl must contain supported coordinates");
+        errors.push(error instanceof MapLinkError
+          ? "map.mapUrl must contain latitude and longitude"
+          : "map.mapUrl could not be resolved");
       }
     }
 

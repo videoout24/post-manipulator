@@ -1,5 +1,5 @@
-import { en } from "./en.js?v=1.11.0";
-import { ru } from "./ru.js?v=1.11.0";
+import { en } from "./en.js?v=1.11.1";
+import { ru } from "./ru.js?v=1.11.1";
 
 export const DEFAULT_LANGUAGE = "ru";
 export const SUPPORTED_LANGUAGES = Object.freeze(["ru", "en"]);

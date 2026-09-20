@@ -15,8 +15,11 @@ const locationEditor = inspector.slice(
   inspector.indexOf("  makeRichTextEditor({", locationEditorStart)
 );
 assert.match(locationEditor, /resolveMapLink\(source\)/);
+assert.match(locationEditor, /link\.type = "text"/);
+assert.match(locationEditor, /const applyLink = \(\) => \{\s*showStatus\(\);/);
 assert.match(locationEditor, /className = "map-settings-row"/);
 assert.match(locationEditor, /for \(const orientation of \["landscape", "portrait"\]\)/);
+assert.match(locationEditor, /refreshOrientationButtons\(mapOrientation\(node\?\.props\)\)/);
 assert.match(locationEditor, /numericField\(t\("core\.propertyRegistry\.zoom"\),[\s\S]*?, 1, 20\)/);
 assert.doesNotMatch(locationEditor, /horizontal_accuracy|accuracyM/);
 assert.doesNotMatch(locationEditor, /numericField\(t\("editor\.blockInspector\.(?:latitude|longitude)"/);

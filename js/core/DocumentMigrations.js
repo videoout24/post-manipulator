@@ -1,6 +1,6 @@
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
-import { normalizeStoredMediaSource } from "./MediaSource.js?v=1.11.0";
-import { mapDimensions, mapOrientation, normalizeMapZoom, resolveMapLink } from "./MapLinkResolver.js?v=1.11.0";
+import { normalizeStoredMediaSource } from "./MediaSource.js?v=1.11.1";
+import { mapDimensions, mapOrientation, normalizeMapZoom, resolveMapLink } from "./MapLinkResolver.js?v=1.11.1";
 
 export function migrateDocumentTree(tree) {
   migrateLegacyMediaProps(tree);

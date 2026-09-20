@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.11.0";
+import { t } from "../i18n/index.js?v=1.11.1";
 import {
   applyRichTextFormat,
   insertRichText,
@@ -20,7 +20,7 @@ import {
   listAnchors,
   unixTimeToDateTimeLocal
 } from "../core/SemanticRichText.js?v=1.5.9";
-import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.0";
+import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.1";
 import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
@@ -33,7 +33,7 @@ import {
   mapOrientation,
   normalizeMapZoom,
   resolveMapLink
-} from "../core/MapLinkResolver.js?v=1.11.0";
+} from "../core/MapLinkResolver.js?v=1.11.1";
 
 export class BlockInspector {
   constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, emojiPreferences = null, events = null }) {
@@ -1079,7 +1079,7 @@ export class BlockInspector {
 
     const link = document.createElement("input");
     link.className = "map-link-input";
-    link.type = "url";
+    link.type = "text";
     link.value = String(node?.props?.mapUrl || "");
     link.placeholder = t("editor.blockInspector.mapLinkPlaceholder");
     link.disabled = !!schema.readOnly;
@@ -1096,7 +1096,7 @@ export class BlockInspector {
       try {
         const resolved = resolveMapLink(source);
         status.textContent = t("editor.blockInspector.mapLinkResolved", {
-          0: resolved.provider,
+          0: t("editor.blockInspector.mapCoordinates"),
           1: formatCoordinate(resolved.location.latitude),
           2: formatCoordinate(resolved.location.longitude)
         });
@@ -1107,6 +1107,7 @@ export class BlockInspector {
     };
 
     const applyLink = () => {
+      showStatus();
       const source = String(link.value || "").trim();
       if (!source) {
         this.controller.updateNodeProperties(node.id, {
@@ -1152,6 +1153,12 @@ export class BlockInspector {
     });
 
     const currentOrientation = mapOrientation(node?.props);
+    const orientationButtons = [];
+    const refreshOrientationButtons = activeOrientation => {
+      for (const button of orientationButtons) {
+        button.setAttribute("aria-pressed", String(button.dataset.orientation === activeOrientation));
+      }
+    };
     for (const orientation of ["landscape", "portrait"]) {
       const button = document.createElement("button");
       button.type = "button";
@@ -1162,10 +1169,14 @@ export class BlockInspector {
         : t("editor.blockInspector.mapPortrait");
       button.setAttribute("aria-pressed", String(currentOrientation === orientation));
       button.disabled = !!schema.readOnly;
-      button.onclick = () => this.controller.updateNodeProperties(node.id, {
-        orientation,
-        ...mapDimensions(orientation)
-      }, { inspectorSource: true });
+      button.onclick = () => {
+        this.controller.updateNodeProperties(node.id, {
+          orientation,
+          ...mapDimensions(orientation)
+        }, { inspectorSource: true });
+        refreshOrientationButtons(mapOrientation(node?.props));
+      };
+      orientationButtons.push(button);
       settings.append(button);
     }
 
@@ -2921,8 +2932,6 @@ function numericField(label, value, min, max) {
 
 function mapLinkErrorText(error) {
   if (!(error instanceof MapLinkError)) return t("editor.blockInspector.mapLinkCoordinatesMissing");
-  if (error.code === "short") return t("editor.blockInspector.mapLinkShortUnsupported");
-  if (error.code === "unsupported") return t("editor.blockInspector.mapLinkProviderUnsupported");
   if (error.code === "empty") return t("editor.blockInspector.mapLinkRequired");
   return t("editor.blockInspector.mapLinkCoordinatesMissing");
 }
