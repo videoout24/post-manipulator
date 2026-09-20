@@ -14,6 +14,10 @@ neither a deployed backend nor paid hosting.
 - manage projects, drafts, publications, and media;
 - schedule regular drafts and Projects (the internal abstraction for linked
   posts), and edit them after publication;
+- assemble posts from blocks taken from drafts, publications, and Project posts
+  using the internal collector;
+- create cross-links in the editor to published messages in bot-accessible
+  channels and groups, with automatic link resolution during publication;
 - receive media from the linked owner through the bot;
 - display a live preview in a separate private channel;
 - delete accessible Bot API service messages from the owner's private chat and preview channel;
