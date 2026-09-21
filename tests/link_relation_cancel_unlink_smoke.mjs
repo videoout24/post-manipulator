@@ -78,7 +78,7 @@ const linking = new LinkingController({
       return clone(value);
     }
   },
-  confirmFn(message) {
+  async confirmFn(message) {
     confirmations.push(message);
     return false;
   }

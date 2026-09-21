@@ -5,7 +5,7 @@ import {
   mapOrientation,
   normalizeMapZoom,
   resolveMapLink
-} from "../js/core/MapLinkResolver.js?v=1.11.2";
+} from "../js/core/MapLinkResolver.js?v=1.11.3";
 
 const cases = [
   [

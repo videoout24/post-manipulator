@@ -1,8 +1,8 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.10.0";
+import { t } from "../i18n/index.js?v=1.11.3";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
-import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.2";
+import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.3";
 
 const TYPE_META = Object.freeze({
   photo: { label: t("app.appNotifications.photo"), icon: "▧" },
@@ -27,6 +27,7 @@ export class GalleryView {
     this.renderQueued = false;
     this.renderGeneration = 0;
     this.topicDeletePending = false;
+    this.dropUploadPending = false;
     this.textareaSizing = new SessionTextareaSizing();
     this.#listen();
   }
@@ -196,6 +197,7 @@ export class GalleryView {
       if (!this.navigation?.openBot?.()) this.#notice(t("gallery.galleryView.failedToOpenBotUsernameUnavailable"), true);
     });
     this.root.querySelector("#galleryUploadFiles")?.addEventListener("click", () => this.#openUploadDialog(topics));
+    this.#bindFileDrop(topics);
 
     for (const button of this.root.querySelectorAll("[data-gallery-rename-topic]")) {
       button.addEventListener("click", async event => {
@@ -258,6 +260,68 @@ export class GalleryView {
         this.selectedId = null;
       });
     });
+  }
+
+  #bindFileDrop(topics) {
+    const content = this.root.querySelector(".gallery-content");
+    if (!content) return;
+    const topic = activeGalleryUploadTopic(topics, this.filterThread);
+    content.dataset.dropLabel = topic
+      ? t("gallery.galleryView.dropFilesToTopic", { 0: topic.name || `Topic ${topic.threadId}` })
+      : t("gallery.galleryView.selectTopicBeforeDrop");
+    content.classList.toggle("drop-topic-unavailable", !topic);
+
+    const show = event => {
+      if (!dataTransferHasFiles(event.dataTransfer)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = topic ? "copy" : "none";
+      content.classList.add("is-file-dragover");
+    };
+    content.addEventListener("dragenter", show);
+    content.addEventListener("dragover", show);
+    content.addEventListener("dragleave", event => {
+      if (event.relatedTarget && content.contains(event.relatedTarget)) return;
+      content.classList.remove("is-file-dragover");
+    });
+    content.addEventListener("drop", event => {
+      if (!dataTransferHasFiles(event.dataTransfer)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      content.classList.remove("is-file-dragover");
+      const files = Array.from(event.dataTransfer?.files || []);
+      if (!topic) {
+        this.#notice(t("gallery.galleryView.selectTopicBeforeDrop"), true);
+        return;
+      }
+      this.#uploadDroppedFiles(files, topic).catch(error => this.#notice(error?.message || String(error), true));
+    });
+  }
+
+  async #uploadDroppedFiles(files, topic) {
+    if (this.dropUploadPending || !files.length) return;
+    this.dropUploadPending = true;
+    try {
+      const caption = await requestTextDialog({
+        title: t("gallery.galleryView.uploadDroppedFiles", { 0: files.length, 1: topic.name || `Topic ${topic.threadId}` }),
+        label: t("core.propertyRegistry.caption"),
+        placeholder: t("gallery.galleryView.captionMayBeEmpty"),
+        submitLabel: t("gallery.galleryView.uploadAction")
+      });
+      if (caption === null) return;
+      this.filterThread = String(topic.threadId);
+      await this.#run(async () => {
+        try {
+          const result = await this.gallery.uploadFiles(files, { threadId: Number(topic.threadId), caption });
+          this.#notice(t("gallery.galleryView.uploadedFiles", { 0: result.assets.length }));
+        } catch (error) {
+          if (!error?.uploadResult) throw error;
+          this.#notice(error?.message || String(error), true);
+        }
+      });
+    } finally {
+      this.dropUploadPending = false;
+    }
   }
 
   #openUploadDialog(topics) {
@@ -437,6 +501,15 @@ export class GalleryView {
 }
 
 function countBy(items, predicate) { return items.reduce((sum, item) => sum + (predicate(item) ? 1 : 0), 0); }
+export function activeGalleryUploadTopic(topics, filterThread) {
+  if (["all", "none", ""].includes(String(filterThread || ""))) return null;
+  const threadId = Number(filterThread);
+  if (!Number.isSafeInteger(threadId) || threadId <= 0) return null;
+  return (topics || []).find(topic => Number(topic?.threadId) === threadId && !topic?.telegramDeleted) || null;
+}
+function dataTransferHasFiles(dataTransfer) {
+  return Array.from(dataTransfer?.types || []).includes("Files") || Boolean(dataTransfer?.files?.length);
+}
 function formatBytes(value) {
   const bytes = Number(value || 0);
   if (!bytes) return "—";

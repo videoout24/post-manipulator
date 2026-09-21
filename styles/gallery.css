@@ -34,7 +34,28 @@
 .gallery-topic-delete:hover { background: var(--theme-surface-hover, #321c22); color: var(--theme-danger, #e79ba7); }
 .gallery-topic-line.local-only .gallery-topic-name::after { content: " · local"; color: var(--theme-text-muted, #607186); font-size: 8px; }
 .gallery-topic-lock { display: grid; place-items: center; color: var(--theme-accent, #567aa8); font-size: 8px; }
-.gallery-content { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--theme-surface, #0c1219); }
+.gallery-content { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--theme-surface, #0c1219); }
+.gallery-content.is-file-dragover::after {
+  content: attr(data-drop-label);
+  position: absolute;
+  z-index: 20;
+  inset: 12px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  border: 2px dashed var(--theme-accent-border, #5d8ed7);
+  border-radius: 12px;
+  background: var(--theme-overlay-surface, rgba(20, 32, 51, .92));
+  color: var(--theme-accent, #b8d6ff);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+.gallery-content.is-file-dragover.drop-topic-unavailable::after {
+  border-color: var(--theme-warning-border, #705849);
+  color: var(--theme-warning, #e0b998);
+}
 .gallery-content-head { flex: 0 0 38px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 13px; border-bottom: 1px solid var(--theme-border, #222c39); color: var(--theme-text-muted, #8594a7); font-size: 10px; }
 .gallery-content-head strong { color: var(--theme-text-secondary, #bdc8d5); }
 .gallery-grid { min-height: 0; overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 10px; padding: 12px; overscroll-behavior: contain; }
@@ -187,4 +208,3 @@ body.resizing-layout * { cursor: col-resize !important; }
 /* v1.1.2 — Collage/Slideshow Gallery collection picker */
 .media-collection-preview { display:grid; grid-template-columns:44px minmax(0,1fr); gap:10px; align-items:center; min-height:52px; padding:7px; border:1px dashed var(--theme-border, #31445a); border-radius:8px; background:var(--theme-surface-raised, #0e151e); }
 .media-collection-icon { width:44px; height:38px; display:grid; place-items:center; border-radius:6px; background:var(--theme-surface-raised, #091018); color:var(--theme-text-muted, #7890aa); font-size:22px; }
-

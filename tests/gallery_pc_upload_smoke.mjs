@@ -7,6 +7,8 @@ const uploaded = [];
 const deleted = [];
 const file = new Blob(["image"], { type: "image/png" });
 Object.defineProperty(file, "name", { value: "image.png" });
+const secondFile = new Blob(["video"], { type: "video/mp4" });
+Object.defineProperty(secondFile, "name", { value: "video.mp4" });
 let storedAsset = null;
 const core = new GalleryCore({
   db: { async get(_store, _key, fallback) { return { ...fallback, deleteSourceAfterIndexing: true }; } },
@@ -43,13 +45,13 @@ const core = new GalleryCore({
   thumbnails: {}
 });
 
-const result = await core.uploadFiles([file], { threadId: 9, caption: "Same caption" });
-assert.equal(result.assets.length, 1);
+const result = await core.uploadFiles([file, secondFile], { threadId: 9, caption: "Same caption" });
+assert.equal(result.assets.length, 2);
 assert.equal(uploaded[0].messageThreadId, 9);
-assert.equal(uploaded[0].caption, "Same caption");
+assert.deepEqual(uploaded.map(item => item.caption), ["Same caption", "Same caption"], "one caption applies to every file in the batch");
 assert.equal(result.assets[0].fileId, "large");
 assert.equal(result.assets[0].source.threadId, 9);
 assert.equal(result.assets[0].source.messageDeleted, true);
-assert.deepEqual(deleted, [[123, 77]]);
+assert.deepEqual(deleted, [[123, 77], [123, 77]]);
 
 console.log("gallery_pc_upload_smoke: OK");

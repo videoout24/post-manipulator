@@ -150,8 +150,18 @@ export class LinkingController {
   async detachRelation(id, { notify = true, confirm = false } = {}) {
     if (!id) return false;
     const relation = this.relations.get(String(id)) || await this.linkRelations.get?.(id) || null;
-    if (confirm && this.confirm?.(t("links.linkingController.breakTheLink", { 0: relation?.label ? ` «${relation.label}»` : "" })) === false) return false;
-    this.#clearRelationFromCurrentTree(relation, id);
+    if (confirm && this.confirm) {
+      const accepted = await this.confirm(t("links.linkingController.breakTheLink", { 0: relation?.label ? ` «${relation.label}»` : "" }));
+      if (accepted !== true) return false;
+    }
+    const cleared = this.#clearRelationFromCurrentTree(relation, id);
+    // The relation record must not disappear before its source AST is durable.
+    // Otherwise a quick post switch/reload can restore the marker from storage
+    // while the relation itself has already been deleted.
+    if (cleared) {
+      if (this.projectSession?.isProjectActive?.()) await this.projectSession.flush?.();
+      else if (this.draftSession?.isActive?.()) await this.draftSession.flush?.();
+    }
     await this.linkRelations.remove?.(id);
     this.relations.delete(String(id));
     if (notify) {

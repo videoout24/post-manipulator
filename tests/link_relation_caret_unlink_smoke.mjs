@@ -38,6 +38,7 @@ async function assertUnlinks({ start, end, label }) {
   assert.equal(fixture.confirmations.length, 1, `${label} must ask before unlinking`);
   assert.equal(fixture.removeCalls(), 1, `${label} must remove the persistent relation`);
   assert.equal(fixture.nodes.get("source").props.text, "До ссылка после", `${label} must unwrap the source marker`);
+  assert.deepEqual(fixture.operations, ["clear", "flush", "remove"], `${label} must save the cleared source before deleting the relation`);
   fixture.linking.stop();
 }
 
@@ -93,6 +94,7 @@ function createFixture() {
     label: "ссылка"
   }]]);
   const confirmations = [];
+  const operations = [];
   let removed = 0;
   const linking = new LinkingController({
     events,
@@ -100,6 +102,7 @@ function createFixture() {
     controller: {
       updateNodeProperty(nodeId, property, value) {
         nodes.get(nodeId).props[property] = value;
+        operations.push("clear");
       }
     },
     linkRelations: {
@@ -107,12 +110,19 @@ function createFixture() {
       async get(id) { return structuredClone(rows.get(String(id)) || null); },
       async remove(id) {
         removed += 1;
+        operations.push("remove");
         const relation = rows.get(String(id)) || null;
         rows.delete(String(id));
         return structuredClone(relation);
       }
     },
-    confirmFn(message) {
+    draftSession: {
+      activeDraftId: "source_draft",
+      draft: { id: "source_draft" },
+      isActive: () => true,
+      async flush() { operations.push("flush"); }
+    },
+    async confirmFn(message) {
       confirmations.push(message);
       return true;
     }
@@ -122,6 +132,7 @@ function createFixture() {
     linking,
     nodes,
     confirmations,
+    operations,
     removeCalls: () => removed
   };
 }

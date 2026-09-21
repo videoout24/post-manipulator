@@ -1,0 +1,22 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { activeGalleryUploadTopic } from "../js/gallery/GalleryView.js";
+
+const topics = [
+  { threadId: 7, name: "Photos" },
+  { threadId: 8, name: "Removed", telegramDeleted: true }
+];
+assert.equal(activeGalleryUploadTopic(topics, "all"), null, "All is not an upload destination");
+assert.equal(activeGalleryUploadTopic(topics, "none"), null, "No topic is not an upload destination");
+assert.deepEqual(activeGalleryUploadTopic(topics, "7"), topics[0], "the active topic is the drop destination");
+assert.equal(activeGalleryUploadTopic(topics, "8"), null, "a locally retained deleted topic cannot receive uploads");
+
+const view = fs.readFileSync(new URL("../js/gallery/GalleryView.js", import.meta.url), "utf8");
+assert.match(view, /addEventListener\("dragenter", show\)/);
+assert.match(view, /addEventListener\("dragover", show\)/);
+assert.match(view, /addEventListener\("drop"/);
+assert.match(view, /requestTextDialog\([\s\S]*?gallery\.galleryView\.uploadDroppedFiles/);
+assert.match(view, /gallery\.uploadFiles\(files, \{ threadId: Number\(topic\.threadId\), caption \}\)/,
+  "dropped files must use one requested caption for the whole batch");
+
+console.log("gallery_drop_upload_smoke: OK");

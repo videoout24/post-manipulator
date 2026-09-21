@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.10.0";
-import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.11.2";
+import { createProjectPostCard } from "../project/ProjectPostCard.js?v=1.11.3";
 import { ProjectIndex } from "../project/ProjectIndex.js?v=1.5.9";
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";

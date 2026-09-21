@@ -23,6 +23,23 @@ select:not([multiple]):focus-visible { outline: 1px solid var(--theme-accent-bor
 select:not([multiple]):disabled { opacity: .55; cursor: not-allowed; }
 select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118); color: var(--theme-text, #d8e2ee); }
 
+/* Some Telegram Desktop WebViews keep the native light select palette even
+   after the root color-scheme changes. Keep every editor select and its
+   popup entries explicitly dark while preserving the custom arrow image. */
+:root[data-theme="dark"] .editor-page { color-scheme: dark; }
+:root[data-theme="dark"] .editor-page select {
+  color-scheme: dark !important;
+  background-color: #0b1118 !important;
+  border-color: #34475d;
+  color: #d8e2ee !important;
+}
+:root[data-theme="dark"] .editor-page select:is(:hover, :focus) { background-color: #101a26 !important; }
+:root[data-theme="dark"] .editor-page select :is(option, optgroup) {
+  color-scheme: dark;
+  background-color: #0b1118 !important;
+  color: #d8e2ee !important;
+}
+
 .compact-select,
 .compact-field select,
 .rich-footer-control select,

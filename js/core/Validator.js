@@ -1,7 +1,7 @@
 import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.7.17";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
-import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.11.2";
-import { MapLinkError, resolveMapLink } from "./MapLinkResolver.js?v=1.11.2";
+import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.11.3";
+import { MapLinkError, resolveMapLink } from "./MapLinkResolver.js?v=1.11.3";
 
 export class Validator {
   constructor(registry) { this.registry = registry; }
