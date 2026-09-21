@@ -63,6 +63,19 @@ export class MediaAssetBinder {
     return asset;
   }
 
+  async assignUploaded(nodeId, assets) {
+    const node = this.tree.find(nodeId);
+    if (!node) throw new Error(t("editor.mediaAssetBinder.mediaBlockNotFound"));
+    const compatible = Array.from(assets || []).filter(asset => this.accepts(node, asset?.type));
+    const selected = this.isCollection(node) ? compatible : compatible.slice(0, 1);
+    for (const asset of selected) await this.assign(nodeId, asset);
+    return {
+      assigned: selected,
+      incompatible: Array.from(assets || []).filter(asset => !this.accepts(node, asset?.type)),
+      unassigned: compatible.slice(selected.length)
+    };
+  }
+
   #appendChild(container, asset, patch) {
     const childType = ASSET_TO_BLOCK[asset.type];
     if (!childType) throw new Error(t("editor.mediaAssetBinder.cannotYetCreateRichBlockForGalleryType", { 0: container.type, 1: asset.type }));

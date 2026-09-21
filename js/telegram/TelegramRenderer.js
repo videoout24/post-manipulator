@@ -1,7 +1,7 @@
 import { t } from "../i18n/index.js?v=1.8.0";
 import { buildSemanticRichText, makeUrlButton } from "../core/SemanticRichText.js?v=1.5.9";
 import { renderableRichText } from "../links/LinkRelationAst.js?v=1.5.9";
-import { mapDimensions, mapOrientation, normalizeMapZoom, resolveMapLink } from "../core/MapLinkResolver.js?v=1.11.3";
+import { mapDimensions, mapOrientation, normalizeMapZoom, resolveMapLink } from "../core/MapLinkResolver.js?v=1.11.4";
 
 /*
   Telegram wire adapter.

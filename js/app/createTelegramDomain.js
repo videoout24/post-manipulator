@@ -4,13 +4,13 @@ import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5"
 import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.7.16";
 import { TopicTransport } from "../telegram/TopicTransport.js?v=1.8.9";
 import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.8.8";
-import { TelegramCore } from "../telegram/TelegramCore.js?v=1.11.3";
+import { TelegramCore } from "../telegram/TelegramCore.js?v=1.11.4";
 import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.10.0";
 import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.8.9";
 import { PreviewController } from "../telegram/PreviewController.js?v=1.7.20";
 import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.9.5";
 import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.7.22";
-import { PublicationService } from "../telegram/PublicationService.js?v=1.11.3";
+import { PublicationService } from "../telegram/PublicationService.js?v=1.11.4";
 import { LinkRelationStore } from "../links/LinkRelationStore.js?v=1.8.6";
 
 export function createTelegramDomain({ db, events, renderer, validator, tree, treeProvider = null, previewSyncGuard = null, drafts = null, draftSession = null, documents = null, initialToken = "", verifiedBot = null } = {}) {

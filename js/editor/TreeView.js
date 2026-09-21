@@ -1,10 +1,10 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.9.6";
+import { t } from "../i18n/index.js?v=1.11.4";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
 export class TreeView {
-  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
+  constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, events = null, requestMediaUpload = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
     this.root = root;
     this.tree = tree;
     this.registry = registry;
@@ -16,6 +16,8 @@ export class TreeView {
     this.inlineInspector = inlineInspector;
     this.textareaSizing = textareaSizing;
     this.blockCollector = blockCollector;
+    this.events = events;
+    this.requestMediaUpload = requestMediaUpload;
     this.onCollapseChange = onCollapseChange;
     this.autoCollapseInactive = Boolean(autoCollapseInactive);
     this.scrollSpeed = normalizeScrollSpeed(scrollSpeed);
@@ -266,6 +268,14 @@ export class TreeView {
       // upper/lower edge = insert before/after, center = nest when allowed.
       el.ondragover = e => {
         e.stopPropagation();
+        if (dataTransferHasFiles(e.dataTransfer)) {
+          if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.supports(node)) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+          this.clearPositionClasses();
+          el.classList.add("drag-media");
+          return;
+        }
         const galleryType = this.draggedGalleryType(e);
         if (galleryType) {
           if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.accepts(node, galleryType)) return;
@@ -289,6 +299,13 @@ export class TreeView {
       };
       el.ondrop = async e => {
         e.stopPropagation();
+        if (dataTransferHasFiles(e.dataTransfer)) {
+          if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.supports(node)) return;
+          e.preventDefault();
+          el.classList.remove("drag-media");
+          await this.uploadFilesToBlock(node, Array.from(e.dataTransfer?.files || []));
+          return;
+        }
         const galleryAssetId = this.draggedGalleryAssetId(e);
         const galleryType = this.draggedGalleryType(e);
         if (galleryAssetId && galleryType) {
@@ -578,6 +595,12 @@ export class TreeView {
     element.ondragover = e => {
       if (this.collapsedNodes.has(node.id)) return;
       e.stopPropagation();
+      if (dataTransferHasFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+        element.classList.add("active", "drag-media");
+        return;
+      }
       const galleryType = this.draggedGalleryType(e);
       if (galleryType && this.mediaBinder?.accepts(node, galleryType)) {
         e.preventDefault();
@@ -599,6 +622,12 @@ export class TreeView {
     element.ondrop = async e => {
       if (this.collapsedNodes.has(node.id)) return;
       e.stopPropagation();
+      if (dataTransferHasFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
+        e.preventDefault();
+        element.classList.remove("active", "drag-media");
+        await this.uploadFilesToBlock(node, Array.from(e.dataTransfer?.files || []));
+        return;
+      }
       const galleryAssetId = this.draggedGalleryAssetId(e);
       const galleryType = this.draggedGalleryType(e);
       if (galleryAssetId && galleryType && this.mediaBinder?.accepts(node, galleryType)) {
@@ -636,6 +665,31 @@ export class TreeView {
     if (!canSibling) return canNest ? { parentId: node.id, index: Infinity, mode: "inside" } : null;
     if (ratio < 0.5) return { parentId, index, mode: "before" };
     return { parentId, index: index + 1, mode: "after" };
+  }
+
+  async uploadFilesToBlock(node, files) {
+    if (!files.length || !this.requestMediaUpload) return;
+    this.controller.select(node.id);
+    try {
+      const upload = await this.requestMediaUpload({ node, files, textareaSizing: this.textareaSizing });
+      if (!upload) return;
+      const binding = await this.mediaBinder.assignUploaded(node.id, upload.assets);
+      const assigned = binding.assigned.length;
+      const uploaded = upload.assets.length;
+      if (!assigned) {
+        this.#mediaUploadNotice(t("editor.treeView.uploadedButNotCompatible", { 0: uploaded, 1: this.registry.get(node.type)?.name || node.type }), "error");
+      } else if (assigned < uploaded) {
+        this.#mediaUploadNotice(t("editor.treeView.uploadedAndAssignedPart", { 0: uploaded, 1: assigned }), upload.partialError ? "error" : "info");
+      } else {
+        this.#mediaUploadNotice(t("editor.treeView.uploadedAndAssigned", { 0: assigned }), upload.partialError ? "error" : "success");
+      }
+    } catch (error) {
+      this.controller.reportError(error?.message || String(error));
+    }
+  }
+
+  #mediaUploadNotice(message, type) {
+    this.events?.emit?.("ui:editor-notice", { message, type });
   }
 
   makeDropZone(parentId, index, isLast = false) {
@@ -1030,6 +1084,10 @@ export function canvasScrollDuration(speed) {
 function normalizeScrollSpeed(value) {
   const numeric = Number(value);
   return Number.isInteger(numeric) && numeric >= 0 && numeric <= 3 ? numeric : 2;
+}
+
+function dataTransferHasFiles(dataTransfer) {
+  return Array.from(dataTransfer?.types || []).includes("Files") || Boolean(dataTransfer?.files?.length);
 }
 
 function countSubtree(node) {

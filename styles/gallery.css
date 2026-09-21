@@ -99,6 +99,7 @@
 }
 .gallery-upload-status { min-height: 18px; color: var(--theme-text-muted, #7890aa); font-size: 9px; }
 .gallery-upload-status.error { color: var(--theme-danger, #e99aa6); }
+.gallery-upload-file-summary { overflow-wrap: anywhere; padding: 7px 8px; border: 1px solid var(--theme-border, #2d3b4d); border-radius: 6px; background: var(--theme-surface-inset, #0a1118); color: var(--theme-text-secondary, #aebdce); font-size: 9px; line-height: 1.45; }
 .gallery-upload-actions { display: flex; justify-content: flex-end; gap: 7px; }
 .gallery-upload-actions button { padding: 6px 9px; font-size: 9px; }
 @media (max-width: 760px) {

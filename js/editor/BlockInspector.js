@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.11.3";
+import { t } from "../i18n/index.js?v=1.11.4";
 import {
   applyRichTextFormat,
   insertRichText,
@@ -13,7 +13,7 @@ import {
   removeRichTextFormat,
   toggleRichTextFormat,
   wrapRichTextWithFormats
-} from "../core/RichText.js?v=1.11.3";
+} from "../core/RichText.js?v=1.11.4";
 import {
   DATE_TIME_FORMAT_OPTIONS,
   dateTimeFormatMetadata,
@@ -21,7 +21,7 @@ import {
   listAnchors,
   unixTimeToDateTimeLocal
 } from "../core/SemanticRichText.js?v=1.5.9";
-import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.3";
+import { SessionTextareaSizing } from "./SessionTextareaSizing.js?v=1.11.4";
 import { createDateTimePicker } from "./DateTimePicker.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { firstHeadingText } from "../project/ProjectGraphReconciler.js?v=1.5.9";
@@ -34,7 +34,7 @@ import {
   mapOrientation,
   normalizeMapZoom,
   resolveMapLink
-} from "../core/MapLinkResolver.js?v=1.11.3";
+} from "../core/MapLinkResolver.js?v=1.11.4";
 
 export class BlockInspector {
   constructor({ root, registry, controller, formulaTemplates = null, richTextContext = null, projectContext = null, emojiPreferences = null, events = null }) {

@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import { BlockTree } from "../js/core/BlockTree.js?v=1.5.9";
-import { migrateLegacyMediaProps } from "../js/core/DocumentMigrations.js?v=1.11.3";
+import { migrateLegacyMediaProps } from "../js/core/DocumentMigrations.js?v=1.11.4";
 import {
   hasSeparateInternalMediaSource,
   normalizeMediaSourcePatch,
   supportsExternalMediaUrl
-} from "../js/core/MediaSource.js?v=1.11.3";
-import { EditorController } from "../js/editor/EditorController.js?v=1.11.3";
-import { MediaAssetBinder } from "../js/editor/MediaAssetBinder.js?v=1.11.3";
-import { isGalleryMediaSourceGroupLocked } from "../js/editor/BlockInspector.js?v=1.11.3";
+} from "../js/core/MediaSource.js?v=1.11.4";
+import { EditorController } from "../js/editor/EditorController.js?v=1.11.4";
+import { MediaAssetBinder } from "../js/editor/MediaAssetBinder.js?v=1.11.4";
+import { isGalleryMediaSourceGroupLocked } from "../js/editor/BlockInspector.js?v=1.11.4";
 
 const mediaTypes = ["animation", "audio", "document", "photo", "video", "voice_note"];
 assert(mediaTypes.every(supportsExternalMediaUrl));

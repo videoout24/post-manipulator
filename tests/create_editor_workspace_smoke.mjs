@@ -63,6 +63,8 @@ assert.equal(composition.palette.metaRegistry, metaRegistry);
 assert.equal(composition.palette.projectContext, projectSession);
 assert.equal(composition.mediaBinder.gallery, gallery);
 assert.equal(composition.treeView.inlineInspector, composition.inlineProperties);
+assert.equal(composition.treeView.events, events);
+assert.equal(typeof composition.treeView.requestMediaUpload, "function");
 assert.equal(composition.assetPicker.binder, composition.mediaBinder);
 assert.equal(composition.workspace.treeView, composition.treeView);
 assert.equal(composition.workspace.assetPicker, composition.assetPicker);
