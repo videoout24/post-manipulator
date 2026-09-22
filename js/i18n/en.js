@@ -1536,6 +1536,7 @@ export const en = Object.freeze({
   "editor.aiDraftExchange.targetFieldMissing": "The response has no target field props.{0}",
   "editor.aiDraftExchange.invalidScope": "This AI request scope is not supported",
   "editor.aiDraftExchange.targetBlockStructureChanged": "The model changed the target block structure",
+  "editor.aiDraftExchange.targetDocumentStructureChanged": "The model changed the document structure",
   "editor.aiDraftExchange.versionConflictTitle": "Draft changed",
   "editor.aiDraftExchange.versionConflictMessage": "“{0}” changed after the AI request was sent. How should the response be applied?",
   "editor.aiDraftExchange.versionConflictApplyCurrent": "Apply to current version",

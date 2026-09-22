@@ -11,6 +11,7 @@ import { TelegramRenderer } from "../js/telegram/TelegramRenderer.js?v=1.5.9";
 const properties = createDefaultPropertyRegistry(createTelegramFormattingRegistry());
 const registry = new BlockRegistry(properties);
 registerTelegramCore(registry);
+assert.equal(registry.get("visibility_group").aiPrompt, false);
 const renderer = new TelegramRenderer(registry);
 const validator = new Validator(registry);
 
@@ -55,6 +56,7 @@ const treeView = fs.readFileSync(new URL("../js/editor/TreeView.js", import.meta
 const styles = fs.readFileSync(new URL("../styles/editor.css", import.meta.url), "utf8");
 assert.match(treeView, /makeVisibilityGroupToggle\(node\)/);
 assert.match(treeView, /updateNodeProperty\(node\.id, "included", !included\)/);
+assert.match(treeView, /if \(def\?\.aiPrompt !== false\) el\.append\(this\.makeAiPromptEditor\(node\)\)/);
 assert.match(styles, /\.block\.visibility-group-hidden[\s\S]*?border-style:\s*dashed/);
 
 console.log("visibility_group_smoke: OK");

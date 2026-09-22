@@ -1115,13 +1115,10 @@ export class PublicationView {
     cleanup.title = cleanupEnabled
       ? t("publications.publicationView.deletingServiceMessagesEnabled")
       : t("publications.publicationView.deletingServiceMessagesDisabled");
-    const targetAnchor = this.publications.find(record =>
-      Number(record.chatId) === Number(target.chatId) && Number(record.messageId) > 0
-    );
-    const open = button("👁", () => this.#openTarget(target, targetAnchor), "publication-target-open");
+    const open = button("👁", () => this.#openTarget(target), "publication-target-open");
     open.title = t("publications.publicationView.openTarget");
     open.setAttribute("aria-label", open.title);
-    open.disabled = !target.username && !targetAnchor;
+    open.disabled = !target.username && !target.chatId;
     actions.append(cleanup, open, button(t("publications.publicationView.check"), () => this.#refresh(target.chatId)));
     if (countTargetPublications(this.publications, target.chatId) === 0) {
       const remove = button("🗑", () => this.#requestTargetRemoval(card, target), "publication-target-remove danger-soft");
@@ -1253,11 +1250,10 @@ export class PublicationView {
     }
   }
 
-  #openTarget(target, anchor) {
+  #openTarget(target) {
     return this.navigation?.openChat?.({
       username: target?.username,
-      chatId: target?.chatId,
-      messageId: anchor?.messageId
+      chatId: target?.chatId
     });
   }
 

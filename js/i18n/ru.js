@@ -1536,6 +1536,7 @@ export const ru = Object.freeze({
   "editor.aiDraftExchange.targetFieldMissing": "В ответе отсутствует целевое поле props.{0}",
   "editor.aiDraftExchange.invalidScope": "Область AI-запроса не поддерживается",
   "editor.aiDraftExchange.targetBlockStructureChanged": "Нейросеть изменила структуру целевого блока",
+  "editor.aiDraftExchange.targetDocumentStructureChanged": "Нейросеть изменила структуру документа",
   "editor.aiDraftExchange.versionConflictTitle": "Черновик изменился",
   "editor.aiDraftExchange.versionConflictMessage": "После отправки AI-запроса «{0}» был изменён. Как применить ответ?",
   "editor.aiDraftExchange.versionConflictApplyCurrent": "Применить к текущему",

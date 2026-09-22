@@ -14,6 +14,8 @@ import { importTelegramRichMessage } from "../js/telegram/TelegramRichMessageImp
 
 const registry = new BlockRegistry(createDefaultPropertyRegistry(createTelegramFormattingRegistry()));
 registerTelegramCore(registry);
+assert.equal(registry.get("comessage").category, registry.get("visibility_group").category);
+assert.equal(registry.get("comessage").aiPrompt, false);
 const tree = new BlockTree({
   id: "root", type: "document", props: {},
   children: [{ id: "paragraph-1", type: "paragraph", props: { text: "Local version" }, children: [] }]
@@ -59,5 +61,7 @@ draftSession.draft.source = { kind: "publication", publicationId: "published-1" 
 assert.equal(controller.removeBlock(marker.id), false, "the marker stays locked while its publication exists");
 assert.equal(controller.updateNodeProperties(marker.id, { hashtag: "#comessage_changed" }), undefined,
   "the marker identity cannot be edited");
+controller.updateNodeAiPrompt(marker.id, "Rewrite the marker");
+assert.equal(marker.ai, undefined, "CoMessage must not accept a block AI prompt");
 
 console.log("comessage protocol smoke: OK");

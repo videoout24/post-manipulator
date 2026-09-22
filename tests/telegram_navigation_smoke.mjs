@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   buildBotLinks,
   buildBotStartLinks,
+  buildPrivateChatLinks,
   buildPrivateMessageCommentsLinks,
   buildPrivateMessageLinks,
   buildPublicMessageCommentsLinks,
@@ -18,6 +19,14 @@ assert.deepEqual(buildBotStartLinks('@publisher_bot', 'bind token'), {
   webUrl: 'https://t.me/publisher_bot?start=bind%20token'
 });
 assert.equal(privateChannelInternalId(-1001234567890), '1234567890');
+assert.deepEqual(buildPrivateChatLinks(-1001234567890), {
+  nativeUrl: 'https://t.me/c/1234567890',
+  webUrl: 'https://t.me/c/1234567890'
+});
+assert.deepEqual(buildPrivateChatLinks(-123456), {
+  nativeUrl: 'tg://openmessage?chat_id=123456',
+  webUrl: ''
+});
 assert.deepEqual(buildPrivateMessageLinks(-1001234567890, 42), {
   nativeUrl: 'tg://privatepost?channel=1234567890&post=42',
   webUrl: 'https://t.me/c/1234567890/42'

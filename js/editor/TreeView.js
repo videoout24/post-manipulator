@@ -243,7 +243,7 @@ export class TreeView {
         el.classList.add("canvas-block-collapsed");
         el.append(this.makeCollapsedSummary(node));
       } else {
-        el.append(this.makeAiPromptEditor(node));
+        if (def?.aiPrompt !== false) el.append(this.makeAiPromptEditor(node));
         const bindings = this.registry.propertyBindings(def);
         const needsVisualPreview = this.mediaBinder?.supports(node) || this.mediaBinder?.isCollection(node) || !bindings.length;
         if (needsVisualPreview) el.append(this.makePreviewElement(node, generation));

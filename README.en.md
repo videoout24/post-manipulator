@@ -116,10 +116,13 @@ separate navigation action. A future AI API integration can use the same package
 and importer without changing the draft format.
 
 An isolated response is applied only to the permitted block or field. If the
+response uses the whole-document prompt, it is applied to the source draft or
+Project post while preserving block identity and structure. If the
 source version changed after export, the application shows a conflict dialog
 instead of changing data automatically. The owner can apply the response to the
 current version, create a separate draft, or cancel without changing anything.
-A response for the entire message is still imported as a separate draft.
+Pending AI requests are limited to 32 records and 30 days; opening another
+request for the same document and scope supersedes the previous record.
 
 For Animation, Audio, Document, Photo, Video, and Voice note blocks, AI can
 return a direct public HTTPS URL that Telegram loads when sending the message.
@@ -322,7 +325,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.11.4
+https://videoout24.github.io/post-manipulator/?build=1.12.0
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -399,7 +402,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.11.4`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

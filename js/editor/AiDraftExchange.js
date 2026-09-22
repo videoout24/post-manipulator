@@ -8,6 +8,8 @@ export const AI_DRAFT_SCHEMA_VERSION = 1;
 const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 const MAX_IMPORT_BLOCKS = 500;
 const MAX_IMPORT_DEPTH = 32;
+const MAX_PENDING_REQUESTS = 32;
+const PENDING_REQUEST_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 
 export class AiDraftExchange {
   constructor({
@@ -44,9 +46,14 @@ export class AiDraftExchange {
     this.invalidResponseReporter = invalidResponseReporter;
     this.unsubscribers = [];
     this.currentScope = null;
+    this.pendingRequestCleanup = Promise.resolve(0);
   }
 
   start() {
+    this.pendingRequestCleanup = this.cleanupPendingRequests().catch(error => {
+      this.#error(error);
+      return 0;
+    });
     this.#listen(this.openButton, "click", () => this.open());
     this.#listen(this.closeButton, "click", () => this.dialog?.close?.());
     this.#listen(this.copyButton, "click", () => this.copy());
@@ -80,6 +87,7 @@ export class AiDraftExchange {
   }
 
   async buildRequest() {
+    await this.pendingRequestCleanup;
     await this.documents?.saveCurrentContext?.();
     const target = await this.#currentTarget();
     const fullAst = this.tree?.toJSON?.();
@@ -178,13 +186,13 @@ export class AiDraftExchange {
       if (original) ast = mergeMissingAiPrompts(ast, original);
       const target = payload.request?.target || {};
       const scope = payload.request?.scope || { kind: "message" };
-      if (["block", "field"].includes(scope.kind) && target.kind === "draft" && target.draftId) {
-        const result = await this.#importScopedDraft(payload, ast);
+      if (target.kind === "draft" && target.draftId) {
+        const result = await this.#importDraft(payload, ast);
         if (result) await this.#completeRequest(payload.request?.id);
         return result;
       }
-      if (["block", "field"].includes(scope.kind) && target.kind === "project-post" && target.projectId && target.postId) {
-        const result = await this.#importScopedProjectPost(payload, ast);
+      if (target.kind === "project-post" && target.projectId && target.postId) {
+        const result = await this.#importProjectPost(payload, ast);
         if (result) await this.#completeRequest(payload.request?.id);
         return result;
       }
@@ -242,12 +250,14 @@ export class AiDraftExchange {
     return { kind: "canvas", title: "" };
   }
 
-  async #importScopedDraft(payload, responseAst) {
+  async #importDraft(payload, responseAst) {
     const target = payload.request.target;
     const scope = payload.request.scope;
     const current = await this.drafts?.get?.(target.draftId);
     if (!current) throw new Error(t("editor.aiDraftExchange.sourceDraftNotFound"));
-    const patchedAst = applyScopedAiResponse(current.messageAst, responseAst, scope);
+    const patchedAst = scope.kind === "message"
+      ? applyMessageAiResponse(current.messageAst, responseAst)
+      : applyScopedAiResponse(current.messageAst, responseAst, scope);
     const sameVersion = Number(current.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
       const choice = await this.#resolveVersionConflict(current.title);
@@ -267,12 +277,14 @@ export class AiDraftExchange {
     return saved;
   }
 
-  async #importScopedProjectPost(payload, responseAst) {
+  async #importProjectPost(payload, responseAst) {
     const target = payload.request.target;
     const scope = payload.request.scope;
     const post = await this.projectSession?.store?.getPost?.(target.projectId, target.postId);
     if (!post) throw new Error(t("editor.aiDraftExchange.sourcePostNotFound"));
-    const patchedAst = applyScopedAiResponse(post.messageAst, responseAst, scope);
+    const patchedAst = scope.kind === "message"
+      ? applyMessageAiResponse(post.messageAst, responseAst)
+      : applyScopedAiResponse(post.messageAst, responseAst, scope);
     const sameVersion = Number(post.updatedAt || 0) === Number(target.version || 0);
     if (!sameVersion) {
       const choice = await this.#resolveVersionConflict(post.title);
@@ -332,6 +344,11 @@ export class AiDraftExchange {
   async #rememberRequestDefinition(payload) {
     const requestId = String(payload?.request?.id || "");
     if (!requestId || !this.db?.put) return;
+    await this.#pruneRequestDefinitions({
+      target: payload.request.target || {},
+      scope: payload.request.scope || { kind: "message" },
+      reserve: 1
+    });
     await this.db.put("runtime", aiRequestKey(requestId), {
       requestId,
       target: structuredClone(payload.request.target || {}),
@@ -349,6 +366,42 @@ export class AiDraftExchange {
   async #completeRequest(requestId) {
     const id = String(requestId || "");
     if (id && this.db?.delete) await this.db.delete("runtime", aiRequestKey(id));
+  }
+
+  async cleanupPendingRequests() {
+    return this.#pruneRequestDefinitions();
+  }
+
+  async #pruneRequestDefinitions({ target = null, scope = null, reserve = 0 } = {}) {
+    if (!this.db?.all) return 0;
+    const rows = (await this.db.all("runtime"))
+      .filter(row => String(row?.key || "").startsWith(AI_REQUEST_PREFIX));
+    if (!rows.length) return 0;
+
+    const remove = new Map();
+    const cutoff = Date.now() - PENDING_REQUEST_MAX_AGE;
+    const supersededSignature = target && scope ? requestSignature(target, scope) : "";
+    const newestBySignature = new Set();
+    const newestFirst = [...rows].sort((a, b) => requestCreatedAt(b) - requestCreatedAt(a));
+    for (const row of newestFirst) {
+      const createdAt = requestCreatedAt(row);
+      const signature = requestSignature(row?.value?.target, row?.value?.scope);
+      if (!createdAt || createdAt < cutoff || !signature || (supersededSignature && signature === supersededSignature)) {
+        remove.set(String(row.key), row);
+        continue;
+      }
+      if (newestBySignature.has(signature)) {
+        remove.set(String(row.key), row);
+        continue;
+      }
+      newestBySignature.add(signature);
+    }
+
+    const capacity = Math.max(0, MAX_PENDING_REQUESTS - Number(reserve || 0));
+    const survivors = newestFirst.filter(row => !remove.has(String(row.key)));
+    for (const row of survivors.slice(capacity)) remove.set(String(row.key), row);
+    await deleteRuntimeRows(this.db, [...remove.values()]);
+    return remove.size;
   }
 
   #listen(target, name, handler) {
@@ -531,6 +584,15 @@ export function applyScopedAiResponse(currentAst, responseAst, scope = {}) {
   return mergeMissingAiPrompts(current, currentAst);
 }
 
+export function applyMessageAiResponse(currentAst, responseAst) {
+  const current = validateAiAst(currentAst);
+  const response = validateAiAst(responseAst);
+  if (blockShape(current) !== blockShape(response)) {
+    throw new Error(t("editor.aiDraftExchange.targetDocumentStructureChanged"));
+  }
+  return mergeMissingAiPrompts(response, current);
+}
+
 export function isAiDraftResponseText(text) {
   const source = stripCodeFence(String(text || "")).trim();
   if (!source.includes(`"format"`) || !source.includes(AI_DRAFT_FORMAT)) return false;
@@ -662,4 +724,39 @@ function aiFileName(payload) {
   return `${title}-ai${requestId ? `-${requestId}` : ""}.json`;
 }
 
-function aiRequestKey(requestId) { return `ai.request:${String(requestId || "")}`; }
+const AI_REQUEST_PREFIX = "ai.request:";
+function aiRequestKey(requestId) { return `${AI_REQUEST_PREFIX}${String(requestId || "")}`; }
+
+function requestCreatedAt(row) {
+  const value = Number(row?.value?.createdAt || 0);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function requestSignature(target = {}, scope = {}) {
+  const targetKey = target?.kind === "draft" && target.draftId
+    ? `draft:${target.draftId}`
+    : target?.kind === "project-post" && target.projectId && target.postId
+      ? `project-post:${target.projectId}:${target.postId}`
+      : target?.kind === "canvas"
+        ? "canvas"
+        : "";
+  if (!targetKey) return "";
+  const scopeKey = scope?.kind === "field"
+    ? `field:${scope.nodeId || ""}:${scope.field || ""}`
+    : scope?.kind === "block"
+      ? `block:${scope.nodeId || ""}`
+      : scope?.kind === "message"
+        ? "message"
+        : "";
+  return scopeKey ? `${targetKey}|${scopeKey}` : "";
+}
+
+async function deleteRuntimeRows(db, rows) {
+  const entries = rows.map(row => ({ store: "runtime", key: row.key }));
+  if (!entries.length) return;
+  if (db.deleteMany) {
+    await db.deleteMany(entries);
+    return;
+  }
+  for (const entry of entries) await db.delete?.(entry.store, entry.key);
+}

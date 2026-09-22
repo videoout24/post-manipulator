@@ -207,9 +207,52 @@ export class DraftStore {
   async delete(id) {
     if (!id) return;
     await this.assertCanDelete(id);
-    await this.db?.delete?.("drafts", id);
+    const runtimeRows = await this.db?.all?.("runtime") || [];
+    const entries = [
+      { store: "drafts", key: id },
+      ...draftAiRequestEntries(runtimeRows, id)
+    ];
+    await deleteDatabaseEntries(this.db, entries);
     this.events?.emit?.("draft:changed", { reason: "deleted", draftId: id });
   }
+
+  async cleanupOrphanedAiRequests() {
+    if (!this.db?.all) return 0;
+    const [runtimeRows, draftRows] = await Promise.all([
+      this.db.all("runtime"),
+      this.db.all("drafts")
+    ]);
+    const draftIds = new Set(draftRows.map(row => String(row.key)));
+    const entries = runtimeRows
+      .filter(isDraftAiRequestRow)
+      .filter(row => !draftIds.has(String(row.value.target.draftId)))
+      .map(row => ({ store: "runtime", key: row.key }));
+    await deleteDatabaseEntries(this.db, entries);
+    return entries.length;
+  }
+}
+
+function draftAiRequestEntries(rows, draftId) {
+  const id = String(draftId);
+  return rows
+    .filter(isDraftAiRequestRow)
+    .filter(row => String(row.value.target.draftId) === id)
+    .map(row => ({ store: "runtime", key: row.key }));
+}
+
+function isDraftAiRequestRow(row) {
+  return String(row?.key || "").startsWith("ai.request:")
+    && row?.value?.target?.kind === "draft"
+    && String(row.value.target.draftId || "").length > 0;
+}
+
+async function deleteDatabaseEntries(db, entries) {
+  if (!entries.length || !db) return;
+  if (db.deleteMany) {
+    await db.deleteMany(entries);
+    return;
+  }
+  for (const { store, key } of entries) await db.delete?.(store, key);
 }
 
 function normalizeDraft(value, fallbackId = "") {

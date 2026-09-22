@@ -246,7 +246,7 @@ export class EditorController {
 
   updateNodeAiPrompt(nodeId, value) {
     const node = this.tree.find(nodeId);
-    if (!node) return;
+    if (!node || this.registry.get(node.type)?.aiPrompt === false) return;
     const prompt = String(value || "");
     const guarded = this.mutationError("property", { nodeId, node, key: "ai.prompt", value: prompt });
     if (guarded) {
@@ -263,7 +263,7 @@ export class EditorController {
 
   updateNodeAiField(nodeId, value) {
     const node = this.tree.find(nodeId);
-    if (!node) return;
+    if (!node || this.registry.get(node.type)?.aiPrompt === false) return;
     const field = String(value || "").trim();
     const guarded = this.mutationError("property", { nodeId, node, key: "ai.field", value: field });
     if (guarded) {

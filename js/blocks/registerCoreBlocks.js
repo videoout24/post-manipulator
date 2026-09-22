@@ -68,8 +68,9 @@ export function registerTelegramCore(registry) {
       prop("hashtag.value", "hashtag", { required: true })
     ]),
     {
-      type: "comessage", name: t("blocks.registerCoreBlocks.comessage"), category: t("blocks.registerCoreBlocks.navigation"),
+      type: "comessage", name: t("blocks.registerCoreBlocks.comessage"), category: t("blocks.category.structure"),
       paletteAliases: ["collaboration", t("blocks.registerCoreBlocks.comessageAlias"), "#comessage_"],
+      aiPrompt: false,
       constraints: { allowedParents: ["document"] },
       accepts: { properties: [prop("comessage.value", "hashtag", { required: true, readOnly: true })] },
       children: { allowed: false }
@@ -169,6 +170,7 @@ export function registerTelegramCore(registry) {
     },
     {
       type:"visibility_group", name:t("blocks.registerCoreBlocks.visibilityGroup"), category:t("blocks.category.structure"),
+      aiPrompt:false,
       accepts:{properties:[
         prop("visibility.title", "title"),
         prop("visibility.included", "included")

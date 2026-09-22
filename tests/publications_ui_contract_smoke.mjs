@@ -57,6 +57,13 @@ assert.match(view, /publicationMatchesSearch\(record, this\.searchQuery\)/);
 assert.match(view, /publications\.publicationView\.searchDraftsAndPostTitles/);
 assert.match(view, /const open = button\("👁"/);
 assert.match(view, /actions\.append\(cleanup, open, button\(t\("publications\.publicationView\.check"\)/);
+assert.match(view, /#openTarget\(target\)[\s\S]*?openChat\?\.\(\{[\s\S]*?chatId: target\?\.chatId[\s\S]*?\}\)/);
+assert.doesNotMatch(view, /#openTarget\(target,\s*targetAnchor\)|messageId:\s*anchor\?\.messageId/,
+  "left-panel target navigation must not depend on a publication post");
+assert.match(view, /#openMessage\(record\)[\s\S]*?openPublicMessage\?\.\(\{ username: record\.target\.username, messageId: record\.messageId \}\)/,
+  "publication navigation must keep opening the concrete public post");
+assert.match(view, /openPrivateMessage\?\.\(\{ chatId: record\.chatId, messageId: record\.messageId \}\)/,
+  "publication navigation must keep opening the concrete private post");
 assert.match(view, /publishedProjectOptions\(this\.publications, this\.selectedTargetId\)/);
 assert.match(view, /scroller\.scrollLeft \+= event\.deltaY/);
 assert.match(view, /\{ passive: false \}/);

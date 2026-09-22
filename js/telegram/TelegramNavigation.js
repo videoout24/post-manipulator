@@ -63,10 +63,10 @@ export class TelegramNavigation {
     return this.#open(links);
   }
 
-  openChat({ username = "", chatId, messageId } = {}) {
+  openChat({ username = "", chatId } = {}) {
     return username
       ? this.#open(buildPublicChatLinks(username))
-      : this.openPrivateMessage({ chatId, messageId });
+      : this.#open(buildPrivateChatLinks(chatId));
   }
 
   openBotStart({ botUsername = this.bot?.username, token = "" } = {}) {
@@ -158,6 +158,18 @@ export function buildPublicChatLinks(username) {
   };
 }
 
+export function buildPrivateChatLinks(chatId) {
+  const channel = privateChannelInternalId(chatId);
+  if (channel) {
+    const url = `https://t.me/c/${channel}`;
+    return { nativeUrl: url, webUrl: url };
+  }
+  const group = privateGroupInternalId(chatId);
+  return group
+    ? { nativeUrl: `tg://openmessage?chat_id=${group}`, webUrl: "" }
+    : { nativeUrl: "", webUrl: "" };
+}
+
 export function buildBotStartLinks(botUsername, token) {
   const username = normalizeUsername(botUsername);
   const payload = String(token || "").trim();
@@ -202,6 +214,11 @@ export function privateChannelInternalId(chatId) {
   const raw = String(chatId ?? "").trim();
   if (!/^-100\d+$/.test(raw)) return "";
   return raw.slice(4);
+}
+
+function privateGroupInternalId(chatId) {
+  const raw = String(chatId ?? "").trim();
+  return /^-\d+$/.test(raw) && !raw.startsWith("-100") ? raw.slice(1) : "";
 }
 
 function normalizeUsername(value) {

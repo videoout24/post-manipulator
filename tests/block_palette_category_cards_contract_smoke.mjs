@@ -25,6 +25,7 @@ for (const type of ["divider", "table", "details"]) {
 }
 assert.match(blocks, /type:\s*"visibility_group"[\s\S]{0,180}category:\s*t\("blocks\.category\.structure"\)/);
 assert.match(blocks, /type:\s*"visibility_group"[\s\S]{0,300}children:\s*\{\s*allowed:\s*true\s*\}/);
+assert.match(blocks, /type:\s*"comessage"[\s\S]{0,180}category:\s*t\("blocks\.category\.structure"\)/);
 assert.match(blocks, /semantic\("anchor_link", t\("blocks\.registerCoreBlocks\.anchorLink"\),[\s\S]*?\{ category: t\("blocks\.registerCoreBlocks\.navigation"\) \}\)/);
 assert.match(blocks, /type:\s*"button_row", name:\s*t\("blocks\.registerCoreBlocks\.buttonRow"\)/);
 assert.match(blocks, /children:\s*\{ allowed: true, types: \["url_button"\], minItems: 1, maxItems: 8 \}/);

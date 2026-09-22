@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import {
   AI_DRAFT_FORMAT,
   AiDraftExchange,
+  applyMessageAiResponse,
   applyScopedAiResponse,
   buildAiDraftRequest,
   mergeMissingAiPrompts,
@@ -222,6 +223,15 @@ delete missingPrompt.children[0].ai;
 const restored = mergeMissingAiPrompts(missingPrompt, ast);
 assert.deepEqual(restored.children[0].ai, ast.children[0].ai, "prompt and selected field survive a model omission");
 
+const wholeResponse = structuredClone(ast);
+wholeResponse.children[0].props.text = "Whole-document title";
+const wholeApplied = applyMessageAiResponse(ast, wholeResponse);
+assert.equal(wholeApplied.children[0].props.text, "Whole-document title");
+const structurallyChangedResponse = structuredClone(wholeResponse);
+structurallyChangedResponse.children.pop();
+assert.throws(() => applyMessageAiResponse(ast, structurallyChangedResponse), /структур|structure/i,
+  "a whole-document AI response must not add, remove, reorder, or retype blocks");
+
 assert.equal(isJsonDocument({ document: { file_name: "answer.json" } }), true);
 assert.equal(isJsonDocument({ document: { file_name: "payload.bin", mime_type: "application/json" } }), true);
 assert.equal(isJsonDocument({ document: { file_name: "notes.pdf", mime_type: "application/pdf" } }), false,
@@ -231,7 +241,14 @@ const runtimeRows = new Map();
 const db = {
   async get(store, key, fallback = null) { return runtimeRows.has(`${store}:${key}`) ? runtimeRows.get(`${store}:${key}`) : fallback; },
   async put(store, key, value) { runtimeRows.set(`${store}:${key}`, structuredClone(value)); },
-  async delete(store, key) { runtimeRows.delete(`${store}:${key}`); }
+  async delete(store, key) { runtimeRows.delete(`${store}:${key}`); },
+  async deleteMany(entries) { for (const { store, key } of entries) runtimeRows.delete(`${store}:${key}`); },
+  async all(store) {
+    const prefix = `${store}:`;
+    return [...runtimeRows]
+      .filter(([key]) => key.startsWith(prefix))
+      .map(([key, value]) => ({ key: key.slice(prefix.length), value: structuredClone(value) }));
+  }
 };
 let storedAst = structuredClone(ast);
 let botOpenCalls = 0;
@@ -294,6 +311,13 @@ assert.equal(manualPayload.request.scope.kind, "field");
 assert.equal(manualPayload.request.contextIncluded, "block");
 assert.equal(manualPayload.messageAst.children.length, 1,
   "Block AI JSON must stay isolated even when the card's full-context checkbox is enabled");
+wholeDraftPayload.messageAst.children[0].props.text = "Whole-draft title";
+const wholeDraftImported = await exchange.importText(JSON.stringify(wholeDraftPayload));
+assert.ok(wholeDraftImported);
+assert.equal(storedAst.children[0].props.text, "Whole-draft title",
+  "a whole-draft AI response must update its source draft");
+assert.equal(createdDrafts.length, 0,
+  "a whole-draft AI response must not create a separate AI draft without a version conflict");
 manualPayload.messageAst.children[0].props.text = "Imported title";
 const imported = await exchange.importText(JSON.stringify(manualPayload));
 assert.ok(imported);
@@ -329,6 +353,106 @@ await exchange.importText(JSON.stringify(manualPayload));
 assert.equal(createdDrafts.length, 1, "a conflict fork is created only after that explicit choice");
 assert.equal(createdDrafts[0].messageAst.children[0].props.text, "Forked title");
 assert.equal(createdDrafts[0].source.importedVia, "manual");
+
+let projectAst = structuredClone(ast);
+const projectPost = {
+  id: "post-1",
+  title: "Project post",
+  messageAst: projectAst,
+  updatedAt: 12,
+  ai: { includeFullContext: true, documentPrompt: "Rewrite the whole post." }
+};
+let openedProjectPost = null;
+const projectSession = {
+  activeProjectId: "project-1",
+  activePostId: projectPost.id,
+  isProjectActive: () => true,
+  snapshot() {
+    return {
+      activeProjectId: this.activeProjectId,
+      activePostId: this.activePostId,
+      project: { id: this.activeProjectId, title: "Project", posts: [{ ...projectPost, messageAst: structuredClone(projectAst) }] }
+    };
+  },
+  store: {
+    async getPost(projectId, postId) {
+      return projectId === "project-1" && postId === projectPost.id
+        ? { ...projectPost, messageAst: structuredClone(projectAst) }
+        : null;
+    },
+    async savePostAst(projectId, postId, nextAst) {
+      assert.equal(projectId, "project-1");
+      assert.equal(postId, projectPost.id);
+      projectAst = structuredClone(nextAst);
+    }
+  }
+};
+const projectExchange = new AiDraftExchange({
+  db,
+  input: responseInput,
+  registry,
+  tree: { root: projectAst, toJSON: () => structuredClone(projectAst) },
+  draftSession: { isActive: () => false },
+  projectSession,
+  drafts,
+  documents: {
+    async saveCurrentContext() {},
+    async openProjectPost(projectId, postId) { openedProjectPost = { projectId, postId }; }
+  },
+  notifications: { show() {} }
+});
+await projectExchange.open();
+const wholePostPayload = JSON.parse(responseInput.value);
+wholePostPayload.messageAst.children[0].props.text = "Whole-project-post title";
+const wholePostImported = await projectExchange.importText(JSON.stringify(wholePostPayload));
+assert.ok(wholePostImported);
+assert.equal(projectAst.children[0].props.text, "Whole-project-post title",
+  "a whole-post AI response must update its source Project post");
+assert.deepEqual(openedProjectPost, { projectId: "project-1", postId: "post-1" });
+assert.equal(createdDrafts.length, 1,
+  "updating a whole Project post must not create another AI draft");
+
+const pruningExchange = new AiDraftExchange({
+  db,
+  input: responseInput,
+  registry,
+  tree: { root: storedAst, toJSON: () => structuredClone(storedAst) },
+  draftSession,
+  drafts,
+  documents: { async saveCurrentContext() {} },
+  notifications: { show() {} }
+});
+await pruningExchange.open({ nodeId: "heading-1" });
+const supersededRequestId = JSON.parse(responseInput.value).request.id;
+await pruningExchange.open({ nodeId: "heading-1" });
+const currentRequestId = JSON.parse(responseInput.value).request.id;
+assert.equal(runtimeRows.has(`runtime:ai.request:${supersededRequestId}`), false,
+  "opening the same AI scope again must discard its superseded pending request");
+assert.equal(runtimeRows.has(`runtime:ai.request:${currentRequestId}`), true);
+
+runtimeRows.set("runtime:ai.request:expired", {
+  requestId: "expired",
+  target: { kind: "draft", draftId: "another-draft" },
+  scope: { kind: "message" },
+  createdAt: Date.now() - 31 * 24 * 60 * 60 * 1000
+});
+await pruningExchange.cleanupPendingRequests();
+assert.equal(runtimeRows.has("runtime:ai.request:expired"), false,
+  "pending AI requests older than the retention period must be removed");
+for (let index = 0; index < 40; index += 1) {
+  runtimeRows.set(`runtime:ai.request:bounded-${index}`, {
+    requestId: `bounded-${index}`,
+    target: { kind: "draft", draftId: `bounded-draft-${index}` },
+    scope: { kind: "message" },
+    createdAt: Date.now() + index
+  });
+}
+await pruningExchange.cleanupPendingRequests();
+assert.equal(
+  [...runtimeRows.keys()].filter(key => key.startsWith("runtime:ai.request:")).length,
+  32,
+  "pending AI request storage must remain bounded"
+);
 
 const [html, editorCss, shellSource] = await Promise.all([
   readFile(new URL("../index.html", import.meta.url), "utf8"),
