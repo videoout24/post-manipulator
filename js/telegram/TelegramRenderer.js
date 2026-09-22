@@ -85,6 +85,11 @@ export class TelegramRenderer {
       case "text_link":
       case "anchor_link":
         return { type: "paragraph", text: buildSemanticRichText(node.type, p, options.tree) };
+      case "comessage":
+        return {
+          type: "paragraph",
+          text: { type: "hashtag", text: String(p.hashtag || ""), hashtag: String(p.hashtag || "") }
+        };
       case "list":
         return { type: "list", items: this.#renderListItems(node) };
       case "block_quotation": {

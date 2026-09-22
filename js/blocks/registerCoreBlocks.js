@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.2";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.9.5";
 
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });
@@ -67,6 +67,13 @@ export function registerTelegramCore(registry) {
     semantic("hashtag", t("blocks.registerCoreBlocks.hashtag"), [
       prop("hashtag.value", "hashtag", { required: true })
     ]),
+    {
+      type: "comessage", name: t("blocks.registerCoreBlocks.comessage"), category: t("blocks.registerCoreBlocks.navigation"),
+      paletteAliases: ["collaboration", t("blocks.registerCoreBlocks.comessageAlias"), "#comessage_"],
+      constraints: { allowedParents: ["document"] },
+      accepts: { properties: [prop("comessage.value", "hashtag", { required: true, readOnly: true })] },
+      children: { allowed: false }
+    },
     semantic("text_link", t("blocks.registerCoreBlocks.textLink"), [
       prop("semantic.text", "text", { default: t("blocks.registerCoreBlocks.more") }),
       prop("link.url", "url", { required: true })
@@ -181,8 +188,10 @@ export function registerTelegramCore(registry) {
       children:{allowed:false}
     },
     {
-      type:"animation", name:t("blocks.registerCoreBlocks.animation"), category:t("blocks.category.media"),
+      type:"animation", name:t("blocks.registerCoreBlocks.animation"), category:t("blocks.category.media"), gallery:{acceptedTypes:["animation"]},
       accepts:{properties:[
+        prop("media.galleryId", "galleryId"),
+        prop("media.fileId", "fileId", { alternativeKey:"url", mediaKind:"animation" }),
         prop("media.animation", "url", { required:true, mediaKind:"animation" }),
         prop("media.hasSpoiler", "hasSpoiler", { scope:"received/media" }),
         rich("content.caption", "caption", FORMAT_GROUPS.full),

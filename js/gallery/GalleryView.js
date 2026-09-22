@@ -1,5 +1,5 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.11.4";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
 import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.4";
@@ -9,7 +9,8 @@ const TYPE_META = Object.freeze({
   video: { label: t("app.appNotifications.video"), icon: "▶" },
   audio: { label: t("app.appNotifications.audio"), icon: "♪" },
   voice: { label: t("editor.editorAssetPicker.voice"), icon: "◖" },
-  document: { label: t("editor.editorAssetPicker.files"), icon: "▤" }
+  document: { label: t("editor.editorAssetPicker.files"), icon: "▤" },
+  animation: { label: t("blocks.registerCoreBlocks.animation"), icon: "◫" }
 });
 
 export class GalleryView {

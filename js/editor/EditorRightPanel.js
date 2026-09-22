@@ -1,8 +1,8 @@
-import { t } from "../i18n/index.js?v=1.10.0";
-import { createDraftListView } from "./DraftListView.js?v=1.11.4";
+import { t } from "../i18n/index.js?v=1.12.0";
+import { createDraftListView } from "./DraftListView.js?v=1.12.0";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.11.4";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
-import { hasUnappliedDraftPublicationChanges } from "./DraftStore.js?v=1.11.4";
+import { hasUnappliedDraftPublicationChanges } from "./DraftStore.js?v=1.12.0";
 import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
 
 export class EditorRightPanel {
@@ -179,6 +179,7 @@ export class EditorRightPanel {
         draft,
         publicationById.get(String(draft.source?.publicationId || "")) || null
       ),
+      isCollaborative: draft => Boolean(publicationById.get(String(draft.source?.publicationId || ""))?.collaboration?.id),
       onCancelPublicationEdit: draft => this.#cancelPublicationEdit(draft),
       onCloseDraft: draft => this.#closeOrdinaryDraft(draft),
       onOpenAi: (draft, documentPrompt) => this.#openDraftAi(draft, documentPrompt),
@@ -267,13 +268,32 @@ export class EditorRightPanel {
   async #applyDraftChanges(draft) {
     return this.#run(async () => {
       await this.documents?.saveCurrentContext?.();
-      const record = await this.onApplyDraftChanges?.(draft.id);
+      let record;
+      try {
+        record = await this.onApplyDraftChanges?.(draft.id);
+      } catch (error) {
+        if (error?.code !== "COLLABORATIVE_PUBLICATION_MISSING") throw error;
+        const decision = await this.missingPublicationPrompt?.({
+          title: t("editor.editorRightPanel.collaborativePublicationMissingTitle"),
+          message: t("editor.editorRightPanel.collaborativePublicationMissingMessage"),
+          choices: [
+            { value: "restore", label: t("editor.editorRightPanel.restoreCollaborativePublication"), className: "primary" }
+          ]
+        });
+        if (decision !== "restore") return null;
+        record = await this.publications?.restoreCollaborativePublication?.(draft.id);
+      }
       if (!record) return record;
       if (!draft.source?.retained) {
         const discarded = await this.#finishPublicationEdit(draft, "publication-edit-applied");
         if (!discarded) throw new Error(t("editor.editorRightPanel.publicationUpdatedButFailedToClearEditor"));
       }
-      this.onToast?.({ message: t("editor.editorRightPanel.publicationUpdated", { 0: record.source?.title || draft.title }), type: "success" });
+      this.onToast?.({
+        message: record.collaboration?.id
+          ? t("editor.editorRightPanel.collaborativePublicationSynced", { 0: record.source?.title || draft.title })
+          : t("editor.editorRightPanel.publicationUpdated", { 0: record.source?.title || draft.title }),
+        type: "success"
+      });
       return record;
     });
   }

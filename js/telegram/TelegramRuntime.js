@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.10.0";
-import { TelegramApiError } from "./TelegramClient.js?v=1.8.8";
+import { t } from "../i18n/index.js?v=1.12.0";
+import { TelegramApiError } from "./TelegramClient.js?v=1.12.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
 const OFFSET_KEY = "telegramOffset";
@@ -13,7 +13,7 @@ const DEFAULT_MEDIA_SETTINGS = Object.freeze({
 });
 
 export class TelegramRuntime {
-  constructor({ db, events, client, ownerBinding, previewChannelBinding, publicationTargets = null, publications = null, serviceMessages = null, botIdentity }) {
+  constructor({ db, events, client, ownerBinding, previewChannelBinding, publicationTargets = null, publications = null, collaboration = null, serviceMessages = null, botIdentity }) {
     this.db = db;
     this.events = events;
     this.client = client;
@@ -21,6 +21,7 @@ export class TelegramRuntime {
     this.previewChannelBinding = previewChannelBinding;
     this.publicationTargets = publicationTargets;
     this.publications = publications;
+    this.collaboration = collaboration;
     this.serviceMessages = serviceMessages;
     this.botIdentity = botIdentity;
     this.running = false;
@@ -117,7 +118,7 @@ export class TelegramRuntime {
           offset: offset || undefined,
           limit: 50,
           timeout: 25,
-          allowed_updates: ["message", "my_chat_member", "channel_post", "message_reaction", "message_reaction_count"]
+          allowed_updates: ["message", "my_chat_member", "channel_post", "edited_channel_post", "message_reaction", "message_reaction_count"]
         }, { signal });
         failures = 0;
 
@@ -164,9 +165,10 @@ export class TelegramRuntime {
         await this.publicationTargets?.handleMyChatMember?.(update);
         return;
       }
-      if (update.channel_post) {
-        await this.previewChannelBinding.handleChannelPost(update);
+      if (update.channel_post || update.edited_channel_post) {
+        if (update.channel_post) await this.previewChannelBinding.handleChannelPost(update);
         await this.publicationTargets?.handleMessage?.(update);
+        await this.collaboration?.handleUpdate?.(update);
         return;
       }
 

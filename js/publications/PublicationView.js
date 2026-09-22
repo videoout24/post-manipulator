@@ -1,9 +1,10 @@
-import { getLocale, t } from "../i18n/index.js?v=1.9.5";
+import { getLocale, t } from "../i18n/index.js?v=1.12.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.9.5";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.12.0";
 import { getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
+import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
 
 export class PublicationView {
   constructor({
@@ -253,13 +254,22 @@ export class PublicationView {
     const open = button("👁", () => this.#openMessage(record), "publication-record-open");
     open.title = scheduled ? t("publications.publicationView.postNotYetPublished") : t("publications.publicationView.openMessageInTelegram");
     open.disabled = scheduled;
+    const sync = record.collaboration?.id
+      ? button("⟳", () => this.#syncCollaborativePublication(record, sync), "publication-record-sync")
+      : null;
+    if (sync) {
+      sync.title = t("publications.publicationView.syncCollaborativePublication");
+      sync.setAttribute("aria-label", sync.title);
+      sync.disabled = scheduled;
+    }
     const remove = button("🗑", () => this.#requestPublicationRemoval(card, record, remove), "publication-record-delete");
     remove.title = scheduled
       ? t("project.projectPostCard.cancelTheScheduledPublication")
       : isPublicationDeleteAvailable(record)
       ? (projectPost ? t("publications.publicationView.deleteProjectPostFromTelegramAndReturn") : t("publications.publicationView.deleteMessageFromTelegram"))
       : t("publications.publicationView.checkPublicationAndIfNecessaryRemoveLocal");
-    tools.append(edit, link, pin, open, remove);
+    if (sync) tools.append(edit, link, pin, open, sync, remove);
+    else tools.append(edit, link, pin, open, remove);
     head.append(identity, tools);
     const reactionRow = el("div", "publication-reaction-row");
     const stats = el("div", "publication-record-stats");
@@ -341,6 +351,9 @@ export class PublicationView {
     const open = button(t("publications.publicationView.openInTelegram"), () => this.#openMessage(record), "primary");
     open.disabled = Boolean(record.scheduledAt);
     actions.append(edit, open);
+    if (record.collaboration?.id && !record.scheduledAt) {
+      actions.append(button(t("publications.publicationView.sync"), event => this.#syncCollaborativePublication(record, event.currentTarget)));
+    }
     if (record.scheduledAt) {
       actions.append(button(t("project.projectPostCard.cancelTheScheduling"), () => this.#cancelScheduledPublication(record)));
     }
@@ -354,6 +367,7 @@ export class PublicationView {
     appendDetailData(data, t("gallery.galleryView.type2"), record.target?.type === "group" ? t("publications.publicationView.group") : t("publications.publicationView.channel"));
     appendDetailData(data, record.scheduledAt ? t("publications.publicationView.scheduled2") : t("publications.publicationView.published2"), formatPublicationDate(record.scheduledAt || record.publishedAt));
     appendDetailData(data, t("publications.publicationView.telegramId"), record.messageId ? String(record.messageId) : "—");
+    if (record.collaboration?.id) appendDetailData(data, "CoMessage", record.collaboration.id);
     appendDetailData(data, t("editor.editorWorkspaceView.blocks"), String(countAstBlocks(record.messageAst)));
     appendDetailData(data, t("publications.publicationView.reactions"), formatCount(record.reactionCount || reactionTotal(record.reactions)));
     appendDetailData(data, t("publications.publicationView.comments"), record.commentsEnabled ? formatCount(record.commentCount) : t("publications.publicationView.disabled"));
@@ -1076,6 +1090,13 @@ export class PublicationView {
       comments.title = target.commentsEnabled ? t("publications.publicationView.commentGroupConnected") : t("publications.publicationView.commentGroupNotConnected");
       comments.setAttribute("aria-label", comments.title);
       metrics.append(comments);
+      if (target.visibility === "private" && target.collaboration?.enabled) {
+        const bots = target.collaboration.selectedBotIds?.length || 0;
+        const coworking = el("span", "publication-target-metric publication-target-collaboration", `🤝 ${bots}`);
+        coworking.title = t("publications.publicationView.collaborationBots", { 0: bots });
+        coworking.setAttribute("aria-label", coworking.title);
+        metrics.append(coworking);
+      }
       if (target.commentsEnabled) {
         const discussion = el("span", "publication-target-discussion", `↳ ${target.linkedDiscussionTitle || t("publications.publicationView.discussionGroup")}`);
         discussion.title = t("publications.publicationView.linkedDiscussionGroup");
@@ -1128,8 +1149,108 @@ export class PublicationView {
   }
 
   async #refresh(chatId) {
-    try { await this.telegramCore.publications.refreshTarget(chatId); }
+    try {
+      const target = await this.telegramCore.publications.refreshTarget(chatId);
+      if (target?.type !== "channel" || target.visibility !== "private") return target;
+      const inspection = await this.telegramCore.publications.inspectCollaboratorBots(chatId);
+      if (!inspection.bots.length) {
+        if (target.collaboration?.enabled) await this.telegramCore.publications.setCollaboratorBots(chatId, []);
+        this.notifications?.show?.({ message: t("publications.publicationView.noOtherAdminBots"), type: "info" });
+        return target;
+      }
+      return this.#showCollaboratorDialog(inspection);
+    }
     catch (error) { this.notifications?.show?.({ message: t("publications.publicationView.check2", { 0: error?.message || error }), type: "error" }); }
+  }
+
+  #showCollaboratorDialog(inspection) {
+    return new Promise(resolve => {
+      const dialog = document.createElement("dialog");
+      dialog.className = "publication-draft-dialog publication-collaboration-dialog";
+      const form = document.createElement("form");
+      form.method = "dialog";
+      const head = el("div", "dialog-head");
+      head.append(
+        el("strong", "", t("publications.publicationView.coworkingMode")),
+        button("×", () => dialog.close("cancel"))
+      );
+      const body = el("div", "publication-draft-dialog-body");
+      body.append(el("p", "", t("publications.publicationView.coworkingModeHint", { 0: inspection.target?.title || "Telegram" })));
+      const selected = new Set((inspection.selectedBotIds || []).map(Number));
+      const list = el("div", "publication-collaboration-bots");
+      for (const bot of inspection.bots) {
+        const row = el("label", "publication-collaboration-bot");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = String(bot.id);
+        input.checked = selected.has(Number(bot.id));
+        const name = bot.username ? `@${bot.username}` : [bot.firstName, bot.lastName].filter(Boolean).join(" ") || String(bot.id);
+        const copy = el("span", "");
+        copy.append(el("strong", "", name), el("small", "", t("publications.publicationView.acceptUpdatesFromBot")));
+        row.append(input, copy);
+        list.append(row);
+      }
+      const actions = el("div", "publication-dialog-actions");
+      const cancel = button(t("core.cardDeleteConfirmation.cancel"), () => dialog.close("cancel"));
+      const save = button(t("core.darkDialog.save"), async event => {
+        event.preventDefault();
+        save.disabled = cancel.disabled = true;
+        try {
+          const ids = [...list.querySelectorAll('input[type="checkbox"]:checked')].map(input => Number(input.value));
+          const target = await this.telegramCore.publications.setCollaboratorBots(inspection.target.chatId, ids);
+          this.notifications?.show?.({
+            message: ids.length
+              ? t("publications.publicationView.coworkingEnabled", { 0: ids.length })
+              : t("publications.publicationView.coworkingDisabled"),
+            type: "success"
+          });
+          dialog.close("saved");
+          resolve(target);
+        } catch (error) {
+          save.disabled = cancel.disabled = false;
+          this.notifications?.show?.({ message: t("publications.publicationView.check2", { 0: error?.message || error }), type: "error" });
+        }
+      }, "primary");
+      actions.append(cancel, save);
+      body.append(list, actions);
+      form.append(head, body);
+      dialog.append(form);
+      document.body.append(dialog);
+      dialog.addEventListener("close", () => {
+        if (dialog.returnValue !== "saved") resolve(null);
+        dialog.remove();
+      }, { once: true });
+      dialog.showModal();
+    });
+  }
+
+  async #syncCollaborativePublication(record, control = null) {
+    if (!record?.collaboration?.id || record.scheduledAt) return false;
+    if (control) control.disabled = true;
+    try {
+      await this.documents?.saveCurrentContext?.();
+      const draft = await this.telegramCore.publications.createEditDraft(record.id);
+      let updated;
+      try {
+        updated = await this.telegramCore.publications.applyDraftChanges(draft.id);
+      } catch (error) {
+        if (error?.code !== "COLLABORATIVE_PUBLICATION_MISSING") throw error;
+        const decision = await chooseDarkDialog({
+          title: t("editor.editorRightPanel.collaborativePublicationMissingTitle"),
+          message: t("editor.editorRightPanel.collaborativePublicationMissingMessage"),
+          choices: [{ value: "restore", label: t("editor.editorRightPanel.restoreCollaborativePublication"), className: "primary" }]
+        });
+        if (decision !== "restore") return false;
+        updated = await this.telegramCore.publications.restoreCollaborativePublication(draft.id);
+      }
+      this.notifications?.show?.({ message: t("publications.publicationView.collaborativePublicationSynced"), type: "success" });
+      return Boolean(updated);
+    } catch (error) {
+      this.notifications?.show?.({ message: t("publications.publicationView.syncFailed", { 0: error?.message || error }), type: "error" });
+      return false;
+    } finally {
+      if (control?.isConnected) control.disabled = false;
+    }
   }
 
   #openTarget(target, anchor) {

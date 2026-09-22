@@ -2,6 +2,7 @@ import { TELEGRAM_LIMITS, treeStats } from "./DocumentLimits.js?v=1.7.17";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
 import { hasMediaSourceConflict, supportsExternalMediaUrl } from "./MediaSource.js?v=1.11.4";
 import { MapLinkError, resolveMapLink } from "./MapLinkResolver.js?v=1.11.4";
+import { comessageNodes, isComessageValue } from "./Comessage.js?v=1.12.0";
 
 export class Validator {
   constructor(registry) { this.registry = registry; }
@@ -48,6 +49,9 @@ export class Validator {
           ? "map.mapUrl must contain latitude and longitude"
           : "map.mapUrl could not be resolved");
       }
+    }
+    if (node.type === "comessage" && !isComessageValue(node.props?.hashtag)) {
+      errors.push("comessage.hashtag must match #comessage_<random>");
     }
 
     if (parent && parent.id !== "root" && def.constraints?.allowedParents &&
@@ -126,6 +130,11 @@ export class Validator {
 
     const anchors = new Map();
     const includedIds = new Set(entries.map(({ node }) => String(node.id)));
+    const comessages = comessageNodes(tree.root);
+    if (comessages.length > 1) errors.push("A Rich Message can contain only one #comessage marker");
+    if (comessages.length && tree.root?.children?.[0] !== comessages[0]) {
+      errors.push("#comessage must be the first block");
+    }
     for (const { node } of entries) {
       if (node.type === "anchor") {
         const name = String(node.props?.name || "").trim();

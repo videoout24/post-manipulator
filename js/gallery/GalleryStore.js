@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
 const ASSET_PREFIX = "asset_";
@@ -12,9 +12,9 @@ export class GalleryStore {
 
   async ingest(media) {
     if (!media?.type || !media?.fileId) throw new Error(t("gallery.galleryStore.galleryMediaEventDoesNotContainType"));
-    const sourceEventKey = media.source?.chatId && media.source?.messageId
+    const sourceEventKey = String(media.sourceEventKey || "") || (media.source?.chatId && media.source?.messageId
       ? `${Number(media.source.chatId)}:${Number(media.source.messageId)}`
-      : null;
+      : null);
     if (sourceEventKey) {
       const existing = await this.findBySourceEventKey(sourceEventKey);
       if (existing) {
@@ -49,6 +49,7 @@ export class GalleryStore {
         messageDeleted: false,
         deleteError: null
       },
+      originSource: media.originSource ? structuredClone(media.originSource) : null,
       telegramDate: media.date || null,
       duplicateOf: duplicate?.id || null,
       createdAt: Date.now(),

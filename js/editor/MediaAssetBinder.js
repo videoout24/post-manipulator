@@ -1,9 +1,10 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.12.0";
 const BLOCK_TO_GALLERY = Object.freeze({
   photo: ["photo"],
   video: ["video"],
   audio: ["audio"],
   document: ["document"],
+  animation: ["animation"],
   voice_note: ["voice"],
   collage: ["photo", "video"],
   slideshow: ["photo", "video"]
@@ -53,7 +54,7 @@ export class MediaAssetBinder {
     const fileId = String(asset.telegram?.fileId || "").trim();
     if (!fileId) throw new Error(t("editor.mediaAssetBinder.galleryAssetIsMissingTelegramFileId"));
 
-    const patch = makeAssetPatch(asset, fileId);
+    const patch = makeAssetPatch(asset, fileId, node.type);
     if (this.isCollection(node)) {
       return this.#appendChild(node, asset, patch);
     }
@@ -100,11 +101,11 @@ export class MediaAssetBinder {
   }
 }
 
-function makeAssetPatch(asset, fileId) {
+function makeAssetPatch(asset, fileId, nodeType = "") {
   const patch = {
     galleryId: asset.id,
     fileId,
-    url: ""
+    url: nodeType === "animation" ? fileId : ""
   };
   if (String(asset.caption || "").trim()) patch.caption = asset.caption;
   return patch;

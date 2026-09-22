@@ -182,6 +182,35 @@ positioning: `0` disables scrolling, `1` is slow, `2` is approximately half the
 former speed and is the default, and `3` is the former speed. The preference is
 stored locally for the entire editor.
 
+## CoMessage: bot coworking inside Telegram
+
+Coworking is available only when the publication target is a **private channel**,
+is not the preview channel, and has other admin bots. **Check** refreshes the
+administrator list and opens a checkbox dialog; updates are accepted only from
+explicitly selected bots.
+
+Ordinary files posted by a selected bot are indexed in Gallery. When source
+deletion after indexing is disabled, the owner's private chat gets a topic named
+after that bot and the message is copied there. Media in the first imported Rich
+Message are also indexed individually and stored as separate file messages in
+that topic. With deletion enabled, Gallery indexes the channel file directly but
+never deletes the shared channel post.
+
+A collaborative publication is identified by its first Rich Message block: the
+semantic hashtag `#comessage_<random>`. The editor exposes this as a **CoMessage**
+block. Its random part is generated when it is added to Canvas; the block is
+always first, unique, and immutable. Once published, it can only be removed after
+the publication itself is deleted. CoMessage Drafts cannot be moved into a
+Project.
+
+Every bot imports the publication into an independent local Draft. Incoming edits
+from another bot do not overwrite that copy and are never pushed automatically;
+the local version replaces the Telegram post only through **Sync**. The
+`#comessage_…` marker is the stable identity while `message_id` is a mutable
+pointer. If the shared post was deleted, Sync offers to restore a new message
+with the same marker; the other bots relink their copies to the new `message_id`
+when they receive the update.
+
 ## Why there is no backend
 
 The MVP does not need a backend. It is intended for one owner working with their own bot, while Telegram already provides the required capabilities: Mini Apps, CloudStorage, the Bot API, and a private bot chat for backups. This allows free static hosting and avoids creating a separate server-side database containing the token.
@@ -190,7 +219,7 @@ This design has several limitations:
 
 - long polling works only while Post Manipulator is open and running in Telegram Desktop;
 - the bot must not have an active webhook because Telegram does not allow webhooks and `getUpdates` at the same time;
-- the application does not replace server automation, background jobs, or collaboration between multiple operators;
+- the application does not replace server automation or background jobs; CoMessage works only while every participating bot's long polling is running;
 - only use a trusted, published copy of the application when entering a token.
 
 A future backend is planned as an independent optional service rather than a mandatory centralized component. Its purpose would be to remove client-only limitations while keeping deployment and operating costs low.

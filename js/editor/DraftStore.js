@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.9.5";
+import { t } from "../i18n/index.js?v=1.12.0";
 const PREFIX = "draft_";
 
 export class DraftStore {
@@ -153,6 +153,21 @@ export class DraftStore {
     }, "publication-baseline-updated");
   }
 
+  async relinkPublication(recordId, { chatId, messageId, targetTitle = "" } = {}) {
+    const updated = [];
+    for (const draft of await this.list()) {
+      if (draft.source?.kind !== "publication" || String(draft.source.publicationId) !== String(recordId)) continue;
+      const next = await this.#saveSource(draft, {
+        ...draft.source,
+        chatId: Number(chatId || draft.source.chatId || 0) || null,
+        messageId: Number(messageId || 0) || null,
+        targetTitle: targetTitle || draft.source.targetTitle || ""
+      }, "publication-relinked");
+      updated.push(next);
+    }
+    return updated;
+  }
+
   async releasePublication(recordId) {
     for (const draft of await this.list()) {
       if (draft.source?.kind !== "publication" || draft.source.publicationId !== recordId) continue;
@@ -181,6 +196,9 @@ export class DraftStore {
 
   async assertCanMoveToProject(id) {
     const draft = await this.get(id);
+    if (draft?.messageAst?.children?.some(node => node?.type === "comessage")) {
+      throw new Error(t("editor.draftListView.comessageProjectBlocked"));
+    }
     if ((draft?.source?.kind === "publication" && draft.source.publicationId) || await this.#hasPublishedRecord(id)) {
       throw new Error(t("editor.draftListView.movePublishedDraftBlocked"));
     }

@@ -1,10 +1,11 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.12.0";
 const META = Object.freeze({
   photo: { label: t("app.appNotifications.photo"), icon: "▧" },
   video: { label: t("app.appNotifications.video"), icon: "▶" },
   audio: { label: t("app.appNotifications.audio"), icon: "♪" },
   voice: { label: t("editor.editorAssetPicker.voice"), icon: "◖" },
-  document: { label: t("editor.editorAssetPicker.files"), icon: "▤" }
+  document: { label: t("editor.editorAssetPicker.files"), icon: "▤" },
+  animation: { label: t("blocks.registerCoreBlocks.animation"), icon: "◫" }
 });
 
 export class EditorAssetPicker {

@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.12.0";
 const SETTINGS_KEY = "gallerySettings";
 let uploadSequence = 0;
 const DEFAULT_SETTINGS = Object.freeze({
@@ -25,6 +25,7 @@ export class GalleryCore {
     if (this.unsubscribers.length) return;
     this.unsubscribers.push(
       this.telegramCore.media.onReceived(media => this.ingest(media)),
+      this.telegramCore.media.onCollaborationReceived?.(media => this.ingestCollaborationMedia(media)),
       this.telegramCore.topics.onObserved(topic => this.observeTopic(topic))
     );
   }
@@ -55,7 +56,7 @@ export class GalleryCore {
     }
 
     const settings = await this.getSettings();
-    if (settings.deleteSourceAfterIndexing && !asset.source?.messageDeleted && asset.source?.chatId && asset.source?.messageId) {
+    if (settings.deleteSourceAfterIndexing && !media?.skipSourceDeletion && !asset.source?.messageDeleted && asset.source?.chatId && asset.source?.messageId) {
       try {
         await this.client.deleteMessage(asset.source.chatId, asset.source.messageId);
         asset = await this.store.update(asset.id, { source: { messageDeleted: true, deleteError: null } });
@@ -69,6 +70,83 @@ export class GalleryCore {
 
     this.events?.emit("gallery:ingested", asset);
     return asset;
+  }
+
+  async ingestCollaborationMedia(media) {
+    try {
+      return await this.#ingestCollaborationMedia(media);
+    } catch (error) {
+      error.retryTelegramUpdate = true;
+      throw error;
+    }
+  }
+
+  async #ingestCollaborationMedia(media) {
+    if (!media?.sourceEventKey) throw new Error("Collaborative media is missing a stable source event key");
+    const existing = await this.store.findBySourceEventKey(media.sourceEventKey);
+    if (existing) return existing;
+    const settings = await this.getSettings();
+    const originSource = structuredClone(media.source || null);
+    let indexedMedia = { ...media, originSource, skipSourceDeletion: true };
+    const transferKey = `collaborationMediaCopy:${media.sourceEventKey}`;
+    const pendingTransfer = await this.db.get("runtime", transferKey, null);
+
+    // When source retention is enabled, give every collaborator bot its own
+    // private owner topic. Rich Message media are materialized one block at a
+    // time; ordinary media posts can be copied as-is.
+    if (pendingTransfer?.source?.messageId) {
+      indexedMedia = { ...indexedMedia, source: structuredClone(pendingTransfer.source) };
+    } else if (!settings.deleteSourceAfterIndexing) {
+      const owner = await this.telegramCore.owner.getOwner();
+      if (!owner?.chatId) throw new Error(t("gallery.galleryCore.firstLinkATelegramOwner"));
+      const topic = await this.#collaborationTopic(media.bot, owner.chatId);
+      const stored = media.separate
+        ? await this.client.sendStoredMedia({
+          chatId: owner.chatId,
+          messageThreadId: topic.threadId,
+          type: media.type,
+          fileId: media.fileId,
+          caption: media.caption || ""
+        })
+        : await this.client.copyMessage({
+          chatId: owner.chatId,
+          fromChatId: media.source?.chatId,
+          messageId: media.source?.messageId,
+          messageThreadId: topic.threadId
+        });
+      const retainedSource = {
+        chatId: Number(owner.chatId),
+        messageId: Number(stored?.message_id || 0),
+        threadId: Number(topic.threadId)
+      };
+      if (!retainedSource.messageId) throw new Error("Telegram did not return message_id for retained collaborative media");
+      await this.db.put("runtime", transferKey, { source: retainedSource, createdAt: Date.now() });
+      indexedMedia = {
+        ...indexedMedia,
+        source: retainedSource
+      };
+    }
+    const asset = await this.ingest(indexedMedia);
+    if (pendingTransfer || !settings.deleteSourceAfterIndexing) await this.db.delete("runtime", transferKey);
+    return asset;
+  }
+
+  async #collaborationTopic(bot, ownerChatId) {
+    const botId = Number(bot?.id || 0);
+    if (!botId) throw new Error("Collaborator bot identity is missing");
+    const systemRole = `collaboration-bot:${botId}`;
+    const existing = (await this.store.listTopics()).find(topic => topic.systemRole === systemRole && !topic.telegramDeleted);
+    if (existing) return existing;
+    const name = bot?.username ? `@${bot.username}` : [bot?.firstName, bot?.lastName].filter(Boolean).join(" ") || `Bot ${botId}`;
+    const created = await this.telegramCore.topics.create(name);
+    return this.store.upsertTopic({
+      ...created,
+      chatId: Number(ownerChatId),
+      name,
+      source: "collaboration",
+      systemRole,
+      telegramDeleted: false
+    });
   }
 
   async observeTopic(topic) {
@@ -290,4 +368,4 @@ function describeAssetUsage(usage) {
   if (usage.kind === "draft") return t("gallery.galleryCore.draft", { 0: usage.draftTitle || usage.draftId });
   return t("gallery.galleryCore.currentEditorDocument");
 }
-import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.10.0";
+import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.12.0";

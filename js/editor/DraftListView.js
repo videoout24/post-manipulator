@@ -1,4 +1,4 @@
-import { getLocale, t } from "../i18n/index.js?v=1.10.0";
+import { getLocale, t } from "../i18n/index.js?v=1.12.0";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 
@@ -14,6 +14,7 @@ export function createDraftListView({
   onSchedule = null,
   onApplyChanges = null,
   hasPublicationChanges = null,
+  isCollaborative = null,
   onCancelPublicationEdit = null,
   onCloseDraft = null,
   onOpenAi = null,
@@ -62,6 +63,7 @@ export function createDraftListView({
         onSchedule,
         onApplyChanges,
         hasPublicationChanges,
+        isCollaborative,
         onCancelPublicationEdit,
         onCloseDraft,
         onOpenAi,
@@ -83,7 +85,7 @@ export function createDraftListView({
 
 function createDraftCard({
   draft, selected, onOpen, onRename, onDelete, onMoveToProject, onPublish,
-  onSchedule, onApplyChanges, hasPublicationChanges, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, isAiPromptOpen, onAiPromptToggle,
+  onSchedule, onApplyChanges, hasPublicationChanges, isCollaborative, onCancelPublicationEdit, onCloseDraft, onOpenAi, onAiPromptChange, isAiPromptOpen, onAiPromptToggle,
   onSelectTarget, onOpenLinkedSource, textareaSizing, linkTargetSlotKey, linkedTargets
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
@@ -128,15 +130,16 @@ function createDraftCard({
 
   const actions = el("div", "draft-card-actions draft-card-lifecycle-actions");
   if (publicationLinked) {
+    const collaborative = Boolean(isCollaborative?.(draft));
     if (publicationCopy) actions.classList.add("publication-edit-actions");
     const scheduledCopy = Boolean(draft.source?.scheduledAt);
     const apply = button(
-      t("editor.draftListView.applyChanges"),
-      scheduledCopy ? t("editor.draftListView.updateTheContentOfTheScheduledPublication") : t("editor.draftListView.updatePublishedMessage"),
+      collaborative ? t("editor.draftListView.sync") : t("editor.draftListView.applyChanges"),
+      collaborative ? t("editor.draftListView.syncHint") : scheduledCopy ? t("editor.draftListView.updateTheContentOfTheScheduledPublication") : t("editor.draftListView.updatePublishedMessage"),
       () => onApplyChanges?.(draft)
     );
     apply.classList.add("publication-edit-apply");
-    apply.disabled = !hasPublicationChanges?.(draft);
+    apply.disabled = !collaborative && !hasPublicationChanges?.(draft);
     const cancel = button(
       publicationCopy ? t("core.cardDeleteConfirmation.cancel") : t("editor.draftListView.closePublicationDraft"),
       publicationCopy ? t("editor.draftListView.cancelEditingAndDeleteWorkingCopy") : t("editor.draftListView.closePublicationDraftHint"),

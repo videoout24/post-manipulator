@@ -1,7 +1,8 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { normalizeMediaSourcePatch } from "../core/MediaSource.js?v=1.11.4";
 import { defaultDateTimeLocal } from "../core/SemanticRichText.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
+import { createComessageValue } from "../core/Comessage.js?v=1.12.0";
 import {
   TELEGRAM_LIMITS,
   countBlocks,
@@ -59,7 +60,11 @@ export class EditorController {
       });
       return null;
     }
-    const guarded = this.mutationError("add", { type, parentId });
+    if (type === "comessage") {
+      parentId = "root";
+      index = 0;
+    }
+    const guarded = this.mutationError("add", { type, parentId, index });
     if (guarded) {
       this.reportError(guarded);
       return null;
@@ -82,6 +87,7 @@ export class EditorController {
       for (const [key, value] of Object.entries(initialProps)) props[key] = structuredClone(value);
     }
     if (type === "date_time" && !props.dateTime) props.dateTime = defaultDateTimeLocal();
+    if (type === "comessage") props.hashtag = createComessageValue();
     if (type === "anchor" && (!initialProps || !Object.prototype.hasOwnProperty.call(initialProps, "name"))) {
       props.name = this.nextAnchorName();
     }

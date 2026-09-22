@@ -1,11 +1,21 @@
-import { t } from "../i18n/index.js?v=1.9.5";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
+import { comessageKey, comessagePublicationId, comessageValueFromAst } from "../core/Comessage.js?v=1.12.0";
 
 export const PUBLICATION_DELETE_WINDOW_MS = 48 * 60 * 60 * 1000;
 const PENDING_FORWARD_PREFIX = "publicationForward:";
 const MAX_TIMER_DELAY = 2_147_000_000;
 const SCHEDULE_RETRY_DELAY = 60_000;
+
+export class CollaborativePublicationMissingError extends Error {
+  constructor(record) {
+    super(t("telegram.publicationService.productionMessageNotFound"));
+    this.name = "CollaborativePublicationMissingError";
+    this.code = "COLLABORATIVE_PUBLICATION_MISSING";
+    this.record = record ? structuredClone(record) : null;
+  }
+}
 
 export class PublicationService {
   constructor({ db, events = null, client, renderer, validator, targets, drafts, draftSession = null, documents = null, linkRelations = null } = {}) {
@@ -61,6 +71,10 @@ export class PublicationService {
     if (!record) return { state: "missing", draft, record: null };
     if (record.scheduledAt && !record.messageId) return { state: "scheduled", draft, record };
     if (!record.chatId || !record.messageId || !record.messageAst) return { state: "missing", draft, record };
+    // Bot API has no read-only getMessage method. The legacy presence probe edits
+    // the message and would silently overwrite another bot's independent version.
+    // CoMessage therefore checks existence only when the user explicitly Syncs.
+    if (record.collaboration?.id) return { state: "unchecked", draft, record };
 
     const envelope = this.renderer.renderEnvelope(astTree(record.messageAst));
     try {
@@ -110,9 +124,15 @@ export class PublicationService {
     this.#assertCommentsConfig(target, commentsEnabled);
     const errors = this.validator.validate(astTree(draft.messageAst));
     if (errors.length) throw new Error(errors.join("; "));
+    const collaborationId = comessageValueFromAst(draft.messageAst);
+    if (collaborationId) this.#assertCollaborationTarget(target);
+    const recordId = collaborationId ? comessagePublicationId(target.chatId, collaborationId) : `publication_${randomUUID()}`;
+    if (collaborationId && await this.db.get("publications", recordId, null)) {
+      throw new Error(t("telegram.publicationService.comessageAlreadyLinked"));
+    }
 
     const record = {
-      id: `publication_${randomUUID()}`,
+      id: recordId,
       source: {
         kind: "draft",
         draftId: draft.id,
@@ -143,6 +163,7 @@ export class PublicationService {
       reactions: [],
       reactionActors: {}
     };
+    if (collaborationId) record.collaboration = collaborationMetadata(collaborationId, { local: true });
     await this.db.put("publications", record.id, record);
     await this.linkRelations?.bindSourceDraftToPublication?.(draft.id, record.id);
     if (this.documents?.clearScheduledDraft) await this.documents.clearScheduledDraft(draft.id);
@@ -204,6 +225,12 @@ export class PublicationService {
       throw new Error(t("project.projectPublicationService.toDisableCommentsTheBotNeedsThe"));
     }
     const publishAst = await this.linkRelations?.materializeAst?.(draft.messageAst) || draft.messageAst;
+    const collaborationId = comessageValueFromAst(publishAst);
+    if (collaborationId) this.#assertCollaborationTarget(target);
+    const recordId = collaborationId ? comessagePublicationId(target.chatId, collaborationId) : `publication_${randomUUID()}`;
+    if (collaborationId && await this.db.get("publications", recordId, null)) {
+      throw new Error(t("telegram.publicationService.comessageAlreadyLinked"));
+    }
     const tree = astTree(publishAst);
     const errors = this.validator.validate(tree);
     if (errors.length) throw new Error(errors.join("; "));
@@ -218,7 +245,7 @@ export class PublicationService {
     if (!messageId) throw new Error(t("telegram.publicationService.telegramDidNotReturnMessageIdFor"));
     const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
     const record = {
-      id: `publication_${randomUUID()}`,
+      id: recordId,
       source: {
         kind: "draft", draftId: draft.id, title: draft.title,
         draftSource: draft.source ? structuredClone(draft.source) : null,
@@ -244,6 +271,7 @@ export class PublicationService {
       reactions: [],
       reactionActors: {}
     };
+    if (collaborationId) record.collaboration = collaborationMetadata(collaborationId, { local: true });
     await this.db.put("publications", record.id, record);
     await this.drafts.retainPublication(record);
     await this.linkRelations?.bindSourceDraftToPublication?.(draft.id, record.id);
@@ -325,6 +353,7 @@ export class PublicationService {
     const commentsRequested = record.commentsRequested !== false;
     this.#assertCommentsConfig(target, commentsRequested);
     const publishAst = await this.linkRelations?.materializeAst?.(record.messageAst) || record.messageAst;
+    if (comessageValueFromAst(publishAst)) this.#assertCollaborationTarget(target);
     const tree = astTree(publishAst);
     const errors = this.validator.validate(tree);
     if (errors.length) throw new Error(errors.join("; "));
@@ -370,6 +399,141 @@ export class PublicationService {
     if (target.type === "channel" && target.commentsEnabled && commentsEnabled === false && !target.discussionRights?.canDelete) {
       throw new Error(t("project.projectPublicationService.toDisableCommentsTheBotNeedsThe"));
     }
+  }
+
+  #assertCollaborationTarget(target) {
+    if (target?.type !== "channel" || target?.visibility !== "private" || !target?.collaboration?.enabled) {
+      throw new Error(t("telegram.publicationService.comessagePrivateCoworkingOnly"));
+    }
+  }
+
+  async importCollaborativePublication({ message, target, bot, marker, messageAst } = {}) {
+    const chatId = Number(message?.chat?.id || target?.chatId || 0);
+    const messageId = Number(message?.message_id || 0);
+    if (!chatId || !messageId || !comessageValueFromAst(messageAst)) return null;
+    this.#assertCollaborationTarget(target);
+    const id = comessagePublicationId(chatId, marker);
+    const existing = await this.db.get("publications", id, null);
+    if (existing) {
+      const previousMessageId = Number(existing.messageId || 0);
+      existing.messageId = messageId;
+      existing.chatId = chatId;
+      existing.target = structuredClone(target);
+      existing.publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
+      existing.deleteUntil = existing.publishedAt + PUBLICATION_DELETE_WINDOW_MS;
+      existing.collaboration = {
+        ...existing.collaboration,
+        ...collaborationMetadata(marker, { local: existing.collaboration?.localOrigin === true, bot }),
+        relinkedAt: previousMessageId && previousMessageId !== messageId ? Date.now() : existing.collaboration?.relinkedAt || null,
+        remoteSeenAt: Date.now()
+      };
+      await this.db.put("publications", existing.id, existing);
+      await this.drafts.retainPublication?.(existing);
+      await this.drafts.relinkPublication?.(existing.id, {
+        chatId,
+        messageId,
+        targetTitle: target.title || ""
+      });
+      this.events?.emit("telegram:publication-updated", structuredClone(existing));
+      this.events?.emit("telegram:publications-changed", await this.list());
+      this.#reconcilePendingForward(existing).catch(error => {
+        this.events?.emit("telegram:publication-discussion-error", { record: existing, error });
+      });
+      return { created: false, relinked: previousMessageId !== messageId, record: structuredClone(existing) };
+    }
+
+    const title = collaborativeTitle(messageAst, bot);
+    const draft = await this.drafts.create({
+      title,
+      messageAst,
+      source: {
+        kind: "collaboration-import",
+        collaborationId: marker,
+        originBotId: Number(bot?.id || 0) || null,
+        originBotUsername: String(bot?.username || ""),
+        chatId,
+        messageId
+      }
+    });
+    const publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
+    const record = {
+      id,
+      source: {
+        kind: "draft",
+        draftId: draft.id,
+        title: draft.title,
+        draftSource: structuredClone(draft.source),
+        draftCreatedAt: draft.createdAt,
+        draftUpdatedAt: draft.updatedAt
+      },
+      messageAst: structuredClone(messageAst),
+      target: structuredClone(target),
+      chatId,
+      messageId,
+      publishedAt,
+      deleteUntil: publishedAt + PUBLICATION_DELETE_WINDOW_MS,
+      commentsEnabled: Boolean(target.commentsEnabled),
+      discussionChatId: target.linkedDiscussionChatId || null,
+      discussionUsername: target.linkedDiscussionUsername || "",
+      discussionMessageId: null,
+      commentsDisabled: false,
+      pinned: false,
+      pinnedAt: null,
+      commentMessageIds: [],
+      commentCount: 0,
+      reactionCount: 0,
+      reactions: [],
+      reactionActors: {},
+      collaboration: { ...collaborationMetadata(marker, { bot }), importedAt: Date.now(), remoteSeenAt: Date.now() }
+    };
+    await this.db.put("publications", record.id, record);
+    await this.drafts.retainPublication(record);
+    this.events?.emit("telegram:publication-created", structuredClone(record));
+    this.events?.emit("telegram:publications-changed", await this.list());
+    this.#reconcilePendingForward(record).catch(error => {
+      this.events?.emit("telegram:publication-discussion-error", { record, error });
+    });
+    return { created: true, relinked: false, record: structuredClone(record), draft };
+  }
+
+  async restoreCollaborativePublication(draftId) {
+    if (this.draftSession?.activeDraftId === draftId) await this.draftSession.flush();
+    const draft = await this.drafts.get(draftId);
+    const recordId = draft?.source?.kind === "publication" ? draft.source.publicationId : null;
+    const record = recordId ? await this.db.get("publications", recordId, null) : null;
+    if (!draft || !record?.collaboration?.id) throw new Error(t("telegram.publicationService.collaborativePublicationNotFound"));
+    const marker = comessageValueFromAst(draft.messageAst);
+    if (comessageKey(marker) !== comessageKey(record.collaboration.id)) {
+      throw new Error(t("telegram.publicationService.comessageIdentityMissing"));
+    }
+    const target = await this.#requireTarget(record.chatId);
+    this.#assertCollaborationTarget(target);
+    const appliedAst = await this.linkRelations?.materializeAst?.(draft.messageAst) || draft.messageAst;
+    const tree = astTree(appliedAst);
+    const errors = this.validator.validate(tree);
+    if (errors.length) throw new Error(errors.join("; "));
+    const envelope = this.renderer.renderEnvelope(tree);
+    const message = await this.client.sendRichMessage({
+      chatId: target.chatId,
+      richMessage: envelope.richMessage,
+      replyMarkup: envelope.replyMarkup,
+      disableNotification: false
+    });
+    const messageId = Number(message?.message_id || 0);
+    if (!messageId) throw new Error(t("telegram.publicationService.telegramDidNotReturnMessageIdFor"));
+    record.messageAst = structuredClone(appliedAst);
+    record.messageId = messageId;
+    record.target = structuredClone(target);
+    record.publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
+    record.deleteUntil = record.publishedAt + PUBLICATION_DELETE_WINDOW_MS;
+    record.editedAt = Date.now();
+    record.collaboration = { ...record.collaboration, restoredAt: Date.now(), remoteSeenAt: Date.now() };
+    await this.db.put("publications", record.id, record);
+    await this.drafts.updatePublicationBaseline?.(draft.id, record.id, draft.messageAst);
+    await this.drafts.relinkPublication?.(record.id, { chatId: record.chatId, messageId, targetTitle: target.title || "" });
+    this.events?.emit("telegram:publication-updated", structuredClone(record));
+    this.events?.emit("telegram:publications-changed", await this.list());
+    return structuredClone(record);
   }
 
   #withRecordOperation(recordId, operation) {
@@ -516,6 +680,15 @@ export class PublicationService {
       const tree = astTree(appliedAst);
       const errors = this.validator.validate(tree);
       if (errors.length) throw new Error(errors.join("; "));
+      const collaborationId = comessageValueFromAst(appliedAst);
+      if (record.collaboration?.id) {
+        if (comessageKey(collaborationId) !== comessageKey(record.collaboration.id)) {
+          throw new Error(t("telegram.publicationService.comessageIdentityChanged"));
+        }
+        this.#assertCollaborationTarget(await this.#requireTarget(record.chatId));
+      } else if (collaborationId) {
+        throw new Error(t("telegram.publicationService.addComessageBeforePublishing"));
+      }
       if (!record.scheduledAt) {
         const envelope = this.renderer.renderEnvelope(tree);
         try {
@@ -526,6 +699,9 @@ export class PublicationService {
             replyMarkup: envelope.replyMarkup
           });
         } catch (error) {
+          if (error?.isMessageMissing?.() && record.collaboration?.id) {
+            throw new CollaborativePublicationMissingError(record);
+          }
           if (!error?.isNotModified?.()) throw error;
         }
       }
@@ -695,6 +871,25 @@ export class PublicationService {
     await this.db.put("publications", record.id, record);
     this.events?.emit("telegram:publications-changed", await this.list());
   }
+}
+
+function collaborationMetadata(id, { local = false, bot = null } = {}) {
+  return {
+    id: String(id || ""),
+    key: comessageKey(id),
+    localOrigin: local === true,
+    originBotId: Number(bot?.id || 0) || null,
+    originBotUsername: String(bot?.username || "")
+  };
+}
+
+function collaborativeTitle(ast, bot) {
+  const name = bot?.username ? `@${bot.username}` : [bot?.firstName, bot?.lastName].filter(Boolean).join(" ") || "Bot";
+  const content = (ast?.children || []).slice(1).map(node => {
+    const value = node?.props?.text ?? node?.props?.caption ?? node?.props?.summary ?? "";
+    return typeof value === "string" ? value : "";
+  }).find(value => value.trim());
+  return content ? `${name}: ${content.trim().slice(0, 64)}` : `CoMessage · ${name}`;
 }
 
 function reactionKey(type) {

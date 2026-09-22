@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.6";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
@@ -195,8 +195,39 @@ export class TelegramClient {
   getChatMember(chatId, userId, options) {
     return this.call("getChatMember", { chat_id: chatId, user_id: userId }, options);
   }
+  getChatAdministrators(chatId, { returnBots = true } = {}, options) {
+    return this.call("getChatAdministrators", { chat_id: chatId, return_bots: returnBots }, options);
+  }
   getChat(chatId, options) { return this.call("getChat", { chat_id: chatId }, options); }
   getChatMemberCount(chatId, options) { return this.call("getChatMemberCount", { chat_id: chatId }, options); }
+  copyMessage({ chatId, fromChatId, messageId, messageThreadId = null } = {}, options) {
+    return this.call("copyMessage", {
+      chat_id: chatId,
+      from_chat_id: fromChatId,
+      message_id: messageId,
+      message_thread_id: messageThreadId
+    }, options);
+  }
+  sendStoredMedia({ chatId, messageThreadId = null, type, fileId, caption = "" } = {}, options) {
+    const methods = {
+      photo: ["sendPhoto", "photo"],
+      video: ["sendVideo", "video"],
+      audio: ["sendAudio", "audio"],
+      voice: ["sendVoice", "voice"],
+      document: ["sendDocument", "document"],
+      animation: ["sendAnimation", "animation"]
+    };
+    const [method, field] = methods[String(type || "")] || [];
+    if (!method || !String(fileId || "").trim()) {
+      throw new TelegramApiError("Unsupported stored Telegram media", { method: method || "sendStoredMedia" });
+    }
+    return this.call(method, {
+      chat_id: chatId,
+      message_thread_id: messageThreadId,
+      caption: String(caption || ""),
+      [field]: String(fileId)
+    }, options);
+  }
   uploadMedia({ chatId, messageThreadId = null, file, caption = "", type = null } = {}, options = {}) {
     if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "uploadMedia" });
     const media = uploadMediaMethod(file, type);

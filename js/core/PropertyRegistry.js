@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.11.4";
+import { t } from "../i18n/index.js?v=1.12.0";
 export class PropertyRegistry {
   constructor(formattingRegistry = null) {
     this.properties = new Map();
@@ -138,6 +138,11 @@ export function createDefaultPropertyRegistry(formattingRegistry = null) {
   add("hashtag.value", {
     label: t("core.formattingRegistry.hashtag"), group: t("core.formattingRegistry.hashtag"), type: "string", editor: "text", default: "#", required: true,
     hint: t("core.propertyRegistry.isAddedAutomaticallyIfItIsNot")
+  });
+  add("comessage.value", {
+    label: t("core.propertyRegistry.comessageId"), group: t("core.formattingRegistry.hashtag"), type: "string", editor: "text",
+    default: "#comessage_", required: true, readOnly: true,
+    hint: t("core.propertyRegistry.comessageIdHint")
   });
   add("link.url", {
     label: t("core.propertyRegistry.url"), group: t("core.formattingRegistry.link"), type: "url", editor: "url", default: "", required: true

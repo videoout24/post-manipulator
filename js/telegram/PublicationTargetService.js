@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.8.0";
+import { t } from "../i18n/index.js?v=1.12.0";
 import { randomBytes } from "../core/Random.js?v=1.5.9";
 
 const TARGETS_KEY = "publicationTargets";
@@ -129,6 +129,7 @@ export class PublicationTargetService {
       commentsEnabled: chat.type === "channel" && Boolean(chat.linked_chat_id),
       discussionRights,
       deleteServiceMessages: existing?.deleteServiceMessages === true,
+      collaboration: normalizeCollaboration(existing?.collaboration),
       discoveredBy,
       checkedAt: Date.now()
     };
@@ -157,6 +158,62 @@ export class PublicationTargetService {
     targets[index] = {
       ...targets[index],
       deleteServiceMessages: enabled === true
+    };
+    await this.db.put("bindings", TARGETS_KEY, targets);
+    this.events?.emit("telegram:publication-targets", targets);
+    return structuredClone(targets[index]);
+  }
+
+  async inspectCollaboratorBots(chatId) {
+    if (await this.#isPreviewChannel(chatId)) {
+      throw new Error(t("telegram.publicationTargetService.previewChannelCannotBeAddedToPublications"));
+    }
+    const target = (await this.list()).find(item => Number(item.chatId) === Number(chatId));
+    if (!target) throw new Error(t("telegram.publicationTargetService.channelOrGroupNotFound"));
+    if (target.type !== "channel" || target.visibility !== "private") {
+      throw new Error(t("telegram.publicationTargetService.coworkingPrivateChannelOnly"));
+    }
+    const [administrators, currentBot] = await Promise.all([
+      this.client.getChatAdministrators(chatId, { returnBots: true }),
+      this.client.getMe()
+    ]);
+    const bots = (administrators || [])
+      .filter(member => ["creator", "administrator"].includes(member?.status) && member?.user?.is_bot === true)
+      .map(member => ({
+        id: Number(member.user?.id || 0),
+        username: String(member.user?.username || ""),
+        firstName: String(member.user?.first_name || ""),
+        lastName: String(member.user?.last_name || ""),
+        status: member.status,
+        rights: {
+          post: member.status === "creator" || member.can_post_messages === true,
+          edit: member.status === "creator" || member.can_edit_messages === true,
+          delete: member.status === "creator" || member.can_delete_messages === true
+        }
+      }))
+      .filter(bot => bot.id && bot.id !== Number(currentBot?.id));
+    return {
+      target: structuredClone(target),
+      bots,
+      selectedBotIds: [...(target.collaboration?.selectedBotIds || [])].map(Number).filter(Number.isSafeInteger)
+    };
+  }
+
+  async setCollaboratorBots(chatId, botIds = []) {
+    const inspection = await this.inspectCollaboratorBots(chatId);
+    const requested = new Set((botIds || []).map(Number).filter(Number.isSafeInteger));
+    const selectedBots = inspection.bots.filter(bot => requested.has(bot.id));
+    const targets = await this.list();
+    const index = targets.findIndex(item => Number(item.chatId) === Number(chatId));
+    if (index < 0) throw new Error(t("telegram.publicationTargetService.channelOrGroupNotFound"));
+    targets[index] = {
+      ...targets[index],
+      collaboration: {
+        enabled: selectedBots.length > 0,
+        selectedBotIds: selectedBots.map(bot => bot.id),
+        bots: selectedBots.map(bot => structuredClone(bot)),
+        checkedAt: Date.now()
+      }
     };
     await this.db.put("bindings", TARGETS_KEY, targets);
     this.events?.emit("telegram:publication-targets", targets);
@@ -236,6 +293,18 @@ export class PublicationTargetService {
     }
     return session;
   }
+}
+
+function normalizeCollaboration(value) {
+  const input = value && typeof value === "object" ? value : {};
+  const selectedBotIds = [...new Set((input.selectedBotIds || []).map(Number).filter(Number.isSafeInteger))];
+  const bots = (input.bots || []).filter(bot => selectedBotIds.includes(Number(bot?.id))).map(bot => structuredClone(bot));
+  return {
+    enabled: selectedBotIds.length > 0,
+    selectedBotIds,
+    bots,
+    checkedAt: Number(input.checkedAt || 0) || null
+  };
 }
 
 export function publicationAvailability(member = {}, chatType = "channel") {

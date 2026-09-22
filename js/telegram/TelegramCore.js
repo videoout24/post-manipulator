@@ -7,6 +7,7 @@ export class TelegramCore {
     previewChannelBinding,
     publicationTargets,
     publications,
+    collaboration,
     previewController,
     topics,
     projectPreview,
@@ -23,6 +24,8 @@ export class TelegramCore {
       cancelBinding: () => publicationTargets.cancelBinding(),
       getBindingSession: () => publicationTargets.getSession(),
       refreshTarget: chatId => publicationTargets.refresh(chatId),
+      inspectCollaboratorBots: chatId => publicationTargets.inspectCollaboratorBots(chatId),
+      setCollaboratorBots: (chatId, botIds) => publicationTargets.setCollaboratorBots(chatId, botIds),
       removeTarget: chatId => publicationTargets.remove(chatId),
       setServiceMessageCleanup: (chatId, enabled) => publicationTargets.setServiceMessageCleanup(chatId, enabled),
       onTargetsChanged: handler => events?.on("telegram:publication-targets", handler),
@@ -33,6 +36,7 @@ export class TelegramCore {
       setPinned: (recordId, pinned) => publications.setPinned(recordId, pinned),
       createEditDraft: recordId => publications.createEditDraft(recordId),
       applyDraftChanges: draftId => publications.applyDraftChanges(draftId),
+      restoreCollaborativePublication: draftId => publications.restoreCollaborativePublication(draftId),
       inspectDraftPublication: draftId => publications.inspectDraftPublication(draftId),
       resolveMissingDraftPublication: (draftId, options) => publications.resolveMissingDraftPublication(draftId, options),
       delete: recordId => publications.delete(recordId),
@@ -66,7 +70,8 @@ export class TelegramCore {
 
     // Gallery will subscribe here; it never needs to parse raw Telegram Update.
     this.media = Object.freeze({
-      onReceived: handler => events?.on("telegram:owner-media", handler)
+      onReceived: handler => events?.on("telegram:owner-media", handler),
+      onCollaborationReceived: handler => events?.on("telegram:collaboration-media", handler)
     });
   }
 }

@@ -1,17 +1,18 @@
-import { TelegramClient } from "../telegram/TelegramClient.js?v=1.8.8";
+import { TelegramClient } from "../telegram/TelegramClient.js?v=1.12.0";
 import { BotIdentityService } from "../telegram/BotIdentityService.js?v=1.8.8";
 import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5";
 import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.7.16";
 import { TopicTransport } from "../telegram/TopicTransport.js?v=1.8.9";
 import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.8.8";
-import { TelegramCore } from "../telegram/TelegramCore.js?v=1.11.4";
-import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.10.0";
+import { TelegramCore } from "../telegram/TelegramCore.js?v=1.12.0";
+import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.12.0";
 import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.8.9";
 import { PreviewController } from "../telegram/PreviewController.js?v=1.7.20";
 import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.9.5";
-import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.7.22";
-import { PublicationService } from "../telegram/PublicationService.js?v=1.11.4";
+import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.12.0";
+import { PublicationService } from "../telegram/PublicationService.js?v=1.12.0";
 import { LinkRelationStore } from "../links/LinkRelationStore.js?v=1.8.6";
+import { ChannelCollaborationService } from "../telegram/ChannelCollaborationService.js?v=1.12.0";
 
 export function createTelegramDomain({ db, events, renderer, validator, tree, treeProvider = null, previewSyncGuard = null, drafts = null, draftSession = null, documents = null, initialToken = "", verifiedBot = null } = {}) {
   const client = new TelegramClient({ events, token: initialToken });
@@ -22,6 +23,7 @@ export function createTelegramDomain({ db, events, renderer, validator, tree, tr
   const publicationTargets = new PublicationTargetService({ db, events, client, previewChannelBinding });
   const linkRelations = new LinkRelationStore({ db, events });
   const publications = new PublicationService({ db, events, client, renderer, validator, targets: publicationTargets, drafts, draftSession, documents, linkRelations });
+  const collaboration = new ChannelCollaborationService({ events, publicationTargets, publications });
   const serviceMessages = new TelegramServiceMessageCleaner({
     client,
     ownerBinding,
@@ -38,6 +40,7 @@ export function createTelegramDomain({ db, events, renderer, validator, tree, tr
     previewChannelBinding,
     publicationTargets,
     publications,
+    collaboration,
     serviceMessages,
     linkRelations,
     botIdentity
@@ -68,6 +71,7 @@ export function createTelegramDomain({ db, events, renderer, validator, tree, tr
     previewChannelBinding,
     publicationTargets,
     publications,
+    collaboration,
     previewController,
     topics,
     projectPreview: projectPreviewTransport,
@@ -82,6 +86,7 @@ export function createTelegramDomain({ db, events, renderer, validator, tree, tr
     previewChannelBinding,
     publicationTargets,
     publications,
+    collaboration,
     serviceMessages,
     linkRelations,
     topics,

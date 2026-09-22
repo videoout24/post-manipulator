@@ -1,5 +1,4 @@
 import { t } from "../i18n/index.js?v=1.8.6";
-import { TelegramApiError } from "./TelegramClient.js?v=1.8.8";
 
 /*
   Project-facing transport.
@@ -61,10 +60,10 @@ export class ProjectPreviewTransport {
       const message = await this.editEnvelope(messageId, envelope);
       return { action: "edited", message, messageId: Number(messageId) };
     } catch (error) {
-      if (error instanceof TelegramApiError && error.isNotModified()) {
+      if (error?.isNotModified?.()) {
         return { action: "unchanged", message: { message_id: Number(messageId) }, messageId: Number(messageId) };
       }
-      if (error instanceof TelegramApiError && error.isMessageMissing()) {
+      if (error?.isMessageMissing?.()) {
         const message = await this.sendEnvelope(envelope, options);
         this.events?.emit("telegram:project-preview-message", {
           action: "recreated", oldMessageId: Number(messageId), message
@@ -129,13 +128,13 @@ export class ProjectPreviewTransport {
       return await this.deleteMessage(record.messageId);
     } catch (error) {
       // A message that was already removed is equivalent to successful cleanup.
-      if (error instanceof TelegramApiError && error.isMessageMissing()) return true;
+      if (error?.isMessageMissing?.()) return true;
       throw error;
     }
   }
 
   async #handleAccessError(channel, error) {
-    if (!(error instanceof TelegramApiError)) return;
+    if (!Number(error?.errorCode) && !String(error?.description || "")) return;
     if (error.errorCode === 403 || /not enough rights|chat not found|bot was kicked|bot is not a member/i.test(error.description || "")) {
       await this.previewChannelBinding.markUnavailable(`telegram_${error.errorCode || "error"}`, error).catch(() => {});
       this.events?.emit("telegram:project-preview-unavailable", { channel, error });

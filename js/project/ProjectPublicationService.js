@@ -4,7 +4,7 @@ import { ProjectDeploymentResolver, telegramMessageUrl } from "./ProjectDeployme
 import { getProjectPostPublicationEligibility, getProjectPostScheduleEligibility } from "./ProjectPublicationEligibility.js?v=1.8.6";
 import { productionContentSnapshot } from "./ProjectPublicationState.js?v=1.5.9";
 import { isLinearProject } from "./ProjectStore.js?v=1.7.6";
-import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.9.5";
+import { PUBLICATION_DELETE_WINDOW_MS, isPublicationDeleteAvailable } from "../telegram/PublicationService.js?v=1.12.0";
 
 const MAX_TIMER_DELAY = 2_147_000_000;
 const SCHEDULE_RETRY_DELAY = 60_000;
