@@ -1,4 +1,4 @@
-import { getLocale, t } from "./i18n/index.js?v=1.11.4";
+import { getLocale, t } from "./i18n/index.js?v=1.12.2";
 import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.8.6";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.22";
@@ -17,7 +17,7 @@ import { createProjectDomain } from "./app/createProjectDomain.js?v=1.9.8";
 import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.10.0";
 import { createEditorDomain } from "./app/createEditorDomain.js?v=1.12.1";
 import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.12.1";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.12.1";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.12.2";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
 import { PublicationView } from "./publications/PublicationView.js?v=1.12.1";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";

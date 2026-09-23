@@ -349,6 +349,51 @@ assert.equal(manualPayload.request.scope.kind, "field");
 assert.equal(manualPayload.request.contextIncluded, "block");
 assert.equal(manualPayload.messageAst.children.length, 1,
   "Block AI JSON must stay isolated even when the card's full-context checkbox is enabled");
+
+const downloadEvents = [];
+let finishDownloadCleanup = null;
+const originalUrl = globalThis.URL;
+const originalSetTimeout = globalThis.setTimeout;
+try {
+  globalThis.URL = {
+    createObjectURL(blob) {
+      assert.equal(blob.type, "application/json");
+      downloadEvents.push("create-url");
+      return "blob:ai-json";
+    },
+    revokeObjectURL(url) { downloadEvents.push(`revoke:${url}`); }
+  };
+  globalThis.setTimeout = (callback, delay) => {
+    assert.ok(delay >= 1000, "the object URL must remain alive while Linux Firefox starts the download");
+    finishDownloadCleanup = callback;
+    return 1;
+  };
+  const anchor = {
+    click() { downloadEvents.push("click"); },
+    remove() { downloadEvents.push("remove"); }
+  };
+  const downloadExchange = new AiDraftExchange({
+    input: { value: JSON.stringify(manualPayload) },
+    documentRoot: {
+      body: { appendChild(node) { assert.equal(node, anchor); downloadEvents.push("append"); } },
+      createElement(tag) { assert.equal(tag, "a"); return anchor; }
+    },
+    notifications: { show() {} }
+  });
+  downloadExchange.download();
+  assert.deepEqual(downloadEvents, ["create-url", "append", "click", "remove"],
+    "the download link must be attached before clicking and the URL must not be revoked synchronously");
+  assert.equal(anchor.href, "blob:ai-json");
+  assert.match(anchor.download, /-ai-.+\.json$/);
+  assert.equal(anchor.hidden, true);
+  assert.equal(typeof finishDownloadCleanup, "function");
+  finishDownloadCleanup();
+  assert.equal(downloadEvents.at(-1), "revoke:blob:ai-json");
+} finally {
+  globalThis.URL = originalUrl;
+  globalThis.setTimeout = originalSetTimeout;
+}
+
 wholeDraftPayload.messageAst.children[0].props.text = "Whole-draft title";
 const wholeDraftImported = await exchange.importText(JSON.stringify(wholeDraftPayload));
 assert.ok(wholeDraftImported);

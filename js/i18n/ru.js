@@ -1505,6 +1505,7 @@ export const ru = Object.freeze({
   "editor.aiDraftExchange.nothingToCopy": "Нет JSON для копирования",
   "editor.aiDraftExchange.copied": "AI JSON скопирован",
   "editor.aiDraftExchange.nothingToDownload": "Нет JSON для скачивания",
+  "editor.aiDraftExchange.downloadUnavailable": "Скачивание недоступно в этом окне браузера",
   "editor.aiDraftExchange.botUsernameUnavailable": "Не удалось открыть бота: username недоступен",
   "editor.aiDraftExchange.fileTooLarge": "AI JSON превышает допустимые 2 МБ",
   "editor.aiDraftExchange.invalidResponseTitle": "Ответ не прошёл проверку",

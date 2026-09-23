@@ -12,6 +12,7 @@ const MAX_IMPORT_BLOCKS = 500;
 const MAX_IMPORT_DEPTH = 32;
 const MAX_PENDING_REQUESTS = 32;
 const PENDING_REQUEST_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+const DOWNLOAD_URL_REVOKE_DELAY = 30 * 1000;
 
 export class AiDraftExchange {
   constructor({
@@ -142,8 +143,16 @@ export class AiDraftExchange {
       const anchor = this.documentRoot.createElement("a");
       anchor.href = url;
       anchor.download = fileName;
-      anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 0);
+      anchor.hidden = true;
+      const downloadRoot = this.documentRoot.body || this.documentRoot.documentElement;
+      if (!downloadRoot) throw new Error(t("editor.aiDraftExchange.downloadUnavailable"));
+      downloadRoot.appendChild(anchor);
+      try {
+        anchor.click();
+      } finally {
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_REVOKE_DELAY);
+      }
     } catch (error) {
       this.#error(error);
     }

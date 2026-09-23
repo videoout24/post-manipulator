@@ -1505,6 +1505,7 @@ export const en = Object.freeze({
   "editor.aiDraftExchange.nothingToCopy": "There is no JSON to copy",
   "editor.aiDraftExchange.copied": "AI JSON copied",
   "editor.aiDraftExchange.nothingToDownload": "There is no JSON to download",
+  "editor.aiDraftExchange.downloadUnavailable": "Downloads are not available in this browser window",
   "editor.aiDraftExchange.botUsernameUnavailable": "Failed to open the bot: username unavailable",
   "editor.aiDraftExchange.fileTooLarge": "AI JSON exceeds the 2 MB limit",
   "editor.aiDraftExchange.invalidResponseTitle": "Response failed validation",
