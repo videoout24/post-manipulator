@@ -149,6 +149,10 @@ const nestedBlockRequest = buildAiDraftRequest({
 });
 assert.equal(nestedBlockRequest.task.blockSchemas.details.children.items.schemaRef,
   "task.blockSchemas[item.type]", "nested children must refer to the same unique type registry");
+assert.ok(nestedBlockRequest.task.blockSchemas.collage,
+  "an unrestricted container must expose schemas for valid child block types not yet present in the AST");
+assert.ok(nestedBlockRequest.task.blockSchemas.photo,
+  "schemas must recursively include valid descendants of possible container children");
 
 const documentPromptRequest = buildAiDraftRequest({
   messageAst: ast,
@@ -227,10 +231,44 @@ const wholeResponse = structuredClone(ast);
 wholeResponse.children[0].props.text = "Whole-document title";
 const wholeApplied = applyMessageAiResponse(ast, wholeResponse);
 assert.equal(wholeApplied.children[0].props.text, "Whole-document title");
-const structurallyChangedResponse = structuredClone(wholeResponse);
-structurallyChangedResponse.children.pop();
-assert.throws(() => applyMessageAiResponse(ast, structurallyChangedResponse), /структур|structure/i,
-  "a whole-document AI response must not add, remove, reorder, or retype blocks");
+const nestedCurrent = {
+  id: "root",
+  type: "document",
+  props: {},
+  children: [{
+    id: "collage-1",
+    type: "collage",
+    props: { caption: "Films" },
+    children: [{
+      id: "photo-1",
+      type: "photo",
+      props: { url: "https://example.com/one.jpg" },
+      children: []
+    }]
+  }]
+};
+const nestedResponse = structuredClone(nestedCurrent);
+nestedResponse.children[0].children.push({
+  id: "photo-2",
+  type: "photo",
+  props: { url: "https://example.com/two.jpg" },
+  children: []
+});
+const nestedApplied = applyMessageAiResponse(nestedCurrent, nestedResponse, registry);
+assert.equal(nestedApplied.children[0].children.length, 2,
+  "a whole-message response may add valid nested blocks");
+const scopedNestedApplied = applyScopedAiResponse(
+  nestedCurrent, nestedResponse, { kind: "block", nodeId: "collage-1" }, registry
+);
+assert.equal(scopedNestedApplied.children[0].children.length, 2,
+  "a block-scoped response may add valid nested blocks");
+const invalidNested = structuredClone(nestedResponse);
+invalidNested.children[0].children.push({ id: "heading-inside-collage", type: "heading", props: { text: "No" }, children: [] });
+assert.throws(
+  () => applyMessageAiResponse(nestedCurrent, invalidNested, registry),
+  /not allowed|структур|structure/i,
+  "a structurally changed response must still obey the registry's parent/child rules"
+);
 
 assert.equal(isJsonDocument({ document: { file_name: "answer.json" } }), true);
 assert.equal(isJsonDocument({ document: { file_name: "payload.bin", mime_type: "application/json" } }), true);
@@ -318,6 +356,32 @@ assert.equal(storedAst.children[0].props.text, "Whole-draft title",
   "a whole-draft AI response must update its source draft");
 assert.equal(createdDrafts.length, 0,
   "a whole-draft AI response must not create a separate AI draft without a version conflict");
+const structuredPayload = structuredClone(wholeDraftPayload);
+structuredPayload.messageAst.children.push({
+  id: "details-from-ai",
+  type: "details",
+  props: { summary: "More films", open: false },
+  children: [{
+    id: "nested-paragraph-from-ai",
+    type: "paragraph",
+    props: { text: "Nested content" },
+    children: []
+  }]
+});
+const promptsBeforeStructureChange = conflictPrompts.length;
+conflictChoice = null;
+const cancelledStructureChange = await exchange.importText(JSON.stringify(structuredPayload));
+assert.equal(cancelledStructureChange, null);
+assert.equal(storedAst.children.some(node => node.id === "details-from-ai"), false);
+assert.equal(conflictPrompts.length, promptsBeforeStructureChange + 1,
+  "valid structural changes must ask whether to replace the original or create a draft");
+assert.match(conflictPrompts.at(-1).title, /структур|structure/i);
+conflictChoice = "new-draft";
+await exchange.importText(JSON.stringify(structuredPayload));
+assert.equal(createdDrafts.length, 1);
+assert.equal(createdDrafts[0].source.structureChanged, true);
+assert.equal(createdDrafts[0].source.versionConflict, undefined);
+conflictChoice = null;
 manualPayload.messageAst.children[0].props.text = "Imported title";
 const imported = await exchange.importText(JSON.stringify(manualPayload));
 assert.ok(imported);
@@ -337,8 +401,8 @@ conflictChoice = null;
 const cancelledConflict = await exchange.importText(JSON.stringify(manualPayload));
 assert.equal(cancelledConflict, null);
 assert.equal(storedAst.children[0].props.text, "Imported title", "closing the conflict dialog changes nothing");
-assert.equal(createdDrafts.length, 0, "a version conflict must not create a draft without an explicit choice");
-assert.equal(conflictPrompts.length, 1);
+assert.equal(createdDrafts.length, 1, "a version conflict must not create a draft without an explicit choice");
+assert.equal(conflictPrompts.length, 3);
 assert.equal(runtimeRows.has(sentRequestKey), true,
   "cancelling keeps the pending exchange available for another import attempt");
 
@@ -350,9 +414,9 @@ assert.equal(runtimeRows.has(sentRequestKey), false, "a completed conflict choic
 conflictChoice = "new-draft";
 manualPayload.messageAst.children[0].props.text = "Forked title";
 await exchange.importText(JSON.stringify(manualPayload));
-assert.equal(createdDrafts.length, 1, "a conflict fork is created only after that explicit choice");
-assert.equal(createdDrafts[0].messageAst.children[0].props.text, "Forked title");
-assert.equal(createdDrafts[0].source.importedVia, "manual");
+assert.equal(createdDrafts.length, 2, "a conflict fork is created only after that explicit choice");
+assert.equal(createdDrafts[1].messageAst.children[0].props.text, "Forked title");
+assert.equal(createdDrafts[1].source.importedVia, "manual");
 
 let projectAst = structuredClone(ast);
 const projectPost = {
@@ -409,7 +473,7 @@ assert.ok(wholePostImported);
 assert.equal(projectAst.children[0].props.text, "Whole-project-post title",
   "a whole-post AI response must update its source Project post");
 assert.deepEqual(openedProjectPost, { projectId: "project-1", postId: "post-1" });
-assert.equal(createdDrafts.length, 1,
+assert.equal(createdDrafts.length, 2,
   "updating a whole Project post must not create another AI draft");
 
 const pruningExchange = new AiDraftExchange({

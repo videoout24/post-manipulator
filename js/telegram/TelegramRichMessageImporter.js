@@ -1,5 +1,5 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { comessageValueFromRichText } from "../core/Comessage.js?v=1.12.0";
+import { comessageValueFromRichText } from "../core/Comessage.js?v=1.12.1";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 
 export function importTelegramRichMessage(richMessage) {

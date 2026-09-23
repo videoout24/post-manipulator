@@ -1,7 +1,9 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.10.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
-import { resolveAiSchemaCatalog } from "./AiBlockSchemaResolver.js?v=1.10.1";
+import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
+import { Validator } from "../core/Validator.js?v=1.12.1";
+import { resolveAiSchemaCatalog } from "./AiBlockSchemaResolver.js?v=1.12.1";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
 export const AI_DRAFT_SCHEMA_VERSION = 1;
@@ -201,7 +203,7 @@ export class AiDraftExchange {
       });
       const draft = await this.drafts.create({
         title,
-        messageAst: ast,
+        messageAst: validateAiAstStructure(ast, this.registry),
         source: {
           kind: "ai-response",
           requestId: String(payload.request?.id || ""),
@@ -256,12 +258,18 @@ export class AiDraftExchange {
     const current = await this.drafts?.get?.(target.draftId);
     if (!current) throw new Error(t("editor.aiDraftExchange.sourceDraftNotFound"));
     const patchedAst = scope.kind === "message"
-      ? applyMessageAiResponse(current.messageAst, responseAst)
-      : applyScopedAiResponse(current.messageAst, responseAst, scope);
+      ? applyMessageAiResponse(current.messageAst, responseAst, this.registry)
+      : applyScopedAiResponse(current.messageAst, responseAst, scope, this.registry);
     const sameVersion = Number(current.updatedAt || 0) === Number(target.version || 0);
-    if (!sameVersion) {
-      const choice = await this.#resolveVersionConflict(current.title);
-      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, current.title);
+    const structureChanged = astStructure(current.messageAst) !== astStructure(patchedAst);
+    if (!sameVersion || structureChanged) {
+      const choice = await this.#resolveImportChoice(current.title, { versionConflict: !sameVersion });
+      if (choice === "new-draft") {
+        return this.#createResponseFork(payload, patchedAst, current.title, {
+          versionConflict: !sameVersion,
+          structureChanged
+        });
+      }
       if (choice !== "apply-current") return null;
     }
 
@@ -283,12 +291,18 @@ export class AiDraftExchange {
     const post = await this.projectSession?.store?.getPost?.(target.projectId, target.postId);
     if (!post) throw new Error(t("editor.aiDraftExchange.sourcePostNotFound"));
     const patchedAst = scope.kind === "message"
-      ? applyMessageAiResponse(post.messageAst, responseAst)
-      : applyScopedAiResponse(post.messageAst, responseAst, scope);
+      ? applyMessageAiResponse(post.messageAst, responseAst, this.registry)
+      : applyScopedAiResponse(post.messageAst, responseAst, scope, this.registry);
     const sameVersion = Number(post.updatedAt || 0) === Number(target.version || 0);
-    if (!sameVersion) {
-      const choice = await this.#resolveVersionConflict(post.title);
-      if (choice === "new-draft") return this.#createConflictFork(payload, patchedAst, post.title);
+    const structureChanged = astStructure(post.messageAst) !== astStructure(patchedAst);
+    if (!sameVersion || structureChanged) {
+      const choice = await this.#resolveImportChoice(post.title, { versionConflict: !sameVersion });
+      if (choice === "new-draft") {
+        return this.#createResponseFork(payload, patchedAst, post.title, {
+          versionConflict: !sameVersion,
+          structureChanged
+        });
+      }
       if (choice !== "apply-current") return null;
     }
 
@@ -299,19 +313,28 @@ export class AiDraftExchange {
     return this.projectSession?.snapshot?.() || true;
   }
 
-  async #resolveVersionConflict(title) {
-    const options = {
-      title: t("editor.aiDraftExchange.versionConflictTitle"),
-      message: t("editor.aiDraftExchange.versionConflictMessage", { 0: title }),
-      choices: [
-        { value: "apply-current", label: t("editor.aiDraftExchange.versionConflictApplyCurrent") },
-        { value: "new-draft", label: t("editor.aiDraftExchange.versionConflictCreateDraft"), className: "primary" }
-      ]
-    };
+  async #resolveImportChoice(title, { versionConflict = false } = {}) {
+    const options = versionConflict
+      ? {
+          title: t("editor.aiDraftExchange.versionConflictTitle"),
+          message: t("editor.aiDraftExchange.versionConflictMessage", { 0: title }),
+          choices: [
+            { value: "apply-current", label: t("editor.aiDraftExchange.versionConflictApplyCurrent") },
+            { value: "new-draft", label: t("editor.aiDraftExchange.versionConflictCreateDraft"), className: "primary" }
+          ]
+        }
+      : {
+          title: t("editor.aiDraftExchange.structureChangeTitle"),
+          message: t("editor.aiDraftExchange.structureChangeMessage", { 0: title }),
+          choices: [
+            { value: "apply-current", label: t("editor.aiDraftExchange.structureChangeApplyOriginal") },
+            { value: "new-draft", label: t("editor.aiDraftExchange.structureChangeCreateDraft"), className: "primary" }
+          ]
+        };
     return this.conflictResolver ? this.conflictResolver(options) : chooseDarkDialog(options);
   }
 
-  async #createConflictFork(payload, patchedAst, title) {
+  async #createResponseFork(payload, patchedAst, title, { versionConflict = false, structureChanged = false } = {}) {
     const fork = await this.drafts.create({
       title: t("editor.aiDraftExchange.importedDraftTitle", { 0: title }),
       messageAst: patchedAst,
@@ -320,12 +343,19 @@ export class AiDraftExchange {
         requestId: String(payload.request?.id || ""),
         target: structuredClone(payload.request?.target || {}),
         importedVia: "manual",
-        versionConflict: true
+        ...(versionConflict ? { versionConflict: true } : {}),
+        ...(structureChanged ? { structureChanged: true } : {})
       }
     });
     await this.documents?.openDraft?.(fork.id);
     this.dialog?.close?.();
-    this.#notify({ message: t("editor.aiDraftExchange.versionConflictForked", { 0: fork.title }), type: "warning", duration: 9000 });
+    this.#notify({
+      message: t(versionConflict
+        ? "editor.aiDraftExchange.versionConflictForked"
+        : "editor.aiDraftExchange.structureChangeForked", { 0: fork.title }),
+      type: versionConflict ? "warning" : "success",
+      duration: 9000
+    });
     return fork;
   }
 
@@ -459,16 +489,16 @@ export function buildAiDraftRequest({
       blockSchemas,
       responseContract: [
         "Return the complete JSON object only.",
-        "Preserve format, schemaVersion, request, task, block id/type/children, and every ai.prompt.",
+        "Preserve format, schemaVersion, request, task, every ai.prompt, and the id/type of each unchanged block. Give every new block a unique non-empty id.",
         "For every block, use task.blockSchemas[block.type] as the canonical props and children shape. Each block type is defined once and shared by all blocks of that type.",
         "When changing a rich-text property, return a string unless its prompt explicitly requests formatting. If requested, return exactly one non-nested object matching task.formatSets[formatSet]; new rich-text arrays and nested formats are forbidden. Preserve unchanged existing rich-text values verbatim.",
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"
-            ? `Change only the content of block ${normalizedScope.nodeId}; keep its identity and structure unchanged.`
+            ? `Change only block ${normalizedScope.nodeId}. Its id/type must stay unchanged, but its nested children may be added, removed, reordered, or changed when the prompt requires it; the resulting nesting must match task.blockSchemas.`
             : normalizedDocumentPrompt
-              ? "Change props only where task.documentPrompt or an ai.prompt requests a change. A documentPrompt may coordinate changes across multiple explicitly referenced blocks; keep all other data unchanged."
-              : "Change props only where an ai.prompt requests a change; keep all other data unchanged."
+              ? "Change props or nesting only where task.documentPrompt or an ai.prompt requests a change. A documentPrompt may coordinate changes across multiple explicitly referenced blocks; every resulting parent/child relation must match task.blockSchemas and all other data must stay unchanged."
+              : "Change props or nesting only where an ai.prompt requests a change; every resulting parent/child relation must match task.blockSchemas and all other data must stay unchanged."
       ]
     },
     messageAst: ast
@@ -543,6 +573,25 @@ export function validateAiAst(input) {
   return visit(input, 0, true);
 }
 
+export function validateAiAstStructure(input, registry = null) {
+  const ast = validateAiAst(input);
+  if (!registry?.get) return ast;
+  const tree = new BlockTree(ast);
+  const validator = new Validator(registry);
+  const errors = [];
+  const visit = (node, parent) => {
+    errors.push(...validator.validateNode(node, parent));
+    for (const child of node.children || []) visit(child, node);
+  };
+  for (const child of ast.children || []) visit(child, ast);
+  errors.push(...validator.validate(tree));
+  const uniqueErrors = [...new Set(errors)];
+  if (uniqueErrors.length) {
+    throw new Error(t("editor.aiDraftExchange.invalidAstStructure", { 0: uniqueErrors[0] }));
+  }
+  return ast;
+}
+
 export function mergeMissingAiPrompts(responseAst, originalAst) {
   const result = validateAiAst(responseAst);
   const prompts = new Map();
@@ -558,7 +607,7 @@ export function mergeMissingAiPrompts(responseAst, originalAst) {
   return result;
 }
 
-export function applyScopedAiResponse(currentAst, responseAst, scope = {}) {
+export function applyScopedAiResponse(currentAst, responseAst, scope = {}, registry = null) {
   const current = validateAiAst(currentAst);
   const response = validateAiAst(responseAst);
   const target = findAstNode(current, scope.nodeId);
@@ -575,22 +624,18 @@ export function applyScopedAiResponse(currentAst, responseAst, scope = {}) {
     target.props ||= {};
     target.props[field] = structuredClone(returned.props?.[field]);
     if (!target.ai?.prompt && returned.ai?.prompt) target.ai = structuredClone(returned.ai);
-    return current;
+    return validateAiAstStructure(current, registry);
   }
 
   if (scope.kind !== "block") throw new Error(t("editor.aiDraftExchange.invalidScope"));
-  if (blockShape(target) !== blockShape(returned)) throw new Error(t("editor.aiDraftExchange.targetBlockStructureChanged"));
   replaceAstNode(current, target.id, returned);
-  return mergeMissingAiPrompts(current, currentAst);
+  return validateAiAstStructure(mergeMissingAiPrompts(current, currentAst), registry);
 }
 
-export function applyMessageAiResponse(currentAst, responseAst) {
+export function applyMessageAiResponse(currentAst, responseAst, registry = null) {
   const current = validateAiAst(currentAst);
   const response = validateAiAst(responseAst);
-  if (blockShape(current) !== blockShape(response)) {
-    throw new Error(t("editor.aiDraftExchange.targetDocumentStructureChanged"));
-  }
-  return mergeMissingAiPrompts(response, current);
+  return validateAiAstStructure(mergeMissingAiPrompts(response, current), registry);
 }
 
 export function isAiDraftResponseText(text) {
@@ -646,7 +691,7 @@ function taskInstruction(scope, documentPrompt = "") {
     return `Use messageAst as context. Apply block ${scope.nodeId}'s ai.prompt only to its props.${scope.field} value.`;
   }
   if (scope.kind === "block") {
-    return `Use messageAst as context. Apply block ${scope.nodeId}'s ai.prompt only to that block while preserving its identity and child structure.`;
+    return `Use messageAst as context. Apply block ${scope.nodeId}'s ai.prompt only to that block. Preserve its id/type; its nested children may change when requested and must match task.blockSchemas.`;
   }
   if (documentPrompt) {
     return "Use the full message AST as context. Apply task.documentPrompt across every block it explicitly addresses, including referenced following or preceding blocks. Also apply each block's ai.prompt to that block.";
@@ -691,11 +736,11 @@ function replaceAstNode(root, nodeId, replacement) {
   if (!visit(root)) throw new Error(t("editor.aiDraftExchange.targetBlockNotFound"));
 }
 
-function blockShape(node) {
+function astStructure(node) {
   return JSON.stringify({
     id: String(node?.id || ""),
     type: String(node?.type || ""),
-    children: (node?.children || []).map(child => JSON.parse(blockShape(child)))
+    children: (node?.children || []).map(child => JSON.parse(astStructure(child)))
   });
 }
 

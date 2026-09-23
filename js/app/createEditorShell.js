@@ -2,12 +2,12 @@ import { AppNavigation } from "./AppNavigation.js?v=1.9.5";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
 import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.9.6";
 import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.9.5";
-import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.12.0";
+import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.12.1";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.9.5";
 import { ProjectLibraryView } from "../project/ProjectLibraryView.js?v=1.11.4";
 import { EditorCommandController } from "../editor/EditorCommandController.js?v=1.9.7";
 import { EditorToolController } from "../editor/EditorToolController.js?v=1.6.5";
-import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.12.0";
+import { AiDraftExchange } from "../editor/AiDraftExchange.js?v=1.12.1";
 import { showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 import { t } from "../i18n/index.js?v=1.8.6";
 

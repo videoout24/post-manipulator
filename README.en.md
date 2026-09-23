@@ -71,7 +71,8 @@ The `AI JSON` button creates a portable `rich-current-ai-draft` package containi
 - the ID and version of the source draft or Project post;
 - either the complete structured AST or the target block's local context;
 - the exact permitted change scope (`message`, `block`, or `field`);
-- block instructions and a contract requiring the complete JSON to be returned without structural changes;
+- block instructions and a contract requiring the complete JSON to be returned;
+  nested structure may change as requested, but must satisfy the registry schemas;
 - `task.blockSchemas`, the expected `props` and `children` shapes derived from
   the block and property registries. Each encountered block type is described
   once: for example, three lists share `task.blockSchemas.list`, while two tables
@@ -116,11 +117,20 @@ separate navigation action. A future AI API integration can use the same package
 and importer without changing the draft format.
 
 An isolated response is applied only to the permitted block or field. If the
-response uses the whole-document prompt, it is applied to the source draft or
-Project post while preserving block identity and structure. If the
-source version changed after export, the application shows a conflict dialog
-instead of changing data automatically. The owner can apply the response to the
-current version, create a separate draft, or cancel without changing anything.
+scope is a field, its structure remains unchanged. Within a block or the whole
+message, AI may add, remove, and rearrange nested blocks. Before import, the final
+tree is recursively validated against the registry: block types, allowed parents
+and children, `minItems`/`maxItems` constraints, required properties, and
+overall message limits. Schemas for allowed child types are included in the AI
+JSON even when the source AST does not yet contain children of those types.
+
+If a valid response changes the `id/type/children` tree, the application does
+not apply it automatically. The owner chooses whether to replace the original
+Draft or Project post, or save the result as a new Draft.
+If the source version changed after export, the application shows a conflict
+dialog instead of changing data automatically. The owner can apply the response
+to the current version, create a separate Draft, or cancel without changing
+anything.
 Pending AI requests are limited to 32 records and 30 days; opening another
 request for the same document and scope supersedes the previous record.
 
@@ -192,6 +202,13 @@ is not the preview channel, and has other admin bots. **Check** refreshes the
 administrator list and opens a checkbox dialog; updates are accepted only from
 explicitly selected bots.
 
+Enable **Sign Messages** in the channel settings: the application uses the post
+signature to identify the bot that sent it. In addition, the owner account of
+every participating bot must be added to the channel. This is a separate
+Telegram client navigation requirement. Without owner membership, an
+administrator bot can still publish and receive coworking updates through the
+Bot API, but that owner's editor cannot open the channel.
+
 Ordinary files posted by a selected bot are indexed in Gallery. When source
 deletion after indexing is disabled, the owner's private chat gets a topic named
 after that bot and the message is copied there. Media in the first imported Rich
@@ -207,12 +224,14 @@ the publication itself is deleted. CoMessage Drafts cannot be moved into a
 Project.
 
 Every bot imports the publication into an independent local Draft. Incoming edits
-from another bot do not overwrite that copy and are never pushed automatically;
-the local version replaces the Telegram post only through **Sync**. The
-`#comessage_…` marker is the stable identity while `message_id` is a mutable
-pointer. If the shared post was deleted, Sync offers to restore a new message
-with the same marker; the other bots relink their copies to the new `message_id`
-when they receive the update.
+update the version shown in **Publications**, but do not overwrite the working
+copy automatically. **Sync** in Publications loads the current channel version
+into the editor, while **Update** in the editor sends the local version to the
+channel. The direction does not depend on which bot created the original post.
+The `#comessage_…` marker is the stable identity while `message_id` is a
+mutable pointer. If the shared post was deleted, **Update** offers to restore a
+new message with the same marker; the other bots relink their copies to the new
+`message_id` when they receive the update.
 
 ## Why there is no backend
 
@@ -325,7 +344,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.12.0
+https://videoout24.github.io/post-manipulator/?build=1.12.1
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -402,7 +421,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.0`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.1`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

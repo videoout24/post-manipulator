@@ -1,5 +1,5 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
 import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.4";

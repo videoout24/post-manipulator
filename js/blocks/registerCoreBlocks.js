@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { FORMAT_GROUPS } from "../core/FormattingRegistry.js?v=1.9.5";
 
 const prop = (property, key, extra = {}) => ({ property, key, ...extra });

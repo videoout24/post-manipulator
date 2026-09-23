@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 const META = Object.freeze({
   photo: { label: t("app.appNotifications.photo"), icon: "▧" },
   video: { label: t("app.appNotifications.video"), icon: "▶" },

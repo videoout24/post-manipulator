@@ -1,8 +1,8 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { normalizeMediaSourcePatch } from "../core/MediaSource.js?v=1.11.4";
 import { defaultDateTimeLocal } from "../core/SemanticRichText.js?v=1.5.9";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { createComessageValue } from "../core/Comessage.js?v=1.12.0";
+import { createComessageValue } from "../core/Comessage.js?v=1.12.1";
 import {
   TELEGRAM_LIMITS,
   countBlocks,

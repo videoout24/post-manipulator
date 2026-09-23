@@ -54,9 +54,15 @@ assert.equal(configured.collaboration.enabled, true);
 assert.deepEqual(configured.collaboration.selectedBotIds, [20]);
 
 const drafts = new DraftStore({ db, events });
+const editedPayloads = [];
+let failEdits = false;
 let restoredMessageId = 500;
 const telegramClient = {
-  async editRichMessage() { throw { isMessageMissing: () => true }; },
+  async editRichMessage(payload) {
+    editedPayloads.push(structuredClone(payload));
+    if (failEdits) throw { isMessageMissing: () => true };
+    return true;
+  },
   async sendRichMessage() { return { message_id: restoredMessageId, date: 2_000 }; }
 };
 const publications = new PublicationService({
@@ -101,6 +107,8 @@ const draftId = records[0].source.draftId;
 const localDraft = await drafts.get(draftId);
 localDraft.messageAst.children[1].props.text = "My independent version";
 await drafts.saveAst(draftId, localDraft.messageAst);
+records[0].collaboration.localOrigin = true;
+await db.put("publications", records[0].id, records[0]);
 
 const editedUpdate = structuredClone(initialUpdate);
 editedUpdate.edited_channel_post = editedUpdate.channel_post;
@@ -110,6 +118,33 @@ await collaboration.handleUpdate(editedUpdate);
 assert.equal((await drafts.get(draftId)).messageAst.children[1].props.text, "My independent version",
   "incoming edits never overwrite the local working copy");
 assert.equal(mediaEvents.length, 1, "edited posts do not re-index initial Rich Message media");
+records = await publications.list();
+assert.equal(records[0].messageAst.children[1].props.text, "Another bot version",
+  "incoming edits update the channel version stored in Publications");
+assert.equal(records[0].collaboration.localOrigin, true,
+  "a remote edit remains available even when the local bot authored the original");
+
+let activeDraftFlushes = 0;
+const reloadedDraftIds = [];
+publications.draftSession = {
+  activeDraftId: draftId,
+  async flush() { activeDraftFlushes += 1; }
+};
+publications.documents = { async openDraft(id) { reloadedDraftIds.push(id); } };
+const pulledDraft = await publications.pullCollaborativePublication(records[0].id);
+assert.equal(pulledDraft.messageAst.children[1].props.text, "Another bot version",
+  "Sync from Publications pulls the channel version into the editor draft");
+assert.equal(editedPayloads.length, 0, "pulling from Publications must not edit Telegram");
+assert.equal(activeDraftFlushes, 1, "an open editor draft is flushed before the pull");
+assert.deepEqual(reloadedDraftIds, [draftId], "an open Canvas is reloaded with the pulled version");
+
+const editorDraft = await drafts.get(draftId);
+editorDraft.messageAst.children[1].props.text = "Editor update";
+await drafts.saveAst(draftId, editorDraft.messageAst);
+const updated = await publications.applyDraftChanges(draftId);
+assert.equal(updated.messageAst.children[1].props.text, "Editor update");
+assert.equal(editedPayloads[0].richMessage.blocks[1].props.text, "Editor update",
+  "Update from the editor pushes the local version to Telegram");
 
 const restoredUpdate = structuredClone(initialUpdate);
 restoredUpdate.channel_post.message_id = 41;
@@ -119,6 +154,7 @@ assert.equal(records[0].messageId, 41, "the stable marker relinks a restored Tel
 assert.equal((await drafts.get(draftId)).source.messageId, 41);
 assert.equal(mediaEvents.at(-1).sourceEventKey, stableMediaKey, "restores reuse stable per-block media keys");
 
+failEdits = true;
 await assert.rejects(
   () => publications.applyDraftChanges(draftId),
   error => error.code === "COLLABORATIVE_PUBLICATION_MISSING"

@@ -1,10 +1,9 @@
-import { getLocale, t } from "../i18n/index.js?v=1.12.0";
+import { getLocale, t } from "../i18n/index.js?v=1.12.1";
 import { linkTargetTooltip, linkTargetVisualState } from "../links/LinkTarget.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
-import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.12.0";
+import { isPublicationDeleteAvailable, publicationDeleteHoursLeft } from "../telegram/PublicationService.js?v=1.12.1";
 import { getProjectPostScheduleEligibility } from "../project/ProjectPublicationEligibility.js?v=1.8.6";
-import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
 
 export class PublicationView {
   constructor({
@@ -1173,6 +1172,12 @@ export class PublicationView {
       );
       const body = el("div", "publication-draft-dialog-body");
       body.append(el("p", "", t("publications.publicationView.coworkingModeHint", { 0: inspection.target?.title || "Telegram" })));
+      const requirements = el("div", "publication-collaboration-requirements");
+      requirements.append(
+        el("p", "", t("publications.publicationView.coworkingSignedPostsRequirement")),
+        el("p", "", t("publications.publicationView.coworkingOwnerMembershipRequirement"))
+      );
+      body.append(requirements);
       const selected = new Set((inspection.selectedBotIds || []).map(Number));
       const list = el("div", "publication-collaboration-bots");
       for (const bot of inspection.bots) {
@@ -1226,22 +1231,9 @@ export class PublicationView {
     if (control) control.disabled = true;
     try {
       await this.documents?.saveCurrentContext?.();
-      const draft = await this.telegramCore.publications.createEditDraft(record.id);
-      let updated;
-      try {
-        updated = await this.telegramCore.publications.applyDraftChanges(draft.id);
-      } catch (error) {
-        if (error?.code !== "COLLABORATIVE_PUBLICATION_MISSING") throw error;
-        const decision = await chooseDarkDialog({
-          title: t("editor.editorRightPanel.collaborativePublicationMissingTitle"),
-          message: t("editor.editorRightPanel.collaborativePublicationMissingMessage"),
-          choices: [{ value: "restore", label: t("editor.editorRightPanel.restoreCollaborativePublication"), className: "primary" }]
-        });
-        if (decision !== "restore") return false;
-        updated = await this.telegramCore.publications.restoreCollaborativePublication(draft.id);
-      }
-      this.notifications?.show?.({ message: t("publications.publicationView.collaborativePublicationSynced"), type: "success" });
-      return Boolean(updated);
+      const draft = await this.telegramCore.publications.pullCollaborativePublication(record.id);
+      this.notifications?.show?.({ message: t("publications.publicationView.collaborativePublicationPulled"), type: "success" });
+      return Boolean(draft);
     } catch (error) {
       this.notifications?.show?.({ message: t("publications.publicationView.syncFailed", { 0: error?.message || error }), type: "error" });
       return false;

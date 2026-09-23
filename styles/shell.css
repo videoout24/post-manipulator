@@ -189,6 +189,8 @@
 .publication-draft-dialog { width: min(460px, calc(100vw - 28px)); }
 .publication-draft-dialog-body { display: grid; gap: 12px; padding: 14px; }
 .publication-collaboration-dialog { width: min(520px, calc(100vw - 28px)); }
+.publication-collaboration-requirements { display: grid; gap: 6px; padding: 9px 10px; border: 1px solid var(--theme-warning-border, #78632d); border-radius: 7px; background: var(--theme-warning-subtle, #302713); color: var(--theme-warning, #f1ca68); font-size: 9px; line-height: 1.45; }
+.publication-collaboration-requirements p { margin: 0; }
 .publication-collaboration-bots { display: grid; gap: 7px; max-height: min(50vh, 360px); overflow: auto; }
 .publication-collaboration-bot { display: flex; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--theme-border, #293746); border-radius: 7px; background: var(--theme-surface-raised, #0b1118); color: var(--theme-text, #dce7f3); cursor: pointer; }
 .publication-collaboration-bot > span { min-width: 0; display: grid; gap: 2px; }

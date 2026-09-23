@@ -1,5 +1,5 @@
-import { comessageValueFromRichMessage } from "../core/Comessage.js?v=1.12.0";
-import { importTelegramRichMessage } from "./TelegramRichMessageImporter.js?v=1.12.0";
+import { comessageValueFromRichMessage } from "../core/Comessage.js?v=1.12.1";
+import { importTelegramRichMessage } from "./TelegramRichMessageImporter.js?v=1.12.1";
 
 export class ChannelCollaborationService {
   constructor({ events = null, publicationTargets, publications } = {}) {

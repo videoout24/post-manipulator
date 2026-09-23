@@ -77,4 +77,4 @@ function normalizeName(value) {
   if ([...name].length > 128) throw new Error(t("telegram.topicTransport.theTopicNameMustNotExceed128"));
   return name;
 }
-import { TelegramApiError } from "./TelegramClient.js?v=1.12.0";
+import { TelegramApiError } from "./TelegramClient.js?v=1.12.1";

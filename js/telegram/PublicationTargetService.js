@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { randomBytes } from "../core/Random.js?v=1.5.9";
 
 const TARGETS_KEY = "publicationTargets";

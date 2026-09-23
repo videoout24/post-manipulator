@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 const PREFIX = "draft_";
 
 export class DraftStore {

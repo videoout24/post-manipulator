@@ -1,18 +1,18 @@
-import { TelegramClient } from "../telegram/TelegramClient.js?v=1.12.0";
+import { TelegramClient } from "../telegram/TelegramClient.js?v=1.12.1";
 import { BotIdentityService } from "../telegram/BotIdentityService.js?v=1.8.8";
 import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5";
 import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.7.16";
 import { TopicTransport } from "../telegram/TopicTransport.js?v=1.8.9";
 import { ProjectPreviewTransport } from "../telegram/ProjectPreviewTransport.js?v=1.8.8";
-import { TelegramCore } from "../telegram/TelegramCore.js?v=1.12.0";
-import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.12.0";
+import { TelegramCore } from "../telegram/TelegramCore.js?v=1.12.1";
+import { TelegramRuntime } from "../telegram/TelegramRuntime.js?v=1.12.1";
 import { TelegramServiceMessageCleaner } from "../telegram/TelegramServiceMessageCleaner.js?v=1.8.9";
 import { PreviewController } from "../telegram/PreviewController.js?v=1.7.20";
-import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.12.0";
-import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.12.0";
-import { PublicationService } from "../telegram/PublicationService.js?v=1.12.0";
+import { TelegramNavigation } from "../telegram/TelegramNavigation.js?v=1.12.1";
+import { PublicationTargetService } from "../telegram/PublicationTargetService.js?v=1.12.1";
+import { PublicationService } from "../telegram/PublicationService.js?v=1.12.1";
 import { LinkRelationStore } from "../links/LinkRelationStore.js?v=1.8.6";
-import { ChannelCollaborationService } from "../telegram/ChannelCollaborationService.js?v=1.12.0";
+import { ChannelCollaborationService } from "../telegram/ChannelCollaborationService.js?v=1.12.1";
 
 export function createTelegramDomain({ db, events, renderer, validator, tree, treeProvider = null, previewSyncGuard = null, drafts = null, draftSession = null, documents = null, initialToken = "", verifiedBot = null } = {}) {
   const client = new TelegramClient({ events, token: initialToken });

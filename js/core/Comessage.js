@@ -1,6 +1,6 @@
 import { randomUUID } from "./Random.js?v=1.5.9";
 import { richTextToPlain } from "./RichText.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 
 export const COMESSAGE_PREFIX = "#comessage_";
 const COMESSAGE_PATTERN = /^#comessage_[A-Za-z0-9_]{6,96}$/;

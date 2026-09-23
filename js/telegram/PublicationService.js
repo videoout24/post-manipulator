@@ -1,7 +1,7 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
-import { comessageKey, comessagePublicationId, comessageValueFromAst } from "../core/Comessage.js?v=1.12.0";
+import { comessageKey, comessagePublicationId, comessageValueFromAst } from "../core/Comessage.js?v=1.12.1";
 
 export const PUBLICATION_DELETE_WINDOW_MS = 48 * 60 * 60 * 1000;
 const PENDING_FORWARD_PREFIX = "publicationForward:";
@@ -73,7 +73,7 @@ export class PublicationService {
     if (!record.chatId || !record.messageId || !record.messageAst) return { state: "missing", draft, record };
     // Bot API has no read-only getMessage method. The legacy presence probe edits
     // the message and would silently overwrite another bot's independent version.
-    // CoMessage therefore checks existence only when the user explicitly Syncs.
+    // CoMessage therefore checks existence only when the user explicitly Updates from the editor.
     if (record.collaboration?.id) return { state: "unchecked", draft, record };
 
     const envelope = this.renderer.renderEnvelope(astTree(record.messageAst));
@@ -416,6 +416,7 @@ export class PublicationService {
     const existing = await this.db.get("publications", id, null);
     if (existing) {
       const previousMessageId = Number(existing.messageId || 0);
+      existing.messageAst = structuredClone(messageAst);
       existing.messageId = messageId;
       existing.chatId = chatId;
       existing.target = structuredClone(target);
@@ -666,6 +667,28 @@ export class PublicationService {
         scheduledAt: Number(record.scheduledAt || 0) || null,
         publicationAst: structuredClone(record.messageAst)
       }
+    });
+  }
+
+  async pullCollaborativePublication(recordId) {
+    return this.#withRecordOperation(recordId, async () => {
+      const record = await this.db.get("publications", recordId, null);
+      if (!record?.collaboration?.id) {
+        throw new Error(t("telegram.publicationService.collaborativePublicationNotFound"));
+      }
+      if (!record.messageAst?.children) {
+        throw new Error(t("telegram.publicationService.thereIsNoLocalCopyOfThe"));
+      }
+
+      const draft = await this.createEditDraft(record.id);
+      if (this.draftSession?.activeDraftId === draft.id) await this.draftSession.flush();
+      await this.drafts.saveAst(draft.id, record.messageAst);
+      await this.drafts.updatePublicationBaseline?.(draft.id, record.id, record.messageAst);
+
+      if (this.draftSession?.activeDraftId === draft.id && this.documents?.openDraft) {
+        await this.documents.openDraft(draft.id);
+      }
+      return this.drafts.get(draft.id);
     });
   }
 

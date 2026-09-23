@@ -18,14 +18,24 @@ export function resolveAiSchemaCatalog(messageAst, registry) {
     }
   };
   const seen = new Set();
+  const queued = [];
+  const enqueue = type => {
+    const normalized = String(type || "").trim();
+    if (!normalized || seen.has(normalized) || queued.includes(normalized)) return;
+    queued.push(normalized);
+  };
   walk(messageAst, node => {
-    const type = String(node?.type || "").trim();
-    if (!type || type === "document" || seen.has(type)) return;
+    if (!(node?.id === "root" && node?.type === "document")) enqueue(node?.type);
+  });
+  while (queued.length) {
+    const type = queued.shift();
+    if (seen.has(type)) continue;
     seen.add(type);
     const definition = registry?.get?.(type);
-    if (!definition) return;
+    if (!definition) continue;
     blockSchemas[type] = describeBlock(definition, registry, formats);
-  });
+    for (const childType of allowedChildTypes(definition, registry)) enqueue(childType);
+  }
   return {
     blockSchemas,
     formatSets,
@@ -203,4 +213,16 @@ function walk(node, visit) {
   if (!node || typeof node !== "object") return;
   visit(node);
   for (const child of node.children || []) walk(child, visit);
+}
+
+function allowedChildTypes(definition, registry) {
+  const children = definition?.children || {};
+  if (children.allowed !== true) return [];
+  if (Array.isArray(children.types) && children.types.length) return children.types;
+  return (registry?.all?.() || [])
+    .filter(child => {
+      const parents = child?.constraints?.allowedParents;
+      return !Array.isArray(parents) || parents.includes(definition.type);
+    })
+    .map(child => child.type);
 }

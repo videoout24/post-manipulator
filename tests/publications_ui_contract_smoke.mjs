@@ -104,6 +104,10 @@ assert.doesNotMatch(view, /`💬 \$\{Number\(record\.commentCount/);
 assert.match(view, /reactionEmoji\(reaction\.type\)/);
 assert.match(view, /publication-reaction-row/);
 assert.match(view, /reactionRow\.append\(badge\)/);
+assert.match(view, /pullCollaborativePublication\(record\.id\)/,
+  "Sync in Publications must pull the channel version into the editor");
+assert.doesNotMatch(view, /publications\.applyDraftChanges/,
+  "Publications must never push the editor version to Telegram");
 assert.match(panel, /await this\.documents\?\.saveCurrentContext\?\.\(\)/);
 assert.match(panel, /this\.onPublishDraft\(fresh\)/);
 assert.match(panel, /this\.onScheduleDraft\(fresh\)/);

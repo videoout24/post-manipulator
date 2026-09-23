@@ -3,7 +3,7 @@ import { EventBus } from "./core/EventBus.js?v=1.5.9";
 import { Storage } from "./storage/Storage.js?v=1.8.6";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.22";
 import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.9.5";
-import { GalleryView } from "./gallery/GalleryView.js?v=1.12.0";
+import { GalleryView } from "./gallery/GalleryView.js?v=1.12.1";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.9.5";
 import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.9.5";
 import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js?v=1.9.5";
@@ -12,21 +12,21 @@ import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { OperationFeedback } from "./app/OperationFeedback.js?v=1.8.6";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.8.6";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.12.0";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.12.1";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.9.8";
 import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.10.0";
-import { createEditorDomain } from "./app/createEditorDomain.js?v=1.12.0";
-import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.12.0";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.12.0";
+import { createEditorDomain } from "./app/createEditorDomain.js?v=1.12.1";
+import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.12.1";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.12.1";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
-import { PublicationView } from "./publications/PublicationView.js?v=1.12.0";
+import { PublicationView } from "./publications/PublicationView.js?v=1.12.1";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
 import { AutomaticPublicationBackup } from "./storage/AutomaticPublicationBackup.js?v=1.9.5";
 import { BlockCollector } from "./editor/BlockCollector.js?v=1.9.6";
 import { LinkingController } from "./links/LinkingController.js?v=1.11.4";
 import { LinkRelationNavigator } from "./links/LinkRelationNavigator.js?v=1.8.6";
 import { confirmDarkDialog } from "./core/DarkDialog.js?v=1.6.5";
-import { comessageMutationError } from "./core/Comessage.js?v=1.12.0";
+import { comessageMutationError } from "./core/Comessage.js?v=1.12.1";
 
 /**
  * Builds the application only after js/bootstrap.js has admitted a verified
@@ -419,7 +419,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.12.0",
+  build: "1.12.1",
   notifications,
   layoutPreferences,
   telegramNavigation,

@@ -1,8 +1,8 @@
-import { t } from "../i18n/index.js?v=1.12.0";
-import { createDraftListView } from "./DraftListView.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
+import { createDraftListView } from "./DraftListView.js?v=1.12.1";
 import { createProjectPostListView } from "./ProjectPostListView.js?v=1.11.4";
 import { hasUnappliedProductionChanges } from "../project/ProjectPublicationState.js?v=1.5.9";
-import { hasUnappliedDraftPublicationChanges } from "./DraftStore.js?v=1.12.0";
+import { hasUnappliedDraftPublicationChanges } from "./DraftStore.js?v=1.12.1";
 import { chooseDarkDialog } from "../core/DarkDialog.js?v=1.9.6";
 
 export class EditorRightPanel {

@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 
 const ASSET_PREFIX = "asset_";

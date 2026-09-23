@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.0";
+import { t } from "../i18n/index.js?v=1.12.1";
 const SETTINGS_KEY = "gallerySettings";
 let uploadSequence = 0;
 const DEFAULT_SETTINGS = Object.freeze({
@@ -368,4 +368,4 @@ function describeAssetUsage(usage) {
   if (usage.kind === "draft") return t("gallery.galleryCore.draft", { 0: usage.draftTitle || usage.draftId });
   return t("gallery.galleryCore.currentEditorDocument");
 }
-import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.12.0";
+import { extractOwnerMedia } from "../telegram/TelegramRuntime.js?v=1.12.1";
