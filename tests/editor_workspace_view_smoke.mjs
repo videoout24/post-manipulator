@@ -35,8 +35,11 @@ const statsRoot = {
   children: [],
   replaceChildren(...nodes) { this.children = nodes; }
 };
+const canvasScroller = { scrollTop: 480 };
+const canvasRoot = { closest: selector => selector === ".canvas-panel" ? canvasScroller : null };
 const documentRoot = {
-  createElement: () => ({ className: "", textContent: "", title: "" })
+  createElement: () => ({ className: "", textContent: "", title: "" }),
+  querySelector: selector => selector === "#canvas" ? canvasRoot : null
 };
 const workspace = new EditorWorkspaceView({
   tree,
@@ -66,6 +69,8 @@ const workspace = new EditorWorkspaceView({
 });
 
 workspace.render();
+workspace.scrollCanvasToTop();
+assert.equal(canvasScroller.scrollTop, 0, "opening a Draft must place the Canvas scroll container at its top");
 assert.equal(blockPaletteMode.hidden, true);
 assert.equal(assetPickerMode.hidden, false);
 assert(calls.some(call => Array.isArray(call) && call[0] === "picker:set" && call[1] === mediaNode.id));

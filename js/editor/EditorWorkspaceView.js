@@ -63,6 +63,12 @@ export class EditorWorkspaceView {
     this.renderStats(hasDocumentContext);
   }
 
+  scrollCanvasToTop() {
+    const canvas = this.documentRoot?.querySelector?.("#canvas") || this.treeView?.root || null;
+    const scroller = canvas?.closest?.(".canvas-panel") || canvas?.parentElement || null;
+    if (scroller) scroller.scrollTop = 0;
+  }
+
   hasDocumentContext() {
     if (!this.projectSession && !this.draftSession) return true;
     return Boolean(this.projectSession?.isProjectActive?.() || this.draftSession?.isActive?.());

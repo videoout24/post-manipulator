@@ -36,5 +36,12 @@ assert.equal(typeof telegram.core.publications.setPinned, "function");
 assert.equal(typeof telegram.core.publications.setServiceMessageCleanup, "function");
 assert.equal(typeof telegram.core.publications.scheduleDraft, "function");
 assert.equal(typeof telegram.core.publications.cancelDraftSchedule, "function");
+let pulledPublicationId = null;
+telegram.publications.pullCollaborativePublication = async recordId => {
+  pulledPublicationId = recordId;
+  return { id: recordId };
+};
+assert.deepEqual(await telegram.core.publications.pullCollaborativePublication("publication-1"), { id: "publication-1" });
+assert.equal(pulledPublicationId, "publication-1");
 
 console.log("create_telegram_domain_smoke: OK");

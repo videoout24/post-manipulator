@@ -90,6 +90,7 @@ function createDraftCard({
 }) {
   const publicationLinked = draft.source?.kind === "publication" && draft.source?.publicationId;
   const publicationCopy = publicationLinked && !draft.source.retained;
+  const collaborative = Boolean(isCollaborative?.(draft));
   const card = el("article", `draft-card${selected ? " selected" : ""}${publicationCopy ? " draft-publication-edit" : ""}`);
   card.dataset.draftId = draft.id;
   card.tabIndex = 0;
@@ -97,7 +98,7 @@ function createDraftCard({
   card.setAttribute("aria-pressed", String(selected));
 
   let documentPrompt = String(draft.ai?.documentPrompt || "");
-  const showDocumentAi = !publicationLinked;
+  const showDocumentAi = !publicationLinked || collaborative;
   let openAi = null;
 
   const head = el("div", "draft-card-head");
@@ -130,7 +131,6 @@ function createDraftCard({
 
   const actions = el("div", "draft-card-actions draft-card-lifecycle-actions");
   if (publicationLinked) {
-    const collaborative = Boolean(isCollaborative?.(draft));
     if (publicationCopy) actions.classList.add("publication-edit-actions");
     const scheduledCopy = Boolean(draft.source?.scheduledAt);
     const apply = button(

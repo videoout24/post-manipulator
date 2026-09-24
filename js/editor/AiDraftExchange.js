@@ -3,6 +3,7 @@ import { t } from "../i18n/index.js?v=1.12.1";
 import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
 import { Validator } from "../core/Validator.js?v=1.12.1";
+import { comessageNodes } from "../core/Comessage.js?v=1.12.1";
 import { resolveAiSchemaCatalog } from "./AiBlockSchemaResolver.js?v=1.12.1";
 
 export const AI_DRAFT_FORMAT = "rich-current-ai-draft";
@@ -133,16 +134,41 @@ export class AiDraftExchange {
     }
   }
 
-  download() {
+  async download() {
     try {
       const text = String(this.input?.value || "");
       if (!text) throw new Error(t("editor.aiDraftExchange.nothingToDownload"));
       const payload = parseAiDraftResponse(text);
       const fileName = aiFileName(payload);
-      const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+      const blob = new Blob([text], { type: "application/json" });
+      const windowRoot = this.documentRoot?.defaultView || globalThis.window || globalThis;
+      const savePicker = windowRoot?.showSaveFilePicker;
+      if (typeof savePicker === "function") {
+        try {
+          const handle = await Reflect.apply(savePicker, windowRoot, [{
+            suggestedName: fileName,
+            types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+          }]);
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          return true;
+        } catch (error) {
+          if (error?.name === "AbortError") return false;
+          // Embedded browsers may expose the picker but reject it. Keep the
+          // standard download path as a compatibility fallback.
+        }
+      }
+
+      const linuxFallback = /linux/i.test(String(windowRoot?.navigator?.userAgent || windowRoot?.navigator?.platform || ""));
+      const url = linuxFallback
+        ? `data:application/json;charset=utf-8,${encodeURIComponent(text)}`
+        : URL.createObjectURL(blob);
       const anchor = this.documentRoot.createElement("a");
       anchor.href = url;
       anchor.download = fileName;
+      anchor.target = "_blank";
+      anchor.rel = "noopener";
       anchor.hidden = true;
       const downloadRoot = this.documentRoot.body || this.documentRoot.documentElement;
       if (!downloadRoot) throw new Error(t("editor.aiDraftExchange.downloadUnavailable"));
@@ -151,10 +177,12 @@ export class AiDraftExchange {
         anchor.click();
       } finally {
         anchor.remove();
-        setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_REVOKE_DELAY);
+        if (!linuxFallback) setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_REVOKE_DELAY);
       }
+      return true;
     } catch (error) {
       this.#error(error);
+      return false;
     }
   }
 
@@ -501,6 +529,9 @@ export function buildAiDraftRequest({
         "Preserve format, schemaVersion, request, task, every ai.prompt, and the id/type of each unchanged block. Give every new block a unique non-empty id.",
         "For every block, use task.blockSchemas[block.type] as the canonical props and children shape. Each block type is defined once and shared by all blocks of that type.",
         "When changing a rich-text property, return a string unless its prompt explicitly requests formatting. If requested, return exactly one non-nested object matching task.formatSets[formatSet]; new rich-text arrays and nested formats are forbidden. Preserve unchanged existing rich-text values verbatim.",
+        ...(comessageNodes(ast).length
+          ? ["The first comessage block is immutable. Preserve its id, type, position, props, and children exactly."]
+          : []),
         normalizedScope.kind === "field"
           ? `Change only props.${normalizedScope.field} of block ${normalizedScope.nodeId}; keep all other data unchanged.`
           : normalizedScope.kind === "block"
@@ -644,7 +675,18 @@ export function applyScopedAiResponse(currentAst, responseAst, scope = {}, regis
 export function applyMessageAiResponse(currentAst, responseAst, registry = null) {
   const current = validateAiAst(currentAst);
   const response = validateAiAst(responseAst);
+  assertComessageUnchanged(current, response);
   return validateAiAstStructure(mergeMissingAiPrompts(response, current), registry);
+}
+
+function assertComessageUnchanged(currentAst, responseAst) {
+  const current = comessageNodes(currentAst);
+  if (!current.length) return;
+  const response = comessageNodes(responseAst);
+  const unchanged = current.length === response.length
+    && responseAst.children?.[0]?.id === currentAst.children?.[0]?.id
+    && JSON.stringify(responseAst.children?.[0]) === JSON.stringify(currentAst.children?.[0]);
+  if (!unchanged) throw new Error(t("core.comessage.identityImmutable"));
 }
 
 export function isAiDraftResponseText(text) {

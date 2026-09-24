@@ -1,9 +1,9 @@
 import { BlockPalette } from "../editor/BlockPalette.js?v=1.5.9";
 import { BlockInspector } from "../editor/BlockInspector.js?v=1.11.4";
-import { TreeView } from "../editor/TreeView.js?v=1.12.1";
+import { TreeView } from "../editor/TreeView.js?v=1.12.4";
 import { MediaAssetBinder } from "../editor/MediaAssetBinder.js?v=1.12.1";
 import { EditorAssetPicker } from "../editor/EditorAssetPicker.js?v=1.12.1";
-import { EditorWorkspaceView } from "../editor/EditorWorkspaceView.js?v=1.9.8";
+import { EditorWorkspaceView } from "../editor/EditorWorkspaceView.js?v=1.12.4";
 import { requestGalleryUpload } from "../gallery/GalleryUploadDialog.js?v=1.11.4";
 
 export function createEditorWorkspace({

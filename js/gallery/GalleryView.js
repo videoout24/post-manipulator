@@ -1,6 +1,7 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
 import { t } from "../i18n/index.js?v=1.12.1";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
+import { dataTransferMayContainFiles, filesFromDataTransfer } from "../core/FileDrop.js?v=1.12.4";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
 import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.4";
 
@@ -273,7 +274,7 @@ export class GalleryView {
     content.classList.toggle("drop-topic-unavailable", !topic);
 
     const show = event => {
-      if (!dataTransferHasFiles(event.dataTransfer)) return;
+      if (!dataTransferMayContainFiles(event.dataTransfer)) return;
       event.preventDefault();
       event.stopPropagation();
       if (event.dataTransfer) event.dataTransfer.dropEffect = topic ? "copy" : "none";
@@ -286,11 +287,11 @@ export class GalleryView {
       content.classList.remove("is-file-dragover");
     });
     content.addEventListener("drop", event => {
-      if (!dataTransferHasFiles(event.dataTransfer)) return;
+      if (!dataTransferMayContainFiles(event.dataTransfer)) return;
       event.preventDefault();
       event.stopPropagation();
       content.classList.remove("is-file-dragover");
-      const files = Array.from(event.dataTransfer?.files || []);
+      const files = filesFromDataTransfer(event.dataTransfer);
       if (!topic) {
         this.#notice(t("gallery.galleryView.selectTopicBeforeDrop"), true);
         return;
@@ -507,9 +508,6 @@ export function activeGalleryUploadTopic(topics, filterThread) {
   const threadId = Number(filterThread);
   if (!Number.isSafeInteger(threadId) || threadId <= 0) return null;
   return (topics || []).find(topic => Number(topic?.threadId) === threadId && !topic?.telegramDeleted) || null;
-}
-function dataTransferHasFiles(dataTransfer) {
-  return Array.from(dataTransfer?.types || []).includes("Files") || Boolean(dataTransfer?.files?.length);
 }
 function formatBytes(value) {
   const bytes = Number(value || 0);

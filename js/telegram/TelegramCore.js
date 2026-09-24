@@ -35,6 +35,7 @@ export class TelegramCore {
       cancelDraftSchedule: recordId => publications.cancelDraftSchedule(recordId),
       setPinned: (recordId, pinned) => publications.setPinned(recordId, pinned),
       createEditDraft: recordId => publications.createEditDraft(recordId),
+      pullCollaborativePublication: recordId => publications.pullCollaborativePublication(recordId),
       applyDraftChanges: draftId => publications.applyDraftChanges(draftId),
       restoreCollaborativePublication: draftId => publications.restoreCollaborativePublication(draftId),
       inspectDraftPublication: draftId => publications.inspectDraftPublication(draftId),

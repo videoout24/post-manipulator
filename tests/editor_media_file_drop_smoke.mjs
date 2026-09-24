@@ -33,7 +33,7 @@ assert.deepEqual(node.props, {
 const treeView = fs.readFileSync(new URL("../js/editor/TreeView.js", import.meta.url), "utf8");
 const dialog = fs.readFileSync(new URL("../js/gallery/GalleryUploadDialog.js", import.meta.url), "utf8");
 const workspace = fs.readFileSync(new URL("../js/app/createEditorWorkspace.js", import.meta.url), "utf8");
-assert.match(treeView, /dataTransferHasFiles\(e\.dataTransfer\)[\s\S]*?uploadFilesToBlock\(node, Array\.from\(e\.dataTransfer\?\.files \|\| \[\]\)\)/,
+assert.match(treeView, /dataTransferMayContainFiles\(e\.dataTransfer\)[\s\S]*?uploadFilesToBlock\(node, filesFromDataTransfer\(e\.dataTransfer\)\)/,
   "OS files dropped on a media block must enter the upload flow");
 assert.match(dialog, /gallery\.createTopic\(topicName\.value\.trim\(\)\)/,
   "the upload dialog must support creating a topic");

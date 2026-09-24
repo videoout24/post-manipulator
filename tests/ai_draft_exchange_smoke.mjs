@@ -166,6 +166,29 @@ assert.equal(documentPromptRequest.task.documentPrompt,
 assert.match(documentPromptRequest.task.instruction, /task\.documentPrompt across every block it explicitly addresses/);
 assert.match(documentPromptRequest.task.responseContract.at(-1), /coordinate changes across multiple explicitly referenced blocks/);
 
+const comessageAst = {
+  id: "root", type: "document", props: {}, children: [
+    { id: "comessage-1", type: "comessage", props: { hashtag: "#comessage_abcdef123456" }, children: [] },
+    { id: "paragraph-comessage", type: "paragraph", props: { text: "Original" }, children: [] }
+  ]
+};
+const comessageRequest = buildAiDraftRequest({
+  messageAst: comessageAst,
+  target: { kind: "draft", draftId: "draft-comessage", version: 1, includeFullContext: true },
+  scope: { kind: "message" },
+  registry,
+  documentPrompt: "Rewrite the paragraph."
+});
+assert.match(comessageRequest.task.responseContract.join("\n"), /comessage block is immutable/i,
+  "whole-document CoMessage requests must tell the model to preserve the marker");
+const changedComessage = structuredClone(comessageAst);
+changedComessage.children[0].props.hashtag = "#comessage_changed123456";
+assert.throws(() => applyMessageAiResponse(comessageAst, changedComessage, registry), /comessage/i,
+  "a whole-document AI response must not change the CoMessage identity");
+const validComessageResponse = structuredClone(comessageAst);
+validComessageResponse.children[1].props.text = "Rewritten";
+assert.equal(applyMessageAiResponse(comessageAst, validComessageResponse, registry).children[1].props.text, "Rewritten");
+
 const isolatedBlockRequest = buildAiDraftRequest({
   messageAst: ast,
   scope: { kind: "block", nodeId: "heading-1" },
@@ -380,15 +403,66 @@ try {
     },
     notifications: { show() {} }
   });
-  downloadExchange.download();
+  assert.equal(await downloadExchange.download(), true);
   assert.deepEqual(downloadEvents, ["create-url", "append", "click", "remove"],
     "the download link must be attached before clicking and the URL must not be revoked synchronously");
   assert.equal(anchor.href, "blob:ai-json");
   assert.match(anchor.download, /-ai-.+\.json$/);
+  assert.equal(anchor.target, "_blank");
+  assert.equal(anchor.rel, "noopener");
   assert.equal(anchor.hidden, true);
   assert.equal(typeof finishDownloadCleanup, "function");
   finishDownloadCleanup();
   assert.equal(downloadEvents.at(-1), "revoke:blob:ai-json");
+
+  let pickerOptions = null;
+  let pickerBlob = null;
+  let pickerClosed = false;
+  const pickerExchange = new AiDraftExchange({
+    input: { value: JSON.stringify(manualPayload) },
+    documentRoot: {
+      defaultView: {
+        async showSaveFilePicker(options) {
+          pickerOptions = options;
+          return {
+            async createWritable() {
+              return {
+                async write(blob) { pickerBlob = blob; },
+                async close() { pickerClosed = true; }
+              };
+            }
+          };
+        }
+      }
+    },
+    notifications: { show() {} }
+  });
+  assert.equal(await pickerExchange.download(), true);
+  assert.match(pickerOptions.suggestedName, /-ai-.+\.json$/);
+  assert.deepEqual(pickerOptions.types[0].accept, { "application/json": [".json"] });
+  assert.equal(await pickerBlob.text(), JSON.stringify(manualPayload));
+  assert.equal(pickerClosed, true, "the Linux save picker must finish writing before download completes");
+
+  const linuxEvents = [];
+  const linuxAnchor = {
+    click() { linuxEvents.push("click"); },
+    remove() { linuxEvents.push("remove"); }
+  };
+  const linuxDownloadExchange = new AiDraftExchange({
+    input: { value: JSON.stringify(manualPayload) },
+    documentRoot: {
+      defaultView: { navigator: { userAgent: "TelegramDesktop WebKit Linux x86_64" } },
+      body: { appendChild(node) { assert.equal(node, linuxAnchor); linuxEvents.push("append"); } },
+      createElement(tag) { assert.equal(tag, "a"); return linuxAnchor; }
+    },
+    notifications: { show() {} }
+  });
+  assert.equal(await linuxDownloadExchange.download(), true);
+  assert.deepEqual(linuxEvents, ["append", "click", "remove"]);
+  assert.match(linuxAnchor.href, /^data:application\/json;charset=utf-8,/);
+  assert.equal(decodeURIComponent(linuxAnchor.href.split(",", 2)[1]), JSON.stringify(manualPayload));
+  assert.equal(linuxAnchor.target, "_blank",
+    "Linux WebKit must be able to open the JSON even when it ignores the download attribute");
 } finally {
   globalThis.URL = originalUrl;
   globalThis.setTimeout = originalSetTimeout;

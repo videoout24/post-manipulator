@@ -92,7 +92,7 @@ draft/project/post IDs, and AST block IDs. It does not include `chat_id`,
 
 The `Block AI JSON` button always creates an isolated package containing only
 the target block and its nested content and uses only that block's prompt. Every
-regular draft card and the active Project post card always show a
+regular or CoMessage draft card and the active Project post card always show a
 **Whole-draft prompt** or **Whole-post prompt** section, regardless of whether
 Canvas blocks have their own AI prompts. The field uses the full width of the
 card and shares the editor's common height
@@ -105,7 +105,12 @@ a list and the paragraphs that follow it. When the document prompt is empty,
 only the local block prompts apply. For a selected regular draft, **Close** saves
 it and clears the Canvas.
 
-The package can be copied or downloaded and then passed to any AI model. Paste
+In a CoMessage package, the first service block is immutable: a response that
+removes, moves, or changes its ID, type, properties, or children is rejected.
+
+The package can be copied or downloaded and then passed to any AI model. When
+downloading, the application uses the system save dialog when the WebView
+supports it and a compatible fallback for Linux WebKit. Paste
 the response manually into the AI JSON field with the operating system's normal
 Paste command, or select a local `.json` file. **Apply response** validates the
 complete package; an invalid response opens a dialog with the reason while the
@@ -344,7 +349,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.12.2
+https://videoout24.github.io/post-manipulator/?build=1.12.4
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -421,7 +426,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.2`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.4`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

@@ -21,7 +21,7 @@ export class EditorEventCoordinator {
     this.unsubscribers.push(
       this.events?.on?.("tree:changed", payload => this.#treeChanged(payload)),
       this.events?.on?.("project:session-changed", payload => this.#projectSessionChanged(payload)),
-      this.events?.on?.("draft:session-changed", () => this.#draftSessionChanged()),
+      this.events?.on?.("draft:session-changed", payload => this.#draftSessionChanged(payload)),
       this.events?.on?.("project:changed", payload => this.#projectChanged(payload)),
       this.events?.on?.("block-collector:changed", () => this.workspace?.updateCollectorState?.()),
       this.events?.on?.("selection:changed", () => this.workspace?.updateSelection?.())
@@ -62,10 +62,13 @@ export class EditorEventCoordinator {
     this.previewStatus?.showProjectDeployment?.(project);
   }
 
-  #draftSessionChanged() {
+  #draftSessionChanged({ reason = "", activeDraftId = null } = {}) {
     // Opening a Draft activates its session after its AST has replaced the shared
     // tree. Re-render here so a no-context placeholder cannot remain on Canvas.
     this.workspace?.render?.();
+    if (activeDraftId && ["opened", "recovered", "created", "created-from-first-block"].includes(reason)) {
+      this.workspace?.scrollCanvasToTop?.();
+    }
     if (!this.projectSession?.isProjectActive?.()) this.telegramPreview?.schedule?.();
   }
 

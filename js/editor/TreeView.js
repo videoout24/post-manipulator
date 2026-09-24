@@ -2,6 +2,7 @@ import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
 import { t } from "../i18n/index.js?v=1.11.4";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
+import { dataTransferMayContainFiles, filesFromDataTransfer } from "../core/FileDrop.js?v=1.12.4";
 
 export class TreeView {
   constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, events = null, requestMediaUpload = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
@@ -268,7 +269,7 @@ export class TreeView {
       // upper/lower edge = insert before/after, center = nest when allowed.
       el.ondragover = e => {
         e.stopPropagation();
-        if (dataTransferHasFiles(e.dataTransfer)) {
+        if (dataTransferMayContainFiles(e.dataTransfer)) {
           if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.supports(node)) return;
           e.preventDefault();
           e.dataTransfer.dropEffect = "copy";
@@ -299,11 +300,11 @@ export class TreeView {
       };
       el.ondrop = async e => {
         e.stopPropagation();
-        if (dataTransferHasFiles(e.dataTransfer)) {
+        if (dataTransferMayContainFiles(e.dataTransfer)) {
           if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.supports(node)) return;
           e.preventDefault();
           el.classList.remove("drag-media");
-          await this.uploadFilesToBlock(node, Array.from(e.dataTransfer?.files || []));
+          await this.uploadFilesToBlock(node, filesFromDataTransfer(e.dataTransfer));
           return;
         }
         const galleryAssetId = this.draggedGalleryAssetId(e);
@@ -595,7 +596,7 @@ export class TreeView {
     element.ondragover = e => {
       if (this.collapsedNodes.has(node.id)) return;
       e.stopPropagation();
-      if (dataTransferHasFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
+      if (dataTransferMayContainFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
         element.classList.add("active", "drag-media");
@@ -622,10 +623,10 @@ export class TreeView {
     element.ondrop = async e => {
       if (this.collapsedNodes.has(node.id)) return;
       e.stopPropagation();
-      if (dataTransferHasFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
+      if (dataTransferMayContainFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
         e.preventDefault();
         element.classList.remove("active", "drag-media");
-        await this.uploadFilesToBlock(node, Array.from(e.dataTransfer?.files || []));
+        await this.uploadFilesToBlock(node, filesFromDataTransfer(e.dataTransfer));
         return;
       }
       const galleryAssetId = this.draggedGalleryAssetId(e);
@@ -1084,10 +1085,6 @@ export function canvasScrollDuration(speed) {
 function normalizeScrollSpeed(value) {
   const numeric = Number(value);
   return Number.isInteger(numeric) && numeric >= 0 && numeric <= 3 ? numeric : 2;
-}
-
-function dataTransferHasFiles(dataTransfer) {
-  return Array.from(dataTransfer?.types || []).includes("Files") || Boolean(dataTransfer?.files?.length);
 }
 
 function countSubtree(node) {

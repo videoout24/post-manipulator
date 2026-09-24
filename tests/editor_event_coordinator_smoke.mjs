@@ -22,6 +22,7 @@ const coordinator = new EditorEventCoordinator({
   telegramPreview: { schedule: () => calls.push("preview:schedule") },
   workspace: {
     render: () => calls.push("workspace:render"),
+    scrollCanvasToTop: () => calls.push("workspace:scroll-top"),
     renderStats: () => calls.push("workspace:stats"),
     updateSelection: () => calls.push("workspace:selection"),
     updateCollectorState: () => calls.push("workspace:collector")
@@ -60,6 +61,18 @@ calls.length = 0;
 events.emit("project:changed", { projectId: "other", project: { id: "other" }, reason: "saved" });
 events.emit("project:changed", { projectId: "project_a", project: { id: "project_a" }, reason: "saved" });
 assert.deepEqual(calls, [["index:rebuild", "project_a"]]);
+
+calls.length = 0;
+projectSession.active = false;
+draftSession.active = true;
+events.emit("draft:session-changed", { reason: "opened", activeDraftId: "draft_a" });
+assert.deepEqual(calls, ["workspace:render", "workspace:scroll-top", "preview:schedule"],
+  "opening a Draft must render it and reset the Canvas scroll position");
+
+calls.length = 0;
+events.emit("draft:session-changed", { reason: "saved", activeDraftId: "draft_a" });
+assert.deepEqual(calls, ["workspace:render", "preview:schedule"],
+  "saving an already open Draft must not unexpectedly move the Canvas");
 
 calls.length = 0;
 events.emit("selection:changed", {});

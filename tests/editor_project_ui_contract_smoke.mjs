@@ -33,6 +33,8 @@ assert.match(postList, /el\("details", "project-post-ai-settings document-ai-pro
   "the whole-post AI prompt must be collapsible");
 assert.match(draftList, /el\("details", "draft-document-ai-settings document-ai-prompt-disclosure"\)/,
   "the whole-draft AI prompt must be collapsible");
+assert.match(draftList, /const showDocumentAi = !publicationLinked \|\| collaborative/,
+  "a CoMessage publication draft must expose the whole-document AI prompt");
 for (const source of [draftList, postList]) {
   assert.match(source, /openAi\.disabled = !documentPrompt\.trim\(\)/,
     "the whole-document AI JSON action must start disabled for an empty prompt");
