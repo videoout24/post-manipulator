@@ -36,6 +36,12 @@ assert.equal(calls[0], "draft:flush", "current Draft must flush before another D
 assert.deepEqual(calls.at(-1), ["draft:activate", draft.id, { reason: "opened" }]);
 
 calls.length = 0;
+await coordinator.reloadDraft(draft.id, { reason: "synced-from-channel" });
+assert.deepEqual(calls.map(call => Array.isArray(call) ? call[0] : call), ["draft:get", "standalone:open", "draft:activate"],
+  "a remote reload must replace Canvas without flushing the stale live tree again");
+assert.deepEqual(calls.at(-1), ["draft:activate", draft.id, { reason: "synced-from-channel" }]);
+
+calls.length = 0;
 const result = await coordinator.moveDraftToProject(draft.id, "project_a");
 assert.equal(result.post.id, "post_a");
 assert.deepEqual(calls.map(call => Array.isArray(call) ? call[0] : call), [

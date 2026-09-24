@@ -1,4 +1,5 @@
-import { t } from "../i18n/index.js?v=1.12.1";
+import { t } from "../i18n/index.js?v=1.12.5";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.5";
 const SETTINGS_KEY = "gallerySettings";
 let uploadSequence = 0;
 const DEFAULT_SETTINGS = Object.freeze({
@@ -217,7 +218,7 @@ export class GalleryCore {
   }
 
   async uploadFiles(files, { threadId, caption = "" } = {}) {
-    const selected = [...(files || [])].filter(file => file instanceof Blob);
+    const selected = [...(files || [])].filter(isBlobLike);
     if (!selected.length) throw new Error(t("gallery.galleryCore.selectAtLeastOneFile"));
     const owner = await this.telegramCore.owner.getOwner();
     if (!owner?.chatId) throw new Error(t("gallery.galleryCore.firstLinkATelegramOwner"));

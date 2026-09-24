@@ -1,14 +1,16 @@
-import { t } from "../i18n/index.js?v=1.11.4";
+import { t } from "../i18n/index.js?v=1.12.5";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.5";
 
 export function requestGalleryUpload({
   gallery,
   events = null,
   files = [],
   topics = [],
+  initialThreadId = null,
   textareaSizing = null,
   dialogId = "editorMediaUploadDialog"
 } = {}) {
-  const selectedFiles = Array.from(files || []).filter(file => file instanceof Blob);
+  const selectedFiles = Array.from(files || []).filter(isBlobLike);
   if (!selectedFiles.length) return Promise.resolve(null);
 
   const previous = document.querySelector(`#${dialogId}`);
@@ -53,6 +55,9 @@ export function requestGalleryUpload({
     minRows: 1
   });
   if (!availableTopics.length) topicSelect.value = "__new__";
+  else if (availableTopics.some(topic => Number(topic.threadId) === Number(initialThreadId))) {
+    topicSelect.value = String(Number(initialThreadId));
+  }
   const syncTopicMode = () => { newTopicField.hidden = topicSelect.value !== "__new__"; };
   topicSelect.addEventListener("change", syncTopicMode);
   syncTopicMode();

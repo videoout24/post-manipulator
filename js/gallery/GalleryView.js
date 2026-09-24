@@ -1,8 +1,9 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.12.1";
+import { t } from "../i18n/index.js?v=1.12.5";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
-import { dataTransferMayContainFiles, filesFromDataTransfer } from "../core/FileDrop.js?v=1.12.4";
+import { dataTransferMayContainFiles, resolveFilesFromDataTransfer } from "../core/FileDrop.js?v=1.12.5";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
+import { requestGalleryUpload } from "./GalleryUploadDialog.js?v=1.12.5";
 import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.4";
 
 const TYPE_META = Object.freeze({
@@ -270,14 +271,14 @@ export class GalleryView {
     const topic = activeGalleryUploadTopic(topics, this.filterThread);
     content.dataset.dropLabel = topic
       ? t("gallery.galleryView.dropFilesToTopic", { 0: topic.name || `Topic ${topic.threadId}` })
-      : t("gallery.galleryView.selectTopicBeforeDrop");
-    content.classList.toggle("drop-topic-unavailable", !topic);
+      : t("gallery.galleryView.uploadFiles");
+    content.classList.remove("drop-topic-unavailable");
 
     const show = event => {
       if (!dataTransferMayContainFiles(event.dataTransfer)) return;
       event.preventDefault();
       event.stopPropagation();
-      if (event.dataTransfer) event.dataTransfer.dropEffect = topic ? "copy" : "none";
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
       content.classList.add("is-file-dragover");
     };
     content.addEventListener("dragenter", show);
@@ -286,41 +287,36 @@ export class GalleryView {
       if (event.relatedTarget && content.contains(event.relatedTarget)) return;
       content.classList.remove("is-file-dragover");
     });
-    content.addEventListener("drop", event => {
+    content.addEventListener("drop", async event => {
       if (!dataTransferMayContainFiles(event.dataTransfer)) return;
       event.preventDefault();
       event.stopPropagation();
       content.classList.remove("is-file-dragover");
-      const files = filesFromDataTransfer(event.dataTransfer);
-      if (!topic) {
-        this.#notice(t("gallery.galleryView.selectTopicBeforeDrop"), true);
-        return;
-      }
-      this.#uploadDroppedFiles(files, topic).catch(error => this.#notice(error?.message || String(error), true));
+      const files = await resolveFilesFromDataTransfer(event.dataTransfer);
+      this.#uploadDroppedFiles(files, topics, topic).catch(error => this.#notice(error?.message || String(error), true));
     });
   }
 
-  async #uploadDroppedFiles(files, topic) {
-    if (this.dropUploadPending || !files.length) return;
+  async #uploadDroppedFiles(files, topics, topic = null) {
+    if (this.dropUploadPending) return;
+    if (!files.length) {
+      this.#notice(t("gallery.galleryView.dropFilesUnavailable"), true);
+      return;
+    }
     this.dropUploadPending = true;
     try {
-      const caption = await requestTextDialog({
-        title: t("gallery.galleryView.uploadDroppedFiles", { 0: files.length, 1: topic.name || `Topic ${topic.threadId}` }),
-        label: t("core.propertyRegistry.caption"),
-        placeholder: t("gallery.galleryView.captionMayBeEmpty"),
-        submitLabel: t("gallery.galleryView.uploadAction")
+      const result = await requestGalleryUpload({
+        gallery: this.gallery,
+        events: this.events,
+        files,
+        topics,
+        initialThreadId: topic?.threadId,
+        textareaSizing: this.textareaSizing,
+        dialogId: "galleryDropUploadDialog"
       });
-      if (caption === null) return;
-      this.filterThread = String(topic.threadId);
-      await this.#run(async () => {
-        try {
-          const result = await this.gallery.uploadFiles(files, { threadId: Number(topic.threadId), caption });
-          this.#notice(t("gallery.galleryView.uploadedFiles", { 0: result.assets.length }));
-        } catch (error) {
-          if (!error?.uploadResult) throw error;
-          this.#notice(error?.message || String(error), true);
-        }
-      });
+      if (!result) return;
+      this.filterThread = String(result.threadId);
+      this.#notice(t("gallery.galleryView.uploadedFiles", { 0: result.assets.length }), Boolean(result.partialError));
     } finally {
       this.dropUploadPending = false;
     }

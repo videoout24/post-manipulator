@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { activeGalleryUploadTopic } from "../js/gallery/GalleryView.js";
-import { dataTransferMayContainFiles, filesFromDataTransfer } from "../js/core/FileDrop.js";
+import { dataTransferMayContainFiles, filesFromDataTransfer, isBlobLike, resolveFilesFromDataTransfer } from "../js/core/FileDrop.js";
 
 const linuxFile = { name: "linux-photo.png", type: "image/png" };
 const linuxTransfer = {
@@ -15,6 +15,17 @@ assert.deepEqual(filesFromDataTransfer(linuxTransfer), [linuxFile],
   "Linux drops must fall back to DataTransferItem.getAsFile()");
 assert.equal(dataTransferMayContainFiles({ files: [], items: [], types: ["text/uri-list"] }), true,
   "Linux URI-list drags must allow the drop event before file data becomes readable");
+const handleFile = { name: "handle-photo.png", type: "image/png", size: 12 };
+assert.deepEqual(await resolveFilesFromDataTransfer({
+  files: [],
+  items: [{ kind: "file", getAsFile: () => null, getAsFileSystemHandle: async () => ({ kind: "file", getFile: async () => handleFile }) }]
+}), [handleFile], "Linux drops must resolve asynchronous file-system handles");
+const crossRealmFile = {
+  name: "cross-realm.png", type: "image/png", size: 10,
+  arrayBuffer: async () => new ArrayBuffer(10),
+  [Symbol.toStringTag]: "File"
+};
+assert.equal(isBlobLike(crossRealmFile), true, "cross-realm Linux File objects must survive upload validation");
 
 const topics = [
   { threadId: 7, name: "Photos" },
@@ -29,9 +40,10 @@ const view = fs.readFileSync(new URL("../js/gallery/GalleryView.js", import.meta
 assert.match(view, /addEventListener\("dragenter", show\)/);
 assert.match(view, /addEventListener\("dragover", show\)/);
 assert.match(view, /addEventListener\("drop"/);
-assert.match(view, /filesFromDataTransfer\(event\.dataTransfer\)/);
-assert.match(view, /requestTextDialog\([\s\S]*?gallery\.galleryView\.uploadDroppedFiles/);
-assert.match(view, /gallery\.uploadFiles\(files, \{ threadId: Number\(topic\.threadId\), caption \}\)/,
-  "dropped files must use one requested caption for the whole batch");
+assert.match(view, /resolveFilesFromDataTransfer\(event\.dataTransfer\)/);
+assert.match(view, /requestGalleryUpload\(\{/,
+  "Gallery drops must open the shared topic/upload dialog even when the All filter is active");
+assert.match(view, /initialThreadId: topic\?\.threadId/,
+  "an active Gallery topic must be preselected without being required");
 
 console.log("gallery_drop_upload_smoke: OK");

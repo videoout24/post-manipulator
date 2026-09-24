@@ -1,4 +1,5 @@
-import { t } from "../i18n/index.js?v=1.12.1";
+import { t } from "../i18n/index.js?v=1.12.5";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.5";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
@@ -229,7 +230,7 @@ export class TelegramClient {
     }, options);
   }
   uploadMedia({ chatId, messageThreadId = null, file, caption = "", type = null } = {}, options = {}) {
-    if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "uploadMedia" });
+    if (!isBlobLike(file)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "uploadMedia" });
     const media = uploadMediaMethod(file, type);
     return this.#trackOperation(media.method, () => this.scheduler.schedule(
       () => this.#callMultipart(media.method, {
@@ -242,7 +243,7 @@ export class TelegramClient {
     ), { fileName: file.name || "file" });
   }
   uploadDocument({ chatId, messageThreadId = null, file, caption = "" } = {}, options = {}) {
-    if (!(file instanceof Blob)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "sendDocument" });
+    if (!isBlobLike(file)) throw new TelegramApiError(t("telegram.telegramClient.noFileSelectedForUpload"), { method: "sendDocument" });
     return this.#trackOperation("sendDocument", () => this.scheduler.schedule(
       () => this.#callMultipart("sendDocument", {
         chat_id: chatId,
@@ -290,7 +291,7 @@ export class TelegramClient {
     const body = new FormData();
     for (const [key, value] of Object.entries(params || {})) {
       if (value === undefined || value === null || value === "") continue;
-      body.append(key, value instanceof Blob ? value : String(value));
+      body.append(key, isBlobLike(value) ? value : String(value));
     }
     const url = `${this.apiBase}/bot${this.#token}/${method}`;
     const requestAbort = createRequestAbort(signal, this.uploadTimeoutMs);

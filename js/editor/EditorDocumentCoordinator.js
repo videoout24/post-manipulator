@@ -44,10 +44,14 @@ export class EditorDocumentCoordinator {
 
   async openDraft(draftId) {
     await this.saveCurrentContext();
+    return this.reloadDraft(draftId, { reason: "opened" });
+  }
+
+  async reloadDraft(draftId, { reason = "reloaded" } = {}) {
     const draft = await this.drafts.get(draftId);
     if (!draft) throw new Error(t("editor.editorDocumentCoordinator.draftNotFound", { 0: draftId }));
     await this.projectSession.openStandaloneAst(draft.messageAst, { reason: "draft-opened", persist: false });
-    this.draftSession?.activate?.(draft, { reason: "opened" });
+    this.draftSession?.activate?.(draft, { reason });
     return draft;
   }
 

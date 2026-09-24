@@ -22,38 +22,44 @@ export class ChannelCollaborationService {
     if (message?.chat?.type !== "channel") return false;
     const target = (await this.publicationTargets?.list?.() || []).find(item => Number(item.chatId) === Number(message.chat.id));
     if (!target || target.type !== "channel" || target.visibility !== "private" || !target.collaboration?.enabled) return false;
-    const bot = resolveSelectedBot(message, target.collaboration);
-    if (!bot) return false;
-
     const marker = comessageValueFromRichMessage(message.rich_message);
     if (marker) {
-      const result = await this.publications.importCollaborativePublication({
+      const existing = await this.publications.getCollaborativePublication?.(message.chat.id, marker);
+      const selectedBot = resolveSelectedBot(message, target.collaboration);
+      if (!selectedBot && !existing) return false;
+      const bot = selectedBot || collaborationBotFromRecord(existing, target.collaboration);
+      const messageAst = importTelegramRichMessage(message.rich_message);
+      preserveMediaBindings(messageAst, existing?.messageAst);
+
+      for (const media of extractRichMessageMedia(message.rich_message)) {
+        if (hasGalleryBinding(messageAst, media)) continue;
+        const results = await this.events?.emitAsync?.("telegram:collaboration-media", {
+          ...media,
+          bot: structuredClone(bot),
+          collaborationId: marker,
+          separate: true,
+          caption: media.caption || "",
+          date: message.date || null,
+          sourceEventKey: `${Number(message.chat.id)}:${String(marker).toLowerCase()}:rich:${media.blockPath}:${media.fileUniqueId || media.fileId}`,
+          source: { chatId: Number(message.chat.id), messageId: Number(message.message_id), threadId: null }
+        }) || [];
+        const asset = results.find(value => value?.id && value?.telegram?.fileId);
+        if (asset) bindGalleryAsset(messageAst, media, asset);
+      }
+
+      await this.publications.importCollaborativePublication({
         message,
         target,
         bot,
         marker,
-        messageAst: importTelegramRichMessage(message.rich_message)
+        messageAst,
+        updateId: update?.update_id
       });
-      // A retried update must be able to finish a partially indexed Rich
-      // Message. Stable marker+block keys make this replay idempotent and also
-      // prevent restored/relinked posts from duplicating their initial media.
-      if (result && update.channel_post) {
-        for (const media of extractRichMessageMedia(message.rich_message)) {
-          await this.events?.emitAsync?.("telegram:collaboration-media", {
-            ...media,
-            bot: structuredClone(bot),
-            collaborationId: marker,
-            separate: true,
-            caption: media.caption || "",
-            date: message.date || null,
-            sourceEventKey: `${Number(message.chat.id)}:${String(marker).toLowerCase()}:rich:${media.blockPath}`,
-            source: { chatId: Number(message.chat.id), messageId: Number(message.message_id), threadId: null }
-          });
-        }
-      }
       return true;
     }
 
+    const bot = resolveSelectedBot(message, target.collaboration);
+    if (!bot) return false;
     const media = extractMessageMedia(message);
     if (!media) return false;
     await this.events?.emitAsync?.("telegram:collaboration-media", {
@@ -73,12 +79,74 @@ export class ChannelCollaborationService {
 function resolveSelectedBot(message, collaboration) {
   const bots = (collaboration?.bots || []).filter(bot => collaboration.selectedBotIds?.includes(Number(bot.id)));
   const senderId = Number(message?.from?.id || 0);
-  if (senderId) return bots.find(bot => Number(bot.id) === senderId) || null;
+  if (senderId) {
+    const sender = bots.find(bot => Number(bot.id) === senderId);
+    if (sender) return sender;
+  }
   const signature = normalize(message?.author_signature);
   if (!signature) return null;
   const matches = bots.filter(bot => [bot.username, bot.firstName, `${bot.firstName || ""} ${bot.lastName || ""}`]
     .some(value => normalize(value) === signature));
   return matches.length === 1 ? matches[0] : null;
+}
+
+function collaborationBotFromRecord(record, collaboration) {
+  const bots = (collaboration?.bots || []).filter(bot => collaboration.selectedBotIds?.includes(Number(bot.id)));
+  const originId = Number(record?.collaboration?.originBotId || 0);
+  return bots.find(bot => Number(bot.id) === originId)
+    || bots[0]
+    || { id: originId, username: record?.collaboration?.originBotUsername || "", firstName: "CoMessage" };
+}
+
+function preserveMediaBindings(nextAst, previousAst) {
+  if (!previousAst) return;
+  const bindings = new Map();
+  for (const node of importedMediaNodes(previousAst)) {
+    const key = importedMediaKey(node);
+    if (!key || !node.props?.galleryId) continue;
+    if (!bindings.has(key)) bindings.set(key, []);
+    bindings.get(key).push(String(node.props.galleryId));
+  }
+  for (const node of importedMediaNodes(nextAst)) {
+    const values = bindings.get(importedMediaKey(node));
+    if (!node.props?.galleryId && values?.length) node.props.galleryId = values.shift();
+  }
+}
+
+function hasGalleryBinding(ast, media) {
+  const matches = importedMediaNodes(ast).filter(node => importedNodeMatchesMedia(node, media));
+  return matches.length > 0 && matches.every(node => node.props?.galleryId);
+}
+
+function bindGalleryAsset(ast, media, asset) {
+  const node = importedMediaNodes(ast).find(candidate => importedNodeMatchesMedia(candidate, media) && !candidate.props?.galleryId);
+  if (!node) return false;
+  node.props.galleryId = String(asset.id);
+  node.props.fileId = String(asset.telegram.fileId || media.fileId || "");
+  if (node.type === "animation") node.props.url = "";
+  return true;
+}
+
+function importedMediaNodes(ast) {
+  const nodes = [];
+  const visit = node => {
+    if (!node || typeof node !== "object") return;
+    if (["animation", "audio", "document", "photo", "video", "voice_note"].includes(node.type)) nodes.push(node);
+    for (const child of node.children || []) visit(child);
+    for (const item of node.props?.items || []) for (const block of item?.blocks || []) visit(block);
+  };
+  visit(ast);
+  return nodes;
+}
+
+function importedMediaKey(node) {
+  const fileId = String(node?.props?.fileId || (node?.type === "animation" ? node?.props?.url : "") || "");
+  return fileId ? `${node.type}:${fileId}` : "";
+}
+
+function importedNodeMatchesMedia(node, media) {
+  const nodeType = node?.type === "voice_note" ? "voice" : node?.type;
+  return nodeType === media?.type && importedMediaKey(node).endsWith(`:${String(media?.fileId || "")}`);
 }
 
 function extractRichMessageMedia(richMessage) {

@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.1";
+import { t } from "../i18n/index.js?v=1.12.5";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 import { comessageKey, comessagePublicationId, comessageValueFromAst } from "../core/Comessage.js?v=1.12.1";
@@ -407,7 +407,13 @@ export class PublicationService {
     }
   }
 
-  async importCollaborativePublication({ message, target, bot, marker, messageAst } = {}) {
+  async getCollaborativePublication(chatId, marker) {
+    const id = comessagePublicationId(chatId, marker);
+    const record = await this.db.get("publications", id, null);
+    return record?.collaboration?.id ? structuredClone(record) : null;
+  }
+
+  async importCollaborativePublication({ message, target, bot, marker, messageAst, updateId = null } = {}) {
     const chatId = Number(message?.chat?.id || target?.chatId || 0);
     const messageId = Number(message?.message_id || 0);
     if (!chatId || !messageId || !comessageValueFromAst(messageAst)) return null;
@@ -422,11 +428,17 @@ export class PublicationService {
       existing.target = structuredClone(target);
       existing.publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
       existing.deleteUntil = existing.publishedAt + PUBLICATION_DELETE_WINDOW_MS;
+      const origin = existing.collaboration?.localOrigin === true || existing.collaboration?.originBotId
+        ? {}
+        : collaborationOriginMetadata(bot);
       existing.collaboration = {
         ...existing.collaboration,
-        ...collaborationMetadata(marker, { local: existing.collaboration?.localOrigin === true, bot }),
+        id: String(marker || ""),
+        key: comessageKey(marker),
+        ...origin,
         relinkedAt: previousMessageId && previousMessageId !== messageId ? Date.now() : existing.collaboration?.relinkedAt || null,
-        remoteSeenAt: Date.now()
+        remoteSeenAt: Date.now(),
+        remote: collaborationRemoteState(messageAst, message, { updateId, source: "telegram-update" })
       };
       await this.db.put("publications", existing.id, existing);
       await this.drafts.retainPublication?.(existing);
@@ -485,7 +497,12 @@ export class PublicationService {
       reactionCount: 0,
       reactions: [],
       reactionActors: {},
-      collaboration: { ...collaborationMetadata(marker, { bot }), importedAt: Date.now(), remoteSeenAt: Date.now() }
+      collaboration: {
+        ...collaborationMetadata(marker, { bot }),
+        importedAt: Date.now(),
+        remoteSeenAt: Date.now(),
+        remote: collaborationRemoteState(messageAst, message, { updateId, source: "telegram-update" })
+      }
     };
     await this.db.put("publications", record.id, record);
     await this.drafts.retainPublication(record);
@@ -528,7 +545,12 @@ export class PublicationService {
     record.publishedAt = Number(message.date || Math.floor(Date.now() / 1000)) * 1000;
     record.deleteUntil = record.publishedAt + PUBLICATION_DELETE_WINDOW_MS;
     record.editedAt = Date.now();
-    record.collaboration = { ...record.collaboration, restoredAt: Date.now(), remoteSeenAt: Date.now() };
+    record.collaboration = {
+      ...record.collaboration,
+      restoredAt: Date.now(),
+      remoteSeenAt: Date.now(),
+      remote: collaborationRemoteState(record.messageAst, message, { source: "local-restore" })
+    };
     await this.db.put("publications", record.id, record);
     await this.drafts.updatePublicationBaseline?.(draft.id, record.id, draft.messageAst);
     await this.drafts.relinkPublication?.(record.id, { chatId: record.chatId, messageId, targetTitle: target.title || "" });
@@ -682,11 +704,13 @@ export class PublicationService {
 
       const draft = await this.createEditDraft(record.id);
       if (this.draftSession?.activeDraftId === draft.id) await this.draftSession.flush();
-      await this.drafts.saveAst(draft.id, record.messageAst);
-      await this.drafts.updatePublicationBaseline?.(draft.id, record.id, record.messageAst);
+      const remoteAst = record.collaboration?.remote?.messageAst || record.messageAst;
+      await this.drafts.saveAst(draft.id, remoteAst);
+      await this.drafts.updatePublicationBaseline?.(draft.id, record.id, remoteAst);
 
-      if (this.draftSession?.activeDraftId === draft.id && this.documents?.openDraft) {
-        await this.documents.openDraft(draft.id);
+      if (this.draftSession?.activeDraftId === draft.id) {
+        if (this.documents?.reloadDraft) await this.documents.reloadDraft(draft.id, { reason: "synced-from-channel" });
+        else if (this.documents?.openDraft) await this.documents.openDraft(draft.id);
       }
       return this.drafts.get(draft.id);
     });
@@ -729,6 +753,16 @@ export class PublicationService {
         }
       }
       record.messageAst = structuredClone(appliedAst);
+      if (record.collaboration?.id) {
+        record.collaboration = {
+          ...record.collaboration,
+          remoteSeenAt: Date.now(),
+          remote: collaborationRemoteState(appliedAst, {
+            message_id: record.messageId,
+            date: Math.floor(Date.now() / 1000)
+          }, { source: "local-edit" })
+        };
+      }
       if (draft.source.retained && record.source?.draftId === draft.id) record.source.title = draft.title;
       record.editedAt = Date.now();
       await this.db.put("publications", record.id, record);
@@ -901,8 +935,26 @@ function collaborationMetadata(id, { local = false, bot = null } = {}) {
     id: String(id || ""),
     key: comessageKey(id),
     localOrigin: local === true,
+    ...collaborationOriginMetadata(bot)
+  };
+}
+
+function collaborationOriginMetadata(bot) {
+  return {
     originBotId: Number(bot?.id || 0) || null,
     originBotUsername: String(bot?.username || "")
+  };
+}
+
+function collaborationRemoteState(messageAst, message = {}, { updateId = null, source = "telegram-update" } = {}) {
+  return {
+    messageAst: structuredClone(messageAst),
+    messageId: Number(message?.message_id || 0) || null,
+    messageDate: Number(message?.date || 0) || null,
+    editDate: Number(message?.edit_date || 0) || null,
+    updateId: Number(updateId || 0) || null,
+    source,
+    receivedAt: Date.now()
   };
 }
 

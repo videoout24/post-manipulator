@@ -12,6 +12,8 @@ export class EventBus {
   }
 
   async emitAsync(name, payload) {
-    for (const fn of this.events.get(name) || []) await fn(payload);
+    const results = [];
+    for (const fn of this.events.get(name) || []) results.push(await fn(payload));
+    return results;
   }
 }

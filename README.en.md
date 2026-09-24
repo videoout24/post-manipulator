@@ -216,9 +216,10 @@ Bot API, but that owner's editor cannot open the channel.
 
 Ordinary files posted by a selected bot are indexed in Gallery. When source
 deletion after indexing is disabled, the owner's private chat gets a topic named
-after that bot and the message is copied there. Media in the first imported Rich
-Message are also indexed individually and stored as separate file messages in
-that topic. With deletion enabled, Gallery indexes the channel file directly but
+after that bot and the message is copied there. New and changed media in every
+received Rich Message are indexed individually, linked to the Draft's media
+blocks, and stored as separate file messages in that topic. Unchanged files are
+not uploaded again. With deletion enabled, Gallery indexes the channel file directly but
 never deletes the shared channel post.
 
 A collaborative publication is identified by its first Rich Message block: the
@@ -229,9 +230,10 @@ the publication itself is deleted. CoMessage Drafts cannot be moved into a
 Project.
 
 Every bot imports the publication into an independent local Draft. Incoming edits
-update the version shown in **Publications**, but do not overwrite the working
-copy automatically. **Sync** in Publications loads the current channel version
-into the editor, while **Update** in the editor sends the local version to the
+persist the last state received through long polling in **Publications**, but do
+not overwrite the working copy automatically. **Sync** applies this latest
+channel snapshot to the local Draft and immediately reloads an open Canvas,
+while **Update** in the editor sends the local version to the
 channel. The direction does not depend on which bot created the original post.
 The `#comessage_…` marker is the stable identity while `message_id` is a
 mutable pointer. If the shared post was deleted, **Update** offers to restore a
@@ -349,7 +351,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.12.4
+https://videoout24.github.io/post-manipulator/?build=1.12.5
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -426,7 +428,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.4`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.5`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

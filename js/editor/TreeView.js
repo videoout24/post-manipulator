@@ -1,8 +1,8 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.11.4";
+import { t } from "../i18n/index.js?v=1.12.5";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
-import { dataTransferMayContainFiles, filesFromDataTransfer } from "../core/FileDrop.js?v=1.12.4";
+import { dataTransferMayContainFiles, resolveFilesFromDataTransfer } from "../core/FileDrop.js?v=1.12.5";
 
 export class TreeView {
   constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, events = null, requestMediaUpload = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
@@ -304,7 +304,7 @@ export class TreeView {
           if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.supports(node)) return;
           e.preventDefault();
           el.classList.remove("drag-media");
-          await this.uploadFilesToBlock(node, filesFromDataTransfer(e.dataTransfer));
+          await this.uploadFilesToBlock(node, await resolveFilesFromDataTransfer(e.dataTransfer));
           return;
         }
         const galleryAssetId = this.draggedGalleryAssetId(e);
@@ -626,7 +626,7 @@ export class TreeView {
       if (dataTransferMayContainFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
         e.preventDefault();
         element.classList.remove("active", "drag-media");
-        await this.uploadFilesToBlock(node, filesFromDataTransfer(e.dataTransfer));
+        await this.uploadFilesToBlock(node, await resolveFilesFromDataTransfer(e.dataTransfer));
         return;
       }
       const galleryAssetId = this.draggedGalleryAssetId(e);
@@ -669,7 +669,11 @@ export class TreeView {
   }
 
   async uploadFilesToBlock(node, files) {
-    if (!files.length || !this.requestMediaUpload) return;
+    if (!files.length) {
+      this.#mediaUploadNotice(t("editor.treeView.dropFilesUnavailable"), "error");
+      return;
+    }
+    if (!this.requestMediaUpload) return;
     this.controller.select(node.id);
     try {
       const upload = await this.requestMediaUpload({ node, files, textareaSizing: this.textareaSizing });
@@ -859,7 +863,12 @@ export class TreeView {
         return wrap;
       }
       const galleryId = node.props?.galleryId;
+      const telegramFileId = String(node.props?.fileId || "").trim();
       if (!galleryId) {
+        if (telegramFileId) {
+          wrap.innerHTML = `<div class="media-block-thumb"><span>${this.iconFor(node.type)}</span></div><div class="media-block-info"><strong>Telegram</strong><span>${escapeText(telegramFileId)}</span></div>`;
+          return wrap;
+        }
         wrap.innerHTML = t("editor.treeView.selectAResourceOnTheLeftOr", { 0: this.iconFor(node.type) });
         return wrap;
       }

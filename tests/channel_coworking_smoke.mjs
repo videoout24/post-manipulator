@@ -80,9 +80,17 @@ const collaboration = new ChannelCollaborationService({
   publications
 });
 const mediaEvents = [];
-events.on("telegram:collaboration-media", media => mediaEvents.push(media));
+events.on("telegram:collaboration-media", media => {
+  mediaEvents.push(media);
+  return {
+    id: `asset-${media.fileUniqueId || media.fileId}`,
+    type: media.type,
+    telegram: { fileId: media.fileId, fileUniqueId: media.fileUniqueId || null }
+  };
+});
 const marker = "#comessage_abcdef123456";
 const initialUpdate = {
+  update_id: 100,
   channel_post: {
     message_id: 40,
     date: 1_000,
@@ -102,6 +110,9 @@ assert.equal(records[0].collaboration.id, marker);
 assert.equal(mediaEvents.length, 1, "Rich Message media is emitted as an individual Gallery event");
 assert.equal(mediaEvents[0].fileId, "photo-large");
 const stableMediaKey = mediaEvents[0].sourceEventKey;
+assert.equal(records[0].messageAst.children[2].props.galleryId, "asset-unique-large",
+  "incoming Rich Message media must be linked to the indexed Gallery asset");
+assert.equal(records[0].collaboration.remote.updateId, 100, "the last channel snapshot must persist its update id");
 
 const draftId = records[0].source.draftId;
 const localDraft = await drafts.get(draftId);
@@ -113,14 +124,24 @@ await db.put("publications", records[0].id, records[0]);
 const editedUpdate = structuredClone(initialUpdate);
 editedUpdate.edited_channel_post = editedUpdate.channel_post;
 delete editedUpdate.channel_post;
+editedUpdate.update_id = 101;
+editedUpdate.edited_channel_post.from.id = 10;
 editedUpdate.edited_channel_post.rich_message.blocks[1].text = "Another bot version";
+editedUpdate.edited_channel_post.rich_message.blocks[2].photo = [
+  { file_id: "photo-new-small", file_unique_id: "unique-new-small", width: 90, height: 90 },
+  { file_id: "photo-new-large", file_unique_id: "unique-new-large", width: 900, height: 900 }
+];
 await collaboration.handleUpdate(editedUpdate);
 assert.equal((await drafts.get(draftId)).messageAst.children[1].props.text, "My independent version",
   "incoming edits never overwrite the local working copy");
-assert.equal(mediaEvents.length, 1, "edited posts do not re-index initial Rich Message media");
+assert.equal(mediaEvents.length, 2, "changed media in edited posts is indexed exactly once");
 records = await publications.list();
 assert.equal(records[0].messageAst.children[1].props.text, "Another bot version",
   "incoming edits update the channel version stored in Publications");
+assert.equal(records[0].messageAst.children[2].props.galleryId, "asset-unique-new-large",
+  "the newest channel media is stored in the remote AST with its Gallery binding");
+assert.equal(records[0].collaboration.remote.messageAst.children[2].props.fileId, "photo-new-large",
+  "the persisted last-remote snapshot includes media changes");
 assert.equal(records[0].collaboration.localOrigin, true,
   "a remote edit remains available even when the local bot authored the original");
 
@@ -130,13 +151,14 @@ publications.draftSession = {
   activeDraftId: draftId,
   async flush() { activeDraftFlushes += 1; }
 };
-publications.documents = { async openDraft(id) { reloadedDraftIds.push(id); } };
+publications.documents = { async reloadDraft(id, options) { reloadedDraftIds.push([id, options]); } };
 const pulledDraft = await publications.pullCollaborativePublication(records[0].id);
 assert.equal(pulledDraft.messageAst.children[1].props.text, "Another bot version",
   "Sync from Publications pulls the channel version into the editor draft");
+assert.equal(pulledDraft.messageAst.children[2].props.galleryId, "asset-unique-new-large");
 assert.equal(editedPayloads.length, 0, "pulling from Publications must not edit Telegram");
 assert.equal(activeDraftFlushes, 1, "an open editor draft is flushed before the pull");
-assert.deepEqual(reloadedDraftIds, [draftId], "an open Canvas is reloaded with the pulled version");
+assert.deepEqual(reloadedDraftIds, [[draftId, { reason: "synced-from-channel" }]], "an open Canvas is reloaded with the pulled version");
 
 const editorDraft = await drafts.get(draftId);
 editorDraft.messageAst.children[1].props.text = "Editor update";
@@ -166,6 +188,10 @@ assert.equal((await drafts.get(draftId)).source.messageId, restoredMessageId);
 
 const ignored = structuredClone(initialUpdate);
 ignored.channel_post.from.id = 999;
-assert.equal(await collaboration.handleUpdate(ignored), false, "updates from unselected bots are ignored");
+ignored.channel_post.rich_message.blocks[0].text = {
+  type: "hashtag", text: "#comessage_unknown123456", hashtag: "#comessage_unknown123456"
+};
+assert.equal(await collaboration.handleUpdate(ignored), false,
+  "an unknown CoMessage from an unselected bot is ignored while known channel edits remain syncable");
 
 console.log("channel coworking smoke: OK");

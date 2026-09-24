@@ -15,6 +15,7 @@ export class EditorEventCoordinator {
       selection, textareaSizing, projectIndex, previewStatus
     });
     this.unsubscribers = [];
+    this.canvasSessionKey = null;
   }
 
   start() {
@@ -49,11 +50,12 @@ export class EditorEventCoordinator {
     else this.workspace?.render?.();
   }
 
-  #projectSessionChanged({ project } = {}) {
+  #projectSessionChanged({ project, activePostId = null, reason = "" } = {}) {
     this.selection?.clear?.();
     this.textareaSizing?.clear?.();
     this.projectIndex?.rebuild?.(project || null);
     this.workspace?.render?.();
+    this.#resetScrollForSession(project?.id ? `project:${project.id}:${activePostId || ""}` : null, reason);
 
     if (!project) {
       this.telegramPreview?.schedule?.();
@@ -66,9 +68,7 @@ export class EditorEventCoordinator {
     // Opening a Draft activates its session after its AST has replaced the shared
     // tree. Re-render here so a no-context placeholder cannot remain on Canvas.
     this.workspace?.render?.();
-    if (activeDraftId && ["opened", "recovered", "created", "created-from-first-block"].includes(reason)) {
-      this.workspace?.scrollCanvasToTop?.();
-    }
+    this.#resetScrollForSession(activeDraftId ? `draft:${activeDraftId}` : null, reason);
     if (!this.projectSession?.isProjectActive?.()) this.telegramPreview?.schedule?.();
   }
 
@@ -76,5 +76,13 @@ export class EditorEventCoordinator {
     if (projectId === this.projectSession?.activeProjectId && project && reason !== "deleted") {
       this.projectIndex?.rebuild?.(project);
     }
+  }
+
+  #resetScrollForSession(nextKey, reason = "") {
+    const forceReload = ["opened", "recovered", "created", "created-from-first-block", "synced-from-channel"].includes(reason);
+    if (nextKey && (nextKey !== this.canvasSessionKey || forceReload)) {
+      this.workspace?.scrollCanvasToTop?.();
+    }
+    this.canvasSessionKey = nextKey;
   }
 }

@@ -48,14 +48,27 @@ assert.deepEqual(calls, ["draft:autosave", "preview:schedule", "workspace:render
 calls.length = 0;
 projectSession.active = true;
 draftSession.active = false;
-events.emit("project:session-changed", { project: { id: "project_a" } });
+events.emit("project:session-changed", { reason: "project-opened", project: { id: "project_a" }, activePostId: "post_a" });
 assert.deepEqual(calls, [
   "selection:clear",
   "textarea:clear",
   ["index:rebuild", "project_a"],
   "workspace:render",
+  "workspace:scroll-top",
   ["project:deployment", "project_a"]
 ]);
+
+calls.length = 0;
+events.emit("project:session-changed", { reason: "saved", project: { id: "project_a" }, activePostId: "post_a" });
+assert.deepEqual(calls, [
+  "selection:clear", "textarea:clear", ["index:rebuild", "project_a"], "workspace:render", ["project:deployment", "project_a"]
+], "saving the same Project post must not move Canvas");
+
+calls.length = 0;
+events.emit("project:session-changed", { reason: "post-opened", project: { id: "project_a" }, activePostId: "post_b" });
+assert.deepEqual(calls, [
+  "selection:clear", "textarea:clear", ["index:rebuild", "project_a"], "workspace:render", "workspace:scroll-top", ["project:deployment", "project_a"]
+], "switching the Canvas to another Project post must reset scroll");
 
 calls.length = 0;
 events.emit("project:changed", { projectId: "other", project: { id: "other" }, reason: "saved" });
@@ -73,6 +86,11 @@ calls.length = 0;
 events.emit("draft:session-changed", { reason: "saved", activeDraftId: "draft_a" });
 assert.deepEqual(calls, ["workspace:render", "preview:schedule"],
   "saving an already open Draft must not unexpectedly move the Canvas");
+
+calls.length = 0;
+events.emit("draft:session-changed", { reason: "synced-from-channel", activeDraftId: "draft_a" });
+assert.deepEqual(calls, ["workspace:render", "workspace:scroll-top", "preview:schedule"],
+  "reloading a CoMessage channel snapshot must reset Canvas scroll");
 
 calls.length = 0;
 events.emit("selection:changed", {});

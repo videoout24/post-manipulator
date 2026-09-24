@@ -1,6 +1,6 @@
 import { AppNavigation } from "./AppNavigation.js?v=1.9.5";
 import { EditorPreviewStatusView } from "../editor/EditorPreviewStatusView.js?v=1.5.9";
-import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.12.4";
+import { EditorEventCoordinator } from "../editor/EditorEventCoordinator.js?v=1.12.5";
 import { EditorTelegramControls } from "../editor/EditorTelegramControls.js?v=1.9.5";
 import { EditorRightPanel } from "../editor/EditorRightPanel.js?v=1.12.4";
 import { EditorSessionHistory } from "../editor/EditorSessionHistory.js?v=1.9.5";
