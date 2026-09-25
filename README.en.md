@@ -58,6 +58,19 @@ a connector to a specific AI provider's API, but that would effectively defeat
 the whole idea—the enjoyment of expressing your own thoughts instead of
 generating everything.
 
+## Interface settings
+
+The **PM** button in the top bar opens language, theme, local-data, Telegram, and
+font settings. The **Fonts** section exposes all 18 centralized text sizes. Each
+variable has a plain-language label listing its main uses and a live `Aa` sample
+that changes immediately when a value is entered.
+
+One size can be shared by several component groups, so its label gives the main
+examples rather than naming a single element. Values from 6 to 96 px are stored
+locally for future launches; **Reset sizes** restores the default scale. The
+reserved `--font-size-24` size is not currently attached to a visible element
+and is therefore shown only by its sample.
+
 ## AI JSON: requests without requiring an AI API
 
 Every block on the Canvas has a collapsible **AI prompt** field directly below
@@ -355,7 +368,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.12.6
+https://videoout24.github.io/post-manipulator/?build=1.12.8
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -432,7 +445,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.6`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.8`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

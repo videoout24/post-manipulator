@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.12.6";
-import { isBlobLike } from "../core/FileDrop.js?v=1.12.7";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.8";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;

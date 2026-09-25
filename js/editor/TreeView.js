@@ -2,7 +2,7 @@ import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
 import { t } from "../i18n/index.js?v=1.12.6";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
-import { dataTransferMayContainFiles, resolveFilesForDrop } from "../core/FileDrop.js?v=1.12.7";
+import { dataTransferMayContainFiles, resolveFilesForDrop } from "../core/FileDrop.js?v=1.12.8";
 
 export class TreeView {
   constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, events = null, requestMediaUpload = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {

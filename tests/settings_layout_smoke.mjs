@@ -8,6 +8,8 @@ const app = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8');
 const navigation = fs.readFileSync(new URL('../js/app/AppNavigation.js', import.meta.url), 'utf8');
 const telegramSettings = fs.readFileSync(new URL('../js/telegram/TelegramSettingsView.js', import.meta.url), 'utf8');
 const controlsCss = fs.readFileSync(new URL('../styles/controls.css', import.meta.url), 'utf8');
+const ru = fs.readFileSync(new URL('../js/i18n/ru.js', import.meta.url), 'utf8');
+const en = fs.readFileSync(new URL('../js/i18n/en.js', import.meta.url), 'utf8');
 
 assert(!/data-tab=["']settings["']/.test(html), 'Settings must not appear as a top tab');
 assert(/id=["']openSettingsFromBrand["']/.test(html), 'Brand must be the Settings entry point');
@@ -27,6 +29,12 @@ assert(/data-settings-panel=["']general["']/.test(html), 'General settings panel
 assert(/data-settings-section=["']fonts["']/.test(html), 'Fonts section must exist in left navigation');
 assert(/data-settings-panel=["']fonts["']/.test(html), 'Fonts settings panel must exist');
 assert.equal((html.match(/data-font-size-token=/g) || []).length, 18, 'Every central font-size token must have an input');
+assert.equal((html.match(/data-font-size-preview=/g) || []).length, 18, 'Every font-size token must have a live preview');
+for (const size of [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 26, 34, 54]) {
+  const key = `html.fontSize${size}Label`;
+  assert(html.includes(`data-i18n="${key}"`), `${key} must label its font-size control`);
+  assert(ru.includes(`"${key}"`) && en.includes(`"${key}"`), `${key} must be translated`);
+}
 assert(/id=["']resetFontSizes["']/.test(html), 'Font sizes must expose a reset action');
 assert(/FontPreferences/.test(telegramSettings), 'Settings view must bind the font preference controller');
 assert(/fontPreferences\.start\(\)/.test(fs.readFileSync(new URL('../js/bootstrap.js', import.meta.url), 'utf8')),

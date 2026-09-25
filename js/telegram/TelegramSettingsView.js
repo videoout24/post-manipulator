@@ -1,9 +1,9 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.12.7";
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.12.8";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { SseProbe } from "../network/SseProbe.js?v=1.7.19";
 import { themePreferences } from "../core/ThemePreferences.js?v=1.8.5";
-import { fontPreferences } from "../core/FontPreferences.js?v=1.12.7";
+import { fontPreferences } from "../core/FontPreferences.js?v=1.12.8";
 import { AUTOMATIC_PUBLICATION_BACKUP_KEY } from "../storage/AutomaticPublicationBackup.js?v=1.9.5";
 
 const NATIVE_INTEGRATION_KEY = "telegramNativeIntegration";
