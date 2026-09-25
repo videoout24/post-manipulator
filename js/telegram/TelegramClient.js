@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.12.6";
-import { isBlobLike } from "../core/FileDrop.js?v=1.12.6";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.7";
 import { TelegramRequestScheduler } from "./TelegramRequestScheduler.js?v=1.5.9";
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
@@ -291,7 +291,8 @@ export class TelegramClient {
     const body = new FormData();
     for (const [key, value] of Object.entries(params || {})) {
       if (value === undefined || value === null || value === "") continue;
-      body.append(key, isBlobLike(value) ? value : String(value));
+      if (isBlobLike(value)) body.append(key, value, String(value.name || "file"));
+      else body.append(key, String(value));
     }
     const url = `${this.apiBase}/bot${this.#token}/${method}`;
     const requestAbort = createRequestAbort(signal, this.uploadTimeoutMs);

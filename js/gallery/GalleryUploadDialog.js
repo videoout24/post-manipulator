@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.js?v=1.12.6";
-import { isBlobLike } from "../core/FileDrop.js?v=1.12.6";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.7";
 
 export function requestGalleryUpload({
   gallery,

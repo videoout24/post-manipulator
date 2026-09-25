@@ -144,24 +144,9 @@ export class AiDraftExchange {
       const fileName = aiFileName(payload);
       const blob = new Blob([text], { type: "application/json" });
       const windowRoot = this.documentRoot?.defaultView || globalThis.window || globalThis;
-      const savePicker = windowRoot?.showSaveFilePicker;
-      if (typeof savePicker === "function") {
-        try {
-          const handle = await Reflect.apply(savePicker, windowRoot, [{
-            suggestedName: fileName,
-            types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
-          }]);
-          const writable = await handle.createWritable();
-          await writable.write(blob);
-          await writable.close();
-          return true;
-        } catch (error) {
-          if (error?.name === "AbortError") return false;
-          // Embedded browsers may expose the picker but reject it. Keep the
-          // standard download path as a compatibility fallback.
-        }
-      }
-
+      // Telegram Desktop for Linux may expose showSaveFilePicker while its
+      // WebKit portal implementation still fails after the native dialog is
+      // opened. Detect that host first so the broken picker is never invoked.
       if (isRestrictedLinuxTelegramWebView(windowRoot)) {
         const copied = await copyDownloadText({
           text,
@@ -181,9 +166,25 @@ export class AiDraftExchange {
         try {
           await report({ title: t("html.downloadJson"), message });
         } catch {}
-        // Clipboard/manual-copy fallback is deliberately not reported as a
-        // completed download. The WebView did not create a file on disk.
         return false;
+      }
+
+      const savePicker = windowRoot?.showSaveFilePicker;
+      if (typeof savePicker === "function") {
+        try {
+          const handle = await Reflect.apply(savePicker, windowRoot, [{
+            suggestedName: fileName,
+            types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+          }]);
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          return true;
+        } catch (error) {
+          if (error?.name === "AbortError") return false;
+          // Embedded browsers may expose the picker but reject it. Keep the
+          // standard download path as a compatibility fallback.
+        }
       }
 
       const url = URL.createObjectURL(blob);

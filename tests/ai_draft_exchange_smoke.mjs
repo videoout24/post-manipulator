@@ -451,10 +451,15 @@ try {
     focus() { linuxEvents.push("focus"); },
     select() { linuxEvents.push("select"); }
   };
+  let linuxSavePickerCalls = 0;
   const linuxDownloadExchange = new AiDraftExchange({
     input: linuxInput,
     documentRoot: {
       defaultView: {
+        showSaveFilePicker() {
+          linuxSavePickerCalls += 1;
+          throw new Error("Linux portal must not be called");
+        },
         navigator: {
           userAgent: "TelegramDesktop WebKit Linux x86_64",
           clipboard: {
@@ -477,6 +482,8 @@ try {
   });
   assert.equal(await linuxDownloadExchange.download(), false,
     "clipboard fallback must not claim that a file was saved to disk");
+  assert.equal(linuxSavePickerCalls, 0,
+    "restricted Linux Telegram must bypass its exposed but broken save picker");
   assert.deepEqual(linuxEvents, ["clipboard", "focus", "select", "exec-copy"]);
   assert.equal(linuxNotifications.length, 1);
   assert.equal(linuxNotifications[0].type, "warning");

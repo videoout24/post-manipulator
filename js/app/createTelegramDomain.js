@@ -1,4 +1,4 @@
-import { TelegramClient } from "../telegram/TelegramClient.js?v=1.12.6";
+import { TelegramClient } from "../telegram/TelegramClient.js?v=1.12.7";
 import { BotIdentityService } from "../telegram/BotIdentityService.js?v=1.8.8";
 import { OwnerBindingService } from "../telegram/OwnerBindingService.js?v=1.6.5";
 import { PreviewChannelBindingService } from "../telegram/PreviewChannelBindingService.js?v=1.7.16";

@@ -19,6 +19,18 @@ assert.equal(dataTransferMayContainFiles(linuxTransfer), true,
   "Linux file drags must be accepted while DataTransfer.files is protected during dragover");
 assert.deepEqual(filesFromDataTransfer(linuxTransfer), [linuxFile],
   "Linux drops must fall back to DataTransferItem.getAsFile()");
+const mislabeledLinuxFile = {
+  name: "webkit-photo.png", type: "image/png", size: 8,
+  slice() {},
+  [Symbol.toStringTag]: "File"
+};
+assert.deepEqual(filesFromDataTransfer({
+  files: [],
+  items: [{ kind: "string", type: "application/x-moz-file", getAsFile: () => mislabeledLinuxFile }]
+}), [mislabeledLinuxFile], "Linux WebKit file items mislabeled as strings must retain their File payload");
+assert.equal(dataTransferMayContainFiles({
+  files: [], items: [{ kind: "string", type: "application/x-moz-file" }], types: []
+}), true, "a mislabeled Linux file item must still activate the drop target");
 assert.equal(dataTransferMayContainFiles({ files: [], items: [], types: ["text/uri-list"] }), true,
   "Linux URI-list drags must allow the drop event before file data becomes readable");
 const handleFile = { name: "handle-photo.png", type: "image/png", size: 12 };
@@ -46,6 +58,38 @@ const crossRealmFile = {
   [Symbol.toStringTag]: "File"
 };
 assert.equal(isBlobLike(crossRealmFile), true, "cross-realm Linux File objects must survive upload validation");
+const legacyWebKitFile = {
+  name: "legacy-webkit.png", type: "image/png", size: 10,
+  slice() {},
+  [Symbol.toStringTag]: "File"
+};
+assert.equal(isBlobLike(legacyWebKitFile), true,
+  "Linux WebKit File objects without Blob.arrayBuffer must remain uploadable through FormData");
+
+const originalFetch = globalThis.fetch;
+try {
+  globalThis.fetch = async (url, options) => {
+    assert.equal(url, "file:///home/user/My%20Photo.png");
+    assert.equal(options.credentials, "omit");
+    return {
+      ok: true,
+      status: 200,
+      async blob() { return new Blob(["png"], { type: "image/png" }); }
+    };
+  };
+  const uriFiles = await resolveFilesFromDataTransfer({
+    files: [],
+    items: [],
+    types: ["text/uri-list"],
+    getData: type => type === "text/uri-list" ? "# local file\nfile:///home/user/My%20Photo.png\n" : ""
+  });
+  assert.equal(uriFiles.length, 1);
+  assert.equal(uriFiles[0].name, "My Photo.png");
+  assert.equal(uriFiles[0].type, "image/png");
+  assert.equal(await uriFiles[0].text(), "png");
+} finally {
+  globalThis.fetch = originalFetch;
+}
 
 const topics = [
   { threadId: 7, name: "Photos" },

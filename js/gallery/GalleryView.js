@@ -1,9 +1,9 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
 import { t } from "../i18n/index.js?v=1.12.6";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
-import { dataTransferMayContainFiles, resolveFilesForDrop } from "../core/FileDrop.js?v=1.12.6";
+import { dataTransferMayContainFiles, resolveFilesForDrop } from "../core/FileDrop.js?v=1.12.7";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
-import { requestGalleryUpload } from "./GalleryUploadDialog.js?v=1.12.6";
+import { requestGalleryUpload } from "./GalleryUploadDialog.js?v=1.12.7";
 import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.4";
 
 const TYPE_META = Object.freeze({
