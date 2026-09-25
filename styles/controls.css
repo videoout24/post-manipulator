@@ -90,7 +90,7 @@ select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118)
   min-height: 26px !important;
   padding: 4px 8px !important;
   border-radius: 6px !important;
-  font-size: 9px !important;
+  font-size: var(--font-size-9) !important;
 }
 :is(button, .button-link) * { font-size: inherit !important; }
 .draft-card button:disabled { opacity: .45; cursor: not-allowed; }
@@ -100,10 +100,10 @@ select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118)
 :is(button, .button-link) *::after { font-size: inherit !important; }
 
 /* Navigation labels need a larger type size than compact action buttons. */
-:is(button, .button-link).brand-settings-trigger { font-size: 20px !important; line-height: 1.2; }
-:is(button, .button-link).top-tab { font-size: 15px !important; }
-:is(button, .button-link).settings-section-button { font-size: 12px !important; }
-@media (max-width: 1180px) { :is(button, .button-link).top-tab { font-size: 14px !important; } }
+:is(button, .button-link).brand-settings-trigger { font-size: var(--font-size-20) !important; line-height: 1.2; }
+:is(button, .button-link).top-tab { font-size: var(--font-size-15) !important; }
+:is(button, .button-link).settings-section-button { font-size: var(--font-size-12) !important; }
+@media (max-width: 1180px) { :is(button, .button-link).top-tab { font-size: var(--font-size-14) !important; } }
 
 /* Leave enough room for icons after applying the shared horizontal padding. */
 .prop-label-accessory .link-relation-block-button,
@@ -120,12 +120,12 @@ select:not([multiple]) option { background-color: var(--theme-field-bg, #0b1118)
   padding: 14px; border: 1px solid var(--theme-accent-border, #45638a); border-radius: 8px;
   background: var(--theme-surface-raised, #172232); color: var(--theme-text, #e9eef5);
   box-shadow: 0 8px 28px var(--theme-shadow-modal, #0008); pointer-events: none;
-  font-size: 11px; line-height: 1.5;
+  font-size: var(--font-size-11); line-height: 1.5;
 }
 .operation-feedback-content { min-width: 0; flex: 1; display: grid; gap: 4px; }
 .operation-feedback-detail { overflow-wrap: anywhere; color: var(--theme-text-secondary, #bac9db); }
 .operation-feedback-detail:empty, .operation-feedback-count:empty { display: none; }
-.operation-feedback-count { color: var(--theme-text-secondary, #bac9db); font-size: 10px; }
+.operation-feedback-count { color: var(--theme-text-secondary, #bac9db); font-size: var(--font-size-10); }
 .operation-feedback progress { display: block; width: 100%; height: 5px; margin-top: 4px; accent-color: var(--theme-accent, #6b9ddd); }
 .operation-feedback progress[hidden] { display: none; }
 .operation-feedback-spinner { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; border: 2px solid var(--theme-border, #43566c); border-top-color: var(--theme-accent, #8ab5ee); border-radius: 50%; animation: operation-spin .8s linear infinite; }

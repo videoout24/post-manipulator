@@ -1,8 +1,8 @@
-import { getLocale, t } from "./i18n/index.js?v=1.12.6";
+import { getLocale, t } from "./i18n/index.js?v=1.12.7";
 import { EventBus } from "./core/EventBus.js?v=1.12.6";
 import { Storage } from "./storage/Storage.js?v=1.8.6";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.22";
-import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.9.5";
+import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.12.7";
 import { GalleryView } from "./gallery/GalleryView.js?v=1.12.6";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.9.5";
 import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.9.5";
@@ -419,7 +419,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.12.6",
+  build: "1.12.7",
   notifications,
   layoutPreferences,
   telegramNavigation,

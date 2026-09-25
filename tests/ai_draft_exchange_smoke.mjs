@@ -706,7 +706,7 @@ assert.doesNotMatch(html, /id="aiDraftPaste"|id="aiDraftSend"/,
   "CORS-dependent clipboard and bot transport actions must not be exposed");
 assert.match(html, /id="aiDraftImport"[\s\S]*?id="aiDraftOpenBot"/,
   "manual import stays on the left while Open bot remains the final action");
-assert.match(editorCss, /\.button-like \{[\s\S]*?font-size: 9px;/,
+assert.match(editorCss, /\.button-like \{[\s\S]*?font-size: var\(--font-size-9\);/,
   "the response file label must use the same compact font size as dialog buttons");
 assert.match(editorCss, /#aiDraftOpenBot \{ margin-left: auto; \}/,
   "Open bot must remain separated on the right");

@@ -24,14 +24,16 @@ const projectPage = new FakeElement({ tabPage: "project" });
 const settingsPage = new FakeElement({ tabPage: "settings" });
 const settingsBrand = new FakeElement();
 const generalButton = new FakeElement({ settingsSection: "general" });
+const fontsButton = new FakeElement({ settingsSection: "fonts" });
 const generalPanel = new FakeElement({ settingsPanel: "general" });
+const fontsPanel = new FakeElement({ settingsPanel: "fonts" });
 const root = {
   querySelectorAll(selector) {
     return {
       "[data-tab]": [editorButton, projectButton],
       "[data-tab-page]": [editorPage, projectPage, settingsPage],
-      "[data-settings-section]": [generalButton],
-      "[data-settings-panel]": [generalPanel]
+      "[data-settings-section]": [generalButton, fontsButton],
+      "[data-settings-panel]": [generalPanel, fontsPanel]
     }[selector] || [];
   },
   querySelector(selector) { return selector === "#openSettingsFromBrand" ? settingsBrand : null; }
@@ -66,6 +68,11 @@ assert.deepEqual(editorTransition, { previousTab: "settings", tab: "editor" });
 generalButton.click();
 assert(generalPanel.classes.has("active"));
 assert.equal(generalButton.attributes.get("aria-selected"), "true");
+fontsButton.click();
+assert(fontsPanel.classes.has("active"));
+assert(!generalPanel.classes.has("active"));
+assert.equal(fontsButton.attributes.get("aria-selected"), "true");
+assert.equal(generalButton.attributes.get("aria-selected"), "false");
 
 navigation.stop();
 assert.equal(projectButton.listeners.size, 0);

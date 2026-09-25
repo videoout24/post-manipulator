@@ -7,13 +7,13 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<meta content="1.12.6" name="rmb-build"/>
+<meta content="1.12.7" name="rmb-build"/>
 <title>PM</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
 <script src="./js/theme-init.js?v=1.9.8"></script>
 <link href="./assets/post-manipulator.png" rel="icon" type="image/png"/>
 <link href="./assets/post-manipulator.png" rel="apple-touch-icon"/>
-<link href="./style.css?v=1.12.1" rel="stylesheet"/>
+<link href="./style.css?v=1.12.7" rel="stylesheet"/>
 </head>
 <body data-app-locked="true">
 <div aria-hidden="true" id="appShell" inert>
@@ -44,9 +44,11 @@
 </div>
 <nav class="settings-sections">
 <button aria-selected="true" class="settings-section-button active" data-i18n="html.general" data-settings-section="general" type="button"></button>
+<button aria-selected="false" class="settings-section-button" data-i18n="html.fonts" data-settings-section="fonts" type="button"></button>
 </nav>
 </aside>
 <section class="settings-content">
+<div class="settings-panel active" data-settings-panel="general">
 <div class="settings-content-head">
 <div>
 <h1 data-i18n="html.general"></h1>
@@ -54,7 +56,6 @@
 </div>
 <div class="runtime-pill" data-i18n="html.stopped" data-state="stopped" id="tgRuntimeStatus"></div>
 </div>
-<div class="settings-panel active" data-settings-panel="general">
 <div class="settings-cards"><section class="settings-card">
 <h2 data-i18n="html.language"></h2>
 <label class="settings-field"><span data-i18n="html.interfaceLanguage"></span><select id="appLanguagePreference"><option data-i18n="html.languageTelegram" value="auto"></option><option data-i18n="html.languageRussian" value="ru"></option><option data-i18n="html.languageEnglish" value="en"></option></select></label>
@@ -164,6 +165,39 @@
 </div>
 </section></div>
 </div>
+<div class="settings-panel" data-settings-panel="fonts">
+<div class="settings-content-head">
+<div>
+<h1 data-i18n="html.fonts"></h1>
+<p data-i18n="html.fontSettingsDescription"></p>
+</div>
+</div>
+<div class="settings-cards"><section class="settings-card font-size-settings-card">
+<h2 data-i18n="html.fontSizeScale"></h2>
+<p class="settings-hint font-size-settings-hint" data-i18n="html.fontSizeScaleHint"></p>
+<div class="font-size-settings-grid">
+<label class="font-size-field"><code>--font-size-7</code><span class="font-size-input"><input data-font-size-token="7" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-8</code><span class="font-size-input"><input data-font-size-token="8" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-9</code><span class="font-size-input"><input data-font-size-token="9" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-10</code><span class="font-size-input"><input data-font-size-token="10" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-11</code><span class="font-size-input"><input data-font-size-token="11" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-12</code><span class="font-size-input"><input data-font-size-token="12" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-13</code><span class="font-size-input"><input data-font-size-token="13" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-14</code><span class="font-size-input"><input data-font-size-token="14" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-15</code><span class="font-size-input"><input data-font-size-token="15" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-16</code><span class="font-size-input"><input data-font-size-token="16" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-17</code><span class="font-size-input"><input data-font-size-token="17" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-18</code><span class="font-size-input"><input data-font-size-token="18" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-20</code><span class="font-size-input"><input data-font-size-token="20" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-22</code><span class="font-size-input"><input data-font-size-token="22" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-24</code><span class="font-size-input"><input data-font-size-token="24" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-26</code><span class="font-size-input"><input data-font-size-token="26" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-34</code><span class="font-size-input"><input data-font-size-token="34" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+<label class="font-size-field"><code>--font-size-54</code><span class="font-size-input"><input data-font-size-token="54" inputmode="decimal" max="96" min="6" step="0.5" type="number"/><span>px</span></span></label>
+</div>
+<div class="settings-actions"><button data-i18n="html.resetFontSizes" disabled="" id="resetFontSizes" type="button"></button></div>
+</section></div>
+</div>
 </section>
 </div>
 </div></section>
@@ -172,7 +206,7 @@
 <div class="gallery-bootstrap">
 <strong data-i18n="html.gallery"></strong>
 <span data-i18n="html.initializingGalleryCore"></span>
-<code>build 1.12.6</code>
+<code>build 1.12.7</code>
 </div>
 </div>
 </section>
@@ -324,6 +358,6 @@
 <section aria-live="polite" aria-modal="true" id="securityGate" role="dialog">
 <div class="security-gate-card"><h1 class="security-gate-title" data-i18n="html.secureLaunch"></h1><p class="security-gate-copy" data-i18n="html.checkingTelegramEnvironment"></p><p class="security-gate-detail" data-i18n="html.launchWindowHint"></p></div>
 </section>
-<script src="./js/bootstrap.js?v=1.12.6" type="module"></script>
+<script src="./js/bootstrap.js?v=1.12.7" type="module"></script>
 </body>
 </html>

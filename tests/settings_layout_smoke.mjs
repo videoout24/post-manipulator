@@ -18,12 +18,19 @@ assert(/id=["']automaticPublicationBackups["'][^>]*type=["']checkbox["']/.test(h
   'Backups settings must expose the automatic publication backup checkbox');
 assert(/data-tab=["']publications["'][^>]*>[\s\S]*?data-tab=["']project["']/.test(html),
   'Publications must appear before the specialized Projects tab');
-assert.match(controlsCss, /\.top-tab\s*\{\s*font-size:\s*15px\s*!important;/,
+assert.match(controlsCss, /\.top-tab\s*\{\s*font-size:\s*var\(--font-size-15\)\s*!important;/,
   'Top-level tab labels must use the larger desktop font');
-assert.match(controlsCss, /max-width:\s*1180px[\s\S]*?\.top-tab\s*\{\s*font-size:\s*14px\s*!important;/,
+assert.match(controlsCss, /max-width:\s*1180px[\s\S]*?\.top-tab\s*\{\s*font-size:\s*var\(--font-size-14\)\s*!important;/,
   'Top-level tab labels must remain readable in the compact layout');
 assert(/data-settings-section=["']general["']/.test(html), 'General section must exist in left navigation');
 assert(/data-settings-panel=["']general["']/.test(html), 'General settings panel must exist');
+assert(/data-settings-section=["']fonts["']/.test(html), 'Fonts section must exist in left navigation');
+assert(/data-settings-panel=["']fonts["']/.test(html), 'Fonts settings panel must exist');
+assert.equal((html.match(/data-font-size-token=/g) || []).length, 18, 'Every central font-size token must have an input');
+assert(/id=["']resetFontSizes["']/.test(html), 'Font sizes must expose a reset action');
+assert(/FontPreferences/.test(telegramSettings), 'Settings view must bind the font preference controller');
+assert(/fontPreferences\.start\(\)/.test(fs.readFileSync(new URL('../js/bootstrap.js', import.meta.url), 'utf8')),
+  'Saved font sizes must be applied during bootstrap');
 assert(/class=["'][^"']*settings-sidebar/.test(html), 'Settings left sidebar must exist');
 assert(/class=["'][^"']*settings-content/.test(html), 'Settings right content panel must exist');
 assert(/class=["'][^"']*settings-cards/.test(html), 'Right settings card stack must exist');

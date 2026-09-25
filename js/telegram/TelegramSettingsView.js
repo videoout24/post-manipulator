@@ -1,14 +1,15 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.9.5";
+import { getLanguagePreference, setLanguagePreference, t } from "../i18n/index.js?v=1.12.7";
 import { confirmDarkDialog } from "../core/DarkDialog.js?v=1.6.5";
 import { SseProbe } from "../network/SseProbe.js?v=1.7.19";
 import { themePreferences } from "../core/ThemePreferences.js?v=1.8.5";
+import { fontPreferences } from "../core/FontPreferences.js?v=1.12.7";
 import { AUTOMATIC_PUBLICATION_BACKUP_KEY } from "../storage/AutomaticPublicationBackup.js?v=1.9.5";
 
 const NATIVE_INTEGRATION_KEY = "telegramNativeIntegration";
 const NETWORK_PANEL_START_EXPANDED_KEY = "networkPanelStartExpanded";
 export class TelegramSettingsView {
-  constructor({ root, db, events, client, runtime, ownerBinding, previewChannelBinding, previewController, botIdentity, navigation = null, verifiedBot = null, sseProbe = null }) {
+  constructor({ root, db, events, client, runtime, ownerBinding, previewChannelBinding, previewController, botIdentity, navigation = null, verifiedBot = null, sseProbe = null, fontPreferencesController = fontPreferences }) {
     this.root = root;
     this.db = db;
     this.events = events;
@@ -21,6 +22,7 @@ export class TelegramSettingsView {
     this.navigation = navigation;
     this.verifiedBot = verifiedBot;
     this.sseProbe = sseProbe || new SseProbe({ db, events });
+    this.fontPreferences = fontPreferencesController;
     this.documentRoot = root?.ownerDocument || globalThis.document;
     this.storageManager = globalThis.navigator?.storage || null;
     this.storagePersistence = { supported: Boolean(this.storageManager?.persist), granted: false, usage: null, quota: null };
@@ -30,6 +32,8 @@ export class TelegramSettingsView {
     this.networkPanelStartExpanded = false;
     this.#bind();
     this.#listen();
+    this.unsubscribeFontPreferences = this.fontPreferences?.subscribe?.(() => this.#renderFontPreferences());
+    this.#renderFontPreferences();
   }
 
   async initialize() {
@@ -82,6 +86,14 @@ export class TelegramSettingsView {
       setLanguagePreference(event.target.value);
       globalThis.location?.reload?.();
     });
+    for (const input of this.root.querySelectorAll("[data-font-size-token]")) {
+      input.addEventListener("input", event => {
+        if (!event.target.value || event.target.validity?.valid === false) return;
+        this.fontPreferences?.setValue?.(event.target.dataset.fontSizeToken, event.target.value);
+      });
+      input.addEventListener("change", () => this.#renderFontPreferences());
+    }
+    this.root.querySelector("#resetFontSizes")?.addEventListener("click", () => this.fontPreferences?.reset?.());
     this.root.querySelector("#requestPersistentStorage")?.addEventListener("click", () => this.#requestPersistentStorage());
     this.root.querySelector("#automaticPublicationBackups")?.addEventListener("change", event => {
       this.#run(async () => {
@@ -190,6 +202,7 @@ export class TelegramSettingsView {
     if (languagePreference) languagePreference.value = getLanguagePreference();
     const themePreference = this.root.querySelector("#appThemePreference");
     if (themePreference) themePreference.value = themePreferences.getPreference();
+    this.#renderFontPreferences();
     const automaticBackups = this.root.querySelector("#automaticPublicationBackups");
     if (automaticBackups) automaticBackups.checked = Boolean(automaticPublicationBackups);
     const sseBaseUrl = this.root.querySelector("#sseBaseUrl");
@@ -361,7 +374,19 @@ export class TelegramSettingsView {
     setDisabled(this.root, "#sseDisconnect", !["connecting", "open", "error"].includes(state.connection));
   }
 
-  stop() { this.sseProbe.stop(); }
+  #renderFontPreferences() {
+    for (const input of this.root.querySelectorAll("[data-font-size-token]")) {
+      if (this.documentRoot?.activeElement === input && !input.value) continue;
+      const value = this.fontPreferences?.getValue?.(input.dataset.fontSizeToken);
+      if (value != null) input.value = String(value);
+    }
+    setDisabled(this.root, "#resetFontSizes", !this.fontPreferences?.hasCustomizations?.());
+  }
+
+  stop() {
+    this.unsubscribeFontPreferences?.();
+    this.sseProbe.stop();
+  }
 
 }
 
