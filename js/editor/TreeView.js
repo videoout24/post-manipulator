@@ -1,8 +1,8 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.12.5";
+import { t } from "../i18n/index.js?v=1.12.6";
 import { richTextToPlain } from "../core/RichText.js?v=1.5.9";
 import { showCardDeleteConfirmation } from "../core/CardDeleteConfirmation.js?v=1.5.9";
-import { dataTransferMayContainFiles, resolveFilesFromDataTransfer } from "../core/FileDrop.js?v=1.12.5";
+import { dataTransferMayContainFiles, resolveFilesForDrop } from "../core/FileDrop.js?v=1.12.6";
 
 export class TreeView {
   constructor({ root, tree, registry, validator = null, controller, dragState = null, mediaBinder = null, gallery = null, thumbnails = null, inlineInspector = null, textareaSizing = null, blockCollector = null, events = null, requestMediaUpload = null, onCollapseChange = null, autoCollapseInactive = false, scrollSpeed = 2 }) {
@@ -304,7 +304,7 @@ export class TreeView {
           if (this.collapsedNodes.has(node.id) || !this.mediaBinder?.supports(node)) return;
           e.preventDefault();
           el.classList.remove("drag-media");
-          await this.uploadFilesToBlock(node, await resolveFilesFromDataTransfer(e.dataTransfer));
+          await this.uploadDroppedFilesToBlock(node, e.dataTransfer);
           return;
         }
         const galleryAssetId = this.draggedGalleryAssetId(e);
@@ -626,7 +626,7 @@ export class TreeView {
       if (dataTransferMayContainFiles(e.dataTransfer) && this.mediaBinder?.supports(node)) {
         e.preventDefault();
         element.classList.remove("active", "drag-media");
-        await this.uploadFilesToBlock(node, await resolveFilesFromDataTransfer(e.dataTransfer));
+        await this.uploadDroppedFilesToBlock(node, e.dataTransfer);
         return;
       }
       const galleryAssetId = this.draggedGalleryAssetId(e);
@@ -668,15 +668,28 @@ export class TreeView {
     return { parentId, index: index + 1, mode: "after" };
   }
 
-  async uploadFilesToBlock(node, files) {
-    if (!files.length) {
+  async uploadDroppedFilesToBlock(node, dataTransfer) {
+    const resolved = await resolveFilesForDrop(dataTransfer);
+    await this.uploadFilesToBlock(node, resolved.files, {
+      selectFiles: resolved.pickerRequired
+    });
+  }
+
+  async uploadFilesToBlock(node, files, { selectFiles = false } = {}) {
+    if (!files.length && !selectFiles) {
       this.#mediaUploadNotice(t("editor.treeView.dropFilesUnavailable"), "error");
       return;
     }
     if (!this.requestMediaUpload) return;
     this.controller.select(node.id);
     try {
-      const upload = await this.requestMediaUpload({ node, files, textareaSizing: this.textareaSizing });
+      const upload = await this.requestMediaUpload({
+        node,
+        files,
+        textareaSizing: this.textareaSizing,
+        selectFiles,
+        autoOpenFilePicker: selectFiles
+      });
       if (!upload) return;
       const binding = await this.mediaBinder.assignUploaded(node.id, upload.assets);
       const assigned = binding.assigned.length;

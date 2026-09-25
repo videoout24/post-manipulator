@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.js?v=1.12.5";
+import { t } from "../i18n/index.js?v=1.12.6";
 import { randomUUID } from "../core/Random.js?v=1.5.9";
 import { materializeRelationUrl, relationIdsInAst, removeLinkRelationFromAst } from "../links/LinkRelationAst.js?v=1.5.9";
 import { comessageKey, comessagePublicationId, comessageValueFromAst } from "../core/Comessage.js?v=1.12.1";

@@ -1,23 +1,23 @@
-import { getLocale, t } from "./i18n/index.js?v=1.12.5";
-import { EventBus } from "./core/EventBus.js?v=1.12.5";
+import { getLocale, t } from "./i18n/index.js?v=1.12.6";
+import { EventBus } from "./core/EventBus.js?v=1.12.6";
 import { Storage } from "./storage/Storage.js?v=1.8.6";
 import { LayoutPreferences } from "./core/LayoutPreferences.js?v=1.7.22";
 import { TelegramSettingsView } from "./telegram/TelegramSettingsView.js?v=1.9.5";
-import { GalleryView } from "./gallery/GalleryView.js?v=1.12.5";
+import { GalleryView } from "./gallery/GalleryView.js?v=1.12.6";
 import { ProjectPreviewSync } from "./project/ProjectPreviewSync.js?v=1.9.5";
 import { ProjectPublicationService } from "./project/ProjectPublicationService.js?v=1.9.5";
-import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js?v=1.12.5";
+import { EditorDocumentCoordinator } from "./editor/EditorDocumentCoordinator.js?v=1.12.6";
 import { EditorCanvasPreferences } from "./editor/EditorCanvasPreferences.js?v=1.9.8";
 import { EmojiPreferences } from "./editor/EmojiPreferences.js?v=1.7.9";
 import { AppNotifications } from "./app/AppNotifications.js?v=1.5.9";
 import { OperationFeedback } from "./app/OperationFeedback.js?v=1.8.6";
 import { AppLifecycle } from "./app/AppLifecycle.js?v=1.8.6";
-import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.12.5";
+import { createTelegramDomain } from "./app/createTelegramDomain.js?v=1.12.6";
 import { createProjectDomain } from "./app/createProjectDomain.js?v=1.9.8";
-import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.12.5";
+import { createGalleryDomain } from "./app/createGalleryDomain.js?v=1.12.6";
 import { createEditorDomain } from "./app/createEditorDomain.js?v=1.12.1";
-import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.12.5";
-import { createEditorShell } from "./app/createEditorShell.js?v=1.12.5";
+import { createEditorWorkspace } from "./app/createEditorWorkspace.js?v=1.12.6";
+import { createEditorShell } from "./app/createEditorShell.js?v=1.12.6";
 import { NetPanel } from "./app/NetPanel.js?v=1.5.9";
 import { PublicationView } from "./publications/PublicationView.js?v=1.12.1";
 import { TelegramBackupService } from "./storage/TelegramBackupService.js?v=1.7.2";
@@ -419,7 +419,7 @@ function renderBackupInspection(inspection) {
 editorWorkspace.render();
 navigation.activateTab(navigation.activeTab);
 const lifecycle = new AppLifecycle({
-  build: "1.12.5",
+  build: "1.12.6",
   notifications,
   layoutPreferences,
   telegramNavigation,

@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.12.5";
-import { isBlobLike } from "../core/FileDrop.js?v=1.12.5";
+import { t } from "../i18n/index.js?v=1.12.6";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.6";
 
 export function requestGalleryUpload({
   gallery,
@@ -8,10 +8,14 @@ export function requestGalleryUpload({
   topics = [],
   initialThreadId = null,
   textareaSizing = null,
-  dialogId = "editorMediaUploadDialog"
+  dialogId = "editorMediaUploadDialog",
+  selectFiles = false,
+  autoOpenFilePicker = false,
+  accept = ""
 } = {}) {
-  const selectedFiles = Array.from(files || []).filter(isBlobLike);
-  if (!selectedFiles.length) return Promise.resolve(null);
+  let selectedFiles = Array.from(files || []).filter(isBlobLike);
+  if (!selectedFiles.length && !selectFiles) return Promise.resolve(null);
+  const pickerNeeded = Boolean(selectFiles);
 
   const previous = document.querySelector(`#${dialogId}`);
   if (previous?.open) previous.close();
@@ -24,7 +28,7 @@ export function requestGalleryUpload({
   const form = document.createElement("form");
   form.method = "dialog";
   form.innerHTML = `
-    <div class="dialog-head"><strong>${t("editor.galleryUploadDialog.title", { 0: selectedFiles.length })}</strong><button type="button" data-upload-close>×</button></div>
+    <div class="dialog-head"><strong data-upload-title>${t("editor.galleryUploadDialog.title", { 0: selectedFiles.length })}</strong><button type="button" data-upload-close>×</button></div>
     <div class="gallery-upload-body">
       <label class="gallery-upload-field"><span>${t("editor.galleryUploadDialog.topic")}</span>
         <select data-upload-topic>
@@ -34,9 +38,10 @@ export function requestGalleryUpload({
       </label>
       <label class="gallery-upload-field" data-upload-new-topic ${availableTopics.length ? "hidden" : ""}><span>${t("gallery.galleryView.newTopicTitle")}</span><input data-upload-topic-name maxlength="128" placeholder="${escapeAttr(t("gallery.galleryView.mediaUploads"))}"></label>
       <label class="gallery-upload-field"><span>${t("gallery.galleryView.captionForEachFile")}</span><textarea data-upload-caption maxlength="1024" rows="1" placeholder="${escapeAttr(t("gallery.galleryView.theSameCaptionWillBeAddedTo"))}"></textarea></label>
-      <div class="gallery-upload-file-summary">${escapeHtml(fileSummary(selectedFiles))}</div>
-      <div class="gallery-upload-status" data-upload-status>${t("editor.galleryUploadDialog.afterUploadResourceWillBeAssigned")}</div>
-      <div class="gallery-upload-actions"><button type="button" data-upload-cancel>${t("gallery.galleryView.cancel")}</button><button class="primary" type="button" data-upload-submit>${t("gallery.galleryView.uploadAction")}</button></div>
+      <div class="gallery-upload-file-summary" data-upload-file-summary>${escapeHtml(selectedFiles.length ? fileSummary(selectedFiles) : t("editor.galleryUploadDialog.linuxDropNeedsFileSelection"))}</div>
+      <div class="gallery-upload-status" data-upload-status>${selectedFiles.length ? t("editor.galleryUploadDialog.afterUploadResourceWillBeAssigned") : t("editor.galleryUploadDialog.selectFilesToContinue")}</div>
+      <input data-upload-files type="file" multiple ${accept ? `accept="${escapeAttr(accept)}"` : ""} hidden>
+      <div class="gallery-upload-actions"><button type="button" data-upload-cancel>${t("gallery.galleryView.cancel")}</button><button type="button" data-upload-choose ${pickerNeeded ? "" : "hidden"}>${t("gallery.galleryView.selectFiles")}</button><button class="primary" type="button" data-upload-submit ${selectedFiles.length ? "" : "disabled"}>${t("gallery.galleryView.uploadAction")}</button></div>
     </div>`;
   dialog.append(form);
   document.body.append(dialog);
@@ -45,6 +50,10 @@ export function requestGalleryUpload({
   const newTopicField = dialog.querySelector("[data-upload-new-topic]");
   const topicName = dialog.querySelector("[data-upload-topic-name]");
   const caption = dialog.querySelector("[data-upload-caption]");
+  const title = dialog.querySelector("[data-upload-title]");
+  const summary = dialog.querySelector("[data-upload-file-summary]");
+  const fileInput = dialog.querySelector("[data-upload-files]");
+  const choose = dialog.querySelector("[data-upload-choose]");
   const submit = dialog.querySelector("[data-upload-submit]");
   const cancel = dialog.querySelector("[data-upload-cancel]");
   const closeButton = dialog.querySelector("[data-upload-close]");
@@ -61,6 +70,29 @@ export function requestGalleryUpload({
   const syncTopicMode = () => { newTopicField.hidden = topicSelect.value !== "__new__"; };
   topicSelect.addEventListener("change", syncTopicMode);
   syncTopicMode();
+
+  const showSelectedFiles = () => {
+    title.textContent = t("editor.galleryUploadDialog.title", { 0: selectedFiles.length });
+    summary.textContent = selectedFiles.length
+      ? fileSummary(selectedFiles)
+      : t("editor.galleryUploadDialog.linuxDropNeedsFileSelection");
+    status.textContent = selectedFiles.length
+      ? t("editor.galleryUploadDialog.afterUploadResourceWillBeAssigned")
+      : t("editor.galleryUploadDialog.selectFilesToContinue");
+    status.classList.remove("error");
+    submit.disabled = selectedFiles.length === 0;
+  };
+  choose.addEventListener("click", () => {
+    fileInput.value = "";
+    try { fileInput.click(); } catch {}
+  });
+  fileInput.addEventListener("change", () => {
+    const nextFiles = Array.from(fileInput.files || []).filter(isBlobLike);
+    if (!nextFiles.length) return;
+    selectedFiles = nextFiles;
+    choose.hidden = false;
+    showSelectedFiles();
+  });
 
   return new Promise(resolve => {
     let settled = false;
@@ -92,6 +124,10 @@ export function requestGalleryUpload({
       }
     }, { once: true });
     submit.addEventListener("click", async () => {
+      if (!selectedFiles.length) {
+        showSelectedFiles();
+        return;
+      }
       const createNew = topicSelect.value === "__new__";
       if (createNew && !topicName.value.trim()) {
         status.textContent = t("gallery.galleryView.enterNewTopicTitle");
@@ -101,7 +137,7 @@ export function requestGalleryUpload({
       }
       status.classList.remove("error");
       uploading = true;
-      for (const control of [submit, cancel, closeButton, topicSelect, topicName, caption]) control.disabled = true;
+      for (const control of [submit, choose, fileInput, cancel, closeButton, topicSelect, topicName, caption]) control.disabled = true;
       let threadId = Number(topicSelect.value || 0);
       try {
         if (createNew) {
@@ -123,12 +159,18 @@ export function requestGalleryUpload({
           return;
         }
         uploading = false;
-        for (const control of [submit, cancel, closeButton, topicSelect, topicName, caption]) control.disabled = false;
+        for (const control of [choose, fileInput, cancel, closeButton, topicSelect, topicName, caption]) control.disabled = false;
+        submit.disabled = selectedFiles.length === 0;
         status.textContent = error?.message || String(error);
         status.classList.add("error");
       }
     });
     dialog.showModal();
+    if (pickerNeeded && autoOpenFilePicker) {
+      queueMicrotask(() => {
+        try { fileInput.click(); } catch {}
+      });
+    }
   });
 }
 

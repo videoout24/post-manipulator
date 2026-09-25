@@ -444,25 +444,85 @@ try {
   assert.equal(pickerClosed, true, "the Linux save picker must finish writing before download completes");
 
   const linuxEvents = [];
-  const linuxAnchor = {
-    click() { linuxEvents.push("click"); },
-    remove() { linuxEvents.push("remove"); }
+  const linuxNotifications = [];
+  const linuxFallbackReports = [];
+  const linuxInput = {
+    value: JSON.stringify(manualPayload),
+    focus() { linuxEvents.push("focus"); },
+    select() { linuxEvents.push("select"); }
   };
   const linuxDownloadExchange = new AiDraftExchange({
-    input: { value: JSON.stringify(manualPayload) },
+    input: linuxInput,
     documentRoot: {
-      defaultView: { navigator: { userAgent: "TelegramDesktop WebKit Linux x86_64" } },
-      body: { appendChild(node) { assert.equal(node, linuxAnchor); linuxEvents.push("append"); } },
-      createElement(tag) { assert.equal(tag, "a"); return linuxAnchor; }
+      defaultView: {
+        navigator: {
+          userAgent: "TelegramDesktop WebKit Linux x86_64",
+          clipboard: {
+            async writeText(text) {
+              assert.equal(text, linuxInput.value);
+              linuxEvents.push("clipboard");
+            }
+          }
+        }
+      },
+      execCommand(command) {
+        assert.equal(command, "copy");
+        linuxEvents.push("exec-copy");
+        return false;
+      },
+      createElement() { throw new Error("restricted Linux Telegram must not pretend that an anchor click saved a file"); }
     },
-    notifications: { show() {} }
+    notifications: { show(payload) { linuxNotifications.push(payload); } },
+    async downloadFallbackReporter(options) { linuxFallbackReports.push(options); }
   });
-  assert.equal(await linuxDownloadExchange.download(), true);
-  assert.deepEqual(linuxEvents, ["append", "click", "remove"]);
-  assert.match(linuxAnchor.href, /^data:application\/json;charset=utf-8,/);
-  assert.equal(decodeURIComponent(linuxAnchor.href.split(",", 2)[1]), JSON.stringify(manualPayload));
-  assert.equal(linuxAnchor.target, "_blank",
-    "Linux WebKit must be able to open the JSON even when it ignores the download attribute");
+  assert.equal(await linuxDownloadExchange.download(), false,
+    "clipboard fallback must not claim that a file was saved to disk");
+  assert.deepEqual(linuxEvents, ["clipboard", "focus", "select", "exec-copy"]);
+  assert.equal(linuxNotifications.length, 1);
+  assert.equal(linuxNotifications[0].type, "warning");
+  assert.match(linuxNotifications[0].message, /буфер|clipboard/i);
+  assert.match(linuxNotifications[0].message, /Файл не создан|No file was created/i);
+  assert.match(linuxNotifications[0].message, /\.json/,
+    "the fallback must tell the user which local filename to create");
+  assert.equal(linuxFallbackReports.length, 1,
+    "the Linux fallback must display an acknowledgement dialog, not only an editor status");
+  assert.match(linuxFallbackReports[0].title, /JSON/i);
+  assert.equal(linuxFallbackReports[0].message, linuxNotifications[0].message);
+
+  const manualFallbackEvents = [];
+  const manualFallbackNotifications = [];
+  const manualFallbackReports = [];
+  const manualFallbackExchange = new AiDraftExchange({
+    input: {
+      value: JSON.stringify(manualPayload),
+      focus() { manualFallbackEvents.push("focus"); },
+      select() { manualFallbackEvents.push("select"); }
+    },
+    documentRoot: {
+      defaultView: {
+        Telegram: { WebApp: { platform: "tdesktop", initData: "signed" } },
+        navigator: {
+          userAgent: "Mozilla/5.0 (X11; Linux x86_64)",
+          clipboard: { async writeText() { throw new Error("clipboard denied"); } }
+        }
+      },
+      execCommand(command) {
+        assert.equal(command, "copy");
+        manualFallbackEvents.push("exec-copy");
+        return false;
+      },
+      createElement() { throw new Error("manual fallback must not create a download anchor"); }
+    },
+    notifications: { show(payload) { manualFallbackNotifications.push(payload); } },
+    async downloadFallbackReporter(options) { manualFallbackReports.push(options); }
+  });
+  assert.equal(await manualFallbackExchange.download(), false);
+  assert.deepEqual(manualFallbackEvents, ["focus", "select", "exec-copy"]);
+  assert.equal(manualFallbackNotifications.length, 1);
+  assert.equal(manualFallbackNotifications[0].type, "warning");
+  assert.match(manualFallbackNotifications[0].message, /Ctrl\+C/i,
+    "a denied clipboard must leave an explicit manual-copy instruction");
+  assert.equal(manualFallbackReports[0].message, manualFallbackNotifications[0].message);
 } finally {
   globalThis.URL = originalUrl;
   globalThis.setTimeout = originalSetTimeout;

@@ -31,30 +31,27 @@ export function filesFromDataTransfer(dataTransfer) {
 export async function resolveFilesFromDataTransfer(dataTransfer) {
   const immediate = filesFromDataTransfer(dataTransfer);
   if (immediate.length) return immediate;
-
-  // Linux WebKit/Chromium builds can expose the drop as a file item while
-  // returning null from getAsFile(). Capture their asynchronous handles before
-  // the drop event leaves its readable state.
-  const pending = [];
-  for (const item of arrayFrom(dataTransfer?.items)) {
-    if (String(item?.kind || "").toLowerCase() !== "file") continue;
-    try {
-      if (typeof item.getAsFileSystemHandle === "function") {
-        const handle = item.getAsFileSystemHandle();
-        pending.push(Promise.resolve(handle).then(value => value?.kind === "file" ? value.getFile() : null));
-        continue;
-      }
-    } catch {}
-    try {
-      const entry = item.webkitGetAsEntry?.();
-      if (entry?.isFile && typeof entry.file === "function") {
-        pending.push(new Promise(resolve => entry.file(resolve, () => resolve(null))));
-      }
-    } catch {}
-  }
-
+  // Capture asynchronous handles before the drop event leaves its readable
+  // state. One rejected provider must not hide files from another item.
+  const pending = asyncFilesFromDataTransfer(dataTransfer);
   if (!pending.length) return [];
-  return uniqueFiles((await Promise.all(pending)).filter(Boolean));
+  const settled = await Promise.allSettled(pending);
+  return uniqueFiles(settled
+    .filter(result => result.status === "fulfilled" && result.value)
+    .map(result => result.value));
+}
+
+export async function resolveFilesForDrop(dataTransfer) {
+  const files = await resolveFilesFromDataTransfer(dataTransfer);
+  // Linux Telegram Desktop can advertise Files/text/uri-list while intentionally
+  // withholding file bytes. A drop event does not reliably grant transient user
+  // activation, so the caller must keep a visible file-picker button available
+  // even if it also attempts to open the picker immediately.
+  return {
+    files,
+    source: files.length ? "transfer" : "unavailable",
+    pickerRequired: files.length === 0
+  };
 }
 
 export function isBlobLike(value) {
@@ -72,6 +69,26 @@ function arrayFrom(value) {
   } catch {
     return [];
   }
+}
+
+function asyncFilesFromDataTransfer(dataTransfer) {
+  const pending = [];
+  for (const item of arrayFrom(dataTransfer?.items)) {
+    if (String(item?.kind || "").toLowerCase() !== "file") continue;
+    try {
+      if (typeof item.getAsFileSystemHandle === "function") {
+        const handle = item.getAsFileSystemHandle();
+        pending.push(Promise.resolve(handle).then(value => value?.kind === "file" ? value.getFile() : null));
+      }
+    } catch {}
+    try {
+      const entry = item.webkitGetAsEntry?.();
+      if (entry?.isFile && typeof entry.file === "function") {
+        pending.push(new Promise(resolve => entry.file(resolve, () => resolve(null))));
+      }
+    } catch {}
+  }
+  return pending;
 }
 
 function uniqueFiles(files) {

@@ -1,5 +1,5 @@
-import { t } from "../i18n/index.js?v=1.12.5";
-import { isBlobLike } from "../core/FileDrop.js?v=1.12.5";
+import { t } from "../i18n/index.js?v=1.12.6";
+import { isBlobLike } from "../core/FileDrop.js?v=1.12.6";
 const SETTINGS_KEY = "gallerySettings";
 let uploadSequence = 0;
 const DEFAULT_SETTINGS = Object.freeze({

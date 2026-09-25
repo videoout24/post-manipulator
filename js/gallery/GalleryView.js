@@ -1,9 +1,9 @@
 import { safeErrorDetails } from "../core/SafeDiagnostics.js?v=1.8.6";
-import { t } from "../i18n/index.js?v=1.12.5";
+import { t } from "../i18n/index.js?v=1.12.6";
 import { confirmDarkDialog, requestTextDialog } from "../core/DarkDialog.js?v=1.6.5";
-import { dataTransferMayContainFiles, resolveFilesFromDataTransfer } from "../core/FileDrop.js?v=1.12.5";
+import { dataTransferMayContainFiles, resolveFilesForDrop } from "../core/FileDrop.js?v=1.12.6";
 import { deleteGalleryTopicDialog } from "./GalleryTopicDeleteDialog.js?v=1.8.6";
-import { requestGalleryUpload } from "./GalleryUploadDialog.js?v=1.12.5";
+import { requestGalleryUpload } from "./GalleryUploadDialog.js?v=1.12.6";
 import { SessionTextareaSizing } from "../editor/SessionTextareaSizing.js?v=1.11.4";
 
 const TYPE_META = Object.freeze({
@@ -292,14 +292,16 @@ export class GalleryView {
       event.preventDefault();
       event.stopPropagation();
       content.classList.remove("is-file-dragover");
-      const files = await resolveFilesFromDataTransfer(event.dataTransfer);
-      this.#uploadDroppedFiles(files, topics, topic).catch(error => this.#notice(error?.message || String(error), true));
+      const resolved = await resolveFilesForDrop(event.dataTransfer);
+      this.#uploadDroppedFiles(resolved.files, topics, topic, {
+        selectFiles: resolved.pickerRequired
+      }).catch(error => this.#notice(error?.message || String(error), true));
     });
   }
 
-  async #uploadDroppedFiles(files, topics, topic = null) {
+  async #uploadDroppedFiles(files, topics, topic = null, { selectFiles = false } = {}) {
     if (this.dropUploadPending) return;
-    if (!files.length) {
+    if (!files.length && !selectFiles) {
       this.#notice(t("gallery.galleryView.dropFilesUnavailable"), true);
       return;
     }
@@ -312,7 +314,9 @@ export class GalleryView {
         topics,
         initialThreadId: topic?.threadId,
         textareaSizing: this.textareaSizing,
-        dialogId: "galleryDropUploadDialog"
+        dialogId: "galleryDropUploadDialog",
+        selectFiles,
+        autoOpenFilePicker: selectFiles
       });
       if (!result) return;
       this.filterThread = String(result.threadId);

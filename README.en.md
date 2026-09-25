@@ -336,6 +336,10 @@ The encrypted Bot API token remains in Telegram CloudStorage, but projects, draf
 
 A similar WebView storage reset in Telegram Desktop for Linux is tracked in [telegramdesktop/tdesktop#31051](https://github.com/telegramdesktop/tdesktop/issues/31051).
 
+A Linux WebView may also draw the drop outline for a local file without exposing its contents to the page. In that case, Post Manipulator displays an upload dialog with a file-selection button and also attempts to open the system picker immediately; if the WebView blocks automatic opening, the visible button reliably opens it from a user click. Selecting the files resumes the same gallery upload or Canvas media-block assignment flow. Windows keeps the direct drop path and requires no extra step. This is a WebView security boundary: JavaScript cannot safely turn a `file:` URI into a `File`, while the system file picker remains available.
+
+AI JSON export first uses the system save dialog. If the Linux Telegram WebView does not provide a working save picker and blocks a normal browser download, the application no longer reports a save that did not happen: it copies the JSON to the clipboard and shows the suggested filename with instructions to save the pasted text manually. Without a backend hosting a temporary public HTTPS file, a static Mini App cannot pass a local `blob:` or `data:` URL to Telegram's system downloader.
+
 ## Quick start
 
 ### 1. Prepare a bot and choose the Mini App address
@@ -351,7 +355,7 @@ There are two deployment options:
 After GitHub Pages deployment, configure this Mini App URL in BotFather:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.12.5
+https://videoout24.github.io/post-manipulator/?build=1.12.6
 ```
 
 Your bot token remains encrypted in Telegram CloudStorage, while application data stays in the local IndexedDB database for the selected bot. The page does not require a preconfigured Bot ID.
@@ -428,7 +432,7 @@ git push
 
 GitHub Pages updates the site automatically.
 
-GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.5`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
+GitHub Pages and Telegram Desktop may retain an older `index.html`. Increase the `build` query parameter in the BotFather Mini App URL after every release, for example `?build=1.12.6`. The parameter must match for Main Mini App and Menu Button; a `#fragment` cannot be used for this purpose. GitHub Pages cannot fully disable this cache. A host that supports a controlled `Cache-Control: no-store` header, such as Cloudflare Pages, is required for that.
 
 ## Local verification
 

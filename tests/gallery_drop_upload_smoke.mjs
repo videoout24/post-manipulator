@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { activeGalleryUploadTopic } from "../js/gallery/GalleryView.js";
-import { dataTransferMayContainFiles, filesFromDataTransfer, isBlobLike, resolveFilesFromDataTransfer } from "../js/core/FileDrop.js";
+import {
+  dataTransferMayContainFiles,
+  filesFromDataTransfer,
+  isBlobLike,
+  resolveFilesForDrop,
+  resolveFilesFromDataTransfer
+} from "../js/core/FileDrop.js";
 
 const linuxFile = { name: "linux-photo.png", type: "image/png" };
 const linuxTransfer = {
@@ -20,6 +26,20 @@ assert.deepEqual(await resolveFilesFromDataTransfer({
   files: [],
   items: [{ kind: "file", getAsFile: () => null, getAsFileSystemHandle: async () => ({ kind: "file", getFile: async () => handleFile }) }]
 }), [handleFile], "Linux drops must resolve asynchronous file-system handles");
+assert.deepEqual(await resolveFilesForDrop({ files: [], items: [], types: ["text/uri-list"] }), {
+  files: [],
+  source: "unavailable",
+  pickerRequired: true
+}, "URI-only WebKit drops must explicitly request the system file picker");
+assert.deepEqual(await resolveFilesForDrop({
+  files: [],
+  items: [{ kind: "file", getAsFile: () => null, getAsFileSystemHandle: async () => null }],
+  types: ["Files"]
+}), {
+  files: [],
+  source: "unavailable",
+  pickerRequired: true
+}, "an empty asynchronous handle must also fall back to the picker");
 const crossRealmFile = {
   name: "cross-realm.png", type: "image/png", size: 10,
   arrayBuffer: async () => new ArrayBuffer(10),
@@ -40,7 +60,9 @@ const view = fs.readFileSync(new URL("../js/gallery/GalleryView.js", import.meta
 assert.match(view, /addEventListener\("dragenter", show\)/);
 assert.match(view, /addEventListener\("dragover", show\)/);
 assert.match(view, /addEventListener\("drop"/);
-assert.match(view, /resolveFilesFromDataTransfer\(event\.dataTransfer\)/);
+assert.match(view, /resolveFilesForDrop\(event\.dataTransfer\)/);
+assert.match(view, /selectFiles: resolved\.pickerRequired/,
+  "Gallery must open the chooser dialog when Linux exposes only a file URI");
 assert.match(view, /requestGalleryUpload\(\{/,
   "Gallery drops must open the shared topic/upload dialog even when the All filter is active");
 assert.match(view, /initialThreadId: topic\?\.threadId/,

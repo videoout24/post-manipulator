@@ -1,5 +1,5 @@
 import { randomUUID } from "../core/Random.js?v=1.5.9";
-import { t } from "../i18n/index.js?v=1.12.1";
+import { t } from "../i18n/index.js?v=1.12.6";
 import { chooseDarkDialog, showDarkMessage } from "../core/DarkDialog.js?v=1.9.6";
 import { BlockTree } from "../core/BlockTree.js?v=1.5.9";
 import { Validator } from "../core/Validator.js?v=1.12.1";
@@ -38,6 +38,7 @@ export class AiDraftExchange {
     notifications = null,
     conflictResolver = null,
     invalidResponseReporter = null,
+    downloadFallbackReporter = null,
     documentRoot = globalThis.document
   } = {}) {
     Object.assign(this, {
@@ -48,6 +49,7 @@ export class AiDraftExchange {
     this.db = db;
     this.conflictResolver = conflictResolver;
     this.invalidResponseReporter = invalidResponseReporter;
+    this.downloadFallbackReporter = downloadFallbackReporter;
     this.unsubscribers = [];
     this.currentScope = null;
     this.pendingRequestCleanup = Promise.resolve(0);
@@ -160,10 +162,31 @@ export class AiDraftExchange {
         }
       }
 
-      const linuxFallback = /linux/i.test(String(windowRoot?.navigator?.userAgent || windowRoot?.navigator?.platform || ""));
-      const url = linuxFallback
-        ? `data:application/json;charset=utf-8,${encodeURIComponent(text)}`
-        : URL.createObjectURL(blob);
+      if (isRestrictedLinuxTelegramWebView(windowRoot)) {
+        const copied = await copyDownloadText({
+          text,
+          input: this.input,
+          documentRoot: this.documentRoot,
+          windowRoot
+        });
+        const message = t(copied
+          ? "editor.aiDraftExchange.downloadCopiedFallback"
+          : "editor.aiDraftExchange.downloadManualFallback", { 0: fileName });
+        this.#notify({
+          message,
+          type: "warning",
+          duration: 15000
+        });
+        const report = this.downloadFallbackReporter || showDarkMessage;
+        try {
+          await report({ title: t("html.downloadJson"), message });
+        } catch {}
+        // Clipboard/manual-copy fallback is deliberately not reported as a
+        // completed download. The WebView did not create a file on disk.
+        return false;
+      }
+
+      const url = URL.createObjectURL(blob);
       const anchor = this.documentRoot.createElement("a");
       anchor.href = url;
       anchor.download = fileName;
@@ -177,7 +200,7 @@ export class AiDraftExchange {
         anchor.click();
       } finally {
         anchor.remove();
-        if (!linuxFallback) setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_REVOKE_DELAY);
+        setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_REVOKE_DELAY);
       }
       return true;
     } catch (error) {
@@ -490,6 +513,50 @@ export class AiDraftExchange {
   #error(error) {
     this.#notify({ message: t("editor.aiDraftExchange.error", { 0: error?.message || error }), type: "error", duration: 9000 });
   }
+}
+
+function isRestrictedLinuxTelegramWebView(windowRoot) {
+  const navigatorRoot = windowRoot?.navigator || {};
+  const environment = `${String(navigatorRoot.userAgent || "")} ${String(navigatorRoot.platform || "")}`;
+  if (!/(?:linux|x11)/i.test(environment)) return false;
+  const webApp = windowRoot?.Telegram?.WebApp || globalThis.Telegram?.WebApp;
+  const telegramEnvironment = `${environment} ${String(webApp?.platform || "")}`;
+  return /(?:telegram|tdesktop|qtwebengine)/i.test(telegramEnvironment)
+    || Boolean(webApp?.initData);
+}
+
+async function copyDownloadText({ text, input, documentRoot, windowRoot }) {
+  const clipboard = windowRoot?.navigator?.clipboard || globalThis.navigator?.clipboard;
+  let clipboardCopy = null;
+  if (typeof clipboard?.writeText === "function") {
+    try {
+      // Start the permission-sensitive Clipboard call before awaiting anything,
+      // while the Download button still provides transient user activation.
+      clipboardCopy = Promise.resolve(Reflect.apply(clipboard.writeText, clipboard, [text]))
+        .then(() => true, () => false);
+    } catch {
+      clipboardCopy = null;
+    }
+  }
+
+  let selected = false;
+  try {
+    input?.focus?.({ preventScroll: true });
+    if (typeof input?.select === "function") {
+      input.select();
+      selected = true;
+    } else if (typeof input?.setSelectionRange === "function") {
+      input.setSelectionRange(0, text.length);
+      selected = true;
+    }
+  } catch {}
+
+  let legacyCopied = false;
+  if (selected && typeof documentRoot?.execCommand === "function") {
+    try { legacyCopied = documentRoot.execCommand("copy") === true; } catch {}
+  }
+  const modernCopied = clipboardCopy ? await clipboardCopy : false;
+  return legacyCopied || modernCopied;
 }
 
 export function buildAiDraftRequest({

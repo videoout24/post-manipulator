@@ -324,6 +324,10 @@ Bot API позволяет боту получить через `getFile` пут
 
 Схожий сброс WebView storage в Linux Telegram Desktop зарегистрирован в [telegramdesktop/tdesktop#31051](https://github.com/telegramdesktop/tdesktop/issues/31051).
 
+Linux WebView также может показать рамку при перетаскивании локального файла, но не передать странице его содержимое. В этом случае Post Manipulator показывает upload-dialog с кнопкой выбора файлов и пытается сразу открыть системный picker; если WebView блокирует автоматическое открытие, picker гарантированно запускается нажатием видимой кнопки. После выбора продолжается тот же сценарий загрузки в галерею или назначения медиа Canvas-блоку. Это не требуется на Windows, где прямой drop продолжает работать без дополнительного шага. Ограничение связано с защитой WebView: `file:` URI нельзя безопасно преобразовать в `File` средствами JavaScript, тогда как системный file picker остаётся доступен.
+
+При экспорте AI JSON приложение сначала использует системный диалог сохранения. Если Linux Telegram WebView не предоставляет рабочий save picker и блокирует обычную браузерную загрузку, приложение больше не сообщает о несуществующем сохранении: JSON копируется в буфер обмена, а уведомление показывает предлагаемое имя файла и просит сохранить вставленный текст вручную. Без backend со временным публичным HTTPS-файлом статическая Mini App не может передать локальный `blob:`/`data:` URL в системный загрузчик Telegram.
+
 ## Быстрый старт
 
 ### 1. Подготовьте бота и выберите адрес Mini App
@@ -339,7 +343,7 @@ Bot API позволяет боту получить через `getFile` пут
 После публикации GitHub Pages укажите в BotFather этот адрес Mini App:
 
 ```text
-https://videoout24.github.io/post-manipulator/?build=1.12.5
+https://videoout24.github.io/post-manipulator/?build=1.12.6
 ```
 
 Ваш bot token останется зашифрованным в Telegram CloudStorage, а данные приложения — в локальной IndexedDB выбранного бота. Страница не требует заранее заданного Bot ID.
@@ -416,7 +420,7 @@ git push
 
 GitHub Pages обновит сайт автоматически.
 
-GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.12.5`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
+GitHub Pages и Telegram Desktop могут сохранить прежний `index.html`, поэтому после каждого релиза увеличивайте параметр `build` в URL Mini App в BotFather, например `?build=1.12.6`. Параметр должен быть одинаковым для Main Mini App и Menu Button; `#fragment` для этого не подходит. Полностью отключить такой кэш на GitHub Pages нельзя — для управляемого `Cache-Control: no-store` нужен другой хостинг, например Cloudflare Pages.
 
 ## Локальная проверка
 

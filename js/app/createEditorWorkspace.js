@@ -1,10 +1,10 @@
 import { BlockPalette } from "../editor/BlockPalette.js?v=1.5.9";
 import { BlockInspector } from "../editor/BlockInspector.js?v=1.11.4";
-import { TreeView } from "../editor/TreeView.js?v=1.12.5";
+import { TreeView } from "../editor/TreeView.js?v=1.12.6";
 import { MediaAssetBinder } from "../editor/MediaAssetBinder.js?v=1.12.1";
 import { EditorAssetPicker } from "../editor/EditorAssetPicker.js?v=1.12.1";
 import { EditorWorkspaceView } from "../editor/EditorWorkspaceView.js?v=1.12.4";
-import { requestGalleryUpload } from "../gallery/GalleryUploadDialog.js?v=1.12.5";
+import { requestGalleryUpload } from "../gallery/GalleryUploadDialog.js?v=1.12.6";
 
 export function createEditorWorkspace({
   documentRoot = document,
@@ -69,9 +69,17 @@ export function createEditorWorkspace({
     textareaSizing: inlineProperties.textareaSizing,
     blockCollector,
     events,
-    requestMediaUpload: async ({ node, files, textareaSizing }) => {
+    requestMediaUpload: async ({ node, files, textareaSizing, selectFiles = false, autoOpenFilePicker = false }) => {
       const topics = await gallery.listTopics();
-      return requestGalleryUpload({ gallery, events, files, topics, textareaSizing });
+      return requestGalleryUpload({
+        gallery,
+        events,
+        files,
+        topics,
+        textareaSizing,
+        selectFiles,
+        autoOpenFilePicker
+      });
     },
     autoCollapseInactive: autoCollapseInactiveCheckbox?.checked === true,
     scrollSpeed: Number(canvasScrollSpeedSelect?.value ?? editorCanvasPreferences?.scrollSpeed ?? 2)
